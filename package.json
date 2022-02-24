@@ -1,0 +1,43 @@
+{
+  "name": "remix-forms",
+  "version": "0.0.7",
+  "description": "Magically create forms + actions in Remix!",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": ["lib"],
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeasonedSoftware/remix-forms.git"
+  },
+  "keywords": [
+    "remix",
+    "forms",
+    "actions",
+    "zod",
+    "typescript",
+    "react-hook-form"
+  ],
+  "author": "Daniel Weinmann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SeasonedSoftware/remix-forms/issues"
+  },
+  "homepage": "https://remix-forms.seasoned.cc",
+  "peerDependencies": {
+    "@remix-run/react": "^1.2.2",
+    "@remix-run/server-runtime": "^1.2.2",
+    "react": "^17.0.2",
+    "zod": "^3.12.0"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.24",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^2.8.8",
+    "react-hook-form": "^7.27.1"
+  }
+}
