@@ -5,6 +5,7 @@ import {
   FormMethod,
   useTransition,
   useSubmit,
+  useActionData,
 } from '@remix-run/react'
 import { SomeZodObject, z } from 'zod'
 import { useForm, UseFormReturn, FieldError, Path } from 'react-hook-form'
@@ -73,6 +74,7 @@ export type FormProps<Schema extends SomeZodObject> = {
   values?: FormValues<z.infer<Schema>>
   labels?: Record<keyof z.infer<Schema>, string>
   options?: Options<z.infer<Schema>>
+  beforeChildren?: React.ReactNode
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
 
@@ -89,16 +91,21 @@ export function Form<Schema extends SomeZodObject>({
   buttonLabel = 'OK',
   method = 'post',
   schema,
+  beforeChildren,
   children: childrenFn,
   labels,
   options,
-  errors,
-  values,
+  errors: errorsProp,
+  values: valuesProp,
   ...props
 }: FormProps<Schema>) {
   type SchemaType = z.infer<Schema>
   const submit = useSubmit()
   const transition = useTransition()
+  const actionData = useActionData()
+
+  const errors = errorsProp || (actionData?.errors as FormErrors<SchemaType>)
+  const values = valuesProp || (actionData?.values as FormValues<SchemaType>)
 
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
@@ -164,6 +171,7 @@ export function Form<Schema extends SomeZodObject>({
 
     return (
       <Component method={method} onSubmit={onSubmit} {...props}>
+        {beforeChildren}
         {mapChildren(children, (child) => {
           if (!React.isValidElement(child)) return child
 
@@ -204,6 +212,7 @@ export function Form<Schema extends SomeZodObject>({
 
   return (
     <Component method={method} onSubmit={onSubmit} {...props}>
+      {beforeChildren}
       {fields.map(({ name, label, options, errors, value }) => (
         <Field
           key={String(name)}
