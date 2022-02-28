@@ -98,12 +98,14 @@ export default function createField<Schema extends SomeZodObject>({
                 })
               } else if (child.type === Input) {
                 return React.cloneElement(child, {
+                  id: String(name),
                   ...register(String(name)),
                   defaultValue: value,
                   ...child.props,
                 })
               } else if (child.type === Select) {
                 return React.cloneElement(child, {
+                  id: String(name),
                   ...register(String(name)),
                   defaultValue: value,
                   children: selectChildren,
@@ -129,11 +131,19 @@ export default function createField<Schema extends SomeZodObject>({
         <Field {...props}>
           <Label htmlFor={String(name)}>{label}</Label>
           {selectChildren ? (
-            <Select {...register(String(name))} defaultValue={value}>
+            <Select
+              id={String(name)}
+              {...register(String(name))}
+              defaultValue={value}
+            >
               {selectChildren}
             </Select>
           ) : (
-            <Input {...register(String(name))} defaultValue={value} />
+            <Input
+              id={String(name)}
+              {...register(String(name))}
+              defaultValue={value}
+            />
           )}
           {errorsChildren && <Errors>{errorsChildren}</Errors>}
         </Field>
