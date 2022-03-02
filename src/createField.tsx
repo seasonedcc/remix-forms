@@ -63,7 +63,7 @@ export default function createField<Schema extends SomeZodObject>({
       }: FieldProps<Schema>,
       ref,
     ) => {
-      const selectChildren = options?.length
+      const selectChildren = options
         ? options.map(({ name, value }) => (
             <option key={String(value)} value={value}>
               {name}
