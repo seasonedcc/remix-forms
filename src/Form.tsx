@@ -21,6 +21,7 @@ type Field<SchemaType> = {
   errors?: string[]
   value?: any
   hidden?: boolean
+  multiline?: boolean
 }
 
 export type Option = { name: string } & Required<
@@ -59,6 +60,12 @@ export type FormProps<Schema extends SomeZodObject> = {
           React.RefAttributes<HTMLInputElement>
       >
     | string
+  multilineComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
   selectComponent?:
     | React.ForwardRefExoticComponent<
         React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
@@ -76,6 +83,7 @@ export type FormProps<Schema extends SomeZodObject> = {
   labels?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
+  multiline?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
@@ -88,6 +96,7 @@ export function Form<Schema extends SomeZodObject>({
   fieldErrorsComponent,
   labelComponent,
   inputComponent,
+  multilineComponent,
   selectComponent,
   buttonComponent: Button = 'button',
   buttonLabel = 'OK',
@@ -98,6 +107,7 @@ export function Form<Schema extends SomeZodObject>({
   labels,
   options,
   hiddenFields,
+  multiline,
   errors: errorsProp,
   values: valuesProp,
   ...props
@@ -137,6 +147,7 @@ export function Form<Schema extends SomeZodObject>({
         fieldComponent,
         labelComponent,
         inputComponent,
+        multilineComponent,
         selectComponent,
         fieldErrorsComponent,
         errorComponent: Error,
@@ -173,6 +184,7 @@ export function Form<Schema extends SomeZodObject>({
       value: values && values[key],
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
+      multiline: multiline && Boolean(multiline.find((item) => item === key)),
     })
   }
 
@@ -197,6 +209,7 @@ export function Form<Schema extends SomeZodObject>({
               value: field?.value,
               errors: field?.errors,
               hidden: field?.hidden,
+              multiline: field?.multiline,
               ...child.props,
             })
           } else if (child.type === Errors) {
@@ -226,17 +239,20 @@ export function Form<Schema extends SomeZodObject>({
   return (
     <Component method={method} onSubmit={onSubmit} {...props}>
       {beforeChildren}
-      {fields.map(({ name, label, options, errors, value, hidden }) => (
-        <Field
-          key={String(name)}
-          name={name}
-          label={label}
-          options={options}
-          errors={errors}
-          value={value}
-          hidden={hidden}
-        />
-      ))}
+      {fields.map(
+        ({ name, label, options, errors, value, hidden, multiline }) => (
+          <Field
+            key={String(name)}
+            name={name}
+            label={label}
+            options={options}
+            errors={errors}
+            value={value}
+            hidden={hidden}
+            multiline={multiline}
+          />
+        ),
+      )}
       {globalErrors?.length && (
         <Errors>
           {globalErrors.map((error) => (

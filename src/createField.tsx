@@ -13,6 +13,12 @@ type Children = (helpers: {
           React.RefAttributes<HTMLInputElement>
       >
     | string
+  Multiline:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
   Select:
     | React.ForwardRefExoticComponent<
         React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
@@ -31,6 +37,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   errors?: string[]
   value?: any
   hidden?: boolean
+  multiline?: boolean
   children?: Children
 } & JSX.IntrinsicElements['div']
 
@@ -39,6 +46,7 @@ export default function createField<Schema extends SomeZodObject>({
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',
   inputComponent: Input = 'input',
+  multilineComponent: Multiline = 'textarea',
   selectComponent: Select = 'select',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
@@ -47,6 +55,7 @@ export default function createField<Schema extends SomeZodObject>({
   | 'fieldComponent'
   | 'labelComponent'
   | 'inputComponent'
+  | 'multilineComponent'
   | 'selectComponent'
   | 'fieldErrorsComponent'
   | 'errorComponent'
@@ -60,6 +69,7 @@ export default function createField<Schema extends SomeZodObject>({
         errors,
         value,
         hidden = false,
+        multiline = false,
         children: childrenFn,
         ...props
       }: FieldProps<Schema>,
@@ -83,6 +93,7 @@ export default function createField<Schema extends SomeZodObject>({
         const children = childrenFn({
           Label,
           Input,
+          Multiline,
           Select,
           Errors,
           Error,
@@ -104,6 +115,13 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   type: hidden ? 'hidden' : 'text',
+                  ...register(String(name)),
+                  defaultValue: value,
+                  ...child.props,
+                })
+              } else if (child.type === Multiline) {
+                return React.cloneElement(child, {
+                  id: String(name),
                   ...register(String(name)),
                   defaultValue: value,
                   ...child.props,
@@ -143,6 +161,12 @@ export default function createField<Schema extends SomeZodObject>({
             >
               {selectChildren}
             </Select>
+          ) : multiline ? (
+            <Multiline
+              id={String(name)}
+              {...register(String(name))}
+              defaultValue={value}
+            />
           ) : (
             <Input
               id={String(name)}
