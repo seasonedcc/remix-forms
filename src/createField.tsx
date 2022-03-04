@@ -30,6 +30,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   options?: Option[]
   errors?: string[]
   value?: any
+  hidden?: boolean
   children?: Children
 } & JSX.IntrinsicElements['div']
 
@@ -58,6 +59,7 @@ export default function createField<Schema extends SomeZodObject>({
         options,
         errors,
         value,
+        hidden = false,
         children: childrenFn,
         ...props
       }: FieldProps<Schema>,
@@ -75,6 +77,8 @@ export default function createField<Schema extends SomeZodObject>({
         ? errors.map((error) => <Error key={error}>{error}</Error>)
         : undefined
 
+      const style = hidden ? { display: 'none' } : undefined
+
       if (childrenFn) {
         const children = childrenFn({
           Label,
@@ -86,7 +90,7 @@ export default function createField<Schema extends SomeZodObject>({
         })
 
         return (
-          <Field {...props}>
+          <Field hidden={hidden} style={style} {...props}>
             {mapChildren(children, (child) => {
               if (!React.isValidElement(child)) return child
 
@@ -99,6 +103,7 @@ export default function createField<Schema extends SomeZodObject>({
               } else if (child.type === Input) {
                 return React.cloneElement(child, {
                   id: String(name),
+                  type: hidden ? 'hidden' : 'text',
                   ...register(String(name)),
                   defaultValue: value,
                   ...child.props,
@@ -128,8 +133,8 @@ export default function createField<Schema extends SomeZodObject>({
       }
 
       return (
-        <Field {...props}>
-          <Label htmlFor={String(name)}>{label}</Label>
+        <Field hidden={hidden} style={style} {...props}>
+          {Boolean(label) && <Label htmlFor={String(name)}>{label}</Label>}
           {selectChildren ? (
             <Select
               id={String(name)}
@@ -141,11 +146,12 @@ export default function createField<Schema extends SomeZodObject>({
           ) : (
             <Input
               id={String(name)}
+              type={hidden ? 'hidden' : 'text'}
               {...register(String(name))}
               defaultValue={value}
             />
           )}
-          {errorsChildren && <Errors>{errorsChildren}</Errors>}
+          {Boolean(errorsChildren) && <Errors>{errorsChildren}</Errors>}
         </Field>
       )
     },

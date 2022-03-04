@@ -20,6 +20,7 @@ type Field<SchemaType> = {
   options?: Option[]
   errors?: string[]
   value?: any
+  hidden?: boolean
 }
 
 export type Option = { name: string } & Required<
@@ -72,8 +73,9 @@ export type FormProps<Schema extends SomeZodObject> = {
   schema: Schema
   errors?: FormErrors<z.infer<Schema>>
   values?: FormValues<z.infer<Schema>>
-  labels?: Record<keyof z.infer<Schema>, string>
+  labels?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
+  hiddenFields?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
@@ -95,6 +97,7 @@ export function Form<Schema extends SomeZodObject>({
   children: childrenFn,
   labels,
   options,
+  hiddenFields,
   errors: errorsProp,
   values: valuesProp,
   ...props
@@ -104,8 +107,15 @@ export function Form<Schema extends SomeZodObject>({
   const transition = useTransition()
   const actionData = useActionData()
 
-  const errors = errorsProp || (actionData?.errors as FormErrors<SchemaType>)
-  const values = valuesProp || (actionData?.values as FormValues<SchemaType>)
+  const errors = {
+    ...errorsProp,
+    ...(actionData?.errors as FormErrors<SchemaType>),
+  }
+
+  const values = {
+    ...valuesProp,
+    ...(actionData?.values as FormValues<SchemaType>),
+  }
 
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
@@ -161,6 +171,8 @@ export function Form<Schema extends SomeZodObject>({
       options: options && options[key],
       errors: (message && [message]) || (errors && errors[key]),
       value: values && values[key],
+      hidden:
+        hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
     })
   }
 
@@ -184,6 +196,7 @@ export function Form<Schema extends SomeZodObject>({
               options: field?.options,
               value: field?.value,
               errors: field?.errors,
+              hidden: field?.hidden,
               ...child.props,
             })
           } else if (child.type === Errors) {
@@ -213,7 +226,7 @@ export function Form<Schema extends SomeZodObject>({
   return (
     <Component method={method} onSubmit={onSubmit} {...props}>
       {beforeChildren}
-      {fields.map(({ name, label, options, errors, value }) => (
+      {fields.map(({ name, label, options, errors, value, hidden }) => (
         <Field
           key={String(name)}
           name={name}
@@ -221,6 +234,7 @@ export function Form<Schema extends SomeZodObject>({
           options={options}
           errors={errors}
           value={value}
+          hidden={hidden}
         />
       ))}
       {globalErrors?.length && (
