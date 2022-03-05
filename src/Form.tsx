@@ -7,7 +7,7 @@ import {
   useSubmit,
   useActionData,
 } from '@remix-run/react'
-import { SomeZodObject, z } from 'zod'
+import { SomeZodObject, z, ZodTypeAny } from 'zod'
 import { useForm, UseFormReturn, FieldError, Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormErrors, FormValues } from './formAction.server'
@@ -15,6 +15,7 @@ import createField, { FieldProps } from './createField'
 import mapChildren from './mapChildren'
 
 type Field<SchemaType> = {
+  shape: ZodTypeAny
   name: keyof SchemaType
   label?: string
   options?: Option[]
@@ -72,6 +73,15 @@ export type FormProps<Schema extends SomeZodObject> = {
           React.RefAttributes<HTMLSelectElement>
       >
     | string
+  checkboxComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
+  checkboxWrapperComponent?:
+    | React.ComponentType<JSX.IntrinsicElements['div']>
+    | string
   buttonComponent?:
     | React.ComponentType<JSX.IntrinsicElements['button']>
     | string
@@ -98,6 +108,8 @@ export function Form<Schema extends SomeZodObject>({
   inputComponent,
   multilineComponent,
   selectComponent,
+  checkboxComponent,
+  checkboxWrapperComponent,
   buttonComponent: Button = 'button',
   buttonLabel = 'OK',
   method = 'post',
@@ -149,6 +161,8 @@ export function Form<Schema extends SomeZodObject>({
         inputComponent,
         multilineComponent,
         selectComponent,
+        checkboxComponent,
+        checkboxWrapperComponent,
         fieldErrorsComponent,
         errorComponent: Error,
       }),
@@ -156,7 +170,10 @@ export function Form<Schema extends SomeZodObject>({
       fieldComponent,
       labelComponent,
       inputComponent,
+      multilineComponent,
       selectComponent,
+      checkboxComponent,
+      checkboxWrapperComponent,
       fieldErrorsComponent,
       Error,
     ],
@@ -175,8 +192,10 @@ export function Form<Schema extends SomeZodObject>({
   for (const stringKey in schema.shape) {
     const key = stringKey as keyof SchemaType
     const message = (formErrors[key] as unknown as FieldError)?.message
+    const shape = schema.shape[stringKey]
 
     fields.push({
+      shape,
       name: stringKey,
       label: labels && labels[key],
       options: options && options[key],
@@ -204,6 +223,7 @@ export function Form<Schema extends SomeZodObject>({
             const field = fields.find((field) => field.name === name)
 
             return React.cloneElement(child, {
+              shape: field?.shape,
               label: field?.label,
               options: field?.options,
               value: field?.value,
@@ -240,9 +260,10 @@ export function Form<Schema extends SomeZodObject>({
     <Component method={method} onSubmit={onSubmit} {...props}>
       {beforeChildren}
       {fields.map(
-        ({ name, label, options, errors, value, hidden, multiline }) => (
+        ({ shape, name, label, options, errors, value, hidden, multiline }) => (
           <Field
             key={String(name)}
+            shape={shape}
             name={name}
             label={label}
             options={options}
