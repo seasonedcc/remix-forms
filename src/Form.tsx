@@ -183,7 +183,9 @@ export function Form<Schema extends SomeZodObject>({
     for (const stringKey in schema.shape) {
       const key = stringKey as keyof SchemaType
       if (errors && errors[key]?.length) {
-        form.setFocus(key as Path<SchemaType>)
+        try {
+          form.setFocus(key as Path<SchemaType>)
+        } catch {}
       }
     }
   }, [errors])
