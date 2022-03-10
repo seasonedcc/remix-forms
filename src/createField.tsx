@@ -47,6 +47,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   errors?: string[]
   value?: any
   multiline?: boolean
+  hidden?: boolean
   children?: Children
 } & JSX.IntrinsicElements['div']
 
@@ -97,6 +98,7 @@ export default function createField<Schema extends SomeZodObject>({
         errors,
         value,
         multiline = false,
+        hidden: hiddenProp = false,
         children: childrenFn,
         ...props
       }: FieldProps<Schema>,
@@ -114,7 +116,7 @@ export default function createField<Schema extends SomeZodObject>({
         ? errors.map((error) => <Error key={error}>{error}</Error>)
         : undefined
 
-      const hidden = fieldType === 'hidden'
+      const hidden = hiddenProp || fieldType === 'hidden'
       const style = hidden ? { display: 'none' } : undefined
       const type = types[fieldType]
       const registerProps = register(String(name), registerOptions[fieldType])
