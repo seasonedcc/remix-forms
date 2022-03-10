@@ -1,5 +1,5 @@
 import React from 'react'
-import { SomeZodObject, z, ZodBoolean, ZodTypeAny } from 'zod'
+import { SomeZodObject, z } from 'zod'
 import { UseFormRegister } from 'react-hook-form'
 import { FormProps } from '.'
 import { Option } from './Form'
@@ -37,17 +37,32 @@ type Children = (helpers: {
   ref: React.ForwardedRef<any>
 }) => React.ReactNode
 
+export type FieldType = 'string' | 'boolean' | 'number' | 'hidden'
+
 export type FieldProps<Schema extends SomeZodObject> = {
   name: keyof z.infer<Schema>
-  shape?: ZodTypeAny
+  fieldType?: FieldType
   label?: string
   options?: Option[]
   errors?: string[]
   value?: any
-  hidden?: boolean
   multiline?: boolean
   children?: Children
 } & JSX.IntrinsicElements['div']
+
+const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
+  boolean: 'checkbox',
+  hidden: 'hidden',
+  string: 'text',
+  number: 'number',
+}
+
+const registerOptions: Record<FieldType, any> = {
+  boolean: {},
+  hidden: {},
+  string: {},
+  number: { valueAsNumber: true },
+}
 
 export default function createField<Schema extends SomeZodObject>({
   register,
@@ -75,13 +90,12 @@ export default function createField<Schema extends SomeZodObject>({
   return React.forwardRef<any, FieldProps<Schema>>(
     (
       {
-        shape,
+        fieldType = 'string',
         name,
         label,
         options,
         errors,
         value,
-        hidden = false,
         multiline = false,
         children: childrenFn,
         ...props
@@ -100,7 +114,10 @@ export default function createField<Schema extends SomeZodObject>({
         ? errors.map((error) => <Error key={error}>{error}</Error>)
         : undefined
 
+      const hidden = fieldType === 'hidden'
       const style = hidden ? { display: 'none' } : undefined
+      const type = types[fieldType]
+      const registerProps = register(String(name), registerOptions[fieldType])
 
       if (childrenFn) {
         const children = childrenFn({
@@ -129,22 +146,22 @@ export default function createField<Schema extends SomeZodObject>({
               } else if (child.type === Input) {
                 return React.cloneElement(child, {
                   id: String(name),
-                  type: hidden ? 'hidden' : 'text',
-                  ...register(String(name)),
+                  type,
+                  ...registerProps,
                   defaultValue: value,
                   ...child.props,
                 })
               } else if (child.type === Multiline) {
                 return React.cloneElement(child, {
                   id: String(name),
-                  ...register(String(name)),
+                  ...registerProps,
                   defaultValue: value,
                   ...child.props,
                 })
               } else if (child.type === Select) {
                 return React.cloneElement(child, {
                   id: String(name),
-                  ...register(String(name)),
+                  ...registerProps,
                   defaultValue: value,
                   children: selectChildren,
                   ...child.props,
@@ -152,8 +169,8 @@ export default function createField<Schema extends SomeZodObject>({
               } else if (child.type === Checkbox) {
                 return React.cloneElement(child, {
                   id: String(name),
-                  type: hidden ? 'hidden' : 'checkbox',
-                  ...register(String(name)),
+                  type,
+                  ...registerProps,
                   defaultChecked: Boolean(value),
                   ...child.props,
                 })
@@ -175,12 +192,12 @@ export default function createField<Schema extends SomeZodObject>({
 
       return (
         <Field hidden={hidden} style={style} {...props}>
-          {shape?._def.typeName === 'ZodBoolean' ? (
+          {fieldType === 'boolean' ? (
             <CheckboxWrapper>
               <Checkbox
                 id={String(name)}
-                type={hidden ? 'hidden' : 'checkbox'}
-                {...register(String(name))}
+                type={type}
+                {...registerProps}
                 defaultChecked={Boolean(value)}
               />
               {Boolean(label) && <Label htmlFor={String(name)}>{label}</Label>}
@@ -191,7 +208,7 @@ export default function createField<Schema extends SomeZodObject>({
               {selectChildren ? (
                 <Select
                   id={String(name)}
-                  {...register(String(name))}
+                  {...registerProps}
                   defaultValue={value}
                 >
                   {selectChildren}
@@ -199,14 +216,14 @@ export default function createField<Schema extends SomeZodObject>({
               ) : multiline ? (
                 <Multiline
                   id={String(name)}
-                  {...register(String(name))}
+                  {...registerProps}
                   defaultValue={value}
                 />
               ) : (
                 <Input
                   id={String(name)}
-                  type={hidden ? 'hidden' : 'text'}
-                  {...register(String(name))}
+                  type={type}
+                  {...registerProps}
                   defaultValue={value}
                 />
               )}

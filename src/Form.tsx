@@ -11,11 +11,11 @@ import { SomeZodObject, z, ZodTypeAny } from 'zod'
 import { useForm, UseFormReturn, FieldError, Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormErrors, FormValues } from './formAction.server'
-import createField, { FieldProps } from './createField'
+import createField, { FieldProps, FieldType } from './createField'
 import mapChildren from './mapChildren'
 
 type Field<SchemaType> = {
-  shape: ZodTypeAny
+  fieldType: FieldType
   name: keyof SchemaType
   label?: string
   options?: Option[]
@@ -97,6 +97,13 @@ export type FormProps<Schema extends SomeZodObject> = {
   beforeChildren?: React.ReactNode
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
+
+type ZodTypeName = 'ZodNumber' | 'ZodBoolean'
+
+const fieldTypes: Record<ZodTypeName, FieldType> = {
+  ZodNumber: 'number',
+  ZodBoolean: 'boolean',
+}
 
 export function Form<Schema extends SomeZodObject>({
   component: Component = RemixForm,
@@ -196,8 +203,11 @@ export function Form<Schema extends SomeZodObject>({
     const message = (formErrors[key] as unknown as FieldError)?.message
     const shape = schema.shape[stringKey]
 
+    const fieldType =
+      fieldTypes[shape?._def.typeName as ZodTypeName] || 'string'
+
     fields.push({
-      shape,
+      fieldType,
       name: stringKey,
       label: labels && labels[key],
       options: options && options[key],
@@ -225,7 +235,7 @@ export function Form<Schema extends SomeZodObject>({
             const field = fields.find((field) => field.name === name)
 
             return React.cloneElement(child, {
-              shape: field?.shape,
+              fieldType: field?.fieldType,
               label: field?.label,
               options: field?.options,
               value: field?.value,
@@ -262,10 +272,19 @@ export function Form<Schema extends SomeZodObject>({
     <Component method={method} onSubmit={onSubmit} {...props}>
       {beforeChildren}
       {fields.map(
-        ({ shape, name, label, options, errors, value, hidden, multiline }) => (
+        ({
+          fieldType,
+          name,
+          label,
+          options,
+          errors,
+          value,
+          hidden,
+          multiline,
+        }) => (
           <Field
             key={String(name)}
-            shape={shape}
+            fieldType={fieldType}
             name={name}
             label={label}
             options={options}
