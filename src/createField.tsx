@@ -37,7 +37,7 @@ type Children = (helpers: {
   ref: React.ForwardedRef<any>
 }) => React.ReactNode
 
-export type FieldType = 'string' | 'boolean' | 'number' | 'hidden'
+export type FieldType = 'string' | 'boolean' | 'number'
 
 export type FieldProps<Schema extends SomeZodObject> = {
   name: keyof z.infer<Schema>
@@ -53,14 +53,12 @@ export type FieldProps<Schema extends SomeZodObject> = {
 
 const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
   boolean: 'checkbox',
-  hidden: 'hidden',
   string: 'text',
   number: 'number',
 }
 
 const registerOptions: Record<FieldType, any> = {
   boolean: {},
-  hidden: {},
   string: {},
   number: { valueAsNumber: true },
 }
@@ -98,7 +96,7 @@ export default function createField<Schema extends SomeZodObject>({
         errors,
         value,
         multiline = false,
-        hidden: hiddenProp = false,
+        hidden = false,
         children: childrenFn,
         ...props
       }: FieldProps<Schema>,
@@ -116,7 +114,6 @@ export default function createField<Schema extends SomeZodObject>({
         ? errors.map((error) => <Error key={error}>{error}</Error>)
         : undefined
 
-      const hidden = hiddenProp || fieldType === 'hidden'
       const style = hidden ? { display: 'none' } : undefined
       const type = types[fieldType]
       const registerProps = register(String(name), registerOptions[fieldType])
