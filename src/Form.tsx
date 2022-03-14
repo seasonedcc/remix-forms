@@ -14,6 +14,7 @@ import { FormErrors, FormValues } from './formAction.server'
 import createField, { FieldProps, FieldType } from './createField'
 import mapChildren from './mapChildren'
 import defaultRenderField from './defaultRenderField'
+import { Fetcher } from '@remix-run/react/transition'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -59,6 +60,11 @@ type Children<Schema extends SomeZodObject> = (
 
 export type FormProps<Schema extends SomeZodObject> = {
   component?: React.ForwardRefExoticComponent<AllRemixFormProps>
+  fetcher?: Fetcher<any> & {
+    Form: ReturnType<any>
+    submit: ReturnType<any>
+    load: (href: string) => void
+  }
   fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
   renderField?: RenderField<Schema>
   globalErrorsComponent?:
@@ -120,7 +126,8 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
 }
 
 export function Form<Schema extends SomeZodObject>({
-  component: Component = RemixForm,
+  component = RemixForm,
+  fetcher,
   renderField = defaultRenderField,
   fieldComponent,
   globalErrorsComponent: Errors = 'div',
@@ -147,8 +154,9 @@ export function Form<Schema extends SomeZodObject>({
   ...props
 }: FormProps<Schema>) {
   type SchemaType = z.infer<Schema>
-  const submit = useSubmit()
-  const transition = useTransition()
+  const Component = fetcher ? fetcher.Form : component
+  const submit = fetcher ? fetcher.submit : useSubmit()
+  const transition = fetcher ? fetcher : useTransition()
   const actionData = useActionData()
 
   const errors = {
