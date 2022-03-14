@@ -13,8 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FormErrors, FormValues } from './formAction.server'
 import createField, { FieldProps, FieldType } from './createField'
 import mapChildren from './mapChildren'
+import defaultRenderField from './defaultRenderField'
 
 type Field<SchemaType> = {
+  shape: ZodTypeAny
   fieldType: FieldType
   name: keyof SchemaType
   label?: string
@@ -24,6 +26,19 @@ type Field<SchemaType> = {
   hidden?: boolean
   multiline?: boolean
 }
+
+type FieldComponent<Schema extends SomeZodObject> =
+  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
+
+export type RenderFieldProps<Schema extends SomeZodObject> = Field<
+  z.infer<Schema>
+> & {
+  Field: FieldComponent<Schema>
+}
+
+export type RenderField<Schema extends SomeZodObject> = (
+  props: RenderFieldProps<Schema>,
+) => JSX.Element
 
 export type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -35,9 +50,7 @@ type AllRemixFormProps = RemixFormProps & React.RefAttributes<HTMLFormElement>
 
 type Children<Schema extends SomeZodObject> = (
   helpers: {
-    Field: React.ForwardRefExoticComponent<
-      FieldProps<Schema> & React.RefAttributes<any>
-    >
+    Field: FieldComponent<Schema>
     Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
@@ -47,6 +60,7 @@ type Children<Schema extends SomeZodObject> = (
 export type FormProps<Schema extends SomeZodObject> = {
   component?: React.ForwardRefExoticComponent<AllRemixFormProps>
   fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
+  renderField?: RenderField<Schema>
   globalErrorsComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
     | string
@@ -107,6 +121,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
 
 export function Form<Schema extends SomeZodObject>({
   component: Component = RemixForm,
+  renderField = defaultRenderField,
   fieldComponent,
   globalErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
@@ -207,6 +222,7 @@ export function Form<Schema extends SomeZodObject>({
       fieldTypes[shape?._def.typeName as ZodTypeName] || 'string'
 
     fields.push({
+      shape,
       fieldType,
       name: stringKey,
       label: labels && labels[key],
@@ -235,6 +251,7 @@ export function Form<Schema extends SomeZodObject>({
             const field = fields.find((field) => field.name === name)
 
             return React.cloneElement(child, {
+              shape: field?.shape,
               fieldType: field?.fieldType,
               label: field?.label,
               options: field?.options,
@@ -271,30 +288,7 @@ export function Form<Schema extends SomeZodObject>({
   return (
     <Component method={method} onSubmit={onSubmit} {...props}>
       {beforeChildren}
-      {fields.map(
-        ({
-          fieldType,
-          name,
-          label,
-          options,
-          errors,
-          value,
-          hidden,
-          multiline,
-        }) => (
-          <Field
-            key={String(name)}
-            fieldType={fieldType}
-            name={name}
-            label={label}
-            options={options}
-            errors={errors}
-            value={value}
-            hidden={hidden}
-            multiline={multiline}
-          />
-        ),
-      )}
+      {fields.map((field) => renderField({ Field, ...field }))}
       {globalErrors?.length && (
         <Errors>
           {globalErrors.map((error) => (
