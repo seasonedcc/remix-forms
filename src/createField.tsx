@@ -4,6 +4,7 @@ import { UseFormRegister } from 'react-hook-form'
 import { FormProps } from '.'
 import { Option } from './Form'
 import mapChildren from './mapChildren'
+import inferLabel from './inferLabel'
 
 type Children = (helpers: {
   Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
@@ -91,7 +92,7 @@ export default function createField<Schema extends SomeZodObject>({
       {
         fieldType = 'string',
         name,
-        label,
+        label: labelProp,
         options,
         errors,
         value,
@@ -117,6 +118,7 @@ export default function createField<Schema extends SomeZodObject>({
       const style = hidden ? { display: 'none' } : undefined
       const type = types[fieldType]
       const registerProps = register(String(name), registerOptions[fieldType])
+      const label = labelProp || inferLabel(String(name))
 
       if (childrenFn) {
         const children = childrenFn({

@@ -1,10 +1,12 @@
 {
   "name": "remix-forms",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Magically create forms + actions in Remix!",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc"
   },
@@ -33,11 +35,13 @@
     "zod": "^3.12.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.181",
     "@types/react": "^17.0.24",
     "typescript": "^4.5.5"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.8",
+    "lodash": "^4.17.21",
     "react-hook-form": "^7.27.1"
   }
 }
