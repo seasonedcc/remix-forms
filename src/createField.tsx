@@ -46,6 +46,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   label?: string
   options?: Option[]
   errors?: string[]
+  autoFocus?: boolean
   value?: any
   multiline?: boolean
   hidden?: boolean
@@ -95,6 +96,7 @@ export default function createField<Schema extends SomeZodObject>({
         label: labelProp,
         options,
         errors,
+        autoFocus = false,
         value,
         multiline = false,
         hidden = false,
@@ -149,6 +151,7 @@ export default function createField<Schema extends SomeZodObject>({
                   id: String(name),
                   type,
                   ...registerProps,
+                  autoFocus,
                   defaultValue: value,
                   ...child.props,
                 })
@@ -156,6 +159,7 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   ...registerProps,
+                  autoFocus,
                   defaultValue: value,
                   ...child.props,
                 })
@@ -163,6 +167,7 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   ...registerProps,
+                  autoFocus,
                   defaultValue: value,
                   children: selectChildren,
                   ...child.props,
@@ -171,6 +176,7 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   type,
+                  autoFocus,
                   ...registerProps,
                   defaultChecked: Boolean(value),
                   ...child.props,
@@ -199,6 +205,7 @@ export default function createField<Schema extends SomeZodObject>({
                 id={String(name)}
                 type={type}
                 {...registerProps}
+                autoFocus={autoFocus}
                 defaultChecked={Boolean(value)}
               />
               {Boolean(label) && <Label htmlFor={String(name)}>{label}</Label>}
@@ -210,6 +217,7 @@ export default function createField<Schema extends SomeZodObject>({
                 <Select
                   id={String(name)}
                   {...registerProps}
+                  autoFocus={autoFocus}
                   defaultValue={value}
                 >
                   {selectChildren}
@@ -218,6 +226,7 @@ export default function createField<Schema extends SomeZodObject>({
                 <Multiline
                   id={String(name)}
                   {...registerProps}
+                  autoFocus={autoFocus}
                   defaultValue={value}
                 />
               ) : (
@@ -225,6 +234,7 @@ export default function createField<Schema extends SomeZodObject>({
                   id={String(name)}
                   type={type}
                   {...registerProps}
+                  autoFocus={autoFocus}
                   defaultValue={value}
                 />
               )}

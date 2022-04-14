@@ -23,6 +23,7 @@ type Field<SchemaType> = {
   label?: string
   options?: Option[]
   errors?: string[]
+  autoFocus?: boolean
   value?: any
   hidden?: boolean
   multiline?: boolean
@@ -225,6 +226,7 @@ export function Form<Schema extends SomeZodObject>({
     }
   }, [errors])
 
+  let autoFocused = false
   let fields: Field<SchemaType>[] = []
   for (const stringKey in schema.shape) {
     const key = stringKey as keyof SchemaType
@@ -234,13 +236,18 @@ export function Form<Schema extends SomeZodObject>({
     const fieldType =
       fieldTypes[shape?._def.typeName as ZodTypeName] || 'string'
 
+    const fieldErrors = (message && [message]) || (errors && errors[key])
+    const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
+    if (autoFocus) autoFocused = true
+
     fields.push({
       shape,
       fieldType,
       name: stringKey,
       label: labels && labels[key],
       options: options && options[key],
-      errors: (message && [message]) || (errors && errors[key]),
+      errors: fieldErrors,
+      autoFocus,
       value: values && values[key],
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
@@ -270,6 +277,7 @@ export function Form<Schema extends SomeZodObject>({
               options: field?.options,
               value: field?.value,
               errors: field?.errors,
+              autoFocus: field?.autoFocus,
               hidden: field?.hidden,
               multiline: field?.multiline,
               ...child.props,
