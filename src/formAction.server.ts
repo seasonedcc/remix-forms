@@ -1,4 +1,4 @@
-import { redirect } from '@remix-run/server-runtime'
+import { json, redirect } from '@remix-run/server-runtime'
 import { DomainFunction, errorMessagesForSchema } from 'remix-domains'
 import { SomeZodObject, z } from 'zod'
 import getFormValues from './getFormValues'
@@ -24,7 +24,7 @@ export type FormActionProps<Schema extends SomeZodObject> = {
   mutation: DomainFunction
   beforeAction?: Callback
   beforeSuccess?: Callback
-  successPath: string
+  successPath?: string
 }
 
 export async function formAction<Schema extends SomeZodObject>({
@@ -49,7 +49,7 @@ export async function formAction<Schema extends SomeZodObject>({
       if (beforeSuccessResponse) return beforeSuccessResponse
     }
 
-    return redirect(successPath)
+    return successPath ? redirect(successPath) : json(result.data)
   } else {
     return {
       errors: {
