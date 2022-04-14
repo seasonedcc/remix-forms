@@ -15,6 +15,7 @@ import createField, { FieldProps, FieldType } from './createField'
 import mapChildren from './mapChildren'
 import defaultRenderField from './defaultRenderField'
 import { Fetcher } from '@remix-run/react/transition'
+import inferLabel from './inferLabel'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -240,12 +241,21 @@ export function Form<Schema extends SomeZodObject>({
     const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
     if (autoFocus) autoFocused = true
 
+    const fieldOptions = options && options[key]
+    const enumOptions =
+      shape?._def.typeName === 'ZodEnum'
+        ? shape._def.values.map((value: string) => ({
+            name: inferLabel(value),
+            value,
+          }))
+        : undefined
+
     fields.push({
       shape,
       fieldType,
       name: stringKey,
       label: labels && labels[key],
-      options: options && options[key],
+      options: fieldOptions || enumOptions,
       errors: fieldErrors,
       autoFocus,
       value: values && values[key],
