@@ -1,7 +1,7 @@
 import { redirect } from '@remix-run/server-runtime'
+import { DomainFunction, errorMessagesForSchema } from 'remix-domains'
 import { SomeZodObject, z } from 'zod'
 import getFormValues from './getFormValues'
-import parseSchemaErrors from './parseSchemaErrors'
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
@@ -16,16 +16,12 @@ export type FormErrors<SchemaType> = Partial<
 
 export type FormAction<SchemaType> = FormActionFailure<SchemaType> | Response
 
-export type Mutation<Schema extends SomeZodObject> = (
-  values: z.infer<Schema>,
-) => Promise<void | { errors: FormErrors<z.infer<Schema>> }>
-
 export type Callback = (request: Request) => Promise<Response | void>
 
 export type FormActionProps<Schema extends SomeZodObject> = {
   request: Request
   schema: Schema
-  mutation: Mutation<Schema>
+  mutation: DomainFunction
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath: string
@@ -45,15 +41,9 @@ export async function formAction<Schema extends SomeZodObject>({
   }
 
   const values = await getFormValues(request, schema)
-  const result = schema.safeParse(values)
+  const result = await mutation(values)
 
   if (result.success) {
-    const mutationResult = await mutation(result.data)
-
-    if (mutationResult?.errors) {
-      return { errors: mutationResult?.errors, values }
-    }
-
     if (beforeSuccess) {
       const beforeSuccessResponse = await beforeSuccess(request)
       if (beforeSuccessResponse) return beforeSuccessResponse
@@ -61,6 +51,14 @@ export async function formAction<Schema extends SomeZodObject>({
 
     return redirect(successPath)
   } else {
-    return { errors: parseSchemaErrors(result, schema), values }
+    return {
+      errors: {
+        ...errorMessagesForSchema(result.inputErrors, schema),
+        _global: result.errors.length
+          ? result.errors.map((error) => error.message)
+          : undefined,
+      },
+      values,
+    }
   }
 }
