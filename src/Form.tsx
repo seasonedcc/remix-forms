@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Form as RemixForm,
   FormProps as RemixFormProps,
@@ -176,7 +176,12 @@ export function Form<Schema extends SomeZodObject>({
   form.watch()
 
   const { errors: formErrors } = form.formState
-  const disabled = transition.state === 'submitting' || !form.formState.isValid
+
+  const [disabled, setDisabled] = useState(false)
+
+  useEffect(() => {
+    setDisabled(transition.state === 'submitting' || !form.formState.isValid)
+  }, [transition.state, form.formState.isValid])
 
   const onSubmit = (event: any) => {
     form.handleSubmit(() => submit(event.target, { replace: true }))(event)
