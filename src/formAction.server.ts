@@ -14,17 +14,46 @@ export type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-export type FormAction<SchemaType> = FormActionFailure<SchemaType> | Response
+export type PerformMutation<SchemaType> =
+  | ({ success: false } & FormActionFailure<SchemaType>)
+  | { success: true; data: unknown }
 
 export type Callback = (request: Request) => Promise<Response | void>
 
-export type FormActionProps<Schema extends SomeZodObject> = {
+export type PerformMutationProps<Schema extends SomeZodObject> = {
   request: Request
   schema: Schema
   mutation: DomainFunction
+}
+
+export type FormActionProps<Schema extends SomeZodObject> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath?: string
+} & PerformMutationProps<Schema>
+
+export async function performMutation<Schema extends SomeZodObject>({
+  request,
+  schema,
+  mutation,
+}: PerformMutationProps<Schema>): Promise<PerformMutation<z.infer<Schema>>> {
+  const values = await getFormValues(request, schema)
+  const result = await mutation(values)
+
+  if (result.success) {
+    return { success: true, data: result.data }
+  } else {
+    return {
+      success: false,
+      errors: {
+        ...errorMessagesForSchema(result.inputErrors, schema),
+        _global: result.errors.length
+          ? result.errors.map((error) => error.message)
+          : undefined,
+      },
+      values,
+    }
+  }
 }
 
 export async function formAction<Schema extends SomeZodObject>({
@@ -34,14 +63,13 @@ export async function formAction<Schema extends SomeZodObject>({
   beforeAction,
   beforeSuccess,
   successPath,
-}: FormActionProps<Schema>): Promise<FormAction<z.infer<Schema>>> {
+}: FormActionProps<Schema>): Promise<Response> {
   if (beforeAction) {
     const beforeActionResponse = await beforeAction(request)
     if (beforeActionResponse) return beforeActionResponse
   }
 
-  const values = await getFormValues(request, schema)
-  const result = await mutation(values)
+  const result = await performMutation({ request, schema, mutation })
 
   if (result.success) {
     if (beforeSuccess) {
@@ -51,14 +79,6 @@ export async function formAction<Schema extends SomeZodObject>({
 
     return successPath ? redirect(successPath) : json(result.data)
   } else {
-    return {
-      errors: {
-        ...errorMessagesForSchema(result.inputErrors, schema),
-        _global: result.errors.length
-          ? result.errors.map((error) => error.message)
-          : undefined,
-      },
-      values,
-    }
+    return json({ errors: result.errors, values: result.values })
   }
 }
