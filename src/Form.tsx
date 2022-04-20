@@ -16,6 +16,7 @@ import mapChildren from './mapChildren'
 import defaultRenderField from './defaultRenderField'
 import { Fetcher } from '@remix-run/react/transition'
 import inferLabel from './inferLabel'
+import { shapeInfo, ZodTypeName } from './shapeInfo'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -120,11 +121,11 @@ export type FormProps<Schema extends SomeZodObject> = {
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
 
-type ZodTypeName = 'ZodNumber' | 'ZodBoolean'
-
 const fieldTypes: Record<ZodTypeName, FieldType> = {
+  ZodString: 'string',
   ZodNumber: 'number',
   ZodBoolean: 'boolean',
+  ZodEnum: 'string',
 }
 
 export function Form<Schema extends SomeZodObject>({
@@ -233,17 +234,16 @@ export function Form<Schema extends SomeZodObject>({
     const key = stringKey as keyof SchemaType
     const message = (formErrors[key] as unknown as FieldError)?.message
     const shape = schema.shape[stringKey]
-
-    const fieldType =
-      fieldTypes[shape?._def.typeName as ZodTypeName] || 'string'
-
     const fieldErrors = (message && [message]) || (errors && errors[key])
     const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
     if (autoFocus) autoFocused = true
 
+    const { typeName, optional, nullable } = shapeInfo(shape)
+    const fieldType = typeName ? fieldTypes[typeName] : 'string'
+
     const fieldOptions = options && options[key]
     const enumOptions =
-      shape?._def.typeName === 'ZodEnum'
+      typeName === 'ZodEnum'
         ? shape._def.values.map((value: string) => ({
             name: inferLabel(value),
             value,

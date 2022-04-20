@@ -1,5 +1,6 @@
 import { inputFromForm } from 'remix-domains'
-import { SomeZodObject, z, ZodBoolean, ZodNumber, ZodTypeAny } from 'zod'
+import { SomeZodObject, z } from 'zod'
+import { coerceValue } from './coercions'
 import { FormValues } from './formAction.server'
 
 export default async function getFormValues<Schema extends SomeZodObject>(
@@ -16,14 +17,4 @@ export default async function getFormValues<Schema extends SomeZodObject>(
   }
 
   return values
-}
-
-function coerceValue(
-  value: FormDataEntryValue | null,
-  shape: ZodTypeAny,
-): string | boolean | number | bigint | null {
-  if (shape instanceof ZodBoolean) return Boolean(value)
-  if (shape instanceof ZodNumber) return Number(value)
-
-  return String(value)
 }

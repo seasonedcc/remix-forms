@@ -1,10 +1,11 @@
 import React from 'react'
-import { SomeZodObject, z } from 'zod'
+import { SomeZodObject, z, ZodTypeAny } from 'zod'
 import { UseFormRegister } from 'react-hook-form'
 import { FormProps } from '.'
 import { Option } from './Form'
 import mapChildren from './mapChildren'
 import inferLabel from './inferLabel'
+import { coerceValue } from './coercions'
 
 type Children = (helpers: {
   Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
@@ -42,6 +43,7 @@ export type FieldType = 'string' | 'boolean' | 'number'
 
 export type FieldProps<Schema extends SomeZodObject> = {
   name: keyof z.infer<Schema>
+  shape: ZodTypeAny
   fieldType?: FieldType
   label?: string
   options?: Option[]
@@ -57,12 +59,6 @@ const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
   boolean: 'checkbox',
   string: 'text',
   number: 'number',
-}
-
-const registerOptions: Record<FieldType, any> = {
-  boolean: {},
-  string: {},
-  number: { valueAsNumber: true },
 }
 
 export default function createField<Schema extends SomeZodObject>({
@@ -92,6 +88,7 @@ export default function createField<Schema extends SomeZodObject>({
     (
       {
         fieldType = 'string',
+        shape,
         name,
         label: labelProp,
         options,
@@ -119,7 +116,11 @@ export default function createField<Schema extends SomeZodObject>({
 
       const style = hidden ? { display: 'none' } : undefined
       const type = types[fieldType]
-      const registerProps = register(String(name), registerOptions[fieldType])
+
+      const registerProps = register(String(name), {
+        setValueAs: (value) => coerceValue(value, shape),
+      })
+
       const label = labelProp || inferLabel(String(name))
 
       if (childrenFn) {
