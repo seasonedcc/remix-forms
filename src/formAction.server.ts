@@ -14,29 +14,37 @@ export type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-export type PerformMutation<SchemaType> =
+export type PerformMutation<SchemaType, D extends unknown> =
   | ({ success: false } & FormActionFailure<SchemaType>)
-  | { success: true; data: unknown }
+  | { success: true; data: D }
 
 export type Callback = (request: Request) => Promise<Response | void>
 
-export type PerformMutationProps<Schema extends SomeZodObject> = {
+export type PerformMutationProps<
+  Schema extends SomeZodObject,
+  D extends unknown,
+> = {
   request: Request
   schema: Schema
-  mutation: DomainFunction
+  mutation: DomainFunction<D>
 }
 
-export type FormActionProps<Schema extends SomeZodObject> = {
+export type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath?: string
-} & PerformMutationProps<Schema>
+} & PerformMutationProps<Schema, D>
 
-export async function performMutation<Schema extends SomeZodObject>({
+export async function performMutation<
+  Schema extends SomeZodObject,
+  D extends unknown,
+>({
   request,
   schema,
   mutation,
-}: PerformMutationProps<Schema>): Promise<PerformMutation<z.infer<Schema>>> {
+}: PerformMutationProps<Schema, D>): Promise<
+  PerformMutation<z.infer<Schema>, D>
+> {
   const values = await getFormValues(request, schema)
   const result = await mutation(values)
 
@@ -56,14 +64,17 @@ export async function performMutation<Schema extends SomeZodObject>({
   }
 }
 
-export async function formAction<Schema extends SomeZodObject>({
+export async function formAction<
+  Schema extends SomeZodObject,
+  D extends unknown,
+>({
   request,
   schema,
   mutation,
   beforeAction,
   beforeSuccess,
   successPath,
-}: FormActionProps<Schema>): Promise<Response> {
+}: FormActionProps<Schema, D>): Promise<Response> {
   if (beforeAction) {
     const beforeActionResponse = await beforeAction(request)
     if (beforeActionResponse) return beforeActionResponse
