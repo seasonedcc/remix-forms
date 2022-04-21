@@ -1,7 +1,10 @@
 import { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
-function makeCoercion<T>(coercion: (value: FormDataEntryValue | null) => T) {
+function makeCoercion<T>(
+  coercion: (value: FormDataEntryValue | null) => T,
+  emptyValue: unknown,
+) {
   return ({
     value,
     optional,
@@ -10,13 +13,18 @@ function makeCoercion<T>(coercion: (value: FormDataEntryValue | null) => T) {
     value: FormDataEntryValue | null
     optional: boolean
     nullable: boolean
-  }) =>
-    value ? coercion(value) : nullable ? null : optional ? undefined : value
+  }) => {
+    if (value) return coercion(value)
+    if (nullable) return null
+    if (optional) return undefined
+
+    return emptyValue
+  }
 }
 
-const coerceString = makeCoercion(String)
-const coerceNumber = makeCoercion(Number)
-const coerceBoolean = makeCoercion(Boolean)
+const coerceString = makeCoercion(String, '')
+const coerceNumber = makeCoercion(Number, null)
+const coerceBoolean = makeCoercion(Boolean, null)
 
 function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
   const { typeName, optional, nullable } = shapeInfo(shape)
