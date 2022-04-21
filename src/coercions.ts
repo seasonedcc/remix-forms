@@ -24,7 +24,7 @@ function makeCoercion<T>(
 
 const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
-const coerceBoolean = makeCoercion(Boolean, null)
+const coerceBoolean = makeCoercion(Boolean, false)
 
 function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
   const { typeName, optional, nullable } = shapeInfo(shape)
