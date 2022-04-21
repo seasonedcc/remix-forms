@@ -33,7 +33,7 @@ const coerceDate = makeCoercion((value) => {
   return new Date(year, month - 1, day)
 }, null)
 
-function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
+function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
   const { typeName, optional, nullable } = shapeInfo(shape)
 
   if (typeName === 'ZodBoolean') {

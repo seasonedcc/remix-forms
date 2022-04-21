@@ -43,7 +43,7 @@ export type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
 export type FieldProps<Schema extends SomeZodObject> = {
   name: keyof z.infer<Schema>
-  shape: ZodTypeAny
+  shape?: ZodTypeAny
   fieldType?: FieldType
   label?: string
   options?: Option[]
