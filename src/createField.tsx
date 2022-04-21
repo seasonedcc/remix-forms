@@ -58,7 +58,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
 const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
   boolean: 'checkbox',
   string: 'text',
-  number: 'number',
+  number: 'text',
 }
 
 export default function createField<Schema extends SomeZodObject>({
