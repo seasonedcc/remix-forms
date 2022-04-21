@@ -125,6 +125,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
   ZodNumber: 'number',
   ZodBoolean: 'boolean',
+  ZodDate: 'date',
   ZodEnum: 'string',
 }
 

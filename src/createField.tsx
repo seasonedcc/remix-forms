@@ -39,7 +39,7 @@ type Children = (helpers: {
   ref: React.ForwardedRef<any>
 }) => React.ReactNode
 
-export type FieldType = 'string' | 'boolean' | 'number'
+export type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
 export type FieldProps<Schema extends SomeZodObject> = {
   name: keyof z.infer<Schema>
@@ -59,6 +59,15 @@ const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
   boolean: 'checkbox',
   string: 'text',
   number: 'text',
+  date: 'date',
+}
+
+function parseDate(value?: Date | string) {
+  if (!value) return value
+
+  const dateTime = typeof value === 'string' ? value : value.toISOString()
+  const [date] = dateTime.split('T')
+  return date
 }
 
 export default function createField<Schema extends SomeZodObject>({
@@ -94,7 +103,7 @@ export default function createField<Schema extends SomeZodObject>({
         options,
         errors,
         autoFocus = false,
-        value,
+        value: rawValue,
         multiline = false,
         hidden = false,
         children: childrenFn,
@@ -102,6 +111,8 @@ export default function createField<Schema extends SomeZodObject>({
       }: FieldProps<Schema>,
       ref,
     ) => {
+      const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
+
       const selectChildren = options
         ? options.map(({ name, value }) => (
             <option key={String(value)} value={value}>

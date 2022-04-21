@@ -2,7 +2,7 @@ import { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
 function makeCoercion<T>(
-  coercion: (value: FormDataEntryValue | null) => T,
+  coercion: (value: FormDataEntryValue) => T,
   emptyValue: unknown,
 ) {
   return ({
@@ -26,6 +26,13 @@ const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
 const coerceBoolean = makeCoercion(Boolean, false)
 
+const coerceDate = makeCoercion((value) => {
+  if (typeof value !== 'string') return null
+
+  const [year, month, day] = value.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}, null)
+
 function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
   const { typeName, optional, nullable } = shapeInfo(shape)
 
@@ -37,6 +44,10 @@ function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
     return coerceNumber({ value, optional, nullable })
   }
 
+  if (typeName === 'ZodDate') {
+    return coerceDate({ value, optional, nullable })
+  }
+
   if (typeName === 'ZodString' || typeName === 'ZodEnum') {
     return coerceString({ value, optional, nullable })
   }
@@ -44,4 +55,4 @@ function coerceValue(value: FormDataEntryValue | null, shape: ZodTypeAny) {
   return value
 }
 
-export { coerceValue, coerceNumber, coerceBoolean, coerceString }
+export { coerceValue, coerceNumber, coerceBoolean, coerceString, coerceDate }

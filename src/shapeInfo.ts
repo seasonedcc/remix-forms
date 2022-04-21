@@ -1,6 +1,11 @@
 import { ZodTypeAny } from 'zod'
 
-type ZodTypeName = 'ZodString' | 'ZodNumber' | 'ZodBoolean' | 'ZodEnum'
+type ZodTypeName =
+  | 'ZodString'
+  | 'ZodNumber'
+  | 'ZodBoolean'
+  | 'ZodDate'
+  | 'ZodEnum'
 
 type ShapeInfo = {
   typeName: ZodTypeName | null
