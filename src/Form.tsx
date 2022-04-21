@@ -238,7 +238,7 @@ export function Form<Schema extends SomeZodObject>({
     const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
     if (autoFocus) autoFocused = true
 
-    const { typeName, optional, nullable } = shapeInfo(shape)
+    const { typeName, getDefaultValue } = shapeInfo(shape)
     const fieldType = typeName ? fieldTypes[typeName] : 'string'
 
     const fieldOptions = options && options[key]
@@ -258,7 +258,7 @@ export function Form<Schema extends SomeZodObject>({
       options: fieldOptions || enumOptions,
       errors: fieldErrors,
       autoFocus,
-      value: values && values[key],
+      value: (values && values[key]) || (getDefaultValue && getDefaultValue()),
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
       multiline: multiline && Boolean(multiline.find((item) => item === key)),
