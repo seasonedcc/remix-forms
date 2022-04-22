@@ -17,6 +17,7 @@ import defaultRenderField from './defaultRenderField'
 import { Fetcher } from '@remix-run/react/transition'
 import inferLabel from './inferLabel'
 import { shapeInfo, ZodTypeName } from './shapeInfo'
+import { concat } from 'lodash/fp'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -239,24 +240,32 @@ export function Form<Schema extends SomeZodObject>({
     const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
     if (autoFocus) autoFocused = true
 
-    const { typeName, getDefaultValue } = shapeInfo(shape)
-    const fieldType = typeName ? fieldTypes[typeName] : 'string'
+    const { typeName, optional, nullable, getDefaultValue, enumValues } =
+      shapeInfo(shape)
 
-    const fieldOptions = options && options[key]
-    const enumOptions =
-      typeName === 'ZodEnum'
-        ? shape._def.values.map((value: string) => ({
-            name: inferLabel(value),
-            value,
-          }))
-        : undefined
+    const fieldType = typeName ? fieldTypes[typeName] : 'string'
+    const propOptions = options && options[key]
+
+    const enumOptions = enumValues
+      ? enumValues.map((value: string) => ({
+          name: inferLabel(value),
+          value,
+        }))
+      : undefined
+
+    const rawOptions = propOptions || enumOptions
+
+    const fieldOptions =
+      rawOptions && (optional || nullable)
+        ? concat([{ name: '', value: '' }], rawOptions)
+        : rawOptions
 
     fields.push({
       shape,
       fieldType,
       name: stringKey,
       label: labels && labels[key],
-      options: fieldOptions || enumOptions,
+      options: fieldOptions,
       errors: fieldErrors,
       autoFocus,
       value: (values && values[key]) || (getDefaultValue && getDefaultValue()),

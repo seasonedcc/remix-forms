@@ -12,6 +12,7 @@ type ShapeInfo = {
   optional: boolean
   nullable: boolean
   getDefaultValue?: () => unknown
+  enumValues?: string[]
 }
 
 function shapeInfo(
@@ -19,25 +20,55 @@ function shapeInfo(
   optional = false,
   nullable = false,
   getDefaultValue?: ShapeInfo['getDefaultValue'],
+  enumValues?: ShapeInfo['enumValues'],
 ): ShapeInfo {
-  if (!shape) return { typeName: null, optional, nullable, getDefaultValue }
+  if (!shape) {
+    return { typeName: null, optional, nullable, getDefaultValue, enumValues }
+  }
 
   const typeName = shape._def.typeName
 
   if (typeName === 'ZodOptional') {
-    return shapeInfo(shape._def.innerType, true, nullable, getDefaultValue)
-  } else if (typeName === 'ZodNullable') {
-    return shapeInfo(shape._def.innerType, optional, true, getDefaultValue)
-  } else if (typeName === 'ZodDefault') {
+    return shapeInfo(
+      shape._def.innerType,
+      true,
+      nullable,
+      getDefaultValue,
+      enumValues,
+    )
+  }
+
+  if (typeName === 'ZodNullable') {
+    return shapeInfo(
+      shape._def.innerType,
+      optional,
+      true,
+      getDefaultValue,
+      enumValues,
+    )
+  }
+
+  if (typeName === 'ZodDefault') {
     return shapeInfo(
       shape._def.innerType,
       optional,
       nullable,
       shape._def.defaultValue,
+      enumValues,
     )
   }
 
-  return { typeName, optional, nullable, getDefaultValue }
+  if (typeName === 'ZodEnum') {
+    return {
+      typeName,
+      optional,
+      nullable,
+      getDefaultValue,
+      enumValues: shape._def.values,
+    }
+  }
+
+  return { typeName, optional, nullable, getDefaultValue, enumValues }
 }
 
 export { shapeInfo }
