@@ -48,6 +48,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   label?: string
   options?: Option[]
   errors?: string[]
+  type?: JSX.IntrinsicElements['input']['type']
   autoFocus?: boolean
   value?: any
   multiline?: boolean
@@ -102,6 +103,7 @@ export default function createField<Schema extends SomeZodObject>({
         label: labelProp,
         options,
         errors,
+        type: typeProp,
         autoFocus = false,
         value: rawValue,
         multiline = false,
@@ -126,7 +128,7 @@ export default function createField<Schema extends SomeZodObject>({
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
-      const type = types[fieldType]
+      const type = typeProp || types[fieldType]
 
       const registerProps = register(String(name), {
         setValueAs: (value) => coerceValue(value, shape),
