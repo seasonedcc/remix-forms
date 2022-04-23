@@ -290,6 +290,10 @@ export function Form<Schema extends SomeZodObject>({
             const { name } = child.props
             const field = fields.find((field) => field.name === name)
 
+            const autoFocus = autoFocused
+              ? field?.autoFocus
+              : child.props.autoFocus
+
             return React.cloneElement(child, {
               shape: field?.shape,
               fieldType: field?.fieldType,
@@ -297,10 +301,10 @@ export function Form<Schema extends SomeZodObject>({
               options: field?.options,
               value: field?.value,
               errors: field?.errors,
-              autoFocus: field?.autoFocus,
               hidden: field?.hidden,
               multiline: field?.multiline,
               ...child.props,
+              autoFocus,
             })
           } else if (child.type === Errors) {
             if (!child.props.children && !globalErrors?.length) return null
