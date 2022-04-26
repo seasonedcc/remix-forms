@@ -33,7 +33,7 @@
     "@remix-run/server-runtime": ">=1.2",
     "react": ">=16.8",
     "zod": ">=3.12",
-    "remix-domains": ">=0.0.2"
+    "remix-domains": ">=0.1.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.181",
