@@ -1,4 +1,5 @@
 import { json, redirect } from '@remix-run/server-runtime'
+import { concat } from 'lodash/fp'
 import { DomainFunction, errorMessagesForSchema } from 'remix-domains'
 import { SomeZodObject, z } from 'zod'
 import getFormValues from './getFormValues'
@@ -27,6 +28,7 @@ export type PerformMutationProps<
   request: Request
   schema: Schema
   mutation: DomainFunction<D>
+  environment?: unknown
 }
 
 export type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
@@ -42,11 +44,12 @@ export async function performMutation<
   request,
   schema,
   mutation,
+  environment,
 }: PerformMutationProps<Schema, D>): Promise<
   PerformMutation<z.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema)
-  const result = await mutation(values)
+  const result = await mutation(values, environment)
 
   if (result.success) {
     return { success: true, data: result.data }
@@ -55,9 +58,12 @@ export async function performMutation<
       success: false,
       errors: {
         ...errorMessagesForSchema(result.inputErrors, schema),
-        _global: result.errors.length
-          ? result.errors.map((error) => error.message)
-          : undefined,
+        _global:
+          result.errors.length || result.environmentErrors.length
+            ? concat(result.errors, result.environmentErrors).map(
+                (error) => error.message,
+              )
+            : undefined,
       },
       values,
     }
@@ -71,6 +77,7 @@ export async function formAction<
   request,
   schema,
   mutation,
+  environment,
   beforeAction,
   beforeSuccess,
   successPath,
@@ -80,7 +87,12 @@ export async function formAction<
     if (beforeActionResponse) return beforeActionResponse
   }
 
-  const result = await performMutation({ request, schema, mutation })
+  const result = await performMutation({
+    request,
+    schema,
+    mutation,
+    environment,
+  })
 
   if (result.success) {
     if (beforeSuccess) {
