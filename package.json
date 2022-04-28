@@ -8,7 +8,9 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -32,13 +34,16 @@
     "@remix-run/react": ">=1.2",
     "@remix-run/server-runtime": ">=1.2",
     "react": ">=16.8",
-    "zod": ">=3.12",
-    "remix-domains": ">=0.1.0"
+    "remix-domains": ">=0.1.0",
+    "zod": ">=3.12"
   },
   "devDependencies": {
+    "@remix-run/node": "^1.4.1",
     "@types/lodash": "^4.14.181",
     "@types/react": "^17.0.24",
-    "typescript": "^4.5.5"
+    "c8": "^7.11.2",
+    "typescript": "^4.5.5",
+    "vitest": "^0.10.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.8",
