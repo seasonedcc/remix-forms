@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { SomeZodObject, z, ZodTypeAny } from 'zod'
 import { UseFormRegister } from 'react-hook-form'
 import { FormProps } from '.'
@@ -6,9 +6,13 @@ import { Option } from './Form'
 import mapChildren from './mapChildren'
 import inferLabel from './inferLabel'
 import { coerceValue } from './coercions'
+import createSmartInput, { SmartInputProps } from './createSmartInput'
 
 type Children = (helpers: {
   Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
+  SmartInput: React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<SmartInputProps> & React.RefAttributes<any>
+  >
   Input:
     | React.ForwardRefExoticComponent<
         React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
@@ -56,7 +60,7 @@ export type FieldProps<Schema extends SomeZodObject> = {
   children?: Children
 } & JSX.IntrinsicElements['div']
 
-const types: Record<FieldType, JSX.IntrinsicElements['input']['type']> = {
+const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   boolean: 'checkbox',
   string: 'text',
   number: 'text',
@@ -136,9 +140,21 @@ export default function createField<Schema extends SomeZodObject>({
 
       const label = labelProp || inferLabel(String(name))
 
+      const SmartInput = useMemo(
+        () =>
+          createSmartInput({
+            inputComponent: Input,
+            multilineComponent: Multiline,
+            selectComponent: Select,
+            checkboxComponent: Checkbox,
+          }),
+        [Input, Multiline, Select, Checkbox],
+      )
+
       if (childrenFn) {
         const children = childrenFn({
           Label,
+          SmartInput,
           Input,
           Multiline,
           Select,
@@ -222,36 +238,20 @@ export default function createField<Schema extends SomeZodObject>({
                 autoFocus={autoFocus}
                 defaultChecked={Boolean(value)}
               />
-              {Boolean(label) && <Label htmlFor={String(name)}>{label}</Label>}
+              <Label htmlFor={String(name)}>{label}</Label>
             </CheckboxWrapper>
           ) : (
             <>
-              {Boolean(label) && <Label htmlFor={String(name)}>{label}</Label>}
-              {selectChildren ? (
-                <Select
-                  id={String(name)}
-                  {...registerProps}
-                  autoFocus={autoFocus}
-                  defaultValue={value}
-                >
-                  {selectChildren}
-                </Select>
-              ) : multiline ? (
-                <Multiline
-                  id={String(name)}
-                  {...registerProps}
-                  autoFocus={autoFocus}
-                  defaultValue={value}
-                />
-              ) : (
-                <Input
-                  id={String(name)}
-                  type={type}
-                  {...registerProps}
-                  autoFocus={autoFocus}
-                  defaultValue={value}
-                />
-              )}
+              <Label htmlFor={String(name)}>{label}</Label>
+              <SmartInput
+                fieldType={fieldType}
+                type={type}
+                selectChildren={selectChildren}
+                multiline={multiline}
+                registerProps={registerProps}
+                autoFocus={autoFocus}
+                value={value}
+              />
             </>
           )}
           {Boolean(errorsChildren) && <Errors>{errorsChildren}</Errors>}
