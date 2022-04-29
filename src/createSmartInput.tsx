@@ -1,17 +1,18 @@
 import React from 'react'
 import { UseFormRegisterReturn } from 'react-hook-form'
-import { SomeZodObject, z } from 'zod'
+import { SomeZodObject } from 'zod'
 import { FieldType } from './createField'
 import { FormProps } from './Form'
 
 export type SmartInputProps = {
-  fieldType: FieldType
-  type: React.HTMLInputTypeAttribute
-  value: any
-  autoFocus: boolean
-  selectChildren: JSX.Element[] | undefined
-  multiline: boolean
-  registerProps: UseFormRegisterReturn
+  fieldType?: FieldType
+  type?: React.HTMLInputTypeAttribute
+  value?: any
+  autoFocus?: boolean
+  selectChildren?: JSX.Element[]
+  multiline?: boolean
+  registerProps?: UseFormRegisterReturn
+  className?: string
 }
 
 export default function createSmartInput<Schema extends SomeZodObject>({
@@ -31,66 +32,68 @@ export default function createSmartInput<Schema extends SomeZodObject>({
   | 'fieldErrorsComponent'
   | 'errorComponent'
 >) {
-  return React.forwardRef<any, SmartInputProps>(
-    (
-      {
-        fieldType,
-        type,
-        value,
-        autoFocus,
-        selectChildren,
-        multiline,
-        registerProps,
-      },
-      ref,
-    ) => {
-      const { name } = registerProps
+  return ({
+    fieldType,
+    type,
+    value,
+    autoFocus,
+    selectChildren,
+    multiline,
+    registerProps,
+    ...props
+  }: SmartInputProps) => {
+    if (!registerProps) return null
 
-      if (fieldType === 'boolean') {
-        return (
-          <Checkbox
-            id={name}
-            type={type}
-            {...registerProps}
-            autoFocus={autoFocus}
-            defaultChecked={Boolean(value)}
-          />
-        )
-      }
+    const { name } = registerProps
 
-      if (selectChildren) {
-        return (
-          <Select
-            id={name}
-            {...registerProps}
-            autoFocus={autoFocus}
-            defaultValue={value}
-          >
-            {selectChildren}
-          </Select>
-        )
-      }
-
-      if (multiline) {
-        return (
-          <Multiline
-            id={name}
-            {...registerProps}
-            autoFocus={autoFocus}
-            defaultValue={value}
-          />
-        )
-      }
-
+    if (fieldType === 'boolean') {
       return (
-        <Input
+        <Checkbox
           id={name}
           type={type}
           {...registerProps}
           autoFocus={autoFocus}
-          defaultValue={value}
+          defaultChecked={Boolean(value)}
+          {...props}
         />
       )
-    },
-  )
+    }
+
+    if (selectChildren) {
+      return (
+        <Select
+          id={name}
+          {...registerProps}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...props}
+        >
+          {selectChildren}
+        </Select>
+      )
+    }
+
+    if (multiline) {
+      return (
+        <Multiline
+          id={name}
+          {...registerProps}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...props}
+        />
+      )
+    }
+
+    return (
+      <Input
+        id={name}
+        type={type}
+        {...registerProps}
+        autoFocus={autoFocus}
+        defaultValue={value}
+        {...props}
+      />
+    )
+  }
 }

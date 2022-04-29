@@ -1,64 +1,57 @@
 import React, { useMemo } from 'react'
-import { SomeZodObject, z, ZodTypeAny } from 'zod'
+import { SomeZodObject, z } from 'zod'
 import { UseFormRegister } from 'react-hook-form'
 import { FormProps } from '.'
-import { Option } from './Form'
+import { Field } from './Form'
 import mapChildren from './mapChildren'
-import inferLabel from './inferLabel'
 import { coerceValue } from './coercions'
 import createSmartInput, { SmartInputProps } from './createSmartInput'
 
-type Children = (helpers: {
-  Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
-  SmartInput: React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<SmartInputProps> & React.RefAttributes<any>
-  >
-  Input:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  Multiline:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-          React.RefAttributes<HTMLTextAreaElement>
-      >
-    | string
-  Select:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-          React.RefAttributes<HTMLSelectElement>
-      >
-    | string
-  Checkbox:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  CheckboxWrapper: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  ref: React.ForwardedRef<any>
-}) => React.ReactNode
+type Children<Schema extends SomeZodObject> = (
+  helpers: FieldProps<Schema> & {
+    Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
+    SmartInput: React.ComponentType<SmartInputProps>
+    Input:
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
+    Multiline:
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+            React.RefAttributes<HTMLTextAreaElement>
+        >
+      | string
+    Select:
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+            React.RefAttributes<HTMLSelectElement>
+        >
+      | string
+    Checkbox:
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
+    CheckboxWrapper: React.ComponentType<JSX.IntrinsicElements['div']> | string
+    Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
+    Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
+    ref: React.ForwardedRef<any>
+  },
+) => React.ReactNode
 
 export type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
-export type FieldProps<Schema extends SomeZodObject> = {
+export type FieldProps<Schema extends SomeZodObject> = Omit<
+  Partial<Field<z.infer<Schema>>>,
+  'name'
+> & {
   name: keyof z.infer<Schema>
-  shape?: ZodTypeAny
-  fieldType?: FieldType
-  label?: string
-  options?: Option[]
-  errors?: string[]
   type?: JSX.IntrinsicElements['input']['type']
-  autoFocus?: boolean
-  value?: any
-  multiline?: boolean
-  hidden?: boolean
-  children?: Children
-} & JSX.IntrinsicElements['div']
+  children?: Children<Schema>
+}
 
 const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   boolean: 'checkbox',
@@ -98,16 +91,20 @@ export default function createField<Schema extends SomeZodObject>({
   | 'fieldErrorsComponent'
   | 'errorComponent'
 >) {
-  return React.forwardRef<any, FieldProps<Schema>>(
+  return React.forwardRef<
+    any,
+    FieldProps<Schema> & Omit<JSX.IntrinsicElements['div'], 'children'>
+  >(
     (
       {
         fieldType = 'string',
         shape,
         name,
-        label: labelProp,
+        label,
         options,
         errors,
         type: typeProp,
+        required = false,
         autoFocus = false,
         value: rawValue,
         multiline = false,
@@ -138,8 +135,6 @@ export default function createField<Schema extends SomeZodObject>({
         setValueAs: (value) => coerceValue(value, shape),
       })
 
-      const label = labelProp || inferLabel(String(name))
-
       const SmartInput = useMemo(
         () =>
           createSmartInput({
@@ -163,6 +158,17 @@ export default function createField<Schema extends SomeZodObject>({
           Errors,
           Error,
           ref,
+          shape,
+          fieldType,
+          name,
+          required,
+          label,
+          options,
+          errors,
+          autoFocus,
+          value,
+          hidden,
+          multiline,
         })
 
         return (
@@ -174,6 +180,17 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   htmlFor: String(name),
                   children: label,
+                  ...child.props,
+                })
+              } else if (child.type === SmartInput) {
+                return React.cloneElement(child, {
+                  fieldType,
+                  type,
+                  selectChildren,
+                  multiline,
+                  registerProps,
+                  autoFocus,
+                  value,
                   ...child.props,
                 })
               } else if (child.type === Input) {

@@ -19,10 +19,11 @@ import inferLabel from './inferLabel'
 import { shapeInfo, ZodTypeName } from './shapeInfo'
 import { concat } from 'lodash/fp'
 
-type Field<SchemaType> = {
+export type Field<SchemaType> = {
   shape: ZodTypeAny
   fieldType: FieldType
   name: keyof SchemaType
+  required: boolean
   label?: string
   options?: Option[]
   errors?: string[]
@@ -194,7 +195,7 @@ export function Form<Schema extends SomeZodObject>({
 
   const Field = useMemo(
     () =>
-      createField({
+      createField<Schema>({
         register: form.register,
         fieldComponent,
         labelComponent,
@@ -236,14 +237,19 @@ export function Form<Schema extends SomeZodObject>({
     const key = stringKey as keyof SchemaType
     const message = (formErrors[key] as unknown as FieldError)?.message
     const shape = schema.shape[stringKey]
-    const fieldErrors = (message && [message]) || (errors && errors[key])
-    const autoFocus = Boolean(fieldErrors && fieldErrors.length && !autoFocused)
+    const errorsArray = (message && [message]) || (errors && errors[key])
+
+    const fieldErrors =
+      errorsArray && errorsArray.length ? errorsArray : undefined
+
+    const autoFocus = Boolean(fieldErrors && !autoFocused)
     if (autoFocus) autoFocused = true
 
     const { typeName, optional, nullable, getDefaultValue, enumValues } =
       shapeInfo(shape)
 
     const fieldType = typeName ? fieldTypes[typeName] : 'string'
+    const required = !(optional || nullable)
     const propOptions = options && options[key]
 
     const enumOptions = enumValues
@@ -256,15 +262,18 @@ export function Form<Schema extends SomeZodObject>({
     const rawOptions = propOptions || enumOptions
 
     const fieldOptions =
-      rawOptions && (optional || nullable)
+      rawOptions && !required
         ? concat([{ name: '', value: '' }], rawOptions)
         : rawOptions
+
+    const label = (labels && labels[key]) || inferLabel(String(stringKey))
 
     fields.push({
       shape,
       fieldType,
       name: stringKey,
-      label: labels && labels[key],
+      required,
+      label,
       options: fieldOptions,
       errors: fieldErrors,
       autoFocus,
@@ -294,10 +303,15 @@ export function Form<Schema extends SomeZodObject>({
               ? field?.autoFocus
               : child.props.autoFocus
 
+            if (!child.props.children && field) {
+              return renderField({ Field, ...field, autoFocus })
+            }
+
             return React.cloneElement(child, {
               shape: field?.shape,
               fieldType: field?.fieldType,
               label: field?.label,
+              required: field?.required,
               options: field?.options,
               value: field?.value,
               errors: field?.errors,
