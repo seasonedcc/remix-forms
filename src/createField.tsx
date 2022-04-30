@@ -163,6 +163,7 @@ export default function createField<Schema extends SomeZodObject>({
           name,
           required,
           label,
+          type,
           options,
           errors,
           autoFocus,

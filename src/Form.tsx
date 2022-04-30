@@ -304,7 +304,7 @@ export function Form<Schema extends SomeZodObject>({
               : child.props.autoFocus
 
             if (!child.props.children && field) {
-              return renderField({ Field, ...field, autoFocus })
+              return renderField({ Field, ...field, ...child.props, autoFocus })
             }
 
             return React.cloneElement(child, {
