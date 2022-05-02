@@ -28,6 +28,16 @@ function shapeInfo(
 
   const typeName = shape._def.typeName
 
+  if (typeName === 'ZodEffects') {
+    return shapeInfo(
+      shape._def.schema,
+      optional,
+      nullable,
+      getDefaultValue,
+      enumValues,
+    )
+  }
+
   if (typeName === 'ZodOptional') {
     return shapeInfo(
       shape._def.innerType,
