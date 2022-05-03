@@ -8,7 +8,13 @@ import {
   useActionData,
 } from '@remix-run/react'
 import { SomeZodObject, z, ZodTypeAny } from 'zod'
-import { useForm, UseFormReturn, FieldError, Path } from 'react-hook-form'
+import {
+  useForm,
+  UseFormReturn,
+  FieldError,
+  Path,
+  ValidationMode,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormErrors, FormValues } from './formAction.server'
 import createField, { FieldProps, FieldType } from './createField'
@@ -71,8 +77,9 @@ export type FormProps<Schema extends SomeZodObject> = {
     submit: ReturnType<any>
     load: (href: string) => void
   }
-  fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
+  mode?: keyof ValidationMode
   renderField?: RenderField<Schema>
+  fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
   globalErrorsComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
     | string
@@ -136,6 +143,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
 export function Form<Schema extends SomeZodObject>({
   component = RemixForm,
   fetcher,
+  mode = 'onSubmit',
   renderField = defaultRenderField,
   fieldComponent,
   globalErrorsComponent: Errors = 'div',
@@ -178,10 +186,7 @@ export function Form<Schema extends SomeZodObject>({
     ...(actionData?.values as FormValues<SchemaType>),
   }
 
-  const form = useForm<SchemaType>({
-    resolver: zodResolver(schema),
-    mode: 'onChange',
-  })
+  const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
   form.watch()
 
   const { errors: formErrors } = form.formState
@@ -189,7 +194,12 @@ export function Form<Schema extends SomeZodObject>({
   const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
-    setDisabled(transition.state === 'submitting' || !form.formState.isValid)
+    const shouldDisable =
+      mode === 'onChange' || mode === 'all'
+        ? transition.state === 'submitting' || !form.formState.isValid
+        : transition.state === 'submitting'
+
+    setDisabled(shouldDisable)
   }, [transition.state, form.formState.isValid])
 
   const onSubmit = (event: any) => {
