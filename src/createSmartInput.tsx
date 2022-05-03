@@ -11,6 +11,7 @@ export type SmartInputProps = {
   autoFocus?: boolean
   selectChildren?: JSX.Element[]
   multiline?: boolean
+  placeholder?: string
   registerProps?: UseFormRegisterReturn
   className?: string
 }
@@ -39,6 +40,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
     autoFocus,
     selectChildren,
     multiline,
+    placeholder,
     registerProps,
     ...props
   }: SmartInputProps) => {
@@ -52,6 +54,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
           id={name}
           type={type}
           {...registerProps}
+          placeholder={placeholder}
           autoFocus={autoFocus}
           defaultChecked={Boolean(value)}
           {...props}
@@ -78,6 +81,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
         <Multiline
           id={name}
           {...registerProps}
+          placeholder={placeholder}
           autoFocus={autoFocus}
           defaultValue={value}
           {...props}
@@ -90,6 +94,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
         id={name}
         type={type}
         {...registerProps}
+        placeholder={placeholder}
         autoFocus={autoFocus}
         defaultValue={value}
         {...props}

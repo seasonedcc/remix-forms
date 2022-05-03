@@ -31,6 +31,7 @@ export type Field<SchemaType> = {
   value?: any
   hidden?: boolean
   multiline?: boolean
+  placeholder?: string
 }
 
 type FieldComponent<Schema extends SomeZodObject> =
@@ -116,6 +117,7 @@ export type FormProps<Schema extends SomeZodObject> = {
   errors?: FormErrors<z.infer<Schema>>
   values?: FormValues<z.infer<Schema>>
   labels?: Partial<Record<keyof z.infer<Schema>, string>>
+  placeholders?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
@@ -152,6 +154,7 @@ export function Form<Schema extends SomeZodObject>({
   beforeChildren,
   children: childrenFn,
   labels,
+  placeholders,
   options,
   hiddenFields,
   multiline,
@@ -281,6 +284,7 @@ export function Form<Schema extends SomeZodObject>({
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
       multiline: multiline && Boolean(multiline.find((item) => item === key)),
+      placeholder: placeholders && placeholders[key],
     })
   }
 
@@ -311,6 +315,7 @@ export function Form<Schema extends SomeZodObject>({
               shape: field?.shape,
               fieldType: field?.fieldType,
               label: field?.label,
+              placeholder: field?.placeholder,
               required: field?.required,
               options: field?.options,
               value: field?.value,
