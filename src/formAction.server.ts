@@ -34,7 +34,7 @@ export type PerformMutationProps<
 export type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
-  successPath?: string
+  successPath?: string | ((data: D) => string)
 } & PerformMutationProps<Schema, D>
 
 export async function performMutation<
@@ -100,7 +100,10 @@ export async function formAction<
       if (beforeSuccessResponse) return beforeSuccessResponse
     }
 
-    return successPath ? redirect(successPath) : json(result.data)
+    const path =
+      typeof successPath === 'function' ? successPath(result.data) : successPath
+
+    return path ? redirect(path) : json(result.data)
   } else {
     return json({ errors: result.errors, values: result.values })
   }
