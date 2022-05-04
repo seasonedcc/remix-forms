@@ -175,22 +175,15 @@ export function Form<Schema extends SomeZodObject>({
   const submit = fetcher ? fetcher.submit : useSubmit()
   const transition = fetcher ? fetcher : useTransition()
   const actionData = useActionData()
-
-  const errors = {
-    ...errorsProp,
-    ...(actionData?.errors as FormErrors<SchemaType>),
-  }
-
-  const values = {
-    ...valuesProp,
-    ...(actionData?.values as FormValues<SchemaType>),
-  }
+  const actionErrors = actionData?.errors as FormErrors<SchemaType>
+  const actionValues = actionData?.values as FormValues<SchemaType>
+  const errors = { ...errorsProp, ...actionErrors }
+  const values = { ...valuesProp, ...actionValues }
 
   const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
   form.watch()
 
   const { errors: formErrors } = form.formState
-
   const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
@@ -242,7 +235,7 @@ export function Form<Schema extends SomeZodObject>({
         } catch {}
       }
     }
-  }, [errors])
+  }, [errorsProp, actionErrors])
 
   let autoFocused = false
   let fields: Field<SchemaType>[] = []
