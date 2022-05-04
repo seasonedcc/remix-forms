@@ -8,7 +8,7 @@ import { coerceValue } from './coercions'
 import createSmartInput, { SmartInputProps } from './createSmartInput'
 
 type Children<Schema extends SomeZodObject> = (
-  helpers: FieldProps<Schema> & {
+  helpers: FieldBaseProps<Schema> & {
     Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
     SmartInput: React.ComponentType<SmartInputProps>
     Input:
@@ -44,7 +44,7 @@ type Children<Schema extends SomeZodObject> = (
 
 export type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
-export type FieldProps<Schema extends SomeZodObject> = Omit<
+type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
 > & {
@@ -52,6 +52,9 @@ export type FieldProps<Schema extends SomeZodObject> = Omit<
   type?: JSX.IntrinsicElements['input']['type']
   children?: Children<Schema>
 }
+
+export type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+  Omit<JSX.IntrinsicElements['div'], 'children'>
 
 const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   boolean: 'checkbox',
@@ -91,10 +94,7 @@ export default function createField<Schema extends SomeZodObject>({
   | 'fieldErrorsComponent'
   | 'errorComponent'
 >) {
-  return React.forwardRef<
-    any,
-    FieldProps<Schema> & Omit<JSX.IntrinsicElements['div'], 'children'>
-  >(
+  return React.forwardRef<any, FieldProps<Schema>>(
     (
       {
         fieldType = 'string',
@@ -112,7 +112,7 @@ export default function createField<Schema extends SomeZodObject>({
         hidden = false,
         children: childrenFn,
         ...props
-      }: FieldProps<Schema>,
+      },
       ref,
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
