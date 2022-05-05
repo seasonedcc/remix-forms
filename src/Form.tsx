@@ -188,7 +188,7 @@ export function Form<Schema extends SomeZodObject>({
   const Component = fetcher ? fetcher.Form : component
   const submit = fetcher ? fetcher.submit : useSubmit()
   const transition = fetcher ? fetcher : useTransition()
-  const actionData = useActionData()
+  const actionData = fetcher ? fetcher.data : useActionData()
   const actionErrors = actionData?.errors as FormErrors<SchemaType>
   const actionValues = actionData?.values as FormValues<SchemaType>
   const errors = { ...errorsProp, ...actionErrors }
