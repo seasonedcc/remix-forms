@@ -20,7 +20,7 @@ import { FormErrors, FormValues } from './formAction.server'
 import createField, { FieldProps, FieldType } from './createField'
 import mapChildren from './mapChildren'
 import defaultRenderField from './defaultRenderField'
-import { Fetcher } from '@remix-run/react/transition'
+import { Fetcher, Transition } from '@remix-run/react/transition'
 import inferLabel from './inferLabel'
 import { shapeInfo, ZodTypeName } from './shapeInfo'
 import { concat } from 'lodash/fp'
@@ -69,6 +69,18 @@ type Children<Schema extends SomeZodObject> = (
     Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
+
+type OnTransition<Schema extends SomeZodObject> = (
+  helpers: {
+    transition:
+      | (Fetcher<any> & {
+          Form: any
+          submit: any
+          load: (href: string) => void
+        })
+      | Transition
+  } & UseFormReturn<z.infer<Schema>, any>,
+) => void
 
 export type FormProps<Schema extends SomeZodObject> = {
   component?: React.ForwardRefExoticComponent<AllRemixFormProps>
@@ -129,6 +141,7 @@ export type FormProps<Schema extends SomeZodObject> = {
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
+  onTransition?: OnTransition<Schema>
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
 
@@ -160,6 +173,7 @@ export function Form<Schema extends SomeZodObject>({
   method = 'post',
   schema,
   beforeChildren,
+  onTransition,
   children: childrenFn,
   labels,
   placeholders,
@@ -183,17 +197,22 @@ export function Form<Schema extends SomeZodObject>({
   const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
   form.watch()
 
-  const { errors: formErrors } = form.formState
+  const { formState } = form
+  const { errors: formErrors, isValid } = formState
   const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
     const shouldDisable =
       mode === 'onChange' || mode === 'all'
-        ? transition.state === 'submitting' || !form.formState.isValid
+        ? transition.state === 'submitting' || !isValid
         : transition.state === 'submitting'
 
     setDisabled(shouldDisable)
-  }, [transition.state, form.formState.isValid])
+  }, [transition.state, formState])
+
+  useEffect(() => {
+    onTransition && onTransition({ transition, ...form })
+  }, [transition.state])
 
   const onSubmit = (event: any) => {
     form.handleSubmit(() => submit(event.target, { replace: true }))(event)
