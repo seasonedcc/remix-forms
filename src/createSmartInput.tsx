@@ -14,6 +14,7 @@ export type SmartInputProps = {
   placeholder?: string
   registerProps?: UseFormRegisterReturn
   className?: string
+  a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
 
 export default function createSmartInput<Schema extends SomeZodObject>({
@@ -42,6 +43,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
     multiline,
     placeholder,
     registerProps,
+    a11yProps,
     ...props
   }: SmartInputProps) => {
     if (!registerProps) return null
@@ -57,6 +59,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
           placeholder={placeholder}
           autoFocus={autoFocus}
           defaultChecked={Boolean(value)}
+          {...a11yProps}
           {...props}
         />
       )
@@ -69,6 +72,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
           {...registerProps}
           autoFocus={autoFocus}
           defaultValue={value}
+          {...a11yProps}
           {...props}
         >
           {selectChildren}
@@ -84,6 +88,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
           placeholder={placeholder}
           autoFocus={autoFocus}
           defaultValue={value}
+          {...a11yProps}
           {...props}
         />
       )
@@ -97,6 +102,7 @@ export default function createSmartInput<Schema extends SomeZodObject>({
         placeholder={placeholder}
         autoFocus={autoFocus}
         defaultValue={value}
+        {...a11yProps}
         {...props}
       />
     )

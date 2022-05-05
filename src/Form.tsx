@@ -349,9 +349,16 @@ export function Form<Schema extends SomeZodObject>({
             })
           } else if (child.type === Errors) {
             if (!child.props.children && !globalErrors?.length) return null
-            if (child.props.children || !globalErrors?.length) return child
+
+            if (child.props.children || !globalErrors?.length) {
+              return React.cloneElement(child, {
+                role: 'alert',
+                ...child.props,
+              })
+            }
 
             return React.cloneElement(child, {
+              role: 'alert',
               children: globalErrors.map((error) => (
                 <Error key={error}>{error}</Error>
               )),
@@ -359,7 +366,7 @@ export function Form<Schema extends SomeZodObject>({
             })
           } else if (child.type === Button) {
             return React.cloneElement(child, {
-              disabled: disabled,
+              disabled,
               children: buttonLabel,
               ...child.props,
             })
@@ -376,7 +383,7 @@ export function Form<Schema extends SomeZodObject>({
       {beforeChildren}
       {fields.map((field) => renderField({ Field, ...field }))}
       {globalErrors?.length && (
-        <Errors>
+        <Errors role="alert">
           {globalErrors.map((error) => (
             <Error key={error}>{error}</Error>
           ))}

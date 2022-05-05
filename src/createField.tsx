@@ -136,6 +136,16 @@ export default function createField<Schema extends SomeZodObject>({
         setValueAs: (value) => coerceValue(value, shape),
       })
 
+      const labelId = `label-for-${name}`
+      const errorsId = `errors-for-${name}`
+
+      const a11yProps = {
+        'aria-labelledby': labelId,
+        'aria-invalid': Boolean(errors),
+        'aria-describedby': errors ? errorsId : undefined,
+        'aria-required': required,
+      }
+
       const SmartInput = useMemo(
         () =>
           createSmartInput({
@@ -181,6 +191,7 @@ export default function createField<Schema extends SomeZodObject>({
 
               if (child.type === Label) {
                 return React.cloneElement(child, {
+                  id: labelId,
                   htmlFor: String(name),
                   children: label,
                   ...child.props,
@@ -195,6 +206,7 @@ export default function createField<Schema extends SomeZodObject>({
                   registerProps,
                   autoFocus,
                   value,
+                  a11yProps,
                   ...child.props,
                 })
               } else if (child.type === Input) {
@@ -202,6 +214,7 @@ export default function createField<Schema extends SomeZodObject>({
                   id: String(name),
                   type,
                   ...registerProps,
+                  ...a11yProps,
                   placeholder,
                   autoFocus,
                   defaultValue: value,
@@ -211,6 +224,7 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   ...registerProps,
+                  ...a11yProps,
                   placeholder,
                   autoFocus,
                   defaultValue: value,
@@ -220,6 +234,7 @@ export default function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   id: String(name),
                   ...registerProps,
+                  ...a11yProps,
                   autoFocus,
                   defaultValue: value,
                   children: selectChildren,
@@ -231,15 +246,25 @@ export default function createField<Schema extends SomeZodObject>({
                   type,
                   autoFocus,
                   ...registerProps,
+                  ...a11yProps,
                   placeholder,
                   defaultChecked: Boolean(value),
                   ...child.props,
                 })
               } else if (child.type === Errors) {
                 if (!child.props.children && !errors?.length) return null
-                if (child.props.children || !errors?.length) return child
+
+                if (child.props.children || !errors?.length) {
+                  return React.cloneElement(child, {
+                    id: errorsId,
+                    role: 'alert',
+                    ...child.props,
+                  })
+                }
 
                 return React.cloneElement(child, {
+                  id: errorsId,
+                  role: 'alert',
                   children: errorsChildren,
                   ...child.props,
                 })
@@ -259,15 +284,20 @@ export default function createField<Schema extends SomeZodObject>({
                 id={String(name)}
                 type={type}
                 {...registerProps}
+                {...a11yProps}
                 placeholder={placeholder}
                 autoFocus={autoFocus}
                 defaultChecked={Boolean(value)}
               />
-              <Label htmlFor={String(name)}>{label}</Label>
+              <Label id={labelId} htmlFor={String(name)}>
+                {label}
+              </Label>
             </CheckboxWrapper>
           ) : (
             <>
-              <Label htmlFor={String(name)}>{label}</Label>
+              <Label id={labelId} htmlFor={String(name)}>
+                {label}
+              </Label>
               <SmartInput
                 fieldType={fieldType}
                 type={type}
@@ -277,10 +307,15 @@ export default function createField<Schema extends SomeZodObject>({
                 registerProps={registerProps}
                 autoFocus={autoFocus}
                 value={value}
+                a11yProps={a11yProps}
               />
             </>
           )}
-          {Boolean(errorsChildren) && <Errors>{errorsChildren}</Errors>}
+          {Boolean(errorsChildren) && (
+            <Errors role="alert" id={errorsId}>
+              {errorsChildren}
+            </Errors>
+          )}
         </Field>
       )
     },
