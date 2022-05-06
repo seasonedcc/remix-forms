@@ -142,6 +142,7 @@ export type FormProps<Schema extends SomeZodObject> = {
   multiline?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<Schema>
+  parseActionData?: (data: any) => any
   children?: Children<Schema>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
 
@@ -174,6 +175,7 @@ export function Form<Schema extends SomeZodObject>({
   schema,
   beforeChildren,
   onTransition,
+  parseActionData,
   children: childrenFn,
   labels,
   placeholders,
@@ -188,7 +190,13 @@ export function Form<Schema extends SomeZodObject>({
   const Component = fetcher ? fetcher.Form : component
   const submit = fetcher ? fetcher.submit : useSubmit()
   const transition = fetcher ? fetcher : useTransition()
-  const actionData = fetcher ? fetcher.data : useActionData()
+  const unparsedActionData = fetcher ? fetcher.data : useActionData()
+
+  const actionData =
+    parseActionData && unparsedActionData
+      ? parseActionData(unparsedActionData)
+      : unparsedActionData
+
   const actionErrors = actionData?.errors as FormErrors<SchemaType>
   const actionValues = actionData?.values as FormValues<SchemaType>
   const errors = { ...errorsProp, ...actionErrors }
