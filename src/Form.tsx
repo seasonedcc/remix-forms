@@ -262,7 +262,7 @@ export function Form<Schema extends SomeZodObject>({
         } catch {}
       }
     }
-  }, [errorsProp, actionErrors])
+  }, [errorsProp, unparsedActionData])
 
   let autoFocused = false
   let fields: Field<SchemaType>[] = []
