@@ -48,7 +48,7 @@ describe('coerceValue', () => {
     expect(coerceValue('999999.999', z.number())).toEqual(999999.999)
   })
 
-  it('coerces numbers to 0 when value is empty', () => {
+  it('coerces numbers to null when value is empty', () => {
     expect(coerceValue('', z.number())).toEqual(null)
     expect(coerceValue(null, z.number())).toEqual(null)
   })
