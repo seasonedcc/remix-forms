@@ -152,6 +152,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodBoolean: 'boolean',
   ZodDate: 'date',
   ZodEnum: 'string',
+  ZodNativeEnum: 'string',
 }
 
 export function Form<Schema extends SomeZodObject>({
