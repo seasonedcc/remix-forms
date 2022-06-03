@@ -7,6 +7,15 @@ enum NativeEnum {
   Two,
 }
 
+const objectType = z.object({
+  boolean: z.boolean(),
+  number: z.number(),
+  date: z.date(),
+  string: z.string(),
+  enum: z.enum(['one', 'two']),
+  nativeEnum: z.nativeEnum(NativeEnum),
+})
+
 const supportedShapes = [
   z.boolean(),
   z.number(),
@@ -14,6 +23,7 @@ const supportedShapes = [
   z.string(),
   z.enum(['one', 'two']),
   z.nativeEnum(NativeEnum),
+  objectType,
 ]
 
 describe('coerceValue', () => {
@@ -106,5 +116,24 @@ describe('coerceValue', () => {
     expect(
       coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test'])),
     ).toEqual('[object File]')
+  })
+
+  it('coerce the object', () => {
+    expect(
+      coerceValue(
+        {
+          boolean: 'on',
+          number: '123',
+          date: '2001-12-31',
+          string: 'some text',
+        },
+        objectType,
+      ),
+    ).toEqual({
+      boolean: true,
+      date: new Date('2001-12-31T02:00:00.000Z'),
+      number: 123,
+      string: 'some text',
+    })
   })
 })
