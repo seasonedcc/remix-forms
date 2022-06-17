@@ -223,7 +223,7 @@ export function Form<Schema extends SomeZodObject>({
   }, [transition.state])
 
   const onSubmit = (event: any) => {
-    form.handleSubmit(() => submit(event.target, { replace: true }))(event)
+    form.handleSubmit(() => submit(event.target))(event)
   }
 
   const Field = useMemo(
