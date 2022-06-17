@@ -206,7 +206,6 @@ export function Form<Schema extends SomeZodObject>({
   const values = { ...valuesProp, ...actionValues }
 
   const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
-  form.watch()
 
   const { formState } = form
   const { errors: formErrors, isValid } = formState
