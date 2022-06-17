@@ -67,18 +67,21 @@ type Children<Schema extends SomeZodObject> = (
     Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
+    transition: FormTransition
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
+type FormTransition =
+  | (Fetcher<any> & {
+      Form: any
+      submit: any
+      load: (href: string) => void
+    })
+  | Transition
+
 type OnTransition<Schema extends SomeZodObject> = (
   helpers: {
-    transition:
-      | (Fetcher<any> & {
-          Form: any
-          submit: any
-          load: (href: string) => void
-        })
-      | Transition
+    transition: FormTransition
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
@@ -321,7 +324,14 @@ export function Form<Schema extends SomeZodObject>({
   const globalErrors = errors?._global
 
   if (childrenFn) {
-    const children = childrenFn({ Field, Errors, Error, Button, ...form })
+    const children = childrenFn({
+      Field,
+      Errors,
+      Error,
+      Button,
+      transition,
+      ...form,
+    })
 
     return (
       <Component method={method} onSubmit={onSubmit} {...props}>
