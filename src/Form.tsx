@@ -134,6 +134,7 @@ export type FormProps<Schema extends SomeZodObject> = {
     | React.ComponentType<JSX.IntrinsicElements['button']>
     | string
   buttonLabel?: string
+  pendingButtonLabel?: string
   method?: FormMethod
   schema: Schema
   errors?: FormErrors<z.infer<Schema>>
@@ -173,7 +174,8 @@ export function Form<Schema extends SomeZodObject>({
   checkboxComponent,
   checkboxWrapperComponent,
   buttonComponent: Button = 'button',
-  buttonLabel = 'OK',
+  buttonLabel: rawButtonLabel = 'OK',
+  pendingButtonLabel = 'OK',
   method = 'post',
   schema,
   beforeChildren,
@@ -321,6 +323,9 @@ export function Form<Schema extends SomeZodObject>({
   }
 
   const globalErrors = errors?._global
+
+  const buttonLabel =
+    transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
 
   if (childrenFn) {
     const children = childrenFn({
