@@ -1,0 +1,22 @@
+diff --git a/node_modules/remix-routes/lib/cli.js b/node_modules/remix-routes/lib/cli.js
+index cea4327..8bc4f0c 100755
+--- a/node_modules/remix-routes/lib/cli.js
++++ b/node_modules/remix-routes/lib/cli.js
+@@ -28,7 +28,7 @@ const meow_1 = __importDefault(require("meow"));
+ const fs = __importStar(require("fs"));
+ const path = __importStar(require("path"));
+ const chokidar_1 = __importDefault(require("chokidar"));
+-const config_1 = require("@remix-run/dev/config");
++const config_1 = require("@remix-run/dev/dist/config");
+ const helpText = `
+ Usage
+ $ remix-routes
+@@ -78,7 +78,7 @@ function watch(remixRoot) {
+ function generate(routesInfo) {
+     const jsCode = generateHelpers(routesInfo);
+     const tsCode = generateDefinition(routesInfo);
+-    const outputPath = path.join(process.cwd(), 'node_modules', '.remix-routes');
++    const outputPath = path.join(process.cwd(), '..', '..', 'node_modules', '.remix-routes');
+     if (!fs.existsSync(outputPath)) {
+         fs.mkdirSync(outputPath);
+     }

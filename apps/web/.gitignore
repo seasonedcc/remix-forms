@@ -1,0 +1,10 @@
+node_modules
+
+/.cache
+/server/build
+/public/build
+/app/styles/
+/build
+.env
+test-results/
+playwright-report/
