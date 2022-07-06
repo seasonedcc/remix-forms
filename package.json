@@ -1,53 +1,29 @@
 {
-  "name": "remix-forms",
-  "version": "0.17.0",
-  "description": "Magically create forms + actions in Remix!",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "lib"
+  "name": "remix-forms-turborepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "vitest",
-    "coverage": "vitest run --coverage"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SeasonedSoftware/remix-forms.git"
-  },
-  "keywords": [
-    "remix",
-    "forms",
-    "actions",
-    "zod",
-    "typescript",
-    "react-hook-form"
-  ],
-  "author": "Daniel Weinmann",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/SeasonedSoftware/remix-forms/issues"
-  },
-  "homepage": "https://remix-forms.seasoned.cc",
-  "peerDependencies": {
-    "@remix-run/react": ">=1.2",
-    "@remix-run/server-runtime": ">=1.2",
-    "react": ">=16.8",
-    "remix-domains": ">=0.2.0",
-    "zod": ">=3.12"
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "postinstall": "patch-package",
+    "test": "turbo run test",
+    "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
-    "@remix-run/node": "^1.4.1",
-    "@types/lodash": "^4.14.181",
-    "@types/react": "^17.0.24",
-    "c8": "^7.11.2",
-    "typescript": "^4.5.5",
-    "vitest": "^0.10.0"
+    "eslint-config-custom": "*",
+    "prettier": "latest",
+    "turbo": "latest"
   },
-  "dependencies": {
-    "@hookform/resolvers": "^2.8.8",
-    "lodash": "^4.17.21",
-    "react-hook-form": "^7.27.1"
-  }
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "npm@8.5.0"
 }

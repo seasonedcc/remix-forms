@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+sub,
+sup {
+  font-size: 60%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: 0;
+  vertical-align: super;
+}
+
+sub {
+  bottom: 0;
+  vertical-align: sub;
+}
