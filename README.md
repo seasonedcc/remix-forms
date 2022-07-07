@@ -36,3 +36,9 @@ $ npm run dev
 ```
 
 This will run the website at http://localhost:3000.
+
+Install Playwright browsers in order to run the tests.
+
+```
+npx playwright install
+```
