@@ -4,7 +4,7 @@
   "scripts": {
     "build": "npm run build:css && remix-routes && remix build",
     "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
-    "dev": "run-p dev:*",
+    "dev": "concurrently \"npm run dev:routes\" \"npm run dev:css\" \"npm run dev:remix\" \"npm run dev:node\"",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "dev:node": "cross-env NODE_ENV=development netlify dev",
@@ -50,6 +50,7 @@
     "patch-package": "^6.4.7",
     "postcss": "^8.4.6",
     "prettier-plugin-tailwindcss": "^0.1.10",
+    "concurrently": "^7.0.0",
     "remix-routes": "^0.1.2",
     "tailwind-scrollbar": "^1.3.1",
     "typescript": "^4.5.5"
