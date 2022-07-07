@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run dev:routes\" \"npm run dev:css\" \"npm run dev:remix\" \"npm run dev:node\"",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
-    "dev:node": "cross-env NODE_ENV=development netlify dev",
+    "dev:server": "cross-env NODE_ENV=development netlify dev",
     "dev:routes": "remix-routes --watch",
     "start": "cross-env NODE_ENV=production netlify dev",
     "test": "playwright test",
