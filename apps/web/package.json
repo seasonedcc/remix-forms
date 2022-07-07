@@ -4,7 +4,7 @@
   "scripts": {
     "build": "npm run build:css && remix-routes && remix build",
     "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
-    "dev": "concurrently \"npm run dev:routes\" \"npm run dev:css\" \"npm run dev:remix\" \"npm run dev:node\"",
+    "dev": "concurrently \"npm run dev:routes\" \"npm run dev:css\" \"npm run dev:remix\" \"npm run dev:server\"",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "dev:server": "cross-env NODE_ENV=development netlify dev",
