@@ -1,2 +1,3 @@
 [build]
-  base = "apps/web/"
+  command = "npm run build"
+  publish = "apps/web/build/"
