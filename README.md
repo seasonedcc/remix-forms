@@ -14,16 +14,16 @@ Also, please [join Remix's community on Discord](https://rmx.as/discord). We'll 
 
 2. Configure the web app to use the local remix-forms
 
-```
+```js
 // apps/web/package.json
 {
-  ...
+  //...
   "dependencies": {
-    ...
+    //...
     "remix-forms": "*",
-    ...
+    //...
   },
-  ...
+  //...
 }
 ```
 
@@ -37,8 +37,16 @@ $ npm run dev
 
 This will run the website at http://localhost:3000.
 
-Install Playwright browsers in order to run the tests.
+## Testing
 
-```
+You need to have the Playwright executables in order to run the tests.
+
+```sh
 npx playwright install
+```
+
+Then you can run
+
+```sh
+npm run test
 ```
