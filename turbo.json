@@ -12,7 +12,10 @@
       "outputs": []
     },
     "test": {
-      "outputs": []
+      "outputs": [],
+      "dependsOn": [
+        "^build"
+      ]
     },
     "dev": {
       "cache": false
