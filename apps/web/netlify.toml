@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build:css && remix-routes && remix build"
+  command = "cd ../.. && npm install && npm run build"
   publish = "public"
 
 [dev]
