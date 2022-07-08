@@ -34,6 +34,7 @@
     "react-hook-form": "^7.31.0",
     "remix-domains": "^0.2.0",
     "remix-forms": "latest",
+    "remix-routes": "github:SeasonedSoftware/remix-routes",
     "tailwindcss": "^3.0.23",
     "zod": "^3.12.0"
   },
@@ -47,11 +48,9 @@
     "@types/tailwindcss": "^3.0.10",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.15.0",
-    "patch-package": "^6.4.7",
     "postcss": "^8.4.6",
     "prettier-plugin-tailwindcss": "^0.1.10",
     "concurrently": "^7.0.0",
-    "remix-routes": "^0.1.2",
     "tailwind-scrollbar": "^1.3.1",
     "typescript": "^4.5.5"
   },
