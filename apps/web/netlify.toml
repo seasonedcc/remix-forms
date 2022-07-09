@@ -1,6 +1,6 @@
 [build]
-  command = "cd ../.. && npm install && npm run build"
-  publish = "public"
+  command = "cd ../.. && npm install && npm run build && pwd && ls -la"
+  publish = "public/build"
 
 [dev]
   command = "remix watch"
