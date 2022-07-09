@@ -1,5 +1,5 @@
 [build]
-  command = "cd ../.. && npm install && npm run build && cp -r node_modules/remix-routes/node_modules/.remix-routes apps/web/node_modules "
+  command = "cd ../.. && npm install && npm run build && cp -r node_modules/remix-routes/node_modules/.remix-routes node_modules/remix-routes && cp -r node_modules/remix-routes/node_modules/.remix-routes node_modules/ && cp -r node_modules/remix-routes/node_modules/.remix-routes apps/web/public/build"
   publish = "public/build"
 
 [dev]
