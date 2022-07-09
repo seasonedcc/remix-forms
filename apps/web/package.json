@@ -32,7 +32,7 @@
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.31.0",
     "remix-domains": "^0.2.0",
-    "remix-forms": "latest",
+    "remix-forms": "*",
     "tailwindcss": "^3.0.23",
     "zod": "^3.12.0"
   },
