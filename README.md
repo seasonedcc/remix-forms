@@ -12,22 +12,7 @@ Also, please [join Remix's community on Discord](https://rmx.as/discord). We'll 
 
 1. Clone the repo
 
-2. Configure the web app to use the local remix-forms
-
-```js
-// apps/web/package.json
-{
-  //...
-  "dependencies": {
-    //...
-    "remix-forms": "*",
-    //...
-  },
-  //...
-}
-```
-
-3. Install and run
+2. Install and run
 
 ```sh
 $ cd remix-forms
