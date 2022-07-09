@@ -9,10 +9,8 @@ node_modules
 coverage
 playwright-report/
 
-# next.js
-.next/
-out/
-build
+build/
+.netlify
 
 # misc
 .DS_Store
@@ -33,3 +31,4 @@ yarn-error.log*
 # turbo
 .turbo
 dist/
+
