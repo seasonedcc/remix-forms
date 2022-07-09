@@ -1,7 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import { LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { LoaderFunction, MetaFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { $path } from 'remix-routes'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
@@ -279,7 +278,7 @@ export default function Component() {
         , and a multitude of other open-source projects. Thank you!
       </p>
       <div className="pt-4 text-center">
-        <ButtonLink to={$path('/examples')}>Check out more examples</ButtonLink>
+        <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
       </div>
     </div>
   )

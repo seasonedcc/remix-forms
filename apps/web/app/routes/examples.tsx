@@ -1,5 +1,4 @@
 import { Outlet } from '@remix-run/react'
-import { $path } from 'remix-routes'
 import SidebarLayout from '~/ui/sidebar-layout'
 
 export default function Component() {
@@ -8,101 +7,89 @@ export default function Component() {
       <SidebarLayout>
         <SidebarLayout.Nav>
           <SidebarLayout.NavTitle>Actions</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/examples/actions/redirect')}>
+          <SidebarLayout.NavLink to={'/examples/actions/redirect'}>
             Redirect
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/actions/without-redirect')}
-          >
+          <SidebarLayout.NavLink to={'/examples/actions/without-redirect'}>
             Without redirect
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/actions/custom-response')}
-          >
+          <SidebarLayout.NavLink to={'/examples/actions/custom-response'}>
             Custom response
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/actions/environment')}>
+          <SidebarLayout.NavLink to={'/examples/actions/environment'}>
             Environment
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/actions/global-error')}>
+          <SidebarLayout.NavLink to={'/examples/actions/global-error'}>
             Global error
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/actions/field-error')}>
+          <SidebarLayout.NavLink to={'/examples/actions/field-error'}>
             Field error
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Modes</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/examples/modes/on-submit')}>
+          <SidebarLayout.NavLink to={'/examples/modes/on-submit'}>
             onSubmit
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/modes/on-blur')}>
+          <SidebarLayout.NavLink to={'/examples/modes/on-blur'}>
             onBlur
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/modes/on-change')}>
+          <SidebarLayout.NavLink to={'/examples/modes/on-change'}>
             onChange
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Schemas</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/examples/schemas/strings')}>
+          <SidebarLayout.NavLink to={'/examples/schemas/strings'}>
             Strings
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/schemas/numbers')}>
+          <SidebarLayout.NavLink to={'/examples/schemas/numbers'}>
             Numbers
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/schemas/booleans')}>
+          <SidebarLayout.NavLink to={'/examples/schemas/booleans'}>
             Booleans
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/schemas/dates')}>
+          <SidebarLayout.NavLink to={'/examples/schemas/dates'}>
             Dates
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/schemas/enums')}>
+          <SidebarLayout.NavLink to={'/examples/schemas/enums'}>
             Enums
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Forms</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/examples/forms/auto-generated')}>
+          <SidebarLayout.NavLink to={'/examples/forms/auto-generated'}>
             Auto-generated
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/forms/labels-and-options')}
-          >
+          <SidebarLayout.NavLink to={'/examples/forms/labels-and-options'}>
             Labels, options, etc
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/forms/hidden-field')}>
+          <SidebarLayout.NavLink to={'/examples/forms/hidden-field'}>
             Hidden field
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/forms/form-with-children')}
-          >
+          <SidebarLayout.NavLink to={'/examples/forms/form-with-children'}>
             Form with children
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/forms/field-with-children')}
-          >
+          <SidebarLayout.NavLink to={'/examples/forms/field-with-children'}>
             Field with children
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/forms/field-layout')}>
+          <SidebarLayout.NavLink to={'/examples/forms/field-layout'}>
             Field layout
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/forms/custom-input')}>
+          <SidebarLayout.NavLink to={'/examples/forms/custom-input'}>
             Custom input
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/forms/async-validation')}>
+          <SidebarLayout.NavLink to={'/examples/forms/async-validation'}>
             Async validation
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/examples/forms/use-fetcher')}>
+          <SidebarLayout.NavLink to={'/examples/forms/use-fetcher'}>
             useFetcher
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>renderField</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink
-            to={$path('/examples/render-field/required-indicator')}
+            to={'/examples/render-field/required-indicator'}
           >
             Required indicator
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink
-            to={$path('/examples/render-field/error-indicator')}
-          >
+          <SidebarLayout.NavLink to={'/examples/render-field/error-indicator'}>
             Error indicator
           </SidebarLayout.NavLink>
           <SidebarLayout.NavLink
-            to={$path('/examples/render-field/inline-checkboxes')}
+            to={'/examples/render-field/inline-checkboxes'}
           >
             Inline checkboxes
           </SidebarLayout.NavLink>

@@ -1,7 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { Link, NavLink } from '@remix-run/react'
-import { $path } from 'remix-routes'
 import { cx } from '~/helpers'
 import logo from '~/logo.png'
 import ButtonLink from './button-link'
@@ -10,9 +9,9 @@ import GitHub from './icons/github'
 import SecondaryButtonLink from './secondary-button-link'
 
 const navigation = [
-  { name: 'Home', to: $path('/') },
-  { name: 'Get Started', to: $path('/get-started') },
-  { name: 'Examples', to: $path('/examples') },
+  { name: 'Home', to: '/' },
+  { name: 'Get Started', to: '/get-started' },
+  { name: 'Examples', to: '/examples' },
 ]
 
 export default function TopBar() {
@@ -27,7 +26,7 @@ export default function TopBar() {
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex-1">
                 <div className="flex shrink-0 items-center">
-                  <Link to={$path('/')} className="block h-10 w-10">
+                  <Link to={'/'} className="block h-10 w-10">
                     <img
                       src={logo}
                       alt="Remix Forms"
@@ -37,9 +36,9 @@ export default function TopBar() {
                   </Link>
                 </div>
               </div>
-              <ButtonLink to={$path('/get-started')}>Get Started</ButtonLink>
+              <ButtonLink to={'/get-started'}>Get Started</ButtonLink>
               <SecondaryButtonLink
-                to={$path('/examples')}
+                to={'/examples'}
                 className="hidden sm:inline"
               >
                 Examples
