@@ -1,4 +1,5 @@
-import { Locator, Page, expect } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { startCase } from 'lodash/fp'
 
 type Field = {
@@ -132,7 +133,7 @@ class Example {
 
   async expectData(data: any) {
     const actionData = JSON.parse(
-      await this.page.locator('#action-data > pre:visible').innerText(),
+      await this.page.locator('#action-data > pre:visible').first().innerText(),
     )
 
     expect(actionData).toEqual(data)
