@@ -1,5 +1,4 @@
 import { Link, Outlet, useMatches } from '@remix-run/react'
-import { $path } from 'remix-routes'
 import ExternalLink from '~/ui/external-link'
 import SidebarLayout from '~/ui/sidebar-layout'
 import SecondaryButtonLink from '~/ui/secondary-button-link'
@@ -15,32 +14,32 @@ export default function Component() {
       <SidebarLayout>
         <SidebarLayout.Nav>
           <SidebarLayout.NavTitle>From scratch</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/conf/01')}>
+          <SidebarLayout.NavLink to={'/conf/01'}>
             01. Quick and dirty
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/02')}>
+          <SidebarLayout.NavLink to={'/conf/02'}>
             02. Server validations
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/03')}>
+          <SidebarLayout.NavLink to={'/conf/03'}>
             03. Type coercions
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/04')}>
+          <SidebarLayout.NavLink to={'/conf/04'}>
             04. Client validations
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/05')}>
+          <SidebarLayout.NavLink to={'/conf/05'}>
             05. Pending UI
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/06')}>
+          <SidebarLayout.NavLink to={'/conf/06'}>
             06. Accessibility
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/07')}>
+          <SidebarLayout.NavLink to={'/conf/07'}>
             07. Focus on error
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Remix Forms</SidebarLayout.NavTitle>
-          <SidebarLayout.NavLink to={$path('/conf/08')}>
+          <SidebarLayout.NavLink to={'/conf/08'}>
             08. Auto-generated
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={$path('/conf/09')}>
+          <SidebarLayout.NavLink to={'/conf/09'}>
             09. Custom layout
           </SidebarLayout.NavLink>
         </SidebarLayout.Nav>
@@ -48,7 +47,7 @@ export default function Component() {
           <TopBar>
             <div className="hidden flex-1 lg:block">
               This is the{' '}
-              <Link to={$path('/conf')} className="underline">
+              <Link to={'/conf'} className="underline">
                 interactive counterpart
               </Link>{' '}
               to our talk at Remix Conf 2022.{' '}

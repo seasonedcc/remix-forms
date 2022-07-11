@@ -17,7 +17,6 @@ import social from './social.png'
 import ExternalLink from './ui/external-link'
 import TopBar from './ui/top-bar'
 import ConfTopBar from './ui/conf/top-bar'
-import { $path } from 'remix-routes'
 
 export const meta: MetaFunction = () => {
   return {
@@ -57,7 +56,7 @@ export default function App() {
         <TopBar />
         {!conf && (
           <ConfTopBar>
-            <Link to={$path('/conf')} className="underline">
+            <Link to={'/conf'} className="underline">
               Check out our talk
             </Link>{' '}
             at Remix Conf!

@@ -12,22 +12,7 @@ Also, please [join Remix's community on Discord](https://rmx.as/discord). We'll 
 
 1. Clone the repo
 
-2. Configure the web app to use the local remix-forms
-
-```
-// apps/web/package.json
-{
-  ...
-  "dependencies": {
-    ...
-    "remix-forms": "*",
-    ...
-  },
-  ...
-}
-```
-
-3. Install and run
+2. Install and run
 
 ```sh
 $ cd remix-forms
@@ -35,10 +20,20 @@ $ npm i
 $ npm run dev
 ```
 
+Note: we had issues running the turborepo `dev` command on Node 18. We recommend using Node 16 for development.
+
 This will run the website at http://localhost:3000.
 
-Install Playwright browsers in order to run the tests.
+## Testing
 
-```
+You need to have the Playwright executables in order to run the tests.
+
+```sh
 npx playwright install
+```
+
+Then you can run
+
+```sh
+npm run test
 ```

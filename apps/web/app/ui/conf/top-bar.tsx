@@ -1,10 +1,9 @@
 import { Link } from '@remix-run/react'
-import { $path } from 'remix-routes'
 
 export default function TopBar({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center bg-gradient-to-r from-blue-600 to-purple-600 py-2 px-4 sm:px-8">
-      <Link to={$path('/conf')}>
+      <Link to={'/conf'}>
         <svg
           viewBox="0 0 745 280"
           xmlns="http://www.w3.org/2000/svg"
