@@ -1,5 +1,4 @@
 module.exports = {
   root: true,
-  // This tells ESLint to load the config from the package `eslint-config-custom`
-  extends: ['custom'],
+  extends: ['@remix-run/eslint-config', '@remix-run/eslint-config/node'],
 }
