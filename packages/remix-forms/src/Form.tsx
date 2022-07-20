@@ -224,12 +224,12 @@ export function Form<Schema extends SomeZodObject>({
         : transition.state === 'submitting'
 
     setDisabled(shouldDisable)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state, formState])
 
   useEffect(() => {
     onTransition && onTransition({ transition, ...form })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state])
 
   const onSubmit = (event: any) => {
@@ -273,7 +273,7 @@ export function Form<Schema extends SomeZodObject>({
         } catch {}
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorsProp, unparsedActionData])
 
   let autoFocused = false
@@ -312,6 +312,7 @@ export function Form<Schema extends SomeZodObject>({
         : rawOptions
 
     const label = (labels && labels[key]) || inferLabel(String(stringKey))
+    const value = values && values[key]
 
     fields.push({
       shape,
@@ -322,7 +323,7 @@ export function Form<Schema extends SomeZodObject>({
       options: fieldOptions,
       errors: fieldErrors,
       autoFocus,
-      value: (values && values[key]) || (getDefaultValue && getDefaultValue()),
+      value: value === undefined ? getDefaultValue && getDefaultValue() : value,
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
       multiline: multiline && Boolean(multiline.find((item) => item === key)),
