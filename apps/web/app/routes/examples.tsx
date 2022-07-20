@@ -61,6 +61,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/forms/hidden-field'}>
             Hidden field
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/forms/edit-values'}>
+            Edit values
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavLink to={'/examples/forms/form-with-children'}>
             Form with children
           </SidebarLayout.NavLink>
