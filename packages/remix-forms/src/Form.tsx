@@ -13,7 +13,10 @@ import {
   UseFormReturn,
   FieldError,
   Path,
-  ValidationMode, DefaultValues, UnpackNestedValue, DeepPartial,
+  ValidationMode,
+  DefaultValues,
+  UnpackNestedValue,
+  DeepPartial
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormErrors, FormValues } from './formAction.server'
@@ -47,7 +50,7 @@ type FieldComponent<Schema extends SomeZodObject> =
 
 export type RenderFieldProps<Schema extends SomeZodObject> = Field<
   z.infer<Schema>
-> & {
+  > & {
   Field: FieldComponent<Schema>
 }
 
@@ -57,7 +60,7 @@ export type RenderField<Schema extends SomeZodObject> = (
 
 export type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
->
+  >
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
@@ -75,10 +78,10 @@ type Children<Schema extends SomeZodObject> = (
 
 type FormTransition =
   | (Fetcher<any> & {
-      Form: any
-      submit: any
-      load: (href: string) => void
-    })
+  Form: any
+  submit: any
+  load: (href: string) => void
+})
   | Transition
 
 type OnTransition<Schema extends SomeZodObject> = (
@@ -107,27 +110,27 @@ export type FormProps<Schema extends SomeZodObject> = {
   labelComponent?: React.ComponentType<JSX.IntrinsicElements['label']> | string
   inputComponent?:
     | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
+    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+    React.RefAttributes<HTMLInputElement>
+    >
     | string
   multilineComponent?:
     | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-          React.RefAttributes<HTMLTextAreaElement>
-      >
+    React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+    React.RefAttributes<HTMLTextAreaElement>
+    >
     | string
   selectComponent?:
     | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-          React.RefAttributes<HTMLSelectElement>
-      >
+    React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+    React.RefAttributes<HTMLSelectElement>
+    >
     | string
   checkboxComponent?:
     | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
+    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+    React.RefAttributes<HTMLInputElement>
+    >
     | string
   checkboxWrapperComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
@@ -162,39 +165,39 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
 }
 
 export function Form<Schema extends SomeZodObject>({
-  component = RemixForm,
-  fetcher,
-  mode = 'onSubmit',
-  renderField = defaultRenderField,
-  fieldComponent,
-  globalErrorsComponent: Errors = 'div',
-  errorComponent: Error = 'div',
-  fieldErrorsComponent,
-  labelComponent,
-  inputComponent,
-  multilineComponent,
-  selectComponent,
-  checkboxComponent,
-  checkboxWrapperComponent,
-  buttonComponent: Button = 'button',
-  buttonLabel: rawButtonLabel = 'OK',
-  pendingButtonLabel = 'OK',
-  method = 'post',
-  schema,
-  beforeChildren,
-  onTransition,
-  parseActionData,
-  children: childrenFn,
-  labels,
-  placeholders,
-  options,
-  hiddenFields,
-  multiline,
-  defaultValues,
-  errors: errorsProp,
-  values: valuesProp,
-  ...props
-}: FormProps<Schema>) {
+                                                     component = RemixForm,
+                                                     fetcher,
+                                                     mode = 'onSubmit',
+                                                     renderField = defaultRenderField,
+                                                     fieldComponent,
+                                                     globalErrorsComponent: Errors = 'div',
+                                                     errorComponent: Error = 'div',
+                                                     fieldErrorsComponent,
+                                                     labelComponent,
+                                                     inputComponent,
+                                                     multilineComponent,
+                                                     selectComponent,
+                                                     checkboxComponent,
+                                                     checkboxWrapperComponent,
+                                                     buttonComponent: Button = 'button',
+                                                     buttonLabel: rawButtonLabel = 'OK',
+                                                     pendingButtonLabel = 'OK',
+                                                     method = 'post',
+                                                     schema,
+                                                     beforeChildren,
+                                                     onTransition,
+                                                     parseActionData,
+                                                     children: childrenFn,
+                                                     labels,
+                                                     placeholders,
+                                                     options,
+                                                     hiddenFields,
+                                                     multiline,
+                                                     defaultValues,
+                                                     errors: errorsProp,
+                                                     values: valuesProp,
+                                                     ...props
+                                                   }: FormProps<Schema>) {
   type SchemaType = z.infer<Schema>
   const Component = fetcher?.Form ?? component
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -227,12 +230,12 @@ export function Form<Schema extends SomeZodObject>({
         : transition.state === 'submitting'
 
     setDisabled(shouldDisable)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state, formState])
 
   useEffect(() => {
     onTransition && onTransition({ transition, ...form })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state])
 
   const onSubmit = (event: any) => {
@@ -276,7 +279,7 @@ export function Form<Schema extends SomeZodObject>({
         } catch {}
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorsProp, unparsedActionData])
 
   let autoFocused = false
@@ -302,9 +305,9 @@ export function Form<Schema extends SomeZodObject>({
 
     const enumOptions = enumValues
       ? enumValues.map((value: string) => ({
-          name: inferLabel(value),
-          value,
-        }))
+        name: inferLabel(value),
+        value,
+      }))
       : undefined
 
     const rawOptions = propOptions || enumOptions
@@ -315,6 +318,7 @@ export function Form<Schema extends SomeZodObject>({
         : rawOptions
 
     const label = (labels && labels[key]) || inferLabel(String(stringKey))
+    const value = values && values[key]
 
     fields.push({
       shape,
@@ -325,7 +329,7 @@ export function Form<Schema extends SomeZodObject>({
       options: fieldOptions,
       errors: fieldErrors,
       autoFocus,
-      value: (values && values[key]) || (getDefaultValue && getDefaultValue()),
+      value: value === undefined ? getDefaultValue && getDefaultValue() : value,
       defaultValue: (defaultValues && defaultValues[stringKey]) || (getDefaultValue && getDefaultValue()),
       hidden:
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
