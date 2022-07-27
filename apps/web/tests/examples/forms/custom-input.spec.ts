@@ -12,7 +12,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(email.label).toHaveText('Email')
   await expect(email.label).toHaveId('label-for-email')
   await expect(email.input).toHaveAttribute('type', 'email')
-  await expect(email.input).toHaveClass('border-2 border-dashed rounded-md')
+  await expect(email.input).toHaveClass('rounded-md border-2 border-dashed')
   await expect(button).toBeEnabled()
 
   // Client-side validation

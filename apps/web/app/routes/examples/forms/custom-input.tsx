@@ -35,7 +35,7 @@ export default () => (
               <input
                 type="email"
                 {...register('email')}
-                className="border-2 border-dashed rounded-md"
+                className="rounded-md border-2 border-dashed"
               />
               <Errors />
             </>
