@@ -1,9 +1,9 @@
 import { inputFromForm } from 'remix-domains'
-import { SomeZodObject, z } from 'zod'
+import type { SomeZodObject, z } from 'zod'
 import { coerceValue } from './coercions'
-import { FormValues } from './formAction.server'
+import type { FormValues } from './formAction.server'
 
-export default async function getFormValues<Schema extends SomeZodObject>(
+async function getFormValues<Schema extends SomeZodObject>(
   request: Request,
   schema: Schema,
 ): Promise<FormValues<z.infer<Schema>>> {
@@ -18,3 +18,5 @@ export default async function getFormValues<Schema extends SomeZodObject>(
 
   return values
 }
+
+export { getFormValues }

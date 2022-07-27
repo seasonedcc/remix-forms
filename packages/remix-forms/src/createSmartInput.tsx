@@ -1,10 +1,10 @@
-import React from 'react'
-import { UseFormRegisterReturn } from 'react-hook-form'
-import { SomeZodObject } from 'zod'
-import { FieldType } from './createField'
-import { FormProps } from './Form'
+import * as React from 'react'
+import type { UseFormRegisterReturn } from 'react-hook-form'
+import type { SomeZodObject } from 'zod'
+import type { FieldType } from './createField'
+import type { FormProps } from './Form'
 
-export type SmartInputProps = {
+type SmartInputProps = {
   fieldType?: FieldType
   type?: React.HTMLInputTypeAttribute
   value?: any
@@ -17,7 +17,7 @@ export type SmartInputProps = {
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
 
-export default function createSmartInput<Schema extends SomeZodObject>({
+function createSmartInput<Schema extends SomeZodObject>({
   inputComponent: Input = 'input',
   multilineComponent: Multiline = 'textarea',
   selectComponent: Select = 'select',
@@ -109,3 +109,6 @@ export default function createSmartInput<Schema extends SomeZodObject>({
     )
   }
 }
+
+export type { SmartInputProps }
+export { createSmartInput }

@@ -1,4 +1,4 @@
-import { ZodTypeAny } from 'zod'
+import type { ZodTypeAny } from 'zod'
 
 type ZodTypeName =
   | 'ZodString'

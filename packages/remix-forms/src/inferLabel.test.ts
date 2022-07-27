@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import inferLabel from './inferLabel'
+import { inferLabel } from './inferLabel'
 
 describe('inferLabel', () => {
   it('capitalizes the field name', () => {

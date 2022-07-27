@@ -1,4 +1,4 @@
-import { ZodTypeAny } from 'zod'
+import type { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
 function makeCoercion<T>(
