@@ -160,9 +160,9 @@ export default function Component() {
       <Pre>npm install remix-forms</Pre>
       <SubHeading>Basic styles</SubHeading>
       <p>
-        Remix Forms doesn't ship any styles, so you need to configure basic
-        styles for your forms. Let's create a custom <em>Form</em> component for
-        your project:
+        Remix Forms doesn&apos;t ship any styles, so you need to configure basic
+        styles for your forms. Let&apos;s create a custom <em>Form</em>{' '}
+        component for your project:
       </p>
       <Code>{formCode}</Code>
       <div className="flex flex-col space-y-2">
@@ -176,11 +176,11 @@ export default function Component() {
         </p>
         <p>
           With your custom <em>Form</em> in place, now you can use it instead of
-          Remix Forms' for all your forms.
+          Remix Forms&apos; for all your forms.
         </p>
         <p>
-          PS: you don't need to customize everything. We'll use standard html
-          tags if you don't.
+          PS: you don&apos;t need to customize everything. We&apos;ll use
+          standard html tags if you don&apos;t.
         </p>
       </div>
       <SubHeading>Write your schema</SubHeading>
@@ -196,39 +196,39 @@ export default function Component() {
         <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains">
           Remix Domains
         </ExternalLink>
-        ' <em>makeDomainFunction</em>. It's a function that receives the values
-        from the form and performs the necessary mutations, such as storing data
-        on a database.
+        &apos; <em>makeDomainFunction</em>. It&apos;s a function that receives
+        the values from the form and performs the necessary mutations, such as
+        storing data on a database.
       </p>
       <p>
-        Remix Domains will parse the request's <em>formData</em> and perform the
-        mutation only if everything is valid. If something goes bad, it will
-        return structured error messages for us.
+        Remix Domains will parse the request&apos;s <em>formData</em> and
+        perform the mutation only if everything is valid. If something goes bad,
+        it will return structured error messages for us.
       </p>
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
       <p>
-        If the mutation is successful, Remix Forms' <em>formAction</em> will
-        redirect to <em>successPath</em>. If not, it will return <em>errors</em>{' '}
-        and <em>values</em> to pass to <em>Form</em>.
+        If the mutation is successful, Remix Forms&apos; <em>formAction</em>{' '}
+        will redirect to <em>successPath</em>. If not, it will return{' '}
+        <em>errors</em> and <em>values</em> to pass to <em>Form</em>.
       </p>
       <Code>{actionCode}</Code>
       <SubHeading>Create a basic form</SubHeading>
       <p>
-        If you don't want any custom UI in the form, you can render{' '}
+        If you don&apos;t want any custom UI in the form, you can render{' '}
         <em>Form</em> without <em>children</em> and it will generate all the
         inputs, labels, error messages and button for you.
       </p>
       <Code>{basicCode}</Code>
       <SubHeading>Custom Form, standard components</SubHeading>
       <p>
-        If you want a custom UI for your form, but don't need to customize the
-        rendering of fields, errors, and buttons, do it like this:
+        If you want a custom UI for your form, but don&apos;t need to customize
+        the rendering of fields, errors, and buttons, do it like this:
       </p>
       <Code>{customFormCode}</Code>
       <SubHeading>Custom Field, standard components</SubHeading>
       <p>
-        If you want a custom UI for a specific field, but don't need to
+        If you want a custom UI for a specific field, but don&apos;t need to
         customize the rendering of the label, input/select, and errors, do this:
       </p>
       <Code>{customFieldCode}</Code>
@@ -238,28 +238,30 @@ export default function Component() {
         <ExternalLink href="https://react-hook-form.com/">
           React Hook Form
         </ExternalLink>
-        's <em>register</em> (and everything else) through the <em>Form</em>'s{' '}
-        <em>children</em> and go nuts:
+        &apos;s <em>register</em> (and everything else) through the{' '}
+        <em>Form</em>
+        &apos;s <em>children</em> and go nuts:
       </p>
       <Code>{customInputCode}</Code>
-      <SubHeading>That's it!</SubHeading>
+      <SubHeading>That&apos;s it!</SubHeading>
       <div className="flex flex-col space-y-2">
         <p>
-          Now go play! Keep in mind that we're just getting started and the APIs
-          are unstable, so we appreciate your patience as we figure things out.
+          Now go play! Keep in mind that we&apos;re just getting started and the
+          APIs are unstable, so we appreciate your patience as we figure things
+          out.
         </p>
         <p>
           Also, please join{' '}
           <ExternalLink href="https://rmx.as/discord">
-            Remix's community on Discord
+            Remix&apos;s community on Discord
           </ExternalLink>
-          . We'll be there to provide you support on Remix Forms.
+          . We&apos;ll be there to provide you support on Remix Forms.
         </p>
       </div>
       <SubHeading>Appreciation</SubHeading>
       <p>
-        Remix Forms is a thin layer on top of giants. It wouldn't be possible
-        without{' '}
+        Remix Forms is a thin layer on top of giants. It wouldn&apos;t be
+        possible without{' '}
         <ExternalLink href="https://www.typescriptlang.org/">
           TypeScript
         </ExternalLink>

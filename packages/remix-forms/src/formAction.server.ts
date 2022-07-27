@@ -1,42 +1,40 @@
 import { json, redirect } from '@remix-run/server-runtime'
-import { DomainFunction, errorMessagesForSchema } from 'remix-domains'
-import { SomeZodObject, z } from 'zod'
-import getFormValues from './getFormValues'
+import type { DomainFunction } from 'remix-domains'
+import { errorMessagesForSchema } from 'remix-domains'
+import type { SomeZodObject, z } from 'zod'
+import { getFormValues } from './getFormValues'
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
   values: FormValues<SchemaType>
 }
 
-export type FormValues<SchemaType> = Partial<Record<keyof SchemaType, any>>
+type FormValues<SchemaType> = Partial<Record<keyof SchemaType, any>>
 
-export type FormErrors<SchemaType> = Partial<
+type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-export type PerformMutation<SchemaType, D extends unknown> =
+type PerformMutation<SchemaType, D extends unknown> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
 
-export type Callback = (request: Request) => Promise<Response | void>
+type Callback = (request: Request) => Promise<Response | void>
 
-export type PerformMutationProps<
-  Schema extends SomeZodObject,
-  D extends unknown,
-> = {
+type PerformMutationProps<Schema extends SomeZodObject, D extends unknown> = {
   request: Request
   schema: Schema
   mutation: DomainFunction<D>
   environment?: unknown
 }
 
-export type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
+type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath?: string | ((data: D) => string)
 } & PerformMutationProps<Schema, D>
 
-export async function performMutation<
+async function performMutation<
   Schema extends SomeZodObject,
   D extends unknown,
 >({
@@ -69,10 +67,7 @@ export async function performMutation<
   }
 }
 
-export async function formAction<
-  Schema extends SomeZodObject,
-  D extends unknown,
->({
+async function formAction<Schema extends SomeZodObject, D extends unknown>({
   request,
   schema,
   mutation,
@@ -107,3 +102,13 @@ export async function formAction<
     return json({ errors: result.errors, values: result.values })
   }
 }
+
+export type {
+  FormValues,
+  FormErrors,
+  PerformMutation,
+  Callback,
+  PerformMutationProps,
+  FormActionProps,
+}
+export { performMutation, formAction }

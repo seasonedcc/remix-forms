@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { cx } from '~/helpers'
 
 const Checkbox = React.forwardRef<
@@ -11,7 +11,7 @@ const Checkbox = React.forwardRef<
     className={cx(
       'h-4 w-4 rounded',
       className,
-      !className && 'border-gray-300 focus:ring-pink-500 text-pink-600',
+      !className && 'border-gray-300 text-pink-600 focus:ring-pink-500',
     )}
     {...props}
   />

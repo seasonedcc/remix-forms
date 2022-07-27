@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'

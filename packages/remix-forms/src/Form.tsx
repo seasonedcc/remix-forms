@@ -1,31 +1,32 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import * as React from 'react'
+import type { FormProps as RemixFormProps, FormMethod } from '@remix-run/react'
 import {
   Form as RemixForm,
-  FormProps as RemixFormProps,
-  FormMethod,
   useTransition,
   useSubmit,
   useActionData,
 } from '@remix-run/react'
-import { SomeZodObject, z, ZodTypeAny } from 'zod'
-import {
-  useForm,
+import type { SomeZodObject, z, ZodTypeAny } from 'zod'
+import type {
   UseFormReturn,
   FieldError,
   Path,
   ValidationMode,
 } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FormErrors, FormValues } from './formAction.server'
-import createField, { FieldProps, FieldType } from './createField'
-import mapChildren from './mapChildren'
-import defaultRenderField from './defaultRenderField'
-import { Fetcher } from '@remix-run/react'
-import inferLabel from './inferLabel'
-import { shapeInfo, ZodTypeName } from './shapeInfo'
-import { Transition } from '@remix-run/react/dist/transition'
+import type { FormErrors, FormValues } from './formAction.server'
+import type { FieldProps, FieldType } from './createField'
+import { createField } from './createField'
+import { mapChildren } from './mapChildren'
+import { defaultRenderField } from './defaultRenderField'
+import type { Fetcher } from '@remix-run/react'
+import { inferLabel } from './inferLabel'
+import type { ZodTypeName } from './shapeInfo'
+import { shapeInfo } from './shapeInfo'
+import type { Transition } from '@remix-run/react/dist/transition'
 
-export type Field<SchemaType> = {
+type Field<SchemaType> = {
   shape: ZodTypeAny
   fieldType: FieldType
   name: keyof SchemaType
@@ -43,17 +44,15 @@ export type Field<SchemaType> = {
 type FieldComponent<Schema extends SomeZodObject> =
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
-export type RenderFieldProps<Schema extends SomeZodObject> = Field<
-  z.infer<Schema>
-> & {
+type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
-export type RenderField<Schema extends SomeZodObject> = (
+type RenderField<Schema extends SomeZodObject> = (
   props: RenderFieldProps<Schema>,
 ) => JSX.Element
 
-export type Option = { name: string } & Required<
+type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
@@ -85,7 +84,7 @@ type OnTransition<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-export type FormProps<Schema extends SomeZodObject> = {
+type FormProps<Schema extends SomeZodObject> = {
   component?: React.ForwardRefExoticComponent<AllRemixFormProps>
   fetcher?: Fetcher<any> & {
     Form: ReturnType<any>
@@ -158,7 +157,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodEnum: 'string',
 }
 
-export function Form<Schema extends SomeZodObject>({
+function Form<Schema extends SomeZodObject>({
   component = RemixForm,
   fetcher,
   mode = 'onSubmit',
@@ -214,9 +213,9 @@ export function Form<Schema extends SomeZodObject>({
 
   const { formState } = form
   const { errors: formErrors, isValid } = formState
-  const [disabled, setDisabled] = useState(false)
+  const [disabled, setDisabled] = React.useState(false)
 
-  useEffect(() => {
+  React.useEffect(() => {
     const shouldDisable =
       mode === 'onChange' || mode === 'all'
         ? transition.state === 'submitting' || !isValid
@@ -226,7 +225,7 @@ export function Form<Schema extends SomeZodObject>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state, formState])
 
-  useEffect(() => {
+  React.useEffect(() => {
     onTransition && onTransition({ transition, ...form })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state])
@@ -235,7 +234,7 @@ export function Form<Schema extends SomeZodObject>({
     form.handleSubmit(() => submit(event.target))(event)
   }
 
-  const Field = useMemo(
+  const Field = React.useMemo(
     () =>
       createField<Schema>({
         register: form.register,
@@ -263,7 +262,7 @@ export function Form<Schema extends SomeZodObject>({
     ],
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     for (const stringKey in schema.shape) {
       const key = stringKey as keyof SchemaType
       if (errors && errors[key]?.length) {
@@ -423,3 +422,6 @@ export function Form<Schema extends SomeZodObject>({
     </Component>
   )
 }
+
+export type { Field, RenderFieldProps, RenderField, Option, FormProps }
+export { Form }

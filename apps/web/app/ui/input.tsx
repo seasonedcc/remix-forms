@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { cx } from '~/helpers'
 
 const Input = React.forwardRef<
@@ -9,9 +9,9 @@ const Input = React.forwardRef<
     ref={ref}
     type={type}
     className={cx(
-      'shadow-sm block w-full sm:text-sm rounded-md text-gray-800',
+      'block w-full rounded-md text-gray-800 shadow-sm sm:text-sm',
       className,
-      !className && 'border-gray-300 focus:ring-pink-500 focus:border-pink-500',
+      !className && 'border-gray-300 focus:border-pink-500 focus:ring-pink-500',
     )}
     {...props}
   />

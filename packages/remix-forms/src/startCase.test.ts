@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import startCase from './startCase'
+import { startCase } from './startCase'
 
 describe('startCase', () => {
   it('capitalizes the first letter of every word', () => {

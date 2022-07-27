@@ -6,7 +6,6 @@ test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
   const companySize = example.field('companySize')
   const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
-  const subscribeToNewsletter = example.field('subscribeToNewsletter')
 
   await page.goto(route)
 

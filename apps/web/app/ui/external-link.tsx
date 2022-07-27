@@ -2,6 +2,7 @@ import { cx } from '~/helpers'
 
 export default function ExternalLink({
   className,
+  children,
   ...props
 }: JSX.IntrinsicElements['a']) {
   return (
@@ -10,6 +11,8 @@ export default function ExternalLink({
       rel="noopener noreferrer"
       {...props}
       className={cx('underline', className)}
-    />
+    >
+      {children}
+    </a>
   )
 }

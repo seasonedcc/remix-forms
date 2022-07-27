@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -66,7 +70,7 @@ export default function Component() {
       title={title}
       description={
         <>
-          In this example, we use Remix Domain's{' '}
+          In this example, we use Remix Domain&apos;s{' '}
           <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains#taking-parameters-that-are-not-user-input">
             environment
           </ExternalLink>{' '}

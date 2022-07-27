@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -31,7 +35,7 @@ export default () => (
               <input
                 type="email"
                 {...register('email')}
-                className="border-2 border-dashed rounded-md"
+                className="rounded-md border-2 border-dashed"
               />
               <Errors />
             </>
@@ -68,7 +72,7 @@ export default function Component() {
           <ExternalLink href="https://react-hook-form.com/">
             react-hook-form
           </ExternalLink>
-          's <em>register</em> function.
+          &apos;s <em>register</em> function.
         </>
       }
     >
@@ -83,7 +87,7 @@ export default function Component() {
                   <input
                     type="email"
                     {...register('email')}
-                    className="border-2 border-dashed rounded-md"
+                    className="rounded-md border-2 border-dashed"
                   />
                   <Errors />
                 </>

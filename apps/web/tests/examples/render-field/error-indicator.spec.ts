@@ -32,7 +32,7 @@ test('With JS enabled', async ({ example }) => {
   )
 
   const errorClass =
-    'shadow-sm block w-full sm:text-sm rounded-md text-gray-800 border-red-600 focus:border-red-600 focus:ring-red-600'
+    'block w-full rounded-md text-gray-800 shadow-sm sm:text-sm border-red-600 focus:border-red-600 focus:ring-red-600'
 
   await expect(email.input).toHaveClass(errorClass)
   await expect(firstName.input).toHaveClass(errorClass)
@@ -53,7 +53,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(newsletter)
 
   const validClass =
-    'shadow-sm block w-full sm:text-sm rounded-md text-gray-800 border-gray-300 focus:ring-pink-500 focus:border-pink-500'
+    'block w-full rounded-md text-gray-800 shadow-sm sm:text-sm border-gray-300 focus:border-pink-500 focus:ring-pink-500'
 
   await expect(email.input).toHaveClass(validClass)
   await expect(firstName.input).toHaveClass(validClass)

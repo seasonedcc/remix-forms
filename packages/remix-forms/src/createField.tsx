@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react'
-import { SomeZodObject, z } from 'zod'
-import { UseFormRegister } from 'react-hook-form'
-import { FormProps } from '.'
-import { Field } from './Form'
-import mapChildren from './mapChildren'
+import * as React from 'react'
+import type { SomeZodObject, z } from 'zod'
+import type { UseFormRegister } from 'react-hook-form'
+import type { FormProps } from '.'
+import type { Field } from './Form'
+import { mapChildren } from './mapChildren'
 import { coerceValue } from './coercions'
-import createSmartInput, { SmartInputProps } from './createSmartInput'
+import type { SmartInputProps } from './createSmartInput'
+import { createSmartInput } from './createSmartInput'
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
@@ -42,7 +43,7 @@ type Children<Schema extends SomeZodObject> = (
   },
 ) => React.ReactNode
 
-export type FieldType = 'string' | 'boolean' | 'number' | 'date'
+type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
 type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
@@ -53,7 +54,7 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   children?: Children<Schema>
 }
 
-export type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
 const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
@@ -71,7 +72,7 @@ function parseDate(value?: Date | string) {
   return date
 }
 
-export default function createField<Schema extends SomeZodObject>({
+function createField<Schema extends SomeZodObject>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',
@@ -147,7 +148,7 @@ export default function createField<Schema extends SomeZodObject>({
         'aria-required': required,
       }
 
-      const SmartInput = useMemo(
+      const SmartInput = React.useMemo(
         () =>
           createSmartInput({
             inputComponent: Input,
@@ -155,6 +156,7 @@ export default function createField<Schema extends SomeZodObject>({
             selectComponent: Select,
             checkboxComponent: Checkbox,
           }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [Input, Multiline, Select, Checkbox],
       )
 
@@ -322,3 +324,6 @@ export default function createField<Schema extends SomeZodObject>({
     },
   )
 }
+
+export type { FieldType, FieldProps }
+export { createField }

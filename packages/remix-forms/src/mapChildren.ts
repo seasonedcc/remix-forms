@@ -1,6 +1,6 @@
-import React from 'react'
+import * as React from 'react'
 
-export default function mapChildren(
+function mapChildren(
   children: React.ReactNode,
   fn: (child: React.ReactNode) => React.ReactNode,
 ): React.ReactNode {
@@ -19,3 +19,5 @@ export default function mapChildren(
     return fn(child)
   })
 }
+
+export { mapChildren }

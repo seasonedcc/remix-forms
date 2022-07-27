@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -65,7 +69,7 @@ export default function Component() {
               {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label>E-mail</Label>
-                  <em>You'll hear from us at this address 👇🏽</em>
+                  <em>You&apos;ll hear from us at this address 👇🏽</em>
                   <SmartInput />
                   <Errors />
                 </>
