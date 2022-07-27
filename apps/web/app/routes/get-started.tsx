@@ -150,6 +150,10 @@ export default function Component() {
         <ExternalLink href="https://github.com/colinhacks/zod">
           Zod
         </ExternalLink>
+        ,{' '}
+        <ExternalLink href="https://react-hook-form.com/">
+          React Hook Form
+        </ExternalLink>
         , and{' '}
         <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains">
           Remix Domains
@@ -157,7 +161,11 @@ export default function Component() {
         in your project before using Remix Forms.
       </p>
       <SubHeading>Installation</SubHeading>
-      <Pre>npm install remix-forms</Pre>
+      <p>
+        Assuming you already have <code>react</code> and <code>remix</code>{' '}
+        installed, you'll need the following packages:
+      </p>
+      <Pre>npm install remix-forms remix-domains zod react-hook-form</Pre>
       <SubHeading>Basic styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you need to configure basic
