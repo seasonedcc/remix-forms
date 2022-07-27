@@ -1,5 +1,4 @@
 import { json, redirect } from '@remix-run/server-runtime'
-import { concat } from 'lodash/fp'
 import { DomainFunction, errorMessagesForSchema } from 'remix-domains'
 import { SomeZodObject, z } from 'zod'
 import getFormValues from './getFormValues'
@@ -60,7 +59,7 @@ export async function performMutation<
         ...errorMessagesForSchema(result.inputErrors, schema),
         _global:
           result.errors.length || result.environmentErrors.length
-            ? concat(result.errors, result.environmentErrors).map(
+            ? [...result.errors, ...result.environmentErrors].map(
                 (error) => error.message,
               )
             : undefined,

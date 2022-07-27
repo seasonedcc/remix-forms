@@ -23,7 +23,6 @@ import defaultRenderField from './defaultRenderField'
 import { Fetcher } from '@remix-run/react'
 import inferLabel from './inferLabel'
 import { shapeInfo, ZodTypeName } from './shapeInfo'
-import { concat } from 'lodash/fp'
 import { Transition } from '@remix-run/react/dist/transition'
 
 export type Field<SchemaType> = {
@@ -308,7 +307,7 @@ export function Form<Schema extends SomeZodObject>({
 
     const fieldOptions =
       rawOptions && !required
-        ? concat([{ name: '', value: '' }], rawOptions)
+        ? ([{ name: '', value: '' }, ...(rawOptions ?? [])] as Option[])
         : rawOptions
 
     const label = (labels && labels[key]) || inferLabel(String(stringKey))
