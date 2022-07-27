@@ -10,6 +10,7 @@
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "dev:server": "cross-env NODE_ENV=development netlify dev",
     "start": "cross-env NODE_ENV=production netlify dev",
+    "lint": "eslint *.ts*",
     "test": "playwright test",
     "pretest:ci": "npm run build",
     "test:ci": "playwright test"
@@ -40,7 +41,6 @@
   "devDependencies": {
     "@playwright/test": "^1.21.1",
     "@remix-run/dev": "^1.6.4",
-    "@remix-run/eslint-config": "^1.6.3",
     "@types/lodash": "^4.14.178",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
