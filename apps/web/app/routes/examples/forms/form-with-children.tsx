@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -70,7 +74,7 @@ export default function Component() {
             <Field name="csrfToken" value="abc123" hidden />
             <Field name="firstName" placeholder="Your first name" />
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
-            <em>You'll hear from us at this address 👆🏽</em>
+            <em>You&apos;ll hear from us at this address 👆🏽</em>
             <Field
               name="howYouFoundOutAboutUs"
               options={[

@@ -1,10 +1,10 @@
 import hljs from 'highlight.js/lib/common'
-import {
+import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
-  redirect,
 } from '@remix-run/node'
+import { redirect } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'

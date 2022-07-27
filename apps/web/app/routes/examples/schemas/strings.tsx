@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -14,7 +18,7 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  nonEmpty: z.string().nonempty(),
+  nonEmpty: z.string().min(1),
   optional: z.string().optional(),
   nullable: z.string().nullable(),
   default: z.string().default('Foo Bar'),
@@ -25,7 +29,7 @@ const code = `const schema = z.object({
   phoneNumber: z
     .string()
     .regex(
-      /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+      /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im,
       'Invalid phone number',
     ),
 })
@@ -38,7 +42,7 @@ export const action: ActionFunction = async ({ request }) =>
 export default () => <Form schema={schema} />`
 
 const schema = z.object({
-  nonEmpty: z.string().nonempty(),
+  nonEmpty: z.string().min(1),
   optional: z.string().optional(),
   nullable: z.string().nullable(),
   default: z.string().default('Foo Bar'),
@@ -49,7 +53,7 @@ const schema = z.object({
   phoneNumber: z
     .string()
     .regex(
-      /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+      /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im,
       'Invalid phone number',
     ),
 })

@@ -1,4 +1,4 @@
-import { MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
@@ -34,11 +34,11 @@ export default function Component() {
         </div>
         <dl className="flex flex-[2] flex-col space-y-8">
           <Feature icon={ClipboardListIcon} title="A great form UI takes work">
-            First, we'll walk you through the creation of a great form UI from
-            scratch.
+            First, we&apos;ll walk you through the creation of a great form UI
+            from scratch.
           </Feature>
           <Feature icon={SparklesIcon} title="We do the work for you">
-            Then, we'll show you how Remix Forms does all the work for you.
+            Then, we&apos;ll show you how Remix Forms does all the work for you.
           </Feature>
           <Feature icon={GiftIcon} title="With a powerful DX">
             <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms-site/tree/main/app/routes/conf">
@@ -56,7 +56,7 @@ export default function Component() {
         .
       </p>
       <div className="flex justify-center">
-        <ButtonLink to="01">Let's Start</ButtonLink>
+        <ButtonLink to="01">Let&apos;s Start</ButtonLink>
       </div>
     </div>
   )

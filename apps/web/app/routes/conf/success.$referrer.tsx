@@ -10,7 +10,7 @@ export default function Component() {
     <div className="flex flex-col space-y-8 p-8 text-center sm:space-y-16 sm:p-16">
       <Heading>Success! 🎉</Heading>
       <SubHeading>
-        You've been redirected here from our successful form!
+        You&apos;ve been redirected here from our successful form!
       </SubHeading>
       <ButtonLink to={`../${referrer}`}>Go back</ButtonLink>
     </div>

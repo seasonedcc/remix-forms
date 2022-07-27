@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'

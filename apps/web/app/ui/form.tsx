@@ -1,5 +1,6 @@
-import { Form as RemixForm, FormProps } from 'remix-forms'
-import { SomeZodObject } from 'zod'
+import type { FormProps } from 'remix-forms'
+import { Form as RemixForm } from 'remix-forms'
+import type { SomeZodObject } from 'zod'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'

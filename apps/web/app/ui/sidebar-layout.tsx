@@ -1,9 +1,9 @@
+import * as React from 'react'
 import { Disclosure, Popover } from '@headlessui/react'
 import { cx } from '~/helpers'
 import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
-import { RemixNavLinkProps } from '@remix-run/react/components'
 import UINavLink from '~/ui/nav-link'
-import React from 'react'
+import type { RemixNavLinkProps } from '@remix-run/react/dist/components'
 
 type SidebarType = 'disclosure' | 'popover'
 
@@ -31,7 +31,10 @@ function Nav({ children, type = 'disclosure', close, ...props }: NavProps) {
             if (!React.isValidElement(child)) return child
 
             if (child.type === NavLink) {
-              return React.cloneElement(child, { type, close })
+              return React.cloneElement(child, {
+                type,
+                close,
+              } as React.HTMLAttributes<unknown>)
             }
 
             return child
@@ -107,16 +110,21 @@ type MapChildren = {
   close: Function
 }
 
-function mapChildren({ children, type, open, close }: MapChildren) {
+function mapChildren({ children, type, close }: MapChildren) {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return child
 
     if (child.type === Nav) {
-      return React.cloneElement(child, { type, close })
+      return React.cloneElement(child, {
+        type,
+        close,
+      } as React.HTMLAttributes<unknown>)
     }
 
     if (child.type === Content) {
-      return React.cloneElement(child, { type })
+      return React.cloneElement(child, {
+        type,
+      } as React.HTMLAttributes<unknown>)
     }
 
     return child
