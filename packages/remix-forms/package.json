@@ -16,6 +16,7 @@
     "@remix-run/react": ">=1.2",
     "@remix-run/server-runtime": ">=1.2",
     "react": ">=16.8",
+    "react-hook-form": ">=7.27",
     "remix-domains": ">=0.2.0",
     "zod": ">=3.12"
   },
@@ -35,7 +36,6 @@
     "vitest": "^0.10.0"
   },
   "dependencies": {
-    "@hookform/resolvers": "^2.8.8",
-    "react-hook-form": "^7.27.1"
+    "@hookform/resolvers": "^2.8.8"
   }
 }
