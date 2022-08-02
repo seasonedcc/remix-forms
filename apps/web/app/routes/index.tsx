@@ -39,7 +39,7 @@ const schema = z.object({
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => value)
+const mutation = makeDomainFunction(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
