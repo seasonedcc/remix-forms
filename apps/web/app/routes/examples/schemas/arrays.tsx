@@ -19,18 +19,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 //
 
-const code = `const schema = z.object({
-  optional: z.string().array().default(['a', 'b', 'c']),
-})
-
-const mutation = makeDomainFunction(schema)(async (values) => {
-    console.log(values);
-    return Array(values)})
-
-export const action: ActionFunction = async ({ request }) =>
-  formAction({ request, schema, mutation })
-
-export default () => <Form schema={schema} />`
+const code = "import {formAction} from 'remix-forms'";
 
 //
 
