@@ -6,6 +6,7 @@ type ZodTypeName =
   | 'ZodBoolean'
   | 'ZodDate'
   | 'ZodEnum'
+  | 'ZodArray'
 
 type ShapeInfo = {
   typeName: ZodTypeName | null

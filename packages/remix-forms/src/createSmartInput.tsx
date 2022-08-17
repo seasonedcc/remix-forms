@@ -66,6 +66,48 @@ function createSmartInput<Schema extends SomeZodObject>({
       )
     }
 
+    if (fieldType === 'array') {
+      return (
+        /*<ul>
+          {value && value.map((value:string, index:number) => (
+            <li key={index}>{value}</li>
+          ))}
+          <li>
+            <Select
+              id={name}
+              {...registerProps}
+              autoFocus={autoFocus}
+              defaultValue={value}
+              {...a11yProps}
+              {...props}
+            />
+            {/!*<Input
+              id={name}
+              type={type}
+              {...registerProps}
+              placeholder={placeholder}
+              autoFocus={autoFocus}
+              {...a11yProps}
+              {...props}
+              onChange={(e) => {
+                value.push(e.target.value)
+              }}
+            />*!/}
+          </li>
+        </ul>*/
+        <Input
+          id={name}
+          type={type}
+          {...registerProps}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...a11yProps}
+          {...props}
+        />
+      )
+    }
+
     if (selectChildren) {
       return (
         <Select
