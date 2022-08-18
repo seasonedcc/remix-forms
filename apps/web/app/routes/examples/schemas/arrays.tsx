@@ -5,7 +5,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 import { formAction } from 'remix-forms'
-import {string, z} from 'zod'
+import {array, string, z} from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'remix-domains'
@@ -24,7 +24,7 @@ const code = "import {formAction} from 'remix-forms'";
 //
 
 const schema = z.object({
-  reallyCoolArray: z.string().array().default(['a', 'b', 'c']),
+  arrayString: z.string().array().default(['a', 'b', 'c']).nullable(),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} />
+      <Form schema={schema}/>
     </Example>
   )
 }

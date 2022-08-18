@@ -7,6 +7,7 @@ import { mapChildren } from './mapChildren'
 import { coerceValue } from './coercions'
 import type { SmartInputProps } from './createSmartInput'
 import { createSmartInput } from './createSmartInput'
+import {shapeInfo} from "./shapeInfo";
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
@@ -312,6 +313,13 @@ function createField<Schema extends SomeZodObject>({
                 value={value}
                 a11yProps={a11yProps}
               />
+              { shapeInfo(shape).typeName === 'ZodArray' && (
+                <ul>
+                  {value?.map((item:string, index:number) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              )}
             </>
           )}
           {Boolean(errorsChildren) && (
