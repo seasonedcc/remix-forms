@@ -43,7 +43,7 @@ type Children<Schema extends SomeZodObject> = (
   },
 ) => React.ReactNode
 
-type FieldType = 'string' | 'boolean' | 'number' | 'date' | 'array'
+type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
 type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
@@ -62,7 +62,6 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   string: 'text',
   number: 'text',
   date: 'date',
-  array: 'text',
 }
 
 function parseDate(value?: Date | string) {

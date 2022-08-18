@@ -155,7 +155,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodBoolean: 'boolean',
   ZodDate: 'date',
   ZodEnum: 'string',
-  ZodArray: 'array',
+  ZodArray: 'string',
 }
 
 function Form<Schema extends SomeZodObject>({

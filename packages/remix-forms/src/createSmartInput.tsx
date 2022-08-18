@@ -66,7 +66,7 @@ function createSmartInput<Schema extends SomeZodObject>({
       )
     }
 
-    if (fieldType === 'array') {
+/*    if (fieldType === 'array') {
       return (
         <>
           <ul>
@@ -113,7 +113,7 @@ function createSmartInput<Schema extends SomeZodObject>({
           />
         </>
       )
-    }
+    }*/
 
     if (selectChildren) {
       return (

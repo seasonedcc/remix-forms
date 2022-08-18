@@ -44,10 +44,6 @@ function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
     return coerceBoolean({ value, optional, nullable })
   }
 
-  if (typeName === 'ZodArray') {
-    return coerceArray({ value, optional, nullable })
-  }
-
   if (typeName === 'ZodNumber') {
     return coerceNumber({ value, optional, nullable })
   }
@@ -58,6 +54,10 @@ function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
 
   if (typeName === 'ZodString' || typeName === 'ZodEnum') {
     return coerceString({ value, optional, nullable })
+  }
+
+  if (typeName === 'ZodArray') {
+    return coerceArray({ value, optional, nullable })
   }
 
   return value
