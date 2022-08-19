@@ -11,10 +11,12 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'remix-domains'
 import Example from '~/ui/example'
 import {useActionData} from "@remix-run/react";
+import Label from "~/ui/label";
 
 const title = 'Arrays'
 const description =
   'In this example, all sorts of array schemas are validated on the client and on the server.'
+const defaultArray = ['1', '2', '3']
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -25,9 +27,9 @@ const code = "import {formAction} from 'remix-forms'";
 //
 
 const schema = z.object({
-  arrayString: z.string().array().default(['a', 'b', 'c']),
-  arrayStringAdd: z.string().nullable(),
-  arrayStringRemove: z.number().int().positive().nullable(),
+  stringArray: z.string().array().default(defaultArray),
+  stringArrayAdd: z.string().nullable(),
+  stringArrayRemove: z.number().int().positive().nullable(),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -35,18 +37,16 @@ export const loader: LoaderFunction = () => ({
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => {
-  if (!values.arrayString) {
-    values.arrayString = []
+  if (!values.stringArray) {
+    values.stringArray = []
   }
 
-  if (values.arrayStringRemove) {
-    values.arrayString.splice(values.arrayStringRemove - 1, 1)
-    values.arrayStringRemove = -1;
+  if (values.stringArrayRemove) {
+    values.stringArray.splice(values.stringArrayRemove - 1, 1)
   }
 
-  if (values.arrayStringAdd) {
-    values.arrayString.push(values.arrayStringAdd)
-    values.arrayStringAdd = '';
+  if (values.stringArrayAdd) {
+    values.stringArray.push(values.stringArrayAdd)
   }
 
   return values
@@ -57,26 +57,42 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Component() {
   const data = useActionData();
-  const arrayString = data?.arrayString || [];
+  const stringArray = data?.stringArray || data?.values?.stringArray || defaultArray || [];
   
   return (
     <Example title={title} description={description}>
-      <Form schema={schema}>
-        {({ Field, Errors, Button, register }) => (
+      <Form
+        id={'myform'}
+        schema={schema}
+        options={{
+          stringArrayRemove: stringArray.map((item:string, index:number) => {
+            return {value: index+1, name: item}
+          })
+        }}
+        hiddenFields={['stringArray']}
+      >
+        {({ Field, Errors, Button }) => (
           <>
-            {arrayString ? (<Field name="arrayString" value={arrayString}/>) : <Field name="arrayString" />}
-            {arrayString && arrayString.map((item:string, index:number) => (
-              <div key={index}>
-                {item} <input type={'button'} onClick={() => {
-                  arrayString.splice(index, 1);
-                }}
-                />
-              </div>
-            ))}
-            <Field name="arrayStringRemove"/>
-            <Field name="arrayStringAdd"/>
+            <Label>Array</Label>
+            <ul className={'list-disc pl-5'}>
+              {stringArray && stringArray.map((item:string, index:number) => (
+                <li key={index}>
+                  <p>{item}</p>
+                </li>
+              ))}
+            </ul>
+            <Field name="stringArray" value={stringArray ? stringArray : []}>
+              {({ SmartInput, Errors }) => (
+                <>
+                  <SmartInput />
+                  <Errors />
+                </>
+              )}
+            </Field>
+            <Field name="stringArrayRemove" />
+            <Field name="stringArrayAdd" />
             <Errors />
-            <Button />
+            <Button disabled={false} />
           </>
         )}
       </Form>
