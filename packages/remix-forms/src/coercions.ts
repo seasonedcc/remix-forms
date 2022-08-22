@@ -26,8 +26,8 @@ const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
 const coerceBoolean = makeCoercion(Boolean, false)
 const coerceArray = makeCoercion((value) => {
-  if (value === '') return []
-  return String(value).split(',')
+  if (value === '') return [];
+  return String(value).split(',').filter((v) => v !== '');
 }, [])
 
 const coerceDate = makeCoercion((value) => {

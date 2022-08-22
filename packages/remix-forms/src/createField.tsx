@@ -301,6 +301,37 @@ function createField<Schema extends SomeZodObject>({
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
+              {/*{ shapeInfo(shape).typeName === 'ZodArray' && (
+                <ul>
+                  {value?.map((item:string, index:number) => (
+                    <li key={index}>
+                      <input
+                        type={type}
+                        placeholder={placeholder}
+                        autoFocus={autoFocus}
+                        value={item}
+                        defaultValue={item}
+                        name={`${String(name)}[${index}]`}
+                      />
+                      <input
+                        type="button"
+                        value="Remove"
+                        onClick={() => {
+                          registerProps.setValueAs(value.filter((_, i) => i !== index))
+                        }}
+                      />
+                    </li>
+                  ))}
+                  <li key={value.length}>
+                    <input
+                      type={type}
+                      placeholder={placeholder}
+                      autoFocus={autoFocus}
+                      name={`${String(name)}`}
+                    />
+                  </li>
+                </ul>
+              )}*/}
               <SmartInput
                 fieldType={fieldType}
                 type={type}

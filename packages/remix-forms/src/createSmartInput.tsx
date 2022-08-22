@@ -66,55 +66,6 @@ function createSmartInput<Schema extends SomeZodObject>({
       )
     }
 
-/*    if (fieldType === 'array') {
-      return (
-        <>
-          <ul>
-            {value && value.map((valueItem:string, index:number) => (
-              <li key={index}>
-                {valueItem} <input
-                  type={'button'}
-                  onClick={() => {
-                    value.splice(index, 1)
-                    document.getElementById(name)?.setAttribute('value', value)
-                  }}
-                  value={'Remove'}
-                />
-              </li>
-            ))}
-          </ul>
-          <Input
-            id={name}
-            type={type}
-            {...registerProps}
-            placeholder={placeholder}
-            autoFocus={autoFocus}
-            defaultValue={value}
-            {...a11yProps}
-            {...props}
-          />
-          <Input
-            id={name + '-add'}
-            type={type}
-            placeholder={placeholder}
-            autoFocus={autoFocus}
-            {...a11yProps}
-            name={name + '-add'}
-            key={name + '-add'}
-          />
-          <input
-            type={'button'}
-            onClick={() => {
-              console.log((document.getElementById(name + '-add') as HTMLInputElement).value)
-              value.push((document.getElementById(name + '-add') as HTMLInputElement).value.replace(',', '&comma;'))
-              document.getElementById(name)?.setAttribute('value', value)
-            }}
-            value={'Add'}
-          />
-        </>
-      )
-    }*/
-
     if (selectChildren) {
       return (
         <Select

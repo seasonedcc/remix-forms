@@ -88,6 +88,8 @@ async function formAction<Schema extends SomeZodObject, D extends unknown>({
     environment,
   })
 
+  console.log('result', result)
+
   if (result.success) {
     if (beforeSuccess) {
       const beforeSuccessResponse = await beforeSuccess(request)
