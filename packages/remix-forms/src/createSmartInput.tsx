@@ -60,6 +60,14 @@ function createSmartInput<Schema extends SomeZodObject>({
       noJSArrayValues = data[name]
     }
 
+    // TODO Current bugs/missing features
+    // - With JS:
+    //    - After an error is triggered and then corrected in the input the submit button needs to be pressen twice for the form to submit
+    //    - Each child in a list should have a unique "key" prop
+    // - Without JS:
+    //    - After an error is triggered the noJS Values are forgotten and the JS part is triggered -> renders the form unusable
+    //    - no support for zod min() min because can't submit when length is less than min but can't increase without submit
+
     if (array) {
       return (
         <>
