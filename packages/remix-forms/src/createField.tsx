@@ -7,6 +7,8 @@ import { mapChildren } from './mapChildren'
 import { coerceValue } from './coercions'
 import type { SmartInputProps } from './createSmartInput'
 import { createSmartInput } from './createSmartInput'
+import { createArrayInput } from './createArrayInput'
+import {shapeInfo} from "./shapeInfo";
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
@@ -301,38 +303,8 @@ function createField<Schema extends SomeZodObject>({
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
-              {/*{ shapeInfo(shape).typeName === 'ZodArray' && (
-                <ul>
-                  {value?.map((item:string, index:number) => (
-                    <li key={index}>
-                      <input
-                        type={type}
-                        placeholder={placeholder}
-                        autoFocus={autoFocus}
-                        value={item}
-                        defaultValue={item}
-                        name={`${String(name)}[${index}]`}
-                      />
-                      <input
-                        type="button"
-                        value="Remove"
-                        onClick={() => {
-                          registerProps.setValueAs(value.filter((_, i) => i !== index))
-                        }}
-                      />
-                    </li>
-                  ))}
-                  <li key={value.length}>
-                    <input
-                      type={type}
-                      placeholder={placeholder}
-                      autoFocus={autoFocus}
-                      name={`${String(name)}`}
-                    />
-                  </li>
-                </ul>
-              )}*/}
               <SmartInput
+                array={shapeInfo(shape).typeName === 'ZodArray'}
                 fieldType={fieldType}
                 type={type}
                 selectChildren={selectChildren}

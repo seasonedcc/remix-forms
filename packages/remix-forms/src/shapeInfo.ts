@@ -10,6 +10,7 @@ type ZodTypeName =
 
 type ShapeInfo = {
   typeName: ZodTypeName | null
+  innerTypeName?: ZodTypeName | null
   optional: boolean
   nullable: boolean
   getDefaultValue?: () => unknown
@@ -72,6 +73,17 @@ function shapeInfo(
   if (typeName === 'ZodEnum') {
     return {
       typeName,
+      optional,
+      nullable,
+      getDefaultValue,
+      enumValues: shape._def.values,
+    }
+  }
+
+  if (typeName === 'ZodArray') {
+    return {
+      typeName,
+      innerTypeName: shape._def.type._def.typeName,
       optional,
       nullable,
       getDefaultValue,

@@ -25,9 +25,13 @@ function makeCoercion<T>(
 const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
 const coerceBoolean = makeCoercion(Boolean, false)
-const coerceArray = makeCoercion((value) => {
+const coerceArrayOfStrings = makeCoercion((value) => {
   if (value === '') return [];
   return String(value).split(',').filter((v) => v !== '');
+}, [])
+const coerceArrayOfNumbers = makeCoercion((value) => {
+  if (value === '') return [];
+  return String(value).split(',').filter((v) => v !== '').map(Number)
 }, [])
 
 const coerceDate = makeCoercion((value) => {
@@ -38,8 +42,8 @@ const coerceDate = makeCoercion((value) => {
 }, null)
 
 function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
-  const { typeName, optional, nullable } = shapeInfo(shape)
-
+  const { typeName, innerTypeName,  optional, nullable } = shapeInfo(shape)
+  
   if (typeName === 'ZodBoolean') {
     return coerceBoolean({ value, optional, nullable })
   }
@@ -57,7 +61,11 @@ function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
   }
 
   if (typeName === 'ZodArray') {
-    return coerceArray({ value, optional, nullable })
+    if (innerTypeName === 'ZodNumber') {
+      return coerceArrayOfNumbers({ value, optional, nullable })
+    }
+
+    return coerceArrayOfStrings({ value, optional, nullable })
   }
 
   return value
