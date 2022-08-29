@@ -5,7 +5,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 import { formAction } from 'remix-forms'
-import {number, z} from 'zod'
+import {z} from 'zod'
 import Form from '~/ui/form'
 import {metaTags} from '~/helpers'
 import { makeDomainFunction } from 'remix-domains'
@@ -23,8 +23,9 @@ const code = '';
 //
 
 const schema = z.object({
-  strings: z.string().array().max(10).default([]), // min() not yet supported
+  strings: z.string().array().max(10, 'Ey leute zu lang!').default([]), // min() not yet supported
   numbers: z.number().array().max(10).default([]), // min() not yet supported
+  submit: z.enum(['submit', 'refresh']).default('submit'), // Can this be solved programmatically in the Form.tsx?
 })
 
 export const loader: LoaderFunction = () => ({
@@ -32,7 +33,6 @@ export const loader: LoaderFunction = () => ({
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => {
-  console.log(values)
   return values;
 })
 

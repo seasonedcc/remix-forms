@@ -8,6 +8,8 @@ const supportedShapes = [
   z.date(),
   z.string(),
   z.enum(['one', 'two']),
+  z.array(z.string()),
+  z.array(z.number()),
 ]
 
 describe('coerceValue', () => {
@@ -100,5 +102,35 @@ describe('coerceValue', () => {
     expect(
       coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test'])),
     ).toEqual('[object Blob]')
+  })
+
+  it('coerces array of strings to empty array when value is empty', () => {
+    expect(
+      coerceValue('', z.array(z.string())),
+    ).toEqual([])
+  })
+
+  it('coerces array of numbers to empty array when value is empty', () => {
+    expect(
+      coerceValue('', z.array(z.number())),
+    ).toEqual([])
+  })
+
+  it('coerces array of strings to array when value is not empty', () => {
+    expect(
+      coerceValue('a,b,c', z.array(z.string())),
+    ).toEqual(['a','b','c'])
+  })
+
+  it('coerces array of numbers to array when value is not empty', () => {
+    expect(
+      coerceValue('1,2,3', z.array(z.number())),
+    ).toEqual([1,2,3])
+  })
+
+  it('coerces array of strings to array when value is a file', () => {
+    expect(
+      coerceValue(new File([], 'some-empty-file.txt'), z.array(z.string())),
+    ).toEqual(['[object Blob]'])
   })
 })

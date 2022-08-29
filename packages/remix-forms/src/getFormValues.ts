@@ -8,11 +8,11 @@ async function getFormValues<Schema extends SomeZodObject>(
   schema: Schema,
 ): Promise<FormValues<z.infer<Schema>>> {
   const input = await inputFromForm(request)
-  console.log('got values', input)
+  console.log('getFormValues', input)
 
   let values: FormValues<z.infer<Schema>> = {}
   for (const key in schema.shape) {
-    const value = input[key]
+    let value = input[key]
     const shape = schema.shape[key]
     values[key as keyof z.infer<Schema>] = coerceValue(value, shape)
   }

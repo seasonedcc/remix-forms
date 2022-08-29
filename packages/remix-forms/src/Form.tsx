@@ -277,6 +277,7 @@ function Form<Schema extends SomeZodObject>({
 
   let autoFocused = false
   let fields: Field<SchemaType>[] = []
+
   for (const stringKey in schema.shape) {
     const key = stringKey as keyof SchemaType
     const message = (formErrors[key] as unknown as FieldError)?.message

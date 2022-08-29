@@ -45,25 +45,33 @@ async function performMutation<
 }: PerformMutationProps<Schema, D>): Promise<
   PerformMutation<z.infer<Schema>, D>
 > {
-  const values = await getFormValues(request, schema)
-  const result = await mutation(values, environment)
+  const values = await getFormValues(request, schema);
+  console.log('formAction', values)
+  const result = await mutation(values, environment);
+  console.log('formAction', result)
 
-  if (result.success) {
-    return { success: true, data: result.data }
-  } else {
-    return {
-      success: false,
-      errors: {
-        ...errorMessagesForSchema(result.inputErrors, schema),
-        _global:
-          result.errors.length || result.environmentErrors.length
-            ? [...result.errors, ...result.environmentErrors].map(
+  if (!values.submit || values.submit === 'submit') {
+    const result = await mutation(values, environment);
+
+    if (result.success) {
+      return { success: true, data: result.data }
+    } else {
+      return {
+        success: false,
+        errors: {
+          ...errorMessagesForSchema(result.inputErrors, schema),
+          _global:
+            result.errors.length || result.environmentErrors.length
+              ? [...result.errors, ...result.environmentErrors].map(
                 (error) => error.message,
               )
-            : undefined,
-      } as FormErrors<Schema>,
-      values,
+              : undefined,
+        } as FormErrors<Schema>,
+        values,
+      }
     }
+  } else {
+    return { success: false, errors: {}, values }
   }
 }
 

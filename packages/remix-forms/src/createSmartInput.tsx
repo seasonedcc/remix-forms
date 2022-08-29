@@ -3,7 +3,6 @@ import type { UseFormRegisterReturn } from 'react-hook-form'
 import type { SomeZodObject } from 'zod'
 import type { FieldType } from './createField'
 import type { FormProps } from './Form'
-import {useActionData} from "@remix-run/react";
 
 type SmartInputProps = {
   array?: boolean
@@ -54,15 +53,9 @@ function createSmartInput<Schema extends SomeZodObject>({
 
     const { name } = registerProps
     const [arrayValues, setArrayValues] = React.useState(value || [])
-    let noJSArrayValues = []
-    const data = useActionData();
-    if (data && data[name]) {
-      noJSArrayValues = data[name]
-    }
 
     // TODO Current bugs/missing features
     // - With JS:
-    //    - After an error is triggered and then corrected in the input the submit button needs to be pressen twice for the form to submit
     //    - Each child in a list should have a unique "key" prop
     // - Without JS:
     //    - After an error is triggered the noJS Values are forgotten and the JS part is triggered -> renders the form unusable
@@ -72,9 +65,6 @@ function createSmartInput<Schema extends SomeZodObject>({
       return (
         <>
           {JSON.stringify(arrayValues)}
-            <noscript>
-              {JSON.stringify(data)}
-            </noscript>
           {arrayValues.map((arrayValue:string|number, index:number) => (
             <div className={'flex'}>
               <div className={'grow'}>
@@ -129,41 +119,13 @@ function createSmartInput<Schema extends SomeZodObject>({
             </div>
           ))}
           <noscript>
-            {noJSArrayValues.map((arrayValue:string|number, index:number) => (
-              <div className={'flex'}>
-                <div className={'grow'}>
-                  {selectChildren ? (
-                    <Select
-                      key={name + index}
-                      autoFocus={autoFocus}
-                      {...a11yProps}
-                      {...props}
-                      defaultValue={arrayValue}
-                      name={name + '[' + index + ']'}
-                    >
-                      {selectChildren}
-                    </Select>
-                  ) : (
-                    <Input
-                      key={name + index}
-                      placeholder={placeholder}
-                      autoFocus={autoFocus}
-                      defaultValue={arrayValue}
-                      {...a11yProps}
-                      {...props}
-                      name={name + '[' + index + ']'}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
             {selectChildren ? (
               <Select
                 key={name + '-add'}
                 autoFocus={autoFocus}
                 {...a11yProps}
                 {...props}
-                name={name + '[' + noJSArrayValues.length + ']'}
+                name={name + '[' + value.length + ']'}
               >
                 {selectChildren}
               </Select>
@@ -174,7 +136,7 @@ function createSmartInput<Schema extends SomeZodObject>({
                 autoFocus={autoFocus}
                 {...a11yProps}
                 {...props}
-                name={name + '[' + noJSArrayValues.length + ']'}
+                name={name + '[' + value.length + ']'}
               />
             )}
           </noscript>
@@ -187,7 +149,7 @@ function createSmartInput<Schema extends SomeZodObject>({
           >
             Add
           </button>
-          <Input
+          <input
             id={name}
             type={type}
             {...registerProps}
@@ -197,6 +159,7 @@ function createSmartInput<Schema extends SomeZodObject>({
             readOnly={true}
             {...a11yProps}
             {...props}
+            hidden={true}
           />
         </>
       )
