@@ -31,7 +31,8 @@ const coerceArrayOfStrings = makeCoercion((value) => {
 }, [])
 const coerceArrayOfNumbers = makeCoercion((value) => {
   if (value === '') return [];
-  return String(value).split(',').filter((v) => v !== '').map(Number)
+  if (value instanceof File) return [String(value)];
+  return String(value).split(',').filter((v) => v !== '').map(Number).filter((v) => !isNaN(v));
 }, [])
 
 const coerceDate = makeCoercion((value) => {

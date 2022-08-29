@@ -122,15 +122,45 @@ describe('coerceValue', () => {
     ).toEqual(['a','b','c'])
   })
 
+  it('coerces array of strings to array and removes empty elements', () => {
+    expect(
+      coerceValue('a,b,c,,,,,,d,,,,e', z.array(z.string())),
+    ).toEqual(['a','b','c','d','e'])
+  })
+
+  it('coerces array of strings to array without trimming whitespaces', () => {
+    expect(
+      coerceValue('a , b , c', z.array(z.string())),
+    ).toEqual(['a ',' b ',' c'])
+  })
+
+  it('coerces array of strings to [object Blob] when value is a file', () => {
+    expect(
+      coerceValue(new File([], 'some-empty-file.txt'), z.array(z.string())),
+    ).toEqual(['[object Blob]'])
+  })
+
   it('coerces array of numbers to array when value is not empty', () => {
     expect(
       coerceValue('1,2,3', z.array(z.number())),
     ).toEqual([1,2,3])
   })
 
-  it('coerces array of strings to array when value is a file', () => {
+  it('coerces array of numbers to array and removes empty elements', () => {
     expect(
-      coerceValue(new File([], 'some-empty-file.txt'), z.array(z.string())),
+      coerceValue('1,2,3,,,,,,4,,,,5', z.array(z.number())),
+    ).toEqual([1,2,3,4,5])
+  })
+
+  it('coerces array of numbers to array when value is not empty and removes values that can not be coerced to numbers', () => {
+    expect(
+      coerceValue('1,a,§,:,;,?,2', z.array(z.number())),
+    ).toEqual([1,2])
+  })
+
+  it('coerces array of numbers to [object Blob] when value is a file', () => {
+    expect(
+      coerceValue(new File([], 'some-empty-file.txt'), z.array(z.number())),
     ).toEqual(['[object Blob]'])
   })
 })
