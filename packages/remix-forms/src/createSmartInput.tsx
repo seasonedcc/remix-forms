@@ -118,37 +118,6 @@ function createSmartInput<Schema extends SomeZodObject>({
               </button>
             </div>
           ))}
-          <noscript>
-            {selectChildren ? (
-              <Select
-                key={name + '-add'}
-                autoFocus={autoFocus}
-                {...a11yProps}
-                {...props}
-                name={name + '[' + value.length + ']'}
-              >
-                {selectChildren}
-              </Select>
-            ) : (
-              <Input
-                key={name + '-add'}
-                placeholder={placeholder}
-                autoFocus={autoFocus}
-                {...a11yProps}
-                {...props}
-                name={name + '[' + value.length + ']'}
-              />
-            )}
-          </noscript>
-          <button
-            className={'inline-flex items-center justify-center rounded-md border border-transparent px-6 py-2 text-base font-medium shadow-sm ring-2 ring-transparent ring-offset-2 ring-offset-transparent focus:outline-none disabled:bg-gray-400 bg-pink-600 text-white hover:bg-pink-700 focus:ring-pink-500 focus:ring-offset-white'}
-            onClick={(e) => {
-              e.preventDefault()
-              setArrayValues([...arrayValues, ''])
-            }}
-          >
-            Add
-          </button>
           <input
             id={name}
             type={type}
@@ -161,6 +130,37 @@ function createSmartInput<Schema extends SomeZodObject>({
             {...props}
             hidden={true}
           />
+          <noscript>
+            {selectChildren ? (
+              <Select
+                key={name + '-add'}
+                autoFocus={autoFocus}
+                {...a11yProps}
+                {...props}
+                name={name}
+              >
+                {selectChildren}
+              </Select>
+            ) : (
+              <Input
+                key={name + '-add'}
+                placeholder={placeholder}
+                autoFocus={autoFocus}
+                {...a11yProps}
+                {...props}
+                name={name}
+              />
+            )}
+          </noscript>
+          <button
+            className={'inline-flex items-center justify-center rounded-md border border-transparent px-6 py-2 text-base font-medium shadow-sm ring-2 ring-transparent ring-offset-2 ring-offset-transparent focus:outline-none disabled:bg-gray-400 bg-pink-600 text-white hover:bg-pink-700 focus:ring-pink-500 focus:ring-offset-white'}
+            onClick={(e) => {
+              e.preventDefault()
+              setArrayValues([...arrayValues, ''])
+            }}
+          >
+            Add
+          </button>
         </>
       )
     }
