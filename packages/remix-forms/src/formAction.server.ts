@@ -70,6 +70,13 @@ async function performMutation<
         values,
       }
     }
+  } else if (values.submit.startsWith('delete')) {
+    const deleteArguments = values.submit.split('delete-')[1].split('-')
+    console.log('deleteArguments', deleteArguments)
+    values[deleteArguments[0]].splice(+deleteArguments[1], 1)
+    // remove nth item from array
+    console.log('newValues', values)
+    return { success: false, errors: {}, values }
   } else {
     return { success: false, errors: {}, values }
   }

@@ -54,23 +54,16 @@ function createSmartInput<Schema extends SomeZodObject>({
     const { name } = registerProps
     const [arrayValues, setArrayValues] = React.useState(value || [])
 
-    // TODO Current bugs/missing features
-    // - With JS:
-    //    - Each child in a list should have a unique "key" prop
-    // - Without JS:
-    //    - After an error is triggered the noJS Values are forgotten and the JS part is triggered -> renders the form unusable
-    //    - no support for zod min() min because can't submit when length is less than min but can't increase without submit
-
     if (array) {
       return (
         <>
           {JSON.stringify(arrayValues)}
           {arrayValues.map((arrayValue:string|number, index:number) => (
-            <div className={'flex'}>
-              <div className={'grow'}>
+            <div className={'flex'} key={`${name}-${index}-item`}>
+              <div className={'grow'} key={`${name}-${index}-inputs`}>
                 {selectChildren ? (
                   <Select
-                    key={name + index}
+                    key={`${name}-${index}-select`}
                     autoFocus={autoFocus}
                     {...a11yProps}
                     {...props}
@@ -85,7 +78,7 @@ function createSmartInput<Schema extends SomeZodObject>({
                   </Select>
                 ) : (
                   <Input
-                    key={name + index}
+                    key={`${name}-${index}-input`}
                     placeholder={placeholder}
                     autoFocus={autoFocus}
                     value={arrayValue}
@@ -102,7 +95,7 @@ function createSmartInput<Schema extends SomeZodObject>({
               </div>
               <button
                 className={'w-3'}
-                key={(index) + '-delete'}
+                key={`${name}-${index}-delete`}
                 onClick={(e) => {
                   e.preventDefault();
                   const newValues = arrayValues.slice(0, index)
