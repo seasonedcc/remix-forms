@@ -3,6 +3,7 @@ import type { UseFormRegisterReturn } from 'react-hook-form'
 import type { SomeZodObject } from 'zod'
 import type { FieldType } from './createField'
 import type { FormProps } from './Form'
+import {useEffect} from "react";
 
 type SmartInputProps = {
   array?: boolean
@@ -54,63 +55,92 @@ function createSmartInput<Schema extends SomeZodObject>({
     const { name } = registerProps
     const [arrayValues, setArrayValues] = React.useState(value || [])
 
+    useEffect(() => {
+      const inputs = document.getElementsByClassName(`${name}-with-js`)
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i] as HTMLInputElement
+        input.classList.remove('hidden')
+      }
+    }, [name, arrayValues])
+
     if (array) {
       return (
         <>
-          <noscript>
-            Since you have JavaScript disabled, you can't modify the values. To change a value you need to remove it and add it again.
-          </noscript>
           {arrayValues.map((arrayValue:string|number, index:number) => (
-            <div className={'flex'} key={`${name}-${index}-item`}>
-              <div className={'grow'} key={`${name}-${index}-inputs`}>
-                {selectChildren ? (
-                  <Select
-                    required={true}
-                    key={`${name}-${index}-select`}
-                    autoFocus={autoFocus}
-                    {...a11yProps}
-                    {...props}
-                    onChange={(e) => {
-                      e.preventDefault()
-                      const newValues = [...arrayValues]
-                      newValues[index] = e.target.value
-                      setArrayValues(newValues)
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+            <div className={'flex'} key={`${name}-${index}`}>
+              <div className={'grow'}>
+                <noscript>
+                  {selectChildren ? (
+                    <Select
+                      autoFocus={autoFocus}
+                      {...a11yProps}
+                      {...props}
+                      value={arrayValue}
+                      onChange={(e) => {
                         e.preventDefault()
-                      }
-                    }}
-                  >
-                    {selectChildren}
-                  </Select>
-                ) : (
-                  <Input
-                    required={true}
-                    key={`${name}-${index}-input`}
-                    placeholder={placeholder}
-                    autoFocus={autoFocus}
-                    value={arrayValue}
-                    {...a11yProps}
-                    {...props}
-                    id={`${name}-${index}-input`}
-                    onChange={(e) => {
-                      e.preventDefault()
-                      const newValues = [...arrayValues]
-                      newValues[index] = e.target.value
-                      setArrayValues(newValues)
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        setArrayValues([...arrayValues, ''])
                       }}
-                    }
-                  />
-                )}
+                    >
+                      {selectChildren}
+                    </Select>
+                  ) : (
+                    <Input
+                      placeholder={placeholder}
+                      autoFocus={autoFocus}
+                      value={arrayValue}
+                      {...a11yProps}
+                      {...props}
+                      readOnly={true}
+                    />
+                  )}
+                </noscript>
+                <div className={`hidden ${name}-with-js`}>
+                  {selectChildren ? (
+                    <Select
+                      required={true}
+                      autoFocus={autoFocus}
+                      {...a11yProps}
+                      {...props}
+                      value={arrayValue}
+                      onChange={(e) => {
+                        e.preventDefault()
+                        const newValues = [...arrayValues]
+                        newValues[index] = e.target.value
+                        setArrayValues(newValues)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                        }
+                      }}
+                    >
+                      {selectChildren}
+                    </Select>
+                  ) : (
+                    <Input
+                      required={true}
+                      placeholder={placeholder}
+                      autoFocus={autoFocus}
+                      value={arrayValue}
+                      {...a11yProps}
+                      {...props}
+                      id={`${name}-${index}-input`}
+                      onChange={(e) => {
+                        e.preventDefault()
+                        const newValues = [...arrayValues]
+                        newValues[index] = e.target.value
+                        setArrayValues(newValues)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          setArrayValues([...arrayValues, ''])
+                        }}
+                      }
+                    />
+                  )}
+                </div>
               </div>
               <button
-                key={`${name}-${index}-delete`}
                 onClick={(e) => {
                   e.preventDefault();
                   const newValues = arrayValues.slice(0, index)

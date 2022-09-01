@@ -25,6 +25,7 @@ const code = '';
 const schema = z.object({
   strings: z.string().array().max(30).default([]), // min() not supported
   numbers: z.number().array().default([]), // min() not supported
+  numbersWithOptions: z.number().array().default([]), // min() not supported
 })
 
 // TODO Current bugs/missing features
@@ -48,7 +49,7 @@ export default function Component() {
     <Example title={title} description={description}>
       <Form
         options={{
-          numbers: [
+          numbersWithOptions: [
             { name: '', value: '' },
             { name: 'Designer', value: 1 },
             { name: 'Dev', value: 2 },
