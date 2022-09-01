@@ -46,9 +46,7 @@ async function performMutation<
   PerformMutation<z.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema);
-  console.log('formAction', values)
   const result = await mutation(values, environment);
-  console.log('formAction', result)
 
   if (!values.submit || values.submit === 'submit') {
     const result = await mutation(values, environment);
@@ -72,10 +70,8 @@ async function performMutation<
     }
   } else if (values.submit.startsWith('delete')) {
     const deleteArguments = values.submit.split('delete-')[1].split('-')
-    console.log('deleteArguments', deleteArguments)
     // @ts-ignore
     values[deleteArguments[0]].splice(Number(deleteArguments[1]), 1)
-    console.log('newValues', values)
     return { success: false, errors: {}, values }
   } else {
     return { success: false, errors: {}, values }
