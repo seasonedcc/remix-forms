@@ -17,6 +17,10 @@ async function getFormValues<Schema extends SomeZodObject>(
     values[key as keyof z.infer<Schema>] = coerceValue(value, shape)
   }
 
+  if (input.submit) {
+    values.submit = input.submit
+  }
+
   return values
 }
 

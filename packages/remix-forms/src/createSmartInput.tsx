@@ -57,12 +57,15 @@ function createSmartInput<Schema extends SomeZodObject>({
     if (array) {
       return (
         <>
-          {JSON.stringify(arrayValues)}
+          <noscript>
+            Since you have JavaScript disabled, you can't modify the values. To change a value you need to remove it and add it again.
+          </noscript>
           {arrayValues.map((arrayValue:string|number, index:number) => (
             <div className={'flex'} key={`${name}-${index}-item`}>
               <div className={'grow'} key={`${name}-${index}-inputs`}>
                 {selectChildren ? (
                   <Select
+                    required={true}
                     key={`${name}-${index}-select`}
                     autoFocus={autoFocus}
                     {...a11yProps}
@@ -73,28 +76,40 @@ function createSmartInput<Schema extends SomeZodObject>({
                       newValues[index] = e.target.value
                       setArrayValues(newValues)
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                      }
+                    }}
                   >
                     {selectChildren}
                   </Select>
                 ) : (
                   <Input
+                    required={true}
                     key={`${name}-${index}-input`}
                     placeholder={placeholder}
                     autoFocus={autoFocus}
                     value={arrayValue}
                     {...a11yProps}
                     {...props}
+                    id={`${name}-${index}-input`}
                     onChange={(e) => {
                       e.preventDefault()
                       const newValues = [...arrayValues]
                       newValues[index] = e.target.value
                       setArrayValues(newValues)
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        setArrayValues([...arrayValues, ''])
+                      }}
+                    }
                   />
                 )}
               </div>
               <button
-                className={'w-3'}
                 key={`${name}-${index}-delete`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -102,6 +117,9 @@ function createSmartInput<Schema extends SomeZodObject>({
                   newValues.push(...arrayValues.slice(index + 1))
                   setArrayValues(newValues)
                 }}
+                type={'submit'}
+                name={'submit'}
+                value={`delete-${name}-${index}`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" className="bi bi-x"
                      viewBox="0 0 16 16">
@@ -116,17 +134,14 @@ function createSmartInput<Schema extends SomeZodObject>({
             type={type}
             {...registerProps}
             placeholder={placeholder}
-            autoFocus={autoFocus}
-            value={arrayValues}
-            readOnly={true}
-            {...a11yProps}
+            value={arrayValues.join(',')}
             {...props}
+            readOnly={true}
             hidden={true}
           />
           <noscript>
             {selectChildren ? (
               <Select
-                key={name + '-add'}
                 autoFocus={autoFocus}
                 {...a11yProps}
                 {...props}
@@ -136,7 +151,6 @@ function createSmartInput<Schema extends SomeZodObject>({
               </Select>
             ) : (
               <Input
-                key={name + '-add'}
                 placeholder={placeholder}
                 autoFocus={autoFocus}
                 {...a11yProps}
@@ -151,6 +165,9 @@ function createSmartInput<Schema extends SomeZodObject>({
               e.preventDefault()
               setArrayValues([...arrayValues, ''])
             }}
+            type={'submit'}
+            name={'submit'}
+            value={`add-${name}`}
           >
             Add
           </button>

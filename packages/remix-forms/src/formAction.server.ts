@@ -73,8 +73,8 @@ async function performMutation<
   } else if (values.submit.startsWith('delete')) {
     const deleteArguments = values.submit.split('delete-')[1].split('-')
     console.log('deleteArguments', deleteArguments)
-    values[deleteArguments[0]].splice(+deleteArguments[1], 1)
-    // remove nth item from array
+    // @ts-ignore
+    values[deleteArguments[0]].splice(Number(deleteArguments[1]), 1)
     console.log('newValues', values)
     return { success: false, errors: {}, values }
   } else {
@@ -102,8 +102,6 @@ async function formAction<Schema extends SomeZodObject, D extends unknown>({
     mutation,
     environment,
   })
-
-  console.log('result', result)
 
   if (result.success) {
     if (beforeSuccess) {

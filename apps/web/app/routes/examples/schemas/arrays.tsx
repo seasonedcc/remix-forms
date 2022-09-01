@@ -23,16 +23,14 @@ const code = '';
 //
 
 const schema = z.object({
-  strings: z.string().array().min(2).max(3).default([]), // min() not yet supported
-  numbers: z.number().array().default([]), // min() not yet supported
-  submit: z.string().default('submit'),
+  strings: z.string().array().max(30).default([]), // min() not supported
+  numbers: z.number().array().default([]), // min() not supported
 })
 
 // TODO Current bugs/missing features
 // - With JS:
 //   - min() doesn't work -> after once to few elements, it doesn't allow a resubmission, even with enough elements
 //     -> works when input is not hidden after second button press
-// - the value of submit still needs to be set manually
 
 export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
