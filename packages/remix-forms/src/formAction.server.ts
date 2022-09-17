@@ -1,6 +1,6 @@
 import { json, redirect } from '@remix-run/server-runtime'
-import type { DomainFunction } from 'remix-domains'
-import { errorMessagesForSchema } from 'remix-domains'
+import type { DomainFunction } from 'domain-functions'
+import { errorMessagesForSchema } from 'domain-functions'
 import type { SomeZodObject, z } from 'zod'
 import { getFormValues } from './getFormValues'
 

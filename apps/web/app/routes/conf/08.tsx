@@ -7,7 +7,7 @@ import type {
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'remix-domains'
+import { InputError, makeDomainFunction } from 'domain-functions'
 import { formAction } from 'remix-forms'
 import Form from '~/ui/form'
 
@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { ActionFunction } from '@remix-run/node'
 import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'remix-domains'
+import { InputError, makeDomainFunction } from 'domain-functions'
 import { Form, formAction } from 'remix-forms'
 
 const reservationSchema = z.object({

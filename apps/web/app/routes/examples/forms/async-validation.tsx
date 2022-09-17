@@ -9,7 +9,7 @@ import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { InputError, makeDomainFunction } from 'remix-domains'
+import { InputError, makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 import { useFetcher } from '@remix-run/react'
 
@@ -19,7 +19,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { InputError } from 'remix-domains'
+const code = `import { InputError } from 'domain-functions'
 
 const schema = z.object({
   username: z.string().nonempty(),

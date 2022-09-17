@@ -21,7 +21,7 @@ import ButtonLink from '~/ui/button-link'
 import Heading from '~/ui/heading'
 import Code from '~/ui/code'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'remix-domains'
+import { makeDomainFunction } from 'domain-functions'
 
 const title = 'Magically create forms + actions in Remix'
 const description =
@@ -30,7 +30,7 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
-import { makeDomainFunction } from 'remix-domains'
+import { makeDomainFunction } from 'domain-functions'
 import { formAction, Form } from 'remix-forms'
 
 const schema = z.object({
