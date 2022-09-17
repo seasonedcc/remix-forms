@@ -8,7 +8,7 @@ import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { InputError, makeDomainFunction } from 'remix-domains'
+import { InputError, makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
 const title = 'Field error'
@@ -17,7 +17,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { InputError } from 'remix-domains'
+const code = `import { InputError } from 'domain-functions'
 
 const schema = z.object({
   email: z.string().nonempty().email(),

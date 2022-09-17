@@ -1,4 +1,4 @@
-import { inputFromForm } from 'remix-domains'
+import { inputFromForm } from 'domain-functions'
 import type { SomeZodObject, z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormValues } from './formAction.server'

@@ -46,7 +46,7 @@ const schema = z.object({
   email: z.string().nonempty().email(),
 })`
 
-const mutationCode = `import { makeDomainFunction } from 'remix-domains'
+const mutationCode = `import { makeDomainFunction } from 'domain-functions'
 
 const mutation = makeDomainFunction(schema)(async (values) => (
   await saveMyValues(values) /* or anything else */
@@ -155,8 +155,8 @@ export default function Component() {
           React Hook Form
         </ExternalLink>
         , and{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains">
-          Remix Domains
+        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
+          Domain Functions
         </ExternalLink>{' '}
         in your project before using Remix Forms.
       </p>
@@ -165,7 +165,7 @@ export default function Component() {
         Assuming you already have <code>react</code> and <code>remix</code>{' '}
         installed, you'll need the following packages:
       </p>
-      <Pre>npm install remix-forms remix-domains zod react-hook-form</Pre>
+      <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
       <SubHeading>Basic styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you need to configure basic
@@ -201,15 +201,15 @@ export default function Component() {
       <SubHeading>Create your mutation</SubHeading>
       <p>
         Create a mutation function using{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains">
-          Remix Domains
+        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
+          Domain Functions
         </ExternalLink>
         &apos; <em>makeDomainFunction</em>. It&apos;s a function that receives
         the values from the form and performs the necessary mutations, such as
         storing data on a database.
       </p>
       <p>
-        Remix Domains will parse the request&apos;s <em>formData</em> and
+        Domain Functions will parse the request&apos;s <em>formData</em> and
         perform the mutation only if everything is valid. If something goes bad,
         it will return structured error messages for us.
       </p>
@@ -282,8 +282,8 @@ export default function Component() {
           Zod
         </ExternalLink>
         ,{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains">
-          Remix Domains
+        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
+          Domain Functions
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
       </p>

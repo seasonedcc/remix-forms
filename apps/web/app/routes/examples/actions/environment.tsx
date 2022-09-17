@@ -8,7 +8,7 @@ import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'remix-domains'
+import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
 
@@ -71,7 +71,7 @@ export default function Component() {
       description={
         <>
           In this example, we use Remix Domain&apos;s{' '}
-          <ExternalLink href="https://github.com/SeasonedSoftware/remix-domains#taking-parameters-that-are-not-user-input">
+          <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions#taking-parameters-that-are-not-user-input">
             environment
           </ExternalLink>{' '}
           to authorize a specific header.

@@ -1,6 +1,6 @@
 {
   "name": "remix-forms",
-  "version": "0.17.4-rc.0",
+  "version": "0.18.0",
   "description": "Magically create forms + actions in Remix!",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -17,7 +17,7 @@
     "@remix-run/server-runtime": ">=1.2",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
-    "remix-domains": ">=0.2.0",
+    "domain-functions": ">=1.0.0",
     "zod": ">=3.12"
   },
   "devDependencies": {

@@ -8,7 +8,7 @@ import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'remix-domains'
+import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
 const title = 'Redirect'
