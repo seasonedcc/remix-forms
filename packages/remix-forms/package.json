@@ -1,10 +1,14 @@
 {
   "name": "remix-forms",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Magically create forms + actions in Remix!",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "*",
+    "./dist/*"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
