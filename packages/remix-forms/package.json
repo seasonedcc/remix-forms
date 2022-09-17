@@ -1,11 +1,28 @@
 {
   "name": "remix-forms",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Magically create forms + actions in Remix!",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeasonedSoftware/remix-forms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SeasonedSoftware/remix-forms/issues"
+  },
+  "homepage": "https://remix-forms.seasoned.cc",
+  "keywords": [
+    "remix",
+    "forms",
+    "actions",
+    "zod",
+    "typescript",
+    "react-hook-form"
+  ],
+  "author": "Daniel Weinmann",
   "scripts": {
     "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
