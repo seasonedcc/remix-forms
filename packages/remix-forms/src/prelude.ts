@@ -1,7 +1,9 @@
 import type { z } from 'zod'
 
-//@ts-ignore
-type FormSchema = z.SomeZodObject | z.ZodEffects<FormSchema>
+type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
+  | z.ZodEffects<T>
+  | z.SomeZodObject
+
 type ObjectFromSchema<T> = T extends z.SomeZodObject
   ? T
   : T extends z.ZodEffects<infer R>
