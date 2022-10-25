@@ -22,6 +22,13 @@ const code = `const schema = z
     planType: z.enum(['personal', 'corporate']),
     quantity: z.number().min(0),
   })
+  .refine(
+    ({ planType, quantity }) => !(planType === 'personal' && quantity >= 8),
+    {
+      message: 'For 8 cards or more please use our corporate plan',
+      path: ['planType'],
+    },
+  )
   .superRefine((arg, ctx) => {
     const isCorporate = arg.planType === 'corporate'
 
@@ -50,6 +57,13 @@ const schema = z
     planType: z.enum(['personal', 'corporate']),
     quantity: z.number().min(0),
   })
+  .refine(
+    ({ planType, quantity }) => !(planType === 'personal' && quantity >= 8),
+    {
+      message: 'For 8 cards or more please use our corporate plan',
+      path: ['planType'],
+    },
+  )
   .superRefine((arg, ctx) => {
     const isCorporate = arg.planType === 'corporate'
 
