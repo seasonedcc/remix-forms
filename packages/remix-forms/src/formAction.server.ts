@@ -1,9 +1,11 @@
 import { json, redirect } from '@remix-run/server-runtime'
 import type { DomainFunction } from 'domain-functions'
+import { inputFromForm } from 'domain-functions'
 import { errorMessagesForSchema } from 'domain-functions'
-import type { SomeZodObject, z } from 'zod'
-import { getFormValues } from './getFormValues'
+import type { z } from 'zod'
+import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
+import { objectFromSchema } from './prelude'
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
@@ -34,6 +36,23 @@ type FormActionProps<Schema extends FormSchema, D extends unknown> = {
   beforeSuccess?: Callback
   successPath?: string | ((data: D) => string)
 } & PerformMutationProps<Schema, D>
+
+async function getFormValues<Schema extends FormSchema>(
+  request: Request,
+  schema: Schema,
+): Promise<FormValues<z.infer<Schema>>> {
+  const shape = objectFromSchema(schema).shape
+
+  const input = await inputFromForm(request)
+
+  let values: FormValues<z.infer<Schema>> = {}
+  for (const key in shape) {
+    const value = input[key]
+    values[key as keyof z.infer<Schema>] = coerceValue(value, shape[key])
+  }
+
+  return values
+}
 
 async function performMutation<Schema extends FormSchema, D extends unknown>({
   request,
