@@ -1,6 +1,6 @@
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
-const route = '/examples/schemas/super-refine'
+const route = '/examples/schemas/zod-effects'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
