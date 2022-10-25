@@ -1,6 +1,6 @@
 {
   "name": "remix-forms",
-  "version": "0.18.2",
+  "version": "0.19.0",
   "description": "Magically create forms + actions in Remix!",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
