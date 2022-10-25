@@ -1,6 +1,5 @@
-import type { FormProps } from 'remix-forms'
+import type { FormProps, FormSchema } from 'remix-forms'
 import { Form as RemixForm } from 'remix-forms'
-import type { SomeZodObject } from 'zod'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -12,7 +11,7 @@ import Checkbox from './checkbox'
 import CheckboxWrapper from './checkbox-wrapper'
 import TextArea from './text-area'
 
-export default function Form<Schema extends SomeZodObject>(
+export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,
 ) {
   return (
