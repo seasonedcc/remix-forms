@@ -176,7 +176,7 @@ export default function Component() {
       <div className="flex flex-col space-y-2">
         <p>
           Check out{' '}
-          <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms-site/blob/main/app/ui/form.tsx">
+          <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms/blob/main/apps/web/app/ui/form.tsx">
             how we customized the styles
           </ExternalLink>{' '}
           for this website. We basically created a bunch of UI components and
