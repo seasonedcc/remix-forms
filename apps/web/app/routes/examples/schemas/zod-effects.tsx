@@ -17,26 +17,26 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `const schema =  z
-.object({
-  planType: z.enum(["personal", "corporate"]),
-  quantity: z.number().min(0),
-})
-.superRefine((arg, ctx) => {
-  const isCorporate = arg.planType === "corporate";
+const code = `const schema = z
+  .object({
+    planType: z.enum(['personal', 'corporate']),
+    quantity: z.number().min(0),
+  })
+  .superRefine((arg, ctx) => {
+    const isCorporate = arg.planType === 'corporate'
 
-  if (isCorporate && arg.quantity < 8) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.too_small,
-      minimum: 8,
-      message: "For corporate cards you must issue at least 8",
-      type: "number",
-      inclusive: true,
-      fatal: true,
-      path: ["planType"],
-    });
-  }
-});
+    if (isCorporate && arg.quantity < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 8,
+        message: 'For corporate cards you must issue at least 8',
+        type: 'number',
+        inclusive: true,
+        fatal: true,
+        path: ['planType'],
+      })
+    }
+  })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
 
