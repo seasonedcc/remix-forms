@@ -51,8 +51,8 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/schemas/enums'}>
             Enums
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={'/examples/schemas/super-refine'}>
-            superRefine
+          <SidebarLayout.NavLink to={'/examples/schemas/zod-effects'}>
+            Zod Effects
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Forms</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/examples/forms/auto-generated'}>

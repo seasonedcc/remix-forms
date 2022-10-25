@@ -11,9 +11,9 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
-const title = 'superRefine'
+const title = 'Zod Effects'
 const description =
-  'In this example, we can use custom validations when the type system is not enough to validate input.'
+  'In this example, we use Zod preprocess, refine and superRefine to make our schemas more powerful.'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
