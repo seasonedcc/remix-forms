@@ -14,10 +14,10 @@ const description = 'Magically create forms + actions in Remix'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const formCode = `import { Form as RemixForm, FormProps } from 'remix-forms'
-import { SomeZodObject } from 'zod'
+const formCode = `import { Form as RemixForm } from 'remix-forms'
+import type { FormProps, FormSchema } from 'remix-forms'
 
-export default function Form<Schema extends SomeZodObject>(
+export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,
 ) {
   return (
