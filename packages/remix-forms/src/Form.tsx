@@ -7,6 +7,9 @@ import {
   useActionData,
 } from '@remix-run/react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
+import type { FormSchema, ObjectFromSchema } from './prelude'
+import { objectFromSchema } from './prelude'
+
 import type {
   UseFormReturn,
   FieldError,
@@ -84,7 +87,7 @@ type OnTransition<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type FormProps<Schema extends SomeZodObject> = {
+type FormProps<Schema extends FormSchema> = {
   component?: React.ForwardRefExoticComponent<AllRemixFormProps>
   fetcher?: Fetcher<any> & {
     Form: ReturnType<any>
@@ -92,7 +95,7 @@ type FormProps<Schema extends SomeZodObject> = {
     load: (href: string) => void
   }
   mode?: keyof ValidationMode
-  renderField?: RenderField<Schema>
+  renderField?: RenderField<ObjectFromSchema<Schema>>
   fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
   globalErrorsComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
@@ -144,9 +147,9 @@ type FormProps<Schema extends SomeZodObject> = {
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
-  onTransition?: OnTransition<Schema>
+  onTransition?: OnTransition<ObjectFromSchema<Schema>>
   parseActionData?: (data: any) => any
-  children?: Children<Schema>
+  children?: Children<ObjectFromSchema<Schema>>
 } & Omit<AllRemixFormProps, 'method' | 'children'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
@@ -157,7 +160,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodEnum: 'string',
 }
 
-function Form<Schema extends SomeZodObject>({
+function Form<Schema extends FormSchema>({
   component = RemixForm,
   fetcher,
   mode = 'onSubmit',
@@ -236,7 +239,7 @@ function Form<Schema extends SomeZodObject>({
 
   const Field = React.useMemo(
     () =>
-      createField<Schema>({
+      createField<ObjectFromSchema<Schema>>({
         register: form.register,
         fieldComponent,
         labelComponent,
@@ -261,9 +264,10 @@ function Form<Schema extends SomeZodObject>({
       Error,
     ],
   )
+  const schemaShape = objectFromSchema(schema).shape
 
   React.useEffect(() => {
-    for (const stringKey in schema.shape) {
+    for (const stringKey in schemaShape) {
       const key = stringKey as keyof SchemaType
       if (errors && errors[key]?.length) {
         try {
@@ -276,10 +280,10 @@ function Form<Schema extends SomeZodObject>({
 
   let autoFocused = false
   let fields: Field<SchemaType>[] = []
-  for (const stringKey in schema.shape) {
+  for (const stringKey in schemaShape) {
     const key = stringKey as keyof SchemaType
     const message = (formErrors[key] as unknown as FieldError)?.message
-    const shape = schema.shape[stringKey]
+    const shape = schemaShape[stringKey]
     const errorsArray = (message && [message]) || (errors && errors[key])
 
     const fieldErrors =
@@ -423,5 +427,12 @@ function Form<Schema extends SomeZodObject>({
   )
 }
 
-export type { Field, RenderFieldProps, RenderField, Option, FormProps }
+export type {
+  Field,
+  RenderFieldProps,
+  RenderField,
+  Option,
+  FormProps,
+  FormSchema,
+}
 export { Form }

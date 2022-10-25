@@ -3,6 +3,7 @@ import type { DomainFunction } from 'domain-functions'
 import { errorMessagesForSchema } from 'domain-functions'
 import type { SomeZodObject, z } from 'zod'
 import { getFormValues } from './getFormValues'
+import type { FormSchema } from './prelude'
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
@@ -21,23 +22,20 @@ type PerformMutation<SchemaType, D extends unknown> =
 
 type Callback = (request: Request) => Promise<Response | void>
 
-type PerformMutationProps<Schema extends SomeZodObject, D extends unknown> = {
+type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
   schema: Schema
   mutation: DomainFunction<D>
   environment?: unknown
 }
 
-type FormActionProps<Schema extends SomeZodObject, D extends unknown> = {
+type FormActionProps<Schema extends FormSchema, D extends unknown> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath?: string | ((data: D) => string)
 } & PerformMutationProps<Schema, D>
 
-async function performMutation<
-  Schema extends SomeZodObject,
-  D extends unknown,
->({
+async function performMutation<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
@@ -67,7 +65,7 @@ async function performMutation<
   }
 }
 
-async function formAction<Schema extends SomeZodObject, D extends unknown>({
+async function formAction<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
