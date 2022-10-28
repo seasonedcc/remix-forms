@@ -52,7 +52,7 @@ const mutation = makeDomainFunction(schema)(async (values) => (
   await saveMyValues(values) /* or anything else */
 ))`
 
-const actionCode = `import { formAction } from 'remix-forms'
+const actionCode = `import { formAction } from '~/formAction'
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({

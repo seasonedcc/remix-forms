@@ -12,7 +12,7 @@
       "outputs": []
     },
     "tsc": {
-      "outputs": []
+      "cache": false
     },
     "test": {
       "outputs": [],

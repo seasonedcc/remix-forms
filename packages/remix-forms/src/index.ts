@@ -1,15 +1,11 @@
-export { Form } from './Form'
-export { formAction, performMutation } from './formAction.server'
+export { createForm } from './createForm'
+export { createFormAction, performMutation } from './mutations'
 
 export type {
   FormProps,
   RenderFieldProps,
   RenderField,
   FormSchema,
-} from './Form'
+} from './createForm'
 
-export type {
-  FormActionProps,
-  Callback,
-  PerformMutation,
-} from './formAction.server'
+export type { FormActionProps, Callback, PerformMutation } from './mutations'

@@ -1,5 +1,5 @@
 import type { FormProps, FormSchema } from 'remix-forms'
-import { Form as RemixForm } from 'remix-forms'
+import { createForm } from 'remix-forms'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -10,6 +10,8 @@ import SubmitButton from './submit-button'
 import Checkbox from './checkbox'
 import CheckboxWrapper from './checkbox-wrapper'
 import TextArea from './text-area'
+
+const RemixForm = createForm()
 
 export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,

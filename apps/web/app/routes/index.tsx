@@ -5,7 +5,6 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import {
@@ -22,6 +21,7 @@ import Heading from '~/ui/heading'
 import Code from '~/ui/code'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
+import { formAction } from '~/formAction'
 
 const title = 'Magically create forms + actions in Remix'
 const description =

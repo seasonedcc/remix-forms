@@ -84,40 +84,46 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-async function formAction<Schema extends FormSchema, D extends unknown>({
-  request,
-  schema,
-  mutation,
-  environment,
-  beforeAction,
-  beforeSuccess,
-  successPath,
-}: FormActionProps<Schema, D>): Promise<Response> {
-  if (beforeAction) {
-    const beforeActionResponse = await beforeAction(request)
-    if (beforeActionResponse) return beforeActionResponse
-  }
-
-  const result = await performMutation({
+function createFormAction() {
+  async function formAction<Schema extends FormSchema, D extends unknown>({
     request,
     schema,
     mutation,
     environment,
-  })
-
-  if (result.success) {
-    if (beforeSuccess) {
-      const beforeSuccessResponse = await beforeSuccess(request)
-      if (beforeSuccessResponse) return beforeSuccessResponse
+    beforeAction,
+    beforeSuccess,
+    successPath,
+  }: FormActionProps<Schema, D>): Promise<Response> {
+    if (beforeAction) {
+      const beforeActionResponse = await beforeAction(request)
+      if (beforeActionResponse) return beforeActionResponse
     }
 
-    const path =
-      typeof successPath === 'function' ? successPath(result.data) : successPath
+    const result = await performMutation({
+      request,
+      schema,
+      mutation,
+      environment,
+    })
 
-    return path ? redirect(path) : json(result.data)
-  } else {
-    return json({ errors: result.errors, values: result.values })
+    if (result.success) {
+      if (beforeSuccess) {
+        const beforeSuccessResponse = await beforeSuccess(request)
+        if (beforeSuccessResponse) return beforeSuccessResponse
+      }
+
+      const path =
+        typeof successPath === 'function'
+          ? successPath(result.data)
+          : successPath
+
+      return path ? redirect(path) : json(result.data)
+    } else {
+      return json({ errors: result.errors, values: result.values })
+    }
   }
+
+  return formAction
 }
 
 export type {
@@ -128,4 +134,5 @@ export type {
   PerformMutationProps,
   FormActionProps,
 }
-export { performMutation, formAction }
+
+export { performMutation, createFormAction }
