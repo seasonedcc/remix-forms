@@ -1,10 +1,12 @@
 import type { DomainFunction } from 'domain-functions'
 import { inputFromForm, errorMessagesForSchema } from 'domain-functions'
-import type { RedirectFunction, JsonFunction } from 'react-router-dom'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+
+type RedirectFunction = (url: string, init?: number | ResponseInit) => Response
+type JsonFunction = <Data>(data: Data, init?: number | ResponseInit) => Response
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>

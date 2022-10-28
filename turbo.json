@@ -12,7 +12,10 @@
       "outputs": []
     },
     "tsc": {
-      "cache": false
+      "cache": false,
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
       "outputs": [],

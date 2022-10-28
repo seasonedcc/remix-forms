@@ -1,9 +1,5 @@
 import * as React from 'react'
-import type {
-  FormProps as RouterFormProps,
-  SubmitFunction,
-} from 'react-router-dom'
-import type { Fetcher } from '@remix-run/router'
+import type { FormProps as RouterFormProps } from 'react-router-dom'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
 import type { FormSchema, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
@@ -74,12 +70,14 @@ type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type BaseFetcherWithComponents<Component extends BaseComponent> = {
-  state: Fetcher['state']
-  data: any
-  Form: Component
-  submit: SubmitFunction
-}
+type SubmitFunction = ({ target }: { target: any }) => void
+
+type BaseFetcherWithComponents<Component extends BaseComponent> =
+  BaseTransition & {
+    data: any
+    Form: Component
+    submit: SubmitFunction
+  }
 
 type FormProps<
   Schema extends FormSchema,

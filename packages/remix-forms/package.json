@@ -41,7 +41,6 @@
     "zod": ">=3.12"
   },
   "devDependencies": {
-    "@remix-run/router": ">=1.0",
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
     "c8": "^7.11.2",
