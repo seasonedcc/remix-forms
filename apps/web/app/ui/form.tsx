@@ -10,19 +10,25 @@ import SubmitButton from './submit-button'
 import Checkbox from './checkbox'
 import CheckboxWrapper from './checkbox-wrapper'
 import TextArea from './text-area'
-import { useActionData, useSubmit, useTransition } from '@remix-run/react'
+import {
+  Form as RemixForm,
+  useActionData,
+  useSubmit,
+  useTransition,
+} from '@remix-run/react'
 
-const RemixForm = createForm({
+const BaseForm = createForm({
+  component: RemixForm,
   useNavigation: useTransition,
   useSubmit,
   useActionData,
 })
 
 export default function Form<Schema extends FormSchema>(
-  props: FormProps<Schema>,
+  props: FormProps<Schema, typeof RemixForm>,
 ) {
   return (
-    <RemixForm<Schema>
+    <BaseForm
       className="flex flex-col space-y-6"
       fieldComponent={Field}
       labelComponent={Label}

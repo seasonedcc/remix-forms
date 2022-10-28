@@ -66,19 +66,27 @@ type Children<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
-type Transition = { state: Navigation['state'] }
+type BaseComponent = React.ForwardRefExoticComponent<{}>
+type BaseTransition = { state: Navigation['state'] }
 
 type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type FormProps<Schema extends FormSchema> = {
-  component: React.ForwardRefExoticComponent<RouterFormProps>
-  fetcher?: Fetcher<any> & {
-    Form: ReturnType<any>
-    submit: ReturnType<any>
-    load: (href: string) => void
-  }
+type BaseFetcherWithComponents<Component extends BaseComponent> = {
+  state: Fetcher['state']
+  data: any
+  Form: Component
+  submit: SubmitFunction
+}
+
+type FormProps<
+  Schema extends FormSchema,
+  Component extends BaseComponent = React.ForwardRefExoticComponent<RouterFormProps>,
+  FetcherWithComponents extends BaseFetcherWithComponents<Component> = BaseFetcherWithComponents<Component>,
+> = {
+  component?: Component
+  fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
   renderField?: RenderField<ObjectFromSchema<Schema>>
   fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
@@ -145,17 +153,22 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodEnum: 'string',
 }
 
-function createForm<T extends Transition>({
+function createForm<
+  Transition extends BaseTransition,
+  Component extends BaseComponent,
+>({
+  component: DefaultComponent,
   useNavigation,
   useSubmit,
   useActionData,
 }: {
-  useNavigation: () => T
+  component: Component
+  useNavigation: () => Transition
   useSubmit: () => SubmitFunction
   useActionData: () => unknown
 }) {
   function Form<Schema extends FormSchema>({
-    component,
+    component = DefaultComponent,
     fetcher,
     mode = 'onSubmit',
     renderField = defaultRenderField,
@@ -186,9 +199,10 @@ function createForm<T extends Transition>({
     errors: errorsProp,
     values: valuesProp,
     ...props
-  }: FormProps<Schema>) {
+  }: FormProps<Schema, Component>) {
     type SchemaType = z.infer<Schema>
-    const Component = fetcher?.Form ?? component
+    // TODO: remove this any and type it correctly
+    const Component: any = fetcher?.Form ?? component
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const submit = fetcher?.submit ?? useSubmit()
     // eslint-disable-next-line react-hooks/rules-of-hooks
