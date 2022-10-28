@@ -42,7 +42,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-v2
       - name: Install Playwright
-        run: npx playwright install chromium
+        run: npm run playwright:ci:install
       - name: Build
         run: npm run build
       - name: Run Playwright tests

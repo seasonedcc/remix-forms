@@ -11,6 +11,7 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "playwright:ci:install": "turbo run playwright:ci:install",
     "tsc": "turbo run tsc",
     "test": "turbo run test",
     "test:ci": "turbo run test:ci"

@@ -23,6 +23,9 @@
         "^build"
       ]
     },
+    "playwright:ci:install": {
+      "outputs": []
+    },
     "dev": {
       "cache": false
     }

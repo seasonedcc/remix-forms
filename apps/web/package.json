@@ -9,6 +9,7 @@
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "dev:server": "cross-env NODE_ENV=development netlify dev",
+    "playwright:ci:install": "playwright install chromium",
     "start": "cross-env NODE_ENV=production netlify dev",
     "lint": "eslint *.ts*",
     "tsc": "tsc",
