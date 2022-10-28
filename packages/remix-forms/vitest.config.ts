@@ -8,5 +8,6 @@ export default defineConfig({
     globals: true,
     isolate: false,
     setupFiles: ['./test-setup.ts'],
+    exclude: ['./dist', './tsc'],
   },
 })
