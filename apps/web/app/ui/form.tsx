@@ -25,7 +25,7 @@ const BaseForm = createForm({
 })
 
 export default function Form<Schema extends FormSchema>(
-  props: FormProps<Schema, typeof RemixForm>,
+  props: FormProps<Schema>,
 ) {
   return (
     <BaseForm
