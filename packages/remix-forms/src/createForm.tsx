@@ -3,11 +3,10 @@ import type {
   FormProps as RouterFormProps,
   SubmitFunction,
 } from 'react-router-dom'
-import type { Navigation, FormMethod, Fetcher } from '@remix-run/router'
+import type { Fetcher } from '@remix-run/router'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
 import type { FormSchema, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
-
 import type {
   UseFormReturn,
   FieldError,
@@ -24,6 +23,8 @@ import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
+
+type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -67,7 +68,7 @@ type Children<Schema extends SomeZodObject> = (
 ) => React.ReactNode
 
 type BaseComponent = React.ForwardRefExoticComponent<{}>
-type BaseTransition = { state: Navigation['state'] }
+type BaseTransition = { state: 'idle' | 'loading' | 'submitting' }
 
 type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
