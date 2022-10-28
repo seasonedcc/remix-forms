@@ -1,7 +1,6 @@
-import { json, redirect } from '@remix-run/server-runtime'
 import type { DomainFunction } from 'domain-functions'
-import { inputFromForm } from 'domain-functions'
-import { errorMessagesForSchema } from 'domain-functions'
+import { inputFromForm, errorMessagesForSchema } from 'domain-functions'
+import type { RedirectFunction, JsonFunction } from 'react-router-dom'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
@@ -84,7 +83,13 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-function createFormAction() {
+function createFormAction({
+  redirect,
+  json,
+}: {
+  redirect: RedirectFunction
+  json: JsonFunction
+}) {
   async function formAction<Schema extends FormSchema, D extends unknown>({
     request,
     schema,

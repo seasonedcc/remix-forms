@@ -10,8 +10,13 @@ import SubmitButton from './submit-button'
 import Checkbox from './checkbox'
 import CheckboxWrapper from './checkbox-wrapper'
 import TextArea from './text-area'
+import { useActionData, useSubmit, useTransition } from '@remix-run/react'
 
-const RemixForm = createForm()
+const RemixForm = createForm({
+  useNavigation: useTransition,
+  useSubmit,
+  useActionData,
+})
 
 export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,

@@ -1,16 +1,24 @@
+import type { inputFromForm } from 'domain-functions'
 import type { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
-function makeCoercion<T>(
-  coercion: (value: FormDataEntryValue) => T,
-  emptyValue: unknown,
-) {
+type ParsedQs = Awaited<ReturnType<typeof inputFromForm>>
+
+type Value =
+  | FormDataEntryValue
+  | ParsedQs
+  | ParsedQs[]
+  | string[]
+  | null
+  | undefined
+
+function makeCoercion<T>(coercion: (value: Value) => T, emptyValue: unknown) {
   return ({
     value,
     optional,
     nullable,
   }: {
-    value: FormDataEntryValue | null
+    value: Value
     optional: boolean
     nullable: boolean
   }) => {
@@ -33,7 +41,7 @@ const coerceDate = makeCoercion((value) => {
   return new Date(year, month - 1, day)
 }, null)
 
-function coerceValue(value: FormDataEntryValue | null, shape?: ZodTypeAny) {
+function coerceValue(value: Value, shape?: ZodTypeAny) {
   const { typeName, optional, nullable } = shapeInfo(shape)
 
   if (typeName === 'ZodBoolean') {

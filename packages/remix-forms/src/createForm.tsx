@@ -1,11 +1,9 @@
 import * as React from 'react'
-import type { FormProps as RemixFormProps, FormMethod } from '@remix-run/react'
-import {
-  Form as RemixForm,
-  useTransition,
-  useSubmit,
-  useActionData,
-} from '@remix-run/react'
+import type {
+  FormProps as RouterFormProps,
+  SubmitFunction,
+} from 'react-router-dom'
+import type { Navigation, FormMethod, Fetcher } from '@remix-run/router'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
 import type { FormSchema, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
@@ -23,11 +21,9 @@ import type { FieldProps, FieldType } from './createField'
 import { createField } from './createField'
 import { mapChildren } from './mapChildren'
 import { defaultRenderField } from './defaultRenderField'
-import type { Fetcher } from '@remix-run/react'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import type { Transition } from '@remix-run/react/dist/transition'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -61,34 +57,23 @@ type Option = { name: string } & Required<
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-type AllRemixFormProps = RemixFormProps & React.RefAttributes<HTMLFormElement>
-
 type Children<Schema extends SomeZodObject> = (
   helpers: {
     Field: FieldComponent<Schema>
     Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
     Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
-    transition: FormTransition
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
-type FormTransition =
-  | (Fetcher<any> & {
-      Form: any
-      submit: any
-      load: (href: string) => void
-    })
-  | Transition
+type Transition = { state: Navigation['state'] }
 
 type OnTransition<Schema extends SomeZodObject> = (
-  helpers: {
-    transition: FormTransition
-  } & UseFormReturn<z.infer<Schema>, any>,
+  helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
 type FormProps<Schema extends FormSchema> = {
-  component?: React.ForwardRefExoticComponent<AllRemixFormProps>
+  component: React.ForwardRefExoticComponent<RouterFormProps>
   fetcher?: Fetcher<any> & {
     Form: ReturnType<any>
     submit: ReturnType<any>
@@ -150,7 +135,7 @@ type FormProps<Schema extends FormSchema> = {
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
   parseActionData?: (data: any) => any
   children?: Children<ObjectFromSchema<Schema>>
-} & Omit<AllRemixFormProps, 'method' | 'children'>
+} & Omit<RouterFormProps, 'method' | 'children'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
@@ -160,9 +145,17 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodEnum: 'string',
 }
 
-function createForm() {
+function createForm<T extends Transition>({
+  useNavigation,
+  useSubmit,
+  useActionData,
+}: {
+  useNavigation: () => T
+  useSubmit: () => SubmitFunction
+  useActionData: () => unknown
+}) {
   function Form<Schema extends FormSchema>({
-    component = RemixForm,
+    component,
     fetcher,
     mode = 'onSubmit',
     renderField = defaultRenderField,
@@ -199,7 +192,7 @@ function createForm() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const submit = fetcher?.submit ?? useSubmit()
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const transition = fetcher ?? useTransition()
+    const transition = fetcher ?? useNavigation()
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const unparsedActionData = fetcher?.data ?? useActionData()
 
@@ -230,7 +223,7 @@ function createForm() {
     }, [transition.state, formState])
 
     React.useEffect(() => {
-      onTransition && onTransition({ transition, ...form })
+      onTransition && onTransition(form)
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transition.state])
 
@@ -346,7 +339,6 @@ function createForm() {
         Errors,
         Error,
         Button,
-        transition,
         ...form,
       })
 
