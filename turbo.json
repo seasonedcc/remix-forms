@@ -11,6 +11,9 @@
     "lint": {
       "outputs": []
     },
+    "tsc": {
+      "outputs": []
+    },
     "test": {
       "outputs": [],
       "dependsOn": [

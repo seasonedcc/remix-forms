@@ -11,6 +11,7 @@
     "dev:server": "cross-env NODE_ENV=development netlify dev",
     "start": "cross-env NODE_ENV=production netlify dev",
     "lint": "eslint *.ts*",
+    "tsc": "tsc",
     "test": "playwright test",
     "pretest:ci": "npm run build",
     "test:ci": "playwright test"

@@ -8,7 +8,7 @@
     "jsx": "react-jsx",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./lib/",
+    "outDir": "./tsc/",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
