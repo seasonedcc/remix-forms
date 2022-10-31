@@ -26,10 +26,8 @@ export { Form }
 `
 
 const createFormActionCode = `import { createFormAction } from 'remix-forms'
-
 // For Remix, import it like this
 import { redirect, json } from '@remix-run/node'
-
 // For React Router 6.4, like this
 import { redirect, json } from 'react-router-dom'
 
@@ -80,20 +78,20 @@ const schema = z.object({
 const mutationCode = `import { makeDomainFunction } from 'domain-functions'
 
 const mutation = makeDomainFunction(schema)(async (values) => (
-  await saveMyValues(values) /* or anything else */
+  console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/formAction'
+const actionCode = `import { formAction } from '~/form-action' /* path to your custom formAction */
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
     request,
     schema,
     mutation,
-    successPath: /* path to redirect on success */,
+    successPath: '/success', /* path to redirect on success */
   })`
 
-const basicCode = `import { Form } from /* path to your custom Form */
+const basicCode = `import { Form } from '~/form' /* path to your custom Form */
 
 export default () => <Form schema={schema} />`
 
@@ -203,8 +201,8 @@ export default function Component() {
           React Router 6.4
         </ExternalLink>
         , or even your custom framework. As long as you pass it a <em>Form</em>{' '}
-        component and a couple of functions and hooks, it will work with any
-        framework!
+        component and a couple of functions and hooks, it will work anywhere
+        React runs.
       </p>
       <SubHeading>Installation</SubHeading>
       <p>
@@ -224,27 +222,6 @@ export default function Component() {
         Next, let's create your project's custom <em>Form</em> component:
       </p>
       <Code>{createFormCode}</Code>
-      <SubHeading>[Optional] Customize styles</SubHeading>
-      <p>
-        Remix Forms doesn&apos;t ship any styles, so you need to configure basic
-        styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
-        component:
-      </p>
-      <Code>{stylesCode}</Code>
-      <div className="flex flex-col space-y-2">
-        <p>
-          Check out{' '}
-          <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms/blob/main/apps/web/app/ui/form.tsx">
-            how we customized the styles
-          </ExternalLink>{' '}
-          for this website. We basically created a bunch of UI components and
-          passed them to our custom form.
-        </p>
-        <p>
-          PS: you don&apos;t need to customize everything. We&apos;ll use
-          standard html tags if you don&apos;t.
-        </p>
-      </div>
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation
@@ -270,9 +247,9 @@ export default function Component() {
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
       <p>
-        If the mutation is successful, Remix Forms&apos; <em>formAction</em>{' '}
-        will redirect to <em>successPath</em>. If not, it will return{' '}
-        <em>errors</em> and <em>values</em> to pass to <em>Form</em>.
+        If the mutation is successful, <em>formAction</em> will redirect to{' '}
+        <em>successPath</em>. If not, it will return <em>errors</em> and{' '}
+        <em>values</em> to pass to <em>Form</em>.
       </p>
       <Code>{actionCode}</Code>
       <SubHeading>Create a basic form</SubHeading>
@@ -305,6 +282,27 @@ export default function Component() {
         &apos;s <em>children</em> and go nuts:
       </p>
       <Code>{customInputCode}</Code>
+      <SubHeading>[Optional] Customize styles</SubHeading>
+      <p>
+        Remix Forms doesn&apos;t ship any styles, so you might want to configure
+        basic styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
+        component:
+      </p>
+      <Code>{stylesCode}</Code>
+      <div className="flex flex-col space-y-2">
+        <p>
+          Check out{' '}
+          <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms/blob/main/apps/web/app/ui/form.tsx">
+            how we customized the styles
+          </ExternalLink>{' '}
+          for this website. We basically created a bunch of UI components and
+          passed them to our custom form.
+        </p>
+        <p>
+          PS: you don&apos;t need to customize everything. We&apos;ll use
+          standard html tags if you don&apos;t.
+        </p>
+      </div>
       <SubHeading>That&apos;s it!</SubHeading>
       <div className="flex flex-col space-y-2">
         <p>
@@ -332,6 +330,10 @@ export default function Component() {
           React Hook Form
         </ExternalLink>
         , <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
+        <ExternalLink href="https://reactrouter.com/">
+          React Router
+        </ExternalLink>
+        ,{' '}
         <ExternalLink href="https://github.com/colinhacks/zod">
           Zod
         </ExternalLink>
