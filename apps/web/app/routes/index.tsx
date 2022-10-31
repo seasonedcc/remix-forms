@@ -31,7 +31,9 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
 import { makeDomainFunction } from 'domain-functions'
-import { formAction, Form } from 'remix-forms'
+// Learn how to create these 2 on "Get Started" 👇🏽
+import { formAction } from '~/formAction'
+import { Form } from '~/form'
 
 const schema = z.object({
   firstName: z.string().nonempty(),

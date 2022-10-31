@@ -14,12 +14,12 @@ import {
   Form as RemixForm,
   useActionData,
   useSubmit,
-  useTransition,
+  useTransition as useNavigation,
 } from '@remix-run/react'
 
 const BaseForm = createForm({
   component: RemixForm,
-  useNavigation: useTransition,
+  useNavigation,
   useSubmit,
   useActionData,
 })

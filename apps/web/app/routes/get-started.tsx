@@ -14,12 +14,40 @@ const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const formCode = `import { Form as RemixForm } from 'remix-forms'
-import type { FormProps, FormSchema } from 'remix-forms'
+const createFormCode = `import { createForm } from 'remix-forms'
+// For Remix, import it like this
+import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
+// For React Router 6.4, like this
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
 
-export default function Form<Schema extends FormSchema>(
-  props: FormProps<Schema>,
-) {
+const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
+
+export { Form }
+`
+
+const createFormActionCode = `import { createFormAction } from 'remix-forms'
+
+// For Remix, import it like this
+import { redirect, json } from '@remix-run/node'
+
+// For React Router 6.4, like this
+import { redirect, json } from 'react-router-dom'
+
+const formAction = createFormAction({ redirect, json })
+
+export { formAction }
+`
+
+const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
+import { createForm } from 'remix-forms'
+// For Remix, import it like this
+import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
+// For React Router 6.4, like this
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
+
+const RemixForm = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
+
+function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
   return (
     <RemixForm<Schema>
       className={/* your form classes */}
@@ -37,7 +65,10 @@ export default function Form<Schema extends FormSchema>(
       {...props}
     />
   )
-}`
+}
+
+export { Form }
+`
 
 const schemaCode = `import { z } from 'zod'
 
@@ -118,7 +149,10 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader: LoaderFunction = () => ({
-  formCode: hljs.highlight(formCode, { language: 'ts' }).value,
+  createFormCode: hljs.highlight(createFormCode, { language: 'ts' }).value,
+  createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
+    .value,
+  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
   actionCode: hljs.highlight(actionCode, { language: 'ts' }).value,
@@ -130,7 +164,9 @@ export const loader: LoaderFunction = () => ({
 
 export default function Component() {
   const {
-    formCode,
+    createFormCode,
+    createFormActionCode,
+    stylesCode,
     schemaCode,
     mutationCode,
     actionCode,
@@ -146,7 +182,6 @@ export default function Component() {
       <SubHeading>Dependencies</SubHeading>
       <p>
         Make sure you have{' '}
-        <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
         <ExternalLink href="https://github.com/colinhacks/zod">
           Zod
         </ExternalLink>
@@ -160,19 +195,42 @@ export default function Component() {
         </ExternalLink>{' '}
         in your project before using Remix Forms.
       </p>
+      <SubHeading>Remix or React Router 6.4?</SubHeading>
+      <p>
+        You can use Remix Forms with{' '}
+        <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
+        <ExternalLink href="https://reactrouter.com/">
+          React Router 6.4
+        </ExternalLink>
+        , or even your custom framework. As long as you pass it a <em>Form</em>{' '}
+        component and a couple of functions and hooks, it will work with any
+        framework!
+      </p>
       <SubHeading>Installation</SubHeading>
       <p>
-        Assuming you already have <code>react</code> and <code>remix</code>{' '}
-        installed, you'll need the following packages:
+        Assuming you already have <em>React</em> and{' '}
+        <em>Remix or React Router</em> installed, you'll need the following
+        packages:
       </p>
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Basic styles</SubHeading>
+      <SubHeading>Create your formAction function</SubHeading>
+      <p>
+        First, let's create a <em>formAction</em> function. This will be used in
+        your actions.
+      </p>
+      <Code>{createFormActionCode}</Code>
+      <SubHeading>Create your Form component</SubHeading>
+      <p>
+        Next, let's create your project's custom <em>Form</em> component:
+      </p>
+      <Code>{createFormCode}</Code>
+      <SubHeading>[Optional] Customize styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you need to configure basic
-        styles for your forms. Let&apos;s create a custom <em>Form</em>{' '}
-        component for your project:
+        styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
+        component:
       </p>
-      <Code>{formCode}</Code>
+      <Code>{stylesCode}</Code>
       <div className="flex flex-col space-y-2">
         <p>
           Check out{' '}
@@ -181,10 +239,6 @@ export default function Component() {
           </ExternalLink>{' '}
           for this website. We basically created a bunch of UI components and
           passed them to our custom form.
-        </p>
-        <p>
-          With your custom <em>Form</em> in place, now you can use it instead of
-          Remix Forms&apos; for all your forms.
         </p>
         <p>
           PS: you don&apos;t need to customize everything. We&apos;ll use

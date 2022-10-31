@@ -1,4 +1,3 @@
-// import type { FormProps, FormSchema } from 'remix-forms'
 import { createForm } from 'remix-forms'
 import {
   Form as RouterForm,
@@ -7,19 +6,11 @@ import {
   useNavigation,
 } from 'react-router-dom'
 
-const BaseForm = createForm({
+const Form = createForm({
   component: RouterForm,
   useNavigation,
   useSubmit,
   useActionData,
 })
 
-export { BaseForm as Form }
-
-// function Form<Schema extends FormSchema>(
-//   props: FormProps<Schema>,
-// ) {
-//   return <BaseForm {...props} />
-// }
-//
-// export { Form }
+export { Form }
