@@ -10,7 +10,7 @@ import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
 
 const title = 'Get Started'
-const description = 'Magically create forms + actions in Remix'
+const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
