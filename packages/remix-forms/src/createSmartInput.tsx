@@ -2,7 +2,7 @@ import * as React from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 import type { SomeZodObject } from 'zod'
 import type { FieldType } from './createField'
-import type { FormProps } from './Form'
+import type { FormProps } from './createForm'
 
 type SmartInputProps = {
   fieldType?: FieldType

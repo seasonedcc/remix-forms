@@ -8,7 +8,7 @@ import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
-import { formAction } from 'remix-forms'
+import { formAction } from '~/formAction'
 import Form from '~/ui/form'
 
 const title = 'Auto-generated'
@@ -20,7 +20,9 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `import { ActionFunction } from '@remix-run/node'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
-import { Form, formAction } from 'remix-forms'
+// Learn how to create these files on "Get Started" 👇🏽
+import { formAction } from '~/form-action'
+import { Form } from '~/form'
 
 const reservationSchema = z.object({
   city: z.enum(['saltLakeCity', 'lasVegas', 'losAngeles']),

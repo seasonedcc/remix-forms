@@ -1,11 +1,12 @@
-import { json, redirect } from '@remix-run/server-runtime'
 import type { DomainFunction } from 'domain-functions'
-import { inputFromForm } from 'domain-functions'
-import { errorMessagesForSchema } from 'domain-functions'
+import { inputFromForm, errorMessagesForSchema } from 'domain-functions'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+
+type RedirectFunction = (url: string, init?: number | ResponseInit) => Response
+type JsonFunction = <Data>(data: Data, init?: number | ResponseInit) => Response
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
@@ -84,40 +85,52 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-async function formAction<Schema extends FormSchema, D extends unknown>({
-  request,
-  schema,
-  mutation,
-  environment,
-  beforeAction,
-  beforeSuccess,
-  successPath,
-}: FormActionProps<Schema, D>): Promise<Response> {
-  if (beforeAction) {
-    const beforeActionResponse = await beforeAction(request)
-    if (beforeActionResponse) return beforeActionResponse
-  }
-
-  const result = await performMutation({
+function createFormAction({
+  redirect,
+  json,
+}: {
+  redirect: RedirectFunction
+  json: JsonFunction
+}) {
+  async function formAction<Schema extends FormSchema, D extends unknown>({
     request,
     schema,
     mutation,
     environment,
-  })
-
-  if (result.success) {
-    if (beforeSuccess) {
-      const beforeSuccessResponse = await beforeSuccess(request)
-      if (beforeSuccessResponse) return beforeSuccessResponse
+    beforeAction,
+    beforeSuccess,
+    successPath,
+  }: FormActionProps<Schema, D>): Promise<Response> {
+    if (beforeAction) {
+      const beforeActionResponse = await beforeAction(request)
+      if (beforeActionResponse) return beforeActionResponse
     }
 
-    const path =
-      typeof successPath === 'function' ? successPath(result.data) : successPath
+    const result = await performMutation({
+      request,
+      schema,
+      mutation,
+      environment,
+    })
 
-    return path ? redirect(path) : json(result.data)
-  } else {
-    return json({ errors: result.errors, values: result.values })
+    if (result.success) {
+      if (beforeSuccess) {
+        const beforeSuccessResponse = await beforeSuccess(request)
+        if (beforeSuccessResponse) return beforeSuccessResponse
+      }
+
+      const path =
+        typeof successPath === 'function'
+          ? successPath(result.data)
+          : successPath
+
+      return path ? redirect(path) : json(result.data)
+    } else {
+      return json({ errors: result.errors, values: result.values })
+    }
   }
+
+  return formAction
 }
 
 export type {
@@ -128,4 +141,5 @@ export type {
   PerformMutationProps,
   FormActionProps,
 }
-export { performMutation, formAction }
+
+export { performMutation, createFormAction }

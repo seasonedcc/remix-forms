@@ -4,7 +4,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { formAction } from 'remix-forms'
+import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'

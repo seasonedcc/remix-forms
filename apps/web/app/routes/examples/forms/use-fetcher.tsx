@@ -4,7 +4,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { formAction } from 'remix-forms'
+import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
@@ -34,10 +34,10 @@ export default () => {
     <Form
       schema={schema}
       fetcher={fetcher}
-      onTransition={({ transition, setFocus, reset, formState }) => {
+      onTransition={({ setFocus, reset, formState }) => {
         const { isDirty } = formState
 
-        if (transition.submission && isDirty) {
+        if (fetcher.submission && isDirty) {
           setFocus('name')
           reset()
         }
@@ -94,10 +94,10 @@ export default function Component() {
       <Form
         schema={schema}
         fetcher={fetcher}
-        onTransition={({ transition, setFocus, reset, formState }) => {
+        onTransition={({ setFocus, reset, formState }) => {
           const { isDirty } = formState
 
-          if (transition.submission && isDirty) {
+          if (fetcher.submission && isDirty) {
             setFocus('name')
             reset()
           }

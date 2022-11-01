@@ -12,13 +12,19 @@
       "outputs": []
     },
     "tsc": {
-      "outputs": []
+      "cache": false,
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
       "outputs": [],
       "dependsOn": [
         "^build"
       ]
+    },
+    "playwright:ci:install": {
+      "outputs": []
     },
     "dev": {
       "cache": false

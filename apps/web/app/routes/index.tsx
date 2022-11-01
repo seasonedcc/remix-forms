@@ -5,7 +5,6 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import {
@@ -22,8 +21,9 @@ import Heading from '~/ui/heading'
 import Code from '~/ui/code'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
+import { formAction } from '~/formAction'
 
-const title = 'Magically create forms + actions in Remix'
+const title = 'The full-stack form library for Remix and React Router'
 const description =
   'All type-safe, with client + server validations, a11y, pending UI, and focus management'
 
@@ -31,7 +31,9 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
 import { makeDomainFunction } from 'domain-functions'
-import { formAction, Form } from 'remix-forms'
+// Learn how to create these files on "Get Started" 👇🏽
+import { formAction } from '~/form-action'
+import { Form } from '~/form'
 
 const schema = z.object({
   firstName: z.string().nonempty(),
@@ -78,8 +80,9 @@ export default function Component() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-16">
       <div className="flex flex-col space-y-8 sm:space-y-16">
         <Heading className="text-center">
-          Magically create forms
-          <br />+ actions in Remix
+          The full-stack form library
+          <br />
+          for Remix and React Router
         </Heading>
         <div className="flex flex-col space-y-6 space-x-0 xl:flex-row xl:space-x-6 xl:space-y-0">
           <Code>{code}</Code>
@@ -132,7 +135,7 @@ export default function Component() {
           <Feature icon={CloudIcon} title="Server-side wiring">
             Perform secure server-side mutations with zero boilerplate.
           </Feature>
-          <Feature icon={ClipboardCheckIcon} title="Fullstack validation">
+          <Feature icon={ClipboardCheckIcon} title="Full-stack validation">
             Validate everything both on the client and the server.
           </Feature>
           <Feature icon={CursorClickIcon} title="Focus management">
