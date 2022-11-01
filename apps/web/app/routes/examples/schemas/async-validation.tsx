@@ -25,10 +25,10 @@ async function validateEmail(email: string) {
 }
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
+  firstName: z.string().min(1),
   email: z
     .string()
-    .nonempty()
+    .min(1)
     .email()
     .refine(validateEmail, { message: 'E-mail already taken.' }),
 })
@@ -43,10 +43,10 @@ async function validateEmail(email: string) {
 }
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
+  firstName: z.string().min(1),
   email: z
     .string()
-    .nonempty()
+    .min(1)
     .email()
     .refine(validateEmail, { message: 'E-mail already taken.' }),
 })

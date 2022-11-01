@@ -18,7 +18,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `const schema = z.object({ email: z.string().nonempty().email() })
+const code = `const schema = z.object({ email: z.string().min(1).email() })
 
 const environmentSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
@@ -40,7 +40,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default () => <Form schema={schema} />`
 
-const schema = z.object({ email: z.string().nonempty().email() })
+const schema = z.object({ email: z.string().min(1).email() })
 
 const environmentSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),

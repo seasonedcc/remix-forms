@@ -17,10 +17,10 @@ const description = 'In this example, we use a custom layout for our fields.'
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  street: z.string().nonempty(),
-  number: z.string().nonempty(),
+  street: z.string().min(1),
+  number: z.string().min(1),
   extendedAddress: z.string().optional(),
-  city: z.string().nonempty(),
+  city: z.string().min(1),
   state: z.enum(['Alabama', 'Alaska', 'Arizona']),
 })
 
@@ -45,10 +45,10 @@ export default () => (
 )`
 
 const schema = z.object({
-  street: z.string().nonempty(),
-  number: z.string().nonempty(),
+  street: z.string().min(1),
+  number: z.string().min(1),
   extendedAddress: z.string().optional(),
-  city: z.string().nonempty(),
+  city: z.string().min(1),
   state: z.enum(['Alabama', 'Alaska', 'Arizona']),
 })
 

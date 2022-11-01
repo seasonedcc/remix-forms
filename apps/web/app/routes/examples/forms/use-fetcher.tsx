@@ -19,7 +19,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `const schema = z.object({ name: z.string().nonempty() })
+const code = `const schema = z.object({ name: z.string().min(1) })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
 
@@ -74,7 +74,7 @@ export default () => {
   )
 }`
 
-const schema = z.object({ name: z.string().nonempty() })
+const schema = z.object({ name: z.string().min(1) })
 
 export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,

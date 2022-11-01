@@ -18,8 +18,8 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
 })
 
 export default () => (
@@ -45,8 +45,8 @@ export default () => (
 )`
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
 })
 
 export const loader: LoaderFunction = () => ({

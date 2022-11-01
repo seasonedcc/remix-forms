@@ -17,8 +17,8 @@ const description = "In this example, we'll edit existing values."
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   companySize: z.number(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
   subscribeToNewsletter: z.boolean().default(true),
@@ -38,8 +38,8 @@ export default () => (
 )`
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   companySize: z.number(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
   subscribeToNewsletter: z.boolean().default(true),

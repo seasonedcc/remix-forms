@@ -21,8 +21,8 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `import { performMutation } from 'remix-forms'
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
@@ -38,8 +38,8 @@ export const action: ActionFunction = async ({ request }) => {
 export default () => <Form schema={schema} />`
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
 })
 
 export const loader: LoaderFunction = () => ({

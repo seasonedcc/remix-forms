@@ -36,8 +36,8 @@ import { formAction } from '~/form-action'
 import { Form } from '~/form'
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
@@ -54,8 +54,8 @@ export const action: ActionFunction = async ({ request }) =>
 export default () => <Form schema={schema} />`
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 

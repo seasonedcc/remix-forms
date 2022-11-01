@@ -22,8 +22,8 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `import { InputError } from 'domain-functions'
 
 const schema = z.object({
-  username: z.string().nonempty(),
-  password: z.string().nonempty(),
+  username: z.string().min(1),
+  password: z.string().min(1),
 })
 
 const takenUsernames = ['foo', 'bar']
@@ -86,8 +86,8 @@ export default function Component() {
 }`
 
 const schema = z.object({
-  username: z.string().nonempty(),
-  password: z.string().nonempty(),
+  username: z.string().min(1),
+  password: z.string().min(1),
 })
 
 const takenUsernames = ['foo', 'bar']

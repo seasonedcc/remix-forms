@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().email(),
-  firstName: z.string().nonempty(),
+  firstName: z.string().min(1),
   preferredSport: z.enum(['Basketball', 'Football', 'Other']),
   newsletter: z.boolean().default(false),
 })
@@ -53,7 +53,7 @@ export default () => (
 
 const schema = z.object({
   email: z.string().email(),
-  firstName: z.string().nonempty(),
+  firstName: z.string().min(1),
   preferredSport: z.enum(['Basketball', 'Football', 'Other']),
   newsletter: z.boolean().default(false),
 })
