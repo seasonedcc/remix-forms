@@ -17,6 +17,7 @@ import social from './social.png'
 import ExternalLink from './ui/external-link'
 import TopBar from './ui/top-bar'
 import ConfTopBar from './ui/conf/top-bar'
+import { GlobalLoading } from './ui/global-loading'
 
 export const meta: MetaFunction = () => {
   return {
@@ -52,7 +53,8 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen w-screen max-w-[100vw] flex-col overflow-y-auto overflow-x-hidden bg-gradient-to-r from-gray-900 to-gray-600 antialiased scrollbar-thin scrollbar-track-gray-500 scrollbar-thumb-gray-700">
+      <body className="flex min-h-screen w-screen max-w-[100vw] flex-col overflow-y-auto bg-gradient-to-r from-gray-900 to-gray-600 antialiased overflow-x-hidden scrollbar-thin scrollbar-track-gray-500 scrollbar-thumb-gray-700">
+        <GlobalLoading />
         <TopBar />
         {!conf && (
           <ConfTopBar>
