@@ -71,8 +71,8 @@ export { Form }
 const schemaCode = `import { z } from 'zod'
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
 })`
 
 const mutationCode = `import { makeDomainFunction } from 'domain-functions'

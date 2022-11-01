@@ -18,16 +18,16 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
 export default () => <Form schema={schema} />`
 
 const schema = z.object({
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 

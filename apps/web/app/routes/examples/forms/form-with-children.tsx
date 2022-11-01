@@ -18,9 +18,9 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  csrfToken: z.string().nonempty(),
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  csrfToken: z.string().min(1),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
   message: z.string().optional(),
 })
@@ -49,9 +49,9 @@ export default () => (
 )`
 
 const schema = z.object({
-  csrfToken: z.string().nonempty(),
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  csrfToken: z.string().min(1),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
   message: z.string().optional(),
 })

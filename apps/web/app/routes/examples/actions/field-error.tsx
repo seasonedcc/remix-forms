@@ -20,8 +20,8 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `import { InputError } from 'domain-functions'
 
 const schema = z.object({
-  email: z.string().nonempty().email(),
-  password: z.string().nonempty(),
+  email: z.string().min(1).email(),
+  password: z.string().min(1),
 })
 
 const takenEmails = ['foo@bar.com', 'bar@foo.com']
@@ -40,8 +40,8 @@ export const action: ActionFunction = async ({ request }) =>
 export default () => <Form schema={schema} />`
 
 const schema = z.object({
-  email: z.string().nonempty().email(),
-  password: z.string().nonempty(),
+  email: z.string().min(1).email(),
+  password: z.string().min(1),
 })
 
 export const loader: LoaderFunction = () => ({

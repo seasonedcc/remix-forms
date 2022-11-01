@@ -17,9 +17,9 @@ const description = 'In this example, we add a hidden field to our form.'
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  csrfToken: z.string().nonempty(),
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  csrfToken: z.string().min(1),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
@@ -32,9 +32,9 @@ export default () => (
 )`
 
 const schema = z.object({
-  csrfToken: z.string().nonempty(),
-  firstName: z.string().nonempty(),
-  email: z.string().nonempty().email(),
+  csrfToken: z.string().min(1),
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 

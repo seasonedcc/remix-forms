@@ -18,8 +18,8 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  email: z.string().nonempty().email(),
-  password: z.string().nonempty(),
+  email: z.string().min(1).email(),
+  password: z.string().min(1),
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => {
@@ -47,8 +47,8 @@ export default () => (
 )`
 
 const schema = z.object({
-  email: z.string().nonempty().email(),
-  password: z.string().nonempty(),
+  email: z.string().min(1).email(),
+  password: z.string().min(1),
 })
 
 export const loader: LoaderFunction = () => ({
