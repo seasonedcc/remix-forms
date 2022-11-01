@@ -143,6 +143,7 @@ type FormProps<Schema extends FormSchema> = {
   multiline?: Array<keyof z.infer<Schema>>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
+  /** @deprecated use your custom json/useActionData in createFormAction/createForm instead */
   parseActionData?: (data: any) => any
   children?: Children<ObjectFromSchema<Schema>>
 } & Omit<BaseFormPropsWithHTMLAttributes, 'children'>
