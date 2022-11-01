@@ -130,7 +130,7 @@ export default function Component() {
             Write your schema once and derive everything else from it.
           </Feature>
           <Feature icon={ShieldCheckIcon} title="Bulletproof DX">
-            100% typed to your schema. Goodbye typos, hello autocomplete!
+            End-to-end typed to your schema. Goodbye typos, hello autocomplete!
           </Feature>
           <Feature icon={CloudIcon} title="Server-side wiring">
             Perform secure server-side mutations with zero boilerplate.
