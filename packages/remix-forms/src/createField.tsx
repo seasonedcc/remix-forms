@@ -105,6 +105,7 @@ function createField<Schema extends SomeZodObject>({
         label,
         options,
         errors,
+        dirty,
         type: typeProp,
         required = false,
         autoFocus = false,

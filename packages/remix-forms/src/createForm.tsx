@@ -1,12 +1,13 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import type { FormSchema, ObjectFromSchema } from './prelude'
+import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
   Path,
   ValidationMode,
+  DeepPartial,
 } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +19,7 @@ import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
+import { coerceValue } from './coercions'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
@@ -37,6 +39,7 @@ type Field<SchemaType> = {
   fieldType: FieldType
   name: keyof SchemaType
   required: boolean
+  dirty: boolean
   label?: string
   options?: Option[]
   errors?: string[]
@@ -219,7 +222,17 @@ function createForm({
     const errors = { ...errorsProp, ...actionErrors }
     const values = { ...valuesProp, ...actionValues }
 
-    const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
+    const schemaShape = objectFromSchema(schema).shape
+    const defaultValues = mapObject(schemaShape, (key, value) => [
+      key,
+      values[key] ?? coerceValue('', value as z.ZodTypeAny),
+    ]) as DeepPartial<SchemaType>
+
+    const form = useForm<SchemaType>({
+      resolver: zodResolver(schema),
+      mode,
+      defaultValues,
+    })
 
     const { formState } = form
     const { errors: formErrors, isValid } = formState
@@ -271,7 +284,6 @@ function createForm({
         Error,
       ],
     )
-    const schemaShape = objectFromSchema(schema).shape
 
     React.useEffect(() => {
       for (const stringKey in schemaShape) {
@@ -328,6 +340,7 @@ function createForm({
         fieldType,
         name: stringKey,
         required,
+        dirty: key in formState.dirtyFields,
         label,
         options: fieldOptions,
         errors: fieldErrors,

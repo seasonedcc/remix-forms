@@ -94,6 +94,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/render-field/error-indicator'}>
             Error indicator
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/render-field/dirty-indicator'}>
+            Dirty indicator
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavLink
             to={'/examples/render-field/inline-checkboxes'}
           >
