@@ -167,7 +167,7 @@ function createForm({
   useSubmit: () => SubmitFunction
   useActionData: () => unknown
 }) {
-  function Form<Schema extends FormSchema>({
+  return function Form<Schema extends FormSchema>({
     component = DefaultComponent,
     fetcher,
     mode = 'onSubmit',
@@ -438,8 +438,6 @@ function createForm({
       </Component>
     )
   }
-
-  return Form
 }
 
 export type {
