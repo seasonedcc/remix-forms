@@ -25,7 +25,7 @@ import { formAction } from '~/formAction'
 
 const title = 'The full-stack form library for Remix and React Router'
 const description =
-  'All type-safe, with client + server validations, a11y, pending UI, and focus management'
+  'E2E type-safe, with client + server validations, a11y, pending UI, and focus management'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -91,7 +91,7 @@ export default function Component() {
               This tiny code creates the form below 👇🏽
             </h3>
             <h2 className="pb-6 text-center text-xl text-white md:text-3xl">
-              All{' '}
+              E2E{' '}
               <span className="underline decoration-green-500">type-safe</span>,
               with client + server{' '}
               <span className="underline decoration-purple-500">
