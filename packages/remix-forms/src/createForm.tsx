@@ -223,9 +223,11 @@ function createForm({
     const values = { ...valuesProp, ...actionValues }
 
     const schemaShape = objectFromSchema(schema).shape
-    const defaultValues = mapObject(schemaShape, (key, value) => [
+    const defaultValues = mapObject(schemaShape, (key, fieldShape) => [
       key,
-      values[key] ?? coerceValue('', value as z.ZodTypeAny),
+      values[key] ??
+        shapeInfo(fieldShape as z.ZodTypeAny)?.getDefaultValue?.() ??
+        coerceValue('', fieldShape as z.ZodTypeAny),
     ]) as DeepPartial<SchemaType>
 
     const form = useForm<SchemaType>({
@@ -311,8 +313,7 @@ function createForm({
       const autoFocus = Boolean(fieldErrors && !autoFocused)
       if (autoFocus) autoFocused = true
 
-      const { typeName, optional, nullable, getDefaultValue, enumValues } =
-        shapeInfo(shape)
+      const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
       const fieldType = typeName ? fieldTypes[typeName] : 'string'
       const required = !(optional || nullable)
@@ -333,7 +334,6 @@ function createForm({
           : rawOptions
 
       const label = (labels && labels[key]) || inferLabel(String(stringKey))
-      const value = values && values[key]
 
       fields.push({
         shape,
@@ -345,8 +345,7 @@ function createForm({
         options: fieldOptions,
         errors: fieldErrors,
         autoFocus,
-        value:
-          value === undefined ? getDefaultValue && getDefaultValue() : value,
+        value: defaultValues[key],
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
