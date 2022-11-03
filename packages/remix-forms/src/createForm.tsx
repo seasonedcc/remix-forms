@@ -19,7 +19,7 @@ import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import { coerceValue } from './coercions'
+import { coerceToForm, coerceValue } from './coercions'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
@@ -224,13 +224,11 @@ function createForm({
 
     const schemaShape = objectFromSchema(schema).shape
     const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
-      const shape = fieldShape as z.ZodTypeAny
-      const { typeName, getDefaultValue } = shapeInfo(shape)
-      const zodDefault =
-        typeName === 'ZodDate'
-          ? parseDate(getDefaultValue?.() as Date | undefined)
-          : getDefaultValue?.()
-      const defaultValue = values[key] ?? zodDefault ?? coerceValue('', shape)
+      const shape = shapeInfo(fieldShape as z.ZodTypeAny)
+      const defaultValue = coerceToForm(
+        values[key] ?? shape?.getDefaultValue?.(),
+        shape,
+      )
 
       return [key, defaultValue]
     }) as DeepPartial<SchemaType>
