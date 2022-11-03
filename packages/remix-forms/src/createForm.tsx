@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
+import { FormSchema, mapObject, ObjectFromSchema, parseDate } from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
@@ -223,12 +223,17 @@ function createForm({
     const values = { ...valuesProp, ...actionValues }
 
     const schemaShape = objectFromSchema(schema).shape
-    const defaultValues = mapObject(schemaShape, (key, fieldShape) => [
-      key,
-      values[key] ??
-        shapeInfo(fieldShape as z.ZodTypeAny)?.getDefaultValue?.() ??
-        coerceValue('', fieldShape as z.ZodTypeAny),
-    ]) as DeepPartial<SchemaType>
+    const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
+      const shape = fieldShape as z.ZodTypeAny
+      const { typeName, getDefaultValue } = shapeInfo(shape)
+      const zodDefault =
+        typeName === 'ZodDate'
+          ? parseDate(getDefaultValue?.() as Date | undefined)
+          : getDefaultValue?.()
+      const defaultValue = values[key] ?? zodDefault ?? coerceValue('', shape)
+
+      return [key, defaultValue]
+    }) as DeepPartial<SchemaType>
 
     const form = useForm<SchemaType>({
       resolver: zodResolver(schema),

@@ -7,6 +7,7 @@ import { mapChildren } from './mapChildren'
 import { coerceValue } from './coercions'
 import type { SmartInputProps } from './createSmartInput'
 import { createSmartInput } from './createSmartInput'
+import { parseDate } from './prelude'
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
@@ -62,14 +63,6 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   string: 'text',
   number: 'text',
   date: 'date',
-}
-
-function parseDate(value?: Date | string) {
-  if (!value) return value
-
-  const dateTime = typeof value === 'string' ? value : value.toISOString()
-  const [date] = dateTime.split('T')
-  return date
 }
 
 function createField<Schema extends SomeZodObject>({

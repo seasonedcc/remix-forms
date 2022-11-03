@@ -25,5 +25,13 @@ function mapObject<T extends Record<string, V>, V, NewValue>(
   )
 }
 
-export { objectFromSchema, mapObject }
+function parseDate(value?: Date | string) {
+  if (!value) return value
+
+  const dateTime = typeof value === 'string' ? value : value.toISOString()
+  const [date] = dateTime.split('T')
+  return date
+}
+
+export { objectFromSchema, mapObject, parseDate }
 export type { FormSchema, ObjectFromSchema }
