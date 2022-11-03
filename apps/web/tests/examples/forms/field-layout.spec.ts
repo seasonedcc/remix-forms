@@ -17,7 +17,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectField(number)
   await example.expectField(extendedAddress, { required: false })
   await example.expectField(city)
-  await example.expectSelect(state, { value: 'Alabama' })
+  await example.expectSelect(state, { value: '' })
   await expect(button).toBeEnabled()
 
   // Client-side validation

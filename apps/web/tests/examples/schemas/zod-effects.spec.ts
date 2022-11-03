@@ -10,7 +10,7 @@ test('With JS enabled', async ({ example }) => {
   await page.goto(route)
 
   // Render
-  await example.expectSelect(planType, { value: 'personal' })
+  await example.expectSelect(planType, { value: '' })
   await example.expectField(quantity, {
     value: '',
     required: true,
@@ -18,6 +18,7 @@ test('With JS enabled', async ({ example }) => {
 
   // fill
   await quantity.input.fill('1')
+  await planType.input.selectOption({ value: 'personal' })
 
   // Submit
   await expect(button).toBeEnabled()

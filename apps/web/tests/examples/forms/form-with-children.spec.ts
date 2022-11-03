@@ -21,7 +21,8 @@ test('With JS enabled', async ({ example }) => {
     "You'll hear from us at this address 👆🏽",
   )
 
-  await example.expectSelect(howYouFoundOutAboutUs, { value: 'fromAFriend' })
+  await example.expectSelect(howYouFoundOutAboutUs, { value: '' })
+  await howYouFoundOutAboutUs.input.selectOption({ value: 'fromAFriend' })
 
   const options = howYouFoundOutAboutUs.input.locator('option')
   await expect(options.first()).toHaveText('Friend')
