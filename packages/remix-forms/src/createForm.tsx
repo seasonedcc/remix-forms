@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import { FormSchema, mapObject, ObjectFromSchema, parseDate } from './prelude'
+import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
 import type { FieldProps, FieldType } from './createField'
 import { createField } from './createField'
-import { mapChildren } from './mapChildren'
+import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
@@ -239,7 +239,7 @@ function createForm({
       defaultValues,
     })
 
-    const { formState } = form
+    const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
     const [disabled, setDisabled] = React.useState(false)
 
@@ -289,6 +289,27 @@ function createForm({
         Error,
       ],
     )
+
+    const children = childrenFn?.({
+      Field,
+      Errors,
+      Error,
+      Button,
+      ...form,
+    })
+
+    React.useEffect(() => {
+      const newDefaults = Object.fromEntries(
+        reduceElements(children, [] as string[][], (prev, child) => {
+          if (child.type === Field) {
+            const { name, value } = child.props
+            prev.push([name, value])
+          }
+          return prev
+        }),
+      )
+      reset({ ...defaultValues, ...newDefaults })
+    }, [])
 
     React.useEffect(() => {
       for (const stringKey in schemaShape) {
@@ -361,15 +382,7 @@ function createForm({
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
 
-    if (childrenFn) {
-      const children = childrenFn({
-        Field,
-        Errors,
-        Error,
-        Button,
-        ...form,
-      })
-
+    if (children) {
       return (
         <Component method={method} onSubmit={onSubmit} {...props}>
           {beforeChildren}
