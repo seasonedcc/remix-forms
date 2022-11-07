@@ -3,10 +3,11 @@ import type { SomeZodObject, z } from 'zod'
 import type { UseFormRegister } from 'react-hook-form'
 import type { FormProps } from '.'
 import type { Field } from './createForm'
-import { mapChildren } from './mapChildren'
+import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
 import type { SmartInputProps } from './createSmartInput'
 import { createSmartInput } from './createSmartInput'
+import { parseDate } from './prelude'
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
@@ -64,14 +65,6 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   date: 'date',
 }
 
-function parseDate(value?: Date | string) {
-  if (!value) return value
-
-  const dateTime = typeof value === 'string' ? value : value.toISOString()
-  const [date] = dateTime.split('T')
-  return date
-}
-
 function createField<Schema extends SomeZodObject>({
   register,
   fieldComponent: Field = 'div',
@@ -105,6 +98,7 @@ function createField<Schema extends SomeZodObject>({
         label,
         options,
         errors,
+        dirty,
         type: typeProp,
         required = false,
         autoFocus = false,

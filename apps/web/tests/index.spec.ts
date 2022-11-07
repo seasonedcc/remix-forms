@@ -11,7 +11,7 @@ test('With JS enabled', async ({ example }) => {
   // Render
   await example.expectField(firstName)
   await example.expectField(email)
-  await example.expectSelect(howYouFoundOutAboutUs, { value: 'fromAFriend' })
+  await example.expectSelect(howYouFoundOutAboutUs, { value: '' })
   const options = howYouFoundOutAboutUs.input.locator('option')
   await expect(options.first()).toHaveText('From A Friend')
   await expect(options.last()).toHaveText('Google')
@@ -47,6 +47,7 @@ test('With JS enabled', async ({ example }) => {
   // Make form be valid
   await email.input.fill('john@doe.com')
   await example.expectValid(email)
+  await howYouFoundOutAboutUs.input.selectOption({ value: 'fromAFriend' })
 
   // Submit form
   button.click()

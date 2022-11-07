@@ -1,23 +1,25 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import type { FormSchema, ObjectFromSchema } from './prelude'
+import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
   Path,
   ValidationMode,
+  DeepPartial,
 } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
 import type { FieldProps, FieldType } from './createField'
 import { createField } from './createField'
-import { mapChildren } from './mapChildren'
+import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
+import { coerceToForm, coerceValue } from './coercions'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
@@ -37,6 +39,7 @@ type Field<SchemaType> = {
   fieldType: FieldType
   name: keyof SchemaType
   required: boolean
+  dirty: boolean
   label?: string
   options?: Option[]
   errors?: string[]
@@ -167,7 +170,7 @@ function createForm({
   useSubmit: () => SubmitFunction
   useActionData: () => unknown
 }) {
-  function Form<Schema extends FormSchema>({
+  return function Form<Schema extends FormSchema>({
     component = DefaultComponent,
     fetcher,
     mode = 'onSubmit',
@@ -219,9 +222,24 @@ function createForm({
     const errors = { ...errorsProp, ...actionErrors }
     const values = { ...valuesProp, ...actionValues }
 
-    const form = useForm<SchemaType>({ resolver: zodResolver(schema), mode })
+    const schemaShape = objectFromSchema(schema).shape
+    const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
+      const shape = shapeInfo(fieldShape as z.ZodTypeAny)
+      const defaultValue = coerceToForm(
+        values[key] ?? shape?.getDefaultValue?.(),
+        shape,
+      )
 
-    const { formState } = form
+      return [key, defaultValue]
+    }) as DeepPartial<SchemaType>
+
+    const form = useForm<SchemaType>({
+      resolver: zodResolver(schema),
+      mode,
+      defaultValues,
+    })
+
+    const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
     const [disabled, setDisabled] = React.useState(false)
 
@@ -271,7 +289,27 @@ function createForm({
         Error,
       ],
     )
-    const schemaShape = objectFromSchema(schema).shape
+
+    const children = childrenFn?.({
+      Field,
+      Errors,
+      Error,
+      Button,
+      ...form,
+    })
+
+    React.useEffect(() => {
+      const newDefaults = Object.fromEntries(
+        reduceElements(children, [] as string[][], (prev, child) => {
+          if (child.type === Field) {
+            const { name, value } = child.props
+            prev.push([name, value])
+          }
+          return prev
+        }),
+      )
+      reset({ ...defaultValues, ...newDefaults })
+    }, [])
 
     React.useEffect(() => {
       for (const stringKey in schemaShape) {
@@ -299,8 +337,7 @@ function createForm({
       const autoFocus = Boolean(fieldErrors && !autoFocused)
       if (autoFocus) autoFocused = true
 
-      const { typeName, optional, nullable, getDefaultValue, enumValues } =
-        shapeInfo(shape)
+      const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
       const fieldType = typeName ? fieldTypes[typeName] : 'string'
       const required = !(optional || nullable)
@@ -321,19 +358,18 @@ function createForm({
           : rawOptions
 
       const label = (labels && labels[key]) || inferLabel(String(stringKey))
-      const value = values && values[key]
 
       fields.push({
         shape,
         fieldType,
         name: stringKey,
         required,
+        dirty: key in formState.dirtyFields,
         label,
         options: fieldOptions,
         errors: fieldErrors,
         autoFocus,
-        value:
-          value === undefined ? getDefaultValue && getDefaultValue() : value,
+        value: defaultValues[key],
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
@@ -346,15 +382,7 @@ function createForm({
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
 
-    if (childrenFn) {
-      const children = childrenFn({
-        Field,
-        Errors,
-        Error,
-        Button,
-        ...form,
-      })
-
+    if (children) {
       return (
         <Component method={method} onSubmit={onSubmit} {...props}>
           {beforeChildren}
@@ -438,8 +466,6 @@ function createForm({
       </Component>
     )
   }
-
-  return Form
 }
 
 export type {

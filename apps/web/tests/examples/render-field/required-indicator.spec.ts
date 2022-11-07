@@ -15,7 +15,7 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectSelect(preferredSport, {
     label: 'Preferred Sport*',
-    value: 'Basketball',
+    value: '',
   })
 
   const options = preferredSport.input.locator('option')

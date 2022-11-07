@@ -12,7 +12,7 @@ test('With JS enabled', async ({ example }) => {
   // Render
   await example.expectField(email)
   await example.expectField(firstName)
-  await example.expectSelect(preferredSport, { value: 'Basketball' })
+  await example.expectSelect(preferredSport, { value: '' })
   const options = preferredSport.input.locator('option')
   await expect(options.first()).toHaveText('Basketball')
   await expect(options.nth(1)).toHaveText('Football')

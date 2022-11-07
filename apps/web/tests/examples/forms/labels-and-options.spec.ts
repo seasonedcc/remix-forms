@@ -12,7 +12,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Render
   await example.expectField(name)
-  await example.expectSelect(roleId, { label: 'Role', value: '1' })
+  await example.expectSelect(roleId, { label: 'Role', value: '' })
   await example.expectField(bio, { multiline: true })
   const options = roleId.input.locator('option')
   await expect(options.first()).toHaveText('Designer')
@@ -29,8 +29,9 @@ test('With JS enabled', async ({ example }) => {
 
   await expect(name.input).toBeFocused()
 
-  // Make first field be valid, focus goes to the second field
+  // Make first and second fields valid, focus goes to the second field
   await name.input.fill('John')
+  await roleId.input.selectOption({ value: '1' })
   await button.click()
   await example.expectValid(name)
   await expect(bio.input).toBeFocused()

@@ -1,6 +1,7 @@
 import type { inputFromForm } from 'domain-functions'
 import type { ZodTypeAny } from 'zod'
-import { shapeInfo } from './shapeInfo'
+import { parseDate } from './prelude'
+import { ShapeInfo, shapeInfo } from './shapeInfo'
 
 type ParsedQs = Awaited<ReturnType<typeof inputFromForm>>
 
@@ -63,4 +64,17 @@ function coerceValue(value: Value, shape?: ZodTypeAny) {
   return value
 }
 
-export { coerceValue }
+function coerceToForm(value: unknown, shape: ShapeInfo) {
+  const { typeName } = shape
+  if (typeName === 'ZodBoolean') {
+    return Boolean(value) ?? false
+  }
+
+  if (typeName === 'ZodDate') {
+    return parseDate(value as Date | undefined)
+  }
+
+  return String(value ?? '')
+}
+
+export { coerceValue, coerceToForm }

@@ -12,10 +12,12 @@ test('With JS enabled', async ({ example }) => {
   await page.goto(route)
 
   // Render
-  await example.expectSelect(mandatory, { value: 'one' })
+  await example.expectSelect(mandatory, { value: '' })
   await example.expectSelect(optional, { required: false })
   await example.expectSelect(nullable, { required: false })
   await example.expectSelect(defaultField, { value: 'two' })
+
+  await mandatory.input.selectOption({ value: 'one' })
 
   await expect(button).toBeEnabled()
 
