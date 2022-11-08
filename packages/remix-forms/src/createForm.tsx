@@ -323,18 +323,18 @@ function createForm({
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transition.state])
 
+    const fieldErrors = (key: keyof SchemaType) => {
+      const message = (formErrors[key] as unknown as FieldError)?.message
+      return (message && [message]) || (errors && errors[key])
+    }
+
     let autoFocused = false
     let fields: Field<SchemaType>[] = []
     for (const stringKey in schemaShape) {
       const key = stringKey as keyof SchemaType
-      const message = (formErrors[key] as unknown as FieldError)?.message
       const shape = schemaShape[stringKey]
-      const errorsArray = (message && [message]) || (errors && errors[key])
 
-      const fieldErrors =
-        errorsArray && errorsArray.length ? errorsArray : undefined
-
-      const autoFocus = Boolean(fieldErrors && !autoFocused)
+      const autoFocus = Boolean(fieldErrors(key) && !autoFocused)
       if (autoFocus) autoFocused = true
 
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
@@ -367,7 +367,7 @@ function createForm({
         dirty: key in formState.dirtyFields,
         label,
         options: fieldOptions,
-        errors: fieldErrors,
+        errors: fieldErrors(key),
         autoFocus,
         value: defaultValues[key],
         hidden:
