@@ -328,7 +328,7 @@ function createForm({
       return (message && [message]) || (errors && errors[key])
     }
     const firstErroredField = Object.keys(schemaShape).find(fieldErrors)
-    const fields = Object.keys(schemaShape).map((key) => {
+    const makeField = (key: string) => {
       const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
@@ -368,7 +368,7 @@ function createForm({
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
         placeholder: placeholders && placeholders[key],
       } as Field<SchemaType>
-    })
+    }
 
     const globalErrors = errors?._global
 
@@ -384,7 +384,7 @@ function createForm({
 
             if (child.type === Field) {
               const { name } = child.props
-              const field = fields.find((field) => field.name === name)
+              const field = makeField(name)
 
               const autoFocus = firstErroredField
                 ? field?.autoFocus
@@ -447,7 +447,9 @@ function createForm({
     return (
       <Component method={method} onSubmit={onSubmit} {...props}>
         {beforeChildren}
-        {fields.map((field) => renderField({ Field, ...field }))}
+        {Object.keys(schemaShape)
+          .map(makeField)
+          .map((field) => renderField({ Field, ...field }))}
         {globalErrors?.length && (
           <Errors role="alert">
             {globalErrors.map((error) => (
