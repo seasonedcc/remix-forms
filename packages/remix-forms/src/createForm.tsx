@@ -395,7 +395,7 @@ function createForm({
       },
     )
 
-    const defaultChildren = (
+    const defaultChildren = () => (
       <>
         {Object.keys(schemaShape)
           .map(makeField)
@@ -451,7 +451,7 @@ function createForm({
     return (
       <Component method={method} onSubmit={onSubmit} {...props}>
         {beforeChildren}
-        {customChildren ?? defaultChildren}
+        {customChildren ?? defaultChildren()}
       </Component>
     )
   }
