@@ -372,78 +372,72 @@ function createForm({
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transition.state])
 
-    if (children) {
-      return (
-        <Component method={method} onSubmit={onSubmit} {...props}>
-          {beforeChildren}
-          {mapChildren(children, (child) => {
-            if (!React.isValidElement(child)) return child
+    const customChildren =
+      children &&
+      mapChildren(children, (child) => {
+        if (!React.isValidElement(child)) return child
 
-            if (child.type === Field) {
-              const { name } = child.props
-              const field = makeField(name)
+        if (child.type === Field) {
+          const { name } = child.props
+          const field = makeField(name)
 
-              const autoFocus = firstErroredField
-                ? field?.autoFocus
-                : child.props.autoFocus
+          const autoFocus = firstErroredField
+            ? field?.autoFocus
+            : child.props.autoFocus
 
-              if (!child.props.children && field) {
-                return renderField({
-                  Field,
-                  ...field,
-                  ...child.props,
-                  autoFocus,
-                })
-              }
+          if (!child.props.children && field) {
+            return renderField({
+              Field,
+              ...field,
+              ...child.props,
+              autoFocus,
+            })
+          }
 
-              return React.cloneElement(child, {
-                shape: field?.shape,
-                fieldType: field?.fieldType,
-                label: field?.label,
-                placeholder: field?.placeholder,
-                required: field?.required,
-                options: field?.options,
-                value: field?.value,
-                errors: field?.errors,
-                hidden: field?.hidden,
-                multiline: field?.multiline,
-                ...child.props,
-                autoFocus,
-              })
-            } else if (child.type === Errors) {
-              if (!child.props.children && !globalErrors?.length) return null
+          return React.cloneElement(child, {
+            shape: field?.shape,
+            fieldType: field?.fieldType,
+            label: field?.label,
+            placeholder: field?.placeholder,
+            required: field?.required,
+            options: field?.options,
+            value: field?.value,
+            errors: field?.errors,
+            hidden: field?.hidden,
+            multiline: field?.multiline,
+            ...child.props,
+            autoFocus,
+          })
+        } else if (child.type === Errors) {
+          if (!child.props.children && !globalErrors?.length) return null
 
-              if (child.props.children || !globalErrors?.length) {
-                return React.cloneElement(child, {
-                  role: 'alert',
-                  ...child.props,
-                })
-              }
+          if (child.props.children || !globalErrors?.length) {
+            return React.cloneElement(child, {
+              role: 'alert',
+              ...child.props,
+            })
+          }
 
-              return React.cloneElement(child, {
-                role: 'alert',
-                children: globalErrors.map((error) => (
-                  <Error key={error}>{error}</Error>
-                )),
-                ...child.props,
-              })
-            } else if (child.type === Button) {
-              return React.cloneElement(child, {
-                disabled,
-                children: buttonLabel,
-                ...child.props,
-              })
-            } else {
-              return child
-            }
-          })}
-        </Component>
-      )
-    }
+          return React.cloneElement(child, {
+            role: 'alert',
+            children: globalErrors.map((error) => (
+              <Error key={error}>{error}</Error>
+            )),
+            ...child.props,
+          })
+        } else if (child.type === Button) {
+          return React.cloneElement(child, {
+            disabled,
+            children: buttonLabel,
+            ...child.props,
+          })
+        } else {
+          return child
+        }
+      })
 
-    return (
-      <Component method={method} onSubmit={onSubmit} {...props}>
-        {beforeChildren}
+    const defaultChildren = (
+      <>
         {Object.keys(schemaShape)
           .map(makeField)
           .map((field) => renderField({ Field, ...field }))}
@@ -455,6 +449,13 @@ function createForm({
           </Errors>
         )}
         <Button disabled={disabled}>{buttonLabel}</Button>
+      </>
+    )
+
+    return (
+      <Component method={method} onSubmit={onSubmit} {...props}>
+        {beforeChildren}
+        {customChildren ?? defaultChildren}
       </Component>
     )
   }
