@@ -241,22 +241,6 @@ function createForm({
 
     const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
-    const [disabled, setDisabled] = React.useState(false)
-
-    React.useEffect(() => {
-      const shouldDisable =
-        mode === 'onChange' || mode === 'all'
-          ? transition.state === 'submitting' || !isValid
-          : transition.state === 'submitting'
-
-      setDisabled(shouldDisable)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [transition.state, formState])
-
-    React.useEffect(() => {
-      onTransition && onTransition(form)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [transition.state])
 
     const onSubmit = (event: any) => {
       form.handleSubmit(() => submit(event.target))(event)
@@ -298,6 +282,17 @@ function createForm({
       ...form,
     })
 
+    const [disabled, setDisabled] = React.useState(false)
+    React.useEffect(() => {
+      const shouldDisable =
+        mode === 'onChange' || mode === 'all'
+          ? transition.state === 'submitting' || !isValid
+          : transition.state === 'submitting'
+
+      setDisabled(shouldDisable)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transition.state, formState])
+
     React.useEffect(() => {
       const newDefaults = Object.fromEntries(
         reduceElements(children, [] as string[][], (prev, child) => {
@@ -322,6 +317,11 @@ function createForm({
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
+
+    React.useEffect(() => {
+      onTransition && onTransition(form)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transition.state])
 
     let autoFocused = false
     let fields: Field<SchemaType>[] = []
