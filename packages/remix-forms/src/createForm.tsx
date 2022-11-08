@@ -285,21 +285,17 @@ function createForm({
 
       const fieldType = typeName ? fieldTypes[typeName] : 'string'
       const required = !(optional || nullable)
-      const propOptions = options && options[key]
-
-      const enumOptions = enumValues
-        ? enumValues.map((value: string) => ({
-            name: inferLabel(value),
-            value,
-          }))
-        : undefined
-
-      const rawOptions = propOptions || enumOptions
 
       const fieldOptions =
-        rawOptions && !required
-          ? ([{ name: '', value: '' }, ...(rawOptions ?? [])] as Option[])
-          : rawOptions
+        options?.[key] ||
+        enumValues?.map((value: string) => ({
+          name: inferLabel(value),
+          value,
+        }))
+
+      const fieldOptionsPlusEmpty =
+        fieldOptions &&
+        ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
 
       const label = (labels && labels[key]) || inferLabel(String(key))
 
@@ -310,7 +306,7 @@ function createForm({
         required,
         dirty: key in formState.dirtyFields,
         label,
-        options: fieldOptions,
+        options: required ? fieldOptions : fieldOptionsPlusEmpty,
         errors: fieldErrors(key),
         autoFocus: key === firstErroredField,
         value: defaultValues[key],
