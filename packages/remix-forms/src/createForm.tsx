@@ -285,7 +285,6 @@ function createForm({
       const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
-      const fieldType = typeName ? fieldTypes[typeName] : 'string'
       const required = !(optional || nullable)
 
       const fieldOptions =
@@ -299,15 +298,13 @@ function createForm({
         fieldOptions &&
         ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
 
-      const label = (labels && labels[key]) || inferLabel(String(key))
-
       return {
         shape,
-        fieldType,
+        fieldType: typeName ? fieldTypes[typeName] : 'string',
         name: key,
         required,
         dirty: key in formState.dirtyFields,
-        label,
+        label: (labels && labels[key]) || inferLabel(String(key)),
         options: required ? fieldOptions : fieldOptionsPlusEmpty(),
         errors: fieldErrors(key),
         autoFocus: key === firstErroredField,
