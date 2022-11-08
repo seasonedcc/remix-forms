@@ -278,7 +278,9 @@ function createForm({
       const message = (formErrors[key] as unknown as FieldError)?.message
       return (message && [message]) || (errors && errors[key])
     }
-    const firstErroredField = Object.keys(schemaShape).find(fieldErrors)
+    const firstErroredField = Object.keys(schemaShape).find(
+      (key) => fieldErrors(key)?.length,
+    )
     const makeField = (key: string) => {
       const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
