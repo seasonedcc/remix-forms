@@ -328,11 +328,8 @@ function createForm({
       return (message && [message]) || (errors && errors[key])
     }
     const firstErroredField = Object.keys(schemaShape).find(fieldErrors)
-
-    let fields: Field<SchemaType>[] = []
-    for (const stringKey in schemaShape) {
-      const key = stringKey as keyof SchemaType
-      const shape = schemaShape[stringKey]
+    const fields = Object.keys(schemaShape).map((key) => {
+      const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
       const fieldType = typeName ? fieldTypes[typeName] : 'string'
@@ -353,12 +350,12 @@ function createForm({
           ? ([{ name: '', value: '' }, ...(rawOptions ?? [])] as Option[])
           : rawOptions
 
-      const label = (labels && labels[key]) || inferLabel(String(stringKey))
+      const label = (labels && labels[key]) || inferLabel(String(key))
 
-      fields.push({
+      return {
         shape,
         fieldType,
-        name: stringKey,
+        name: key,
         required,
         dirty: key in formState.dirtyFields,
         label,
@@ -370,8 +367,8 @@ function createForm({
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
         placeholder: placeholders && placeholders[key],
-      })
-    }
+      } as Field<SchemaType>
+    })
 
     const globalErrors = errors?._global
 
