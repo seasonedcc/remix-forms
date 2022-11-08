@@ -327,16 +327,12 @@ function createForm({
       const message = (formErrors[key] as unknown as FieldError)?.message
       return (message && [message]) || (errors && errors[key])
     }
+    const firstErroredField = Object.keys(schemaShape).find(fieldErrors)
 
-    let autoFocused = false
     let fields: Field<SchemaType>[] = []
     for (const stringKey in schemaShape) {
       const key = stringKey as keyof SchemaType
       const shape = schemaShape[stringKey]
-
-      const autoFocus = Boolean(fieldErrors(key) && !autoFocused)
-      if (autoFocus) autoFocused = true
-
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
 
       const fieldType = typeName ? fieldTypes[typeName] : 'string'
@@ -368,7 +364,7 @@ function createForm({
         label,
         options: fieldOptions,
         errors: fieldErrors(key),
-        autoFocus,
+        autoFocus: key === firstErroredField,
         value: defaultValues[key],
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
@@ -393,7 +389,7 @@ function createForm({
               const { name } = child.props
               const field = fields.find((field) => field.name === name)
 
-              const autoFocus = autoFocused
+              const autoFocus = firstErroredField
                 ? field?.autoFocus
                 : child.props.autoFocus
 
