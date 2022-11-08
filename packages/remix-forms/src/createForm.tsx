@@ -293,7 +293,7 @@ function createForm({
           value,
         }))
 
-      const fieldOptionsPlusEmpty =
+      const fieldOptionsPlusEmpty = () =>
         fieldOptions &&
         ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
 
@@ -306,7 +306,7 @@ function createForm({
         required,
         dirty: key in formState.dirtyFields,
         label,
-        options: required ? fieldOptions : fieldOptionsPlusEmpty,
+        options: required ? fieldOptions : fieldOptionsPlusEmpty(),
         errors: fieldErrors(key),
         autoFocus: key === firstErroredField,
         value: defaultValues[key],
