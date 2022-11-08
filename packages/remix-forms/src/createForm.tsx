@@ -359,16 +359,13 @@ function createForm({
     }, [])
 
     React.useEffect(() => {
-      for (const stringKey in schemaShape) {
-        const key = stringKey as keyof SchemaType
-        if (errors && errors[key]?.length) {
-          try {
-            form.setFocus(key as Path<SchemaType>)
-          } catch {}
-        }
+      if (firstErroredField) {
+        try {
+          form.setFocus(firstErroredField as Path<SchemaType>)
+        } catch {}
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [errorsProp, unparsedActionData])
+    }, [unparsedActionData])
 
     React.useEffect(() => {
       onTransition && onTransition(form)
