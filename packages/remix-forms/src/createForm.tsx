@@ -274,14 +274,6 @@ function createForm({
       ],
     )
 
-    const children = childrenFn?.({
-      Field,
-      Errors,
-      Error,
-      Button,
-      ...form,
-    })
-
     const fieldErrors = (key: keyof SchemaType) => {
       const message = (formErrors[key] as unknown as FieldError)?.message
       return (message && [message]) || (errors && errors[key])
@@ -336,9 +328,15 @@ function createForm({
 
     const [disabled, setDisabled] = React.useState(false)
 
-    const customChildren =
-      children &&
-      mapChildren(children, (child) => {
+    const customChildren = mapChildren(
+      childrenFn?.({
+        Field,
+        Errors,
+        Error,
+        Button,
+        ...form,
+      }),
+      (child) => {
         if (!React.isValidElement(child)) return child
 
         if (child.type === Field) {
@@ -398,7 +396,8 @@ function createForm({
         } else {
           return child
         }
-      })
+      },
+    )
 
     const defaultChildren = (
       <>
@@ -428,7 +427,7 @@ function createForm({
 
     React.useEffect(() => {
       const newDefaults = Object.fromEntries(
-        reduceElements(children, [] as string[][], (prev, child) => {
+        reduceElements(customChildren, [] as string[][], (prev, child) => {
           if (child.type === Field) {
             const { name, value } = child.props
             prev.push([name, value])
