@@ -277,14 +277,16 @@ function createField<Schema extends SomeZodObject>({
         <Field hidden={hidden} style={style} {...props}>
           {fieldType === 'boolean' ? (
             <CheckboxWrapper>
-              <Checkbox
-                id={String(name)}
+              <SmartInput
+                fieldType={fieldType}
                 type={type}
-                {...registerProps}
-                {...a11yProps}
+                selectChildren={selectChildren}
+                multiline={multiline}
                 placeholder={placeholder}
+                registerProps={registerProps}
                 autoFocus={autoFocus}
-                defaultChecked={Boolean(value)}
+                value={value}
+                a11yProps={a11yProps}
               />
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
