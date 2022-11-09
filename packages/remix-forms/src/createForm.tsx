@@ -241,22 +241,6 @@ function createForm({
 
     const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
-    const [disabled, setDisabled] = React.useState(false)
-
-    React.useEffect(() => {
-      const shouldDisable =
-        mode === 'onChange' || mode === 'all'
-          ? transition.state === 'submitting' || !isValid
-          : transition.state === 'submitting'
-
-      setDisabled(shouldDisable)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [transition.state, formState])
-
-    React.useEffect(() => {
-      onTransition && onTransition(form)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [transition.state])
 
     const onSubmit = (event: any) => {
       form.handleSubmit(() => submit(event.target))(event)
@@ -290,17 +274,155 @@ function createForm({
       ],
     )
 
-    const children = childrenFn?.({
-      Field,
-      Errors,
-      Error,
-      Button,
-      ...form,
-    })
+    const fieldErrors = (key: keyof SchemaType) => {
+      const message = (formErrors[key] as unknown as FieldError)?.message
+      return (message && [message]) || (errors && errors[key])
+    }
+    const firstErroredField = Object.keys(schemaShape).find(
+      (key) => fieldErrors(key)?.length,
+    )
+    const makeField = (key: string) => {
+      const shape = schemaShape[key]
+      const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
+
+      const required = !(optional || nullable)
+
+      const fieldOptions =
+        options?.[key] ||
+        enumValues?.map((value: string) => ({
+          name: inferLabel(value),
+          value,
+        }))
+
+      const fieldOptionsPlusEmpty = () =>
+        fieldOptions &&
+        ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
+
+      return {
+        shape,
+        fieldType: typeName ? fieldTypes[typeName] : 'string',
+        name: key,
+        required,
+        dirty: key in formState.dirtyFields,
+        label: (labels && labels[key]) || inferLabel(String(key)),
+        options: required ? fieldOptions : fieldOptionsPlusEmpty(),
+        errors: fieldErrors(key),
+        autoFocus: key === firstErroredField,
+        value: defaultValues[key],
+        hidden:
+          hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
+        multiline: multiline && Boolean(multiline.find((item) => item === key)),
+        placeholder: placeholders && placeholders[key],
+      } as Field<SchemaType>
+    }
+
+    const globalErrors = errors?._global
+
+    const buttonLabel =
+      transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
+
+    const [disabled, setDisabled] = React.useState(false)
+
+    const customChildren = mapChildren(
+      childrenFn?.({
+        Field,
+        Errors,
+        Error,
+        Button,
+        ...form,
+      }),
+      (child) => {
+        if (!React.isValidElement(child)) return child
+
+        if (child.type === Field) {
+          const { name } = child.props
+          const field = makeField(name)
+
+          const autoFocus = firstErroredField
+            ? field?.autoFocus
+            : child.props.autoFocus
+
+          if (!child.props.children && field) {
+            return renderField({
+              Field,
+              ...field,
+              ...child.props,
+              autoFocus,
+            })
+          }
+
+          return React.cloneElement(child, {
+            shape: field?.shape,
+            fieldType: field?.fieldType,
+            label: field?.label,
+            placeholder: field?.placeholder,
+            required: field?.required,
+            options: field?.options,
+            value: field?.value,
+            errors: field?.errors,
+            hidden: field?.hidden,
+            multiline: field?.multiline,
+            ...child.props,
+            autoFocus,
+          })
+        } else if (child.type === Errors) {
+          if (!child.props.children && !globalErrors?.length) return null
+
+          if (child.props.children || !globalErrors?.length) {
+            return React.cloneElement(child, {
+              role: 'alert',
+              ...child.props,
+            })
+          }
+
+          return React.cloneElement(child, {
+            role: 'alert',
+            children: globalErrors.map((error) => (
+              <Error key={error}>{error}</Error>
+            )),
+            ...child.props,
+          })
+        } else if (child.type === Button) {
+          return React.cloneElement(child, {
+            disabled,
+            children: buttonLabel,
+            ...child.props,
+          })
+        } else {
+          return child
+        }
+      },
+    )
+
+    const defaultChildren = () => (
+      <>
+        {Object.keys(schemaShape)
+          .map(makeField)
+          .map((field) => renderField({ Field, ...field }))}
+        {globalErrors?.length && (
+          <Errors role="alert">
+            {globalErrors.map((error) => (
+              <Error key={error}>{error}</Error>
+            ))}
+          </Errors>
+        )}
+        <Button disabled={disabled}>{buttonLabel}</Button>
+      </>
+    )
+
+    React.useEffect(() => {
+      const shouldDisable =
+        mode === 'onChange' || mode === 'all'
+          ? transition.state === 'submitting' || !isValid
+          : transition.state === 'submitting'
+
+      setDisabled(shouldDisable)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transition.state, formState])
 
     React.useEffect(() => {
       const newDefaults = Object.fromEntries(
-        reduceElements(children, [] as string[][], (prev, child) => {
+        reduceElements(customChildren, [] as string[][], (prev, child) => {
           if (child.type === Field) {
             const { name, value } = child.props
             prev.push([name, value])
@@ -312,157 +434,23 @@ function createForm({
     }, [])
 
     React.useEffect(() => {
-      for (const stringKey in schemaShape) {
-        const key = stringKey as keyof SchemaType
-        if (errors && errors[key]?.length) {
-          try {
-            form.setFocus(key as Path<SchemaType>)
-          } catch {}
-        }
+      if (firstErroredField) {
+        try {
+          form.setFocus(firstErroredField as Path<SchemaType>)
+        } catch {}
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
 
-    let autoFocused = false
-    let fields: Field<SchemaType>[] = []
-    for (const stringKey in schemaShape) {
-      const key = stringKey as keyof SchemaType
-      const message = (formErrors[key] as unknown as FieldError)?.message
-      const shape = schemaShape[stringKey]
-      const errorsArray = (message && [message]) || (errors && errors[key])
-
-      const fieldErrors =
-        errorsArray && errorsArray.length ? errorsArray : undefined
-
-      const autoFocus = Boolean(fieldErrors && !autoFocused)
-      if (autoFocus) autoFocused = true
-
-      const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
-
-      const fieldType = typeName ? fieldTypes[typeName] : 'string'
-      const required = !(optional || nullable)
-      const propOptions = options && options[key]
-
-      const enumOptions = enumValues
-        ? enumValues.map((value: string) => ({
-            name: inferLabel(value),
-            value,
-          }))
-        : undefined
-
-      const rawOptions = propOptions || enumOptions
-
-      const fieldOptions =
-        rawOptions && !required
-          ? ([{ name: '', value: '' }, ...(rawOptions ?? [])] as Option[])
-          : rawOptions
-
-      const label = (labels && labels[key]) || inferLabel(String(stringKey))
-
-      fields.push({
-        shape,
-        fieldType,
-        name: stringKey,
-        required,
-        dirty: key in formState.dirtyFields,
-        label,
-        options: fieldOptions,
-        errors: fieldErrors,
-        autoFocus,
-        value: defaultValues[key],
-        hidden:
-          hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
-        multiline: multiline && Boolean(multiline.find((item) => item === key)),
-        placeholder: placeholders && placeholders[key],
-      })
-    }
-
-    const globalErrors = errors?._global
-
-    const buttonLabel =
-      transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
-
-    if (children) {
-      return (
-        <Component method={method} onSubmit={onSubmit} {...props}>
-          {beforeChildren}
-          {mapChildren(children, (child) => {
-            if (!React.isValidElement(child)) return child
-
-            if (child.type === Field) {
-              const { name } = child.props
-              const field = fields.find((field) => field.name === name)
-
-              const autoFocus = autoFocused
-                ? field?.autoFocus
-                : child.props.autoFocus
-
-              if (!child.props.children && field) {
-                return renderField({
-                  Field,
-                  ...field,
-                  ...child.props,
-                  autoFocus,
-                })
-              }
-
-              return React.cloneElement(child, {
-                shape: field?.shape,
-                fieldType: field?.fieldType,
-                label: field?.label,
-                placeholder: field?.placeholder,
-                required: field?.required,
-                options: field?.options,
-                value: field?.value,
-                errors: field?.errors,
-                hidden: field?.hidden,
-                multiline: field?.multiline,
-                ...child.props,
-                autoFocus,
-              })
-            } else if (child.type === Errors) {
-              if (!child.props.children && !globalErrors?.length) return null
-
-              if (child.props.children || !globalErrors?.length) {
-                return React.cloneElement(child, {
-                  role: 'alert',
-                  ...child.props,
-                })
-              }
-
-              return React.cloneElement(child, {
-                role: 'alert',
-                children: globalErrors.map((error) => (
-                  <Error key={error}>{error}</Error>
-                )),
-                ...child.props,
-              })
-            } else if (child.type === Button) {
-              return React.cloneElement(child, {
-                disabled,
-                children: buttonLabel,
-                ...child.props,
-              })
-            } else {
-              return child
-            }
-          })}
-        </Component>
-      )
-    }
+    React.useEffect(() => {
+      onTransition && onTransition(form)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transition.state])
 
     return (
       <Component method={method} onSubmit={onSubmit} {...props}>
         {beforeChildren}
-        {fields.map((field) => renderField({ Field, ...field }))}
-        {globalErrors?.length && (
-          <Errors role="alert">
-            {globalErrors.map((error) => (
-              <Error key={error}>{error}</Error>
-            ))}
-          </Errors>
-        )}
-        <Button disabled={disabled}>{buttonLabel}</Button>
+        {customChildren ?? defaultChildren()}
       </Component>
     )
   }
