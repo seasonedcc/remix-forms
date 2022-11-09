@@ -440,7 +440,7 @@ function createForm({
         } catch {}
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [unparsedActionData])
+    }, [errorsProp, unparsedActionData])
 
     React.useEffect(() => {
       onTransition && onTransition(form)
