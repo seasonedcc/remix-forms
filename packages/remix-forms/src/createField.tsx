@@ -273,21 +273,25 @@ function createField<Schema extends SomeZodObject>({
         )
       }
 
+      const smartInput = (
+        <SmartInput
+          fieldType={fieldType}
+          type={type}
+          selectChildren={selectChildren}
+          multiline={multiline}
+          placeholder={placeholder}
+          registerProps={registerProps}
+          autoFocus={autoFocus}
+          value={value}
+          a11yProps={a11yProps}
+        />
+      )
+
       return (
         <Field hidden={hidden} style={style} {...props}>
           {fieldType === 'boolean' ? (
             <CheckboxWrapper>
-              <SmartInput
-                fieldType={fieldType}
-                type={type}
-                selectChildren={selectChildren}
-                multiline={multiline}
-                placeholder={placeholder}
-                registerProps={registerProps}
-                autoFocus={autoFocus}
-                value={value}
-                a11yProps={a11yProps}
-              />
+              {smartInput}
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
@@ -297,17 +301,7 @@ function createField<Schema extends SomeZodObject>({
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
-              <SmartInput
-                fieldType={fieldType}
-                type={type}
-                selectChildren={selectChildren}
-                multiline={multiline}
-                placeholder={placeholder}
-                registerProps={registerProps}
-                autoFocus={autoFocus}
-                value={value}
-                a11yProps={a11yProps}
-              />
+              {smartInput}
             </>
           )}
           {Boolean(errorsChildren) && (
