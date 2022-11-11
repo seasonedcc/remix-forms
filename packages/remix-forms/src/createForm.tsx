@@ -98,12 +98,8 @@ type FormProps<Schema extends FormSchema> = {
   mode?: keyof ValidationMode
   renderField?: RenderField<ObjectFromSchema<Schema>>
   fieldComponent?: ComponentOrTagName<'div'>
-  globalErrorsComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
-  fieldErrorsComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
+  globalErrorsComponent?: ComponentOrTagName<'div'>
+  fieldErrorsComponent?: ComponentOrTagName<'div'>
   errorComponent?: ComponentOrTagName<'div'>
   labelComponent?: ComponentOrTagName<'label'>
   inputComponent?:
@@ -130,12 +126,8 @@ type FormProps<Schema extends FormSchema> = {
           React.RefAttributes<HTMLInputElement>
       >
     | string
-  checkboxWrapperComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
-  buttonComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['button']>
-    | string
+  checkboxWrapperComponent?: ComponentOrTagName<'div'>
+  buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
