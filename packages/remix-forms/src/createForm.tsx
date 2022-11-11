@@ -17,7 +17,11 @@ import type {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
-import type { FieldComponent, FieldType } from './createField'
+import type {
+  ComponentMappings,
+  FieldComponent,
+  FieldType,
+} from './createField'
 import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
@@ -92,41 +96,12 @@ type FetcherWithComponents = Transition & {
   submit: SubmitFunction
 }
 
-type FormProps<Schema extends FormSchema> = {
+type FormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: FormComponent
   fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
   renderField?: RenderField<ObjectFromSchema<Schema>>
-  fieldComponent?: ComponentOrTagName<'div'>
   globalErrorsComponent?: ComponentOrTagName<'div'>
-  fieldErrorsComponent?: ComponentOrTagName<'div'>
-  errorComponent?: ComponentOrTagName<'div'>
-  labelComponent?: ComponentOrTagName<'label'>
-  inputComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  multilineComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-          React.RefAttributes<HTMLTextAreaElement>
-      >
-    | string
-  selectComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-          React.RefAttributes<HTMLSelectElement>
-      >
-    | string
-  checkboxComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  checkboxWrapperComponent?: ComponentOrTagName<'div'>
   buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
   pendingButtonLabel?: string

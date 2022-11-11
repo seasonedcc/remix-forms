@@ -68,6 +68,38 @@ type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
 type FieldComponent<Schema extends SomeZodObject> =
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
+type ComponentMappings = {
+  fieldComponent?: ComponentOrTagName<'div'>
+  labelComponent?: ComponentOrTagName<'label'>
+  inputComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
+  multilineComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
+  selectComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+          React.RefAttributes<HTMLSelectElement>
+      >
+    | string
+  checkboxComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
+  checkboxWrapperComponent?: ComponentOrTagName<'div'>
+  fieldErrorsComponent?: ComponentOrTagName<'div'>
+  errorComponent?: ComponentOrTagName<'div'>
+}
+
 function createField<Schema extends SomeZodObject>({
   register,
   fieldComponent: Field = 'div',
@@ -79,18 +111,9 @@ function createField<Schema extends SomeZodObject>({
   checkboxWrapperComponent: CheckboxWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
-}: { register: UseFormRegister<any> } & Pick<
-  FormProps<Schema>,
-  | 'fieldComponent'
-  | 'labelComponent'
-  | 'inputComponent'
-  | 'multilineComponent'
-  | 'selectComponent'
-  | 'checkboxComponent'
-  | 'checkboxWrapperComponent'
-  | 'fieldErrorsComponent'
-  | 'errorComponent'
->): FieldComponent<Schema> {
+}: {
+  register: UseFormRegister<any>
+} & ComponentMappings): FieldComponent<Schema> {
   // eslint-disable-next-line react/display-name
   return React.forwardRef<any, FieldProps<Schema>>(
     (
@@ -318,5 +341,5 @@ function createField<Schema extends SomeZodObject>({
   )
 }
 
-export type { FieldType, FieldComponent }
+export type { FieldType, FieldComponent, ComponentMappings }
 export { createField }
