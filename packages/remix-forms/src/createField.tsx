@@ -46,6 +46,13 @@ type Children<Schema extends SomeZodObject> = (
 
 type FieldType = 'string' | 'boolean' | 'number' | 'date'
 
+const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
+  boolean: 'checkbox',
+  string: 'text',
+  number: 'text',
+  date: 'date',
+}
+
 type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
@@ -57,13 +64,6 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
 
 type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
-
-const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
-  boolean: 'checkbox',
-  string: 'text',
-  number: 'text',
-  date: 'date',
-}
 
 function createField<Schema extends SomeZodObject>({
   register,
