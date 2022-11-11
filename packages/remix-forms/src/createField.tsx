@@ -65,6 +65,9 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
 type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
+type FieldComponent<Schema extends SomeZodObject> =
+  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
+
 function createField<Schema extends SomeZodObject>({
   register,
   fieldComponent: Field = 'div',
@@ -87,7 +90,7 @@ function createField<Schema extends SomeZodObject>({
   | 'checkboxWrapperComponent'
   | 'fieldErrorsComponent'
   | 'errorComponent'
->) {
+>): FieldComponent<Schema> {
   // eslint-disable-next-line react/display-name
   return React.forwardRef<any, FieldProps<Schema>>(
     (
@@ -315,5 +318,5 @@ function createField<Schema extends SomeZodObject>({
   )
 }
 
-export type { FieldType, FieldProps }
+export type { FieldType, FieldComponent }
 export { createField }

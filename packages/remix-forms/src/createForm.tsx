@@ -12,7 +12,7 @@ import type {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
-import type { FieldProps, FieldType } from './createField'
+import type { FieldComponent, FieldType } from './createField'
 import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
@@ -49,9 +49,6 @@ type Field<SchemaType> = {
   multiline?: boolean
   placeholder?: string
 }
-
-type FieldComponent<Schema extends SomeZodObject> =
-  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
 type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
