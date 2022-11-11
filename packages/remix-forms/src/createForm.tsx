@@ -144,6 +144,7 @@ type FormProps<Schema extends FormSchema> = {
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
+  autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
   /** @deprecated use your custom json/useActionData in createFormAction/createForm instead */
@@ -199,6 +200,7 @@ function createForm({
     options,
     hiddenFields,
     multiline,
+    autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
     ...props
@@ -307,7 +309,7 @@ function createForm({
         label: (labels && labels[key]) || inferLabel(String(key)),
         options: required ? fieldOptions : fieldOptionsPlusEmpty(),
         errors: fieldErrors(key),
-        autoFocus: key === firstErroredField,
+        autoFocus: key === firstErroredField || key === autoFocusProp,
         value: defaultValues[key],
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
@@ -340,7 +342,7 @@ function createForm({
 
           const autoFocus = firstErroredField
             ? field?.autoFocus
-            : child.props.autoFocus
+            : child.props.autoFocus ?? field?.autoFocus
 
           if (!child.props.children && field) {
             return renderField({

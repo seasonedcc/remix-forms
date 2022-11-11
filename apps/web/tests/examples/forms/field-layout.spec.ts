@@ -19,6 +19,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectField(city)
   await example.expectSelect(state, { value: '' })
   await expect(button).toBeEnabled()
+  await expect(street.input).toBeFocused()
 
   // Client-side validation
   await button.click()
@@ -76,6 +77,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   const state = example.field('state')
 
   await page.goto(route)
+  await example.expectAutoFocus(street)
 
   // Server-side validation
   await button.click()

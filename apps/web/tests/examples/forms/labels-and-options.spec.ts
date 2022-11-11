@@ -18,6 +18,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(options.first()).toHaveText('Designer')
   await expect(options.last()).toHaveText('Dev')
   await expect(button).toBeEnabled()
+  await expect(name.input).toBeFocused()
 
   // Client-side validation
   await button.click()
@@ -59,6 +60,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   const bio = example.field('bio')
 
   await page.goto(route)
+  await example.expectAutoFocus(name)
 
   // Server-side validation
   await button.click()
@@ -75,7 +77,6 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
   await example.expectValid(name)
-  await example.expectNoAutoFocus(name)
   await example.expectAutoFocus(bio)
 
   // Make form be valid and test selecting an option

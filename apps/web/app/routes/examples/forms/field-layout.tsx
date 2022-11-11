@@ -25,7 +25,7 @@ const code = `const schema = z.object({
 })
 
 export default () => (
-  <Form schema={schema}>
+  <Form schema={schema} autoFocus="street">
     {({ Field, Errors, Button }) => (
       <>
         <div className="flex space-x-4">
@@ -64,7 +64,7 @@ export const action: ActionFunction = async ({ request }) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema}>
+      <Form schema={schema} autoFocus="street">
         {({ Field, Errors, Button }) => (
           <>
             <div className="flex space-x-4">

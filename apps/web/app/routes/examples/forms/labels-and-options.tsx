@@ -26,6 +26,7 @@ const code = `const schema = z.object({
 export default () => (
   <Form
     schema={schema}
+    autoFocus="name"
     labels={{ roleId: 'Role' }}
     placeholders={{ name: 'Your name', bio: 'Your story' }}
     options={{
@@ -59,6 +60,7 @@ export default function Component() {
     <Example title={title} description={description}>
       <Form
         schema={schema}
+        autoFocus="name"
         labels={{ roleId: 'Role' }}
         placeholders={{ name: 'Your name', bio: 'Your story' }}
         options={{
