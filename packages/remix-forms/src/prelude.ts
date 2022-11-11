@@ -10,6 +10,10 @@ type ObjectFromSchema<T> = T extends z.SomeZodObject
   ? ObjectFromSchema<R>
   : never
 
+type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
+  | React.ComponentType<JSX.IntrinsicElements[ElementType]>
+  | string
+
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema,
 ): ObjectFromSchema<Schema> {
@@ -34,4 +38,4 @@ function parseDate(value?: Date | string) {
 }
 
 export { objectFromSchema, mapObject, parseDate }
-export type { FormSchema, ObjectFromSchema }
+export type { FormSchema, ObjectFromSchema, ComponentOrTagName }

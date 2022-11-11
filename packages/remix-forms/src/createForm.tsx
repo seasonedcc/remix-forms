@@ -1,6 +1,11 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
+import {
+  ComponentOrTagName,
+  FormSchema,
+  mapObject,
+  ObjectFromSchema,
+} from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
@@ -67,9 +72,9 @@ type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 type Children<Schema extends SomeZodObject> = (
   helpers: {
     Field: FieldComponent<Schema>
-    Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
+    Errors: ComponentOrTagName<'div'>
+    Error: ComponentOrTagName<'div'>
+    Button: ComponentOrTagName<'button'>
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
@@ -92,15 +97,15 @@ type FormProps<Schema extends FormSchema> = {
   fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
   renderField?: RenderField<ObjectFromSchema<Schema>>
-  fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
+  fieldComponent?: ComponentOrTagName<'div'>
   globalErrorsComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
     | string
   fieldErrorsComponent?:
     | React.ComponentType<JSX.IntrinsicElements['div']>
     | string
-  errorComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  labelComponent?: React.ComponentType<JSX.IntrinsicElements['label']> | string
+  errorComponent?: ComponentOrTagName<'div'>
+  labelComponent?: ComponentOrTagName<'label'>
   inputComponent?:
     | React.ForwardRefExoticComponent<
         React.PropsWithoutRef<JSX.IntrinsicElements['input']> &

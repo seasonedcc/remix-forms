@@ -7,11 +7,11 @@ import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
 import type { SmartInputProps } from './createSmartInput'
 import { createSmartInput } from './createSmartInput'
-import { parseDate } from './prelude'
+import { ComponentOrTagName, parseDate } from './prelude'
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
-    Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
+    Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
     Input:
       | React.ForwardRefExoticComponent<
@@ -37,9 +37,9 @@ type Children<Schema extends SomeZodObject> = (
             React.RefAttributes<HTMLInputElement>
         >
       | string
-    CheckboxWrapper: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
+    CheckboxWrapper: ComponentOrTagName<'div'>
+    Errors: ComponentOrTagName<'div'>
+    Error: ComponentOrTagName<'div'>
     ref: React.ForwardedRef<any>
   },
 ) => React.ReactNode
