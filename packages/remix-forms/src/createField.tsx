@@ -1,12 +1,9 @@
 import * as React from 'react'
 import type { SomeZodObject, z } from 'zod'
-import type { UseFormRegister } from 'react-hook-form'
-import type { FormProps } from '.'
+import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { Field } from './createForm'
 import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
-import type { SmartInputProps } from './createSmartInput'
-import { createSmartInput } from './createSmartInput'
 import { ComponentOrTagName, parseDate } from './prelude'
 
 type Children<Schema extends SomeZodObject> = (
@@ -98,6 +95,101 @@ type ComponentMappings = {
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
   fieldErrorsComponent?: ComponentOrTagName<'div'>
   errorComponent?: ComponentOrTagName<'div'>
+}
+
+type SmartInputProps = {
+  fieldType?: FieldType
+  type?: React.HTMLInputTypeAttribute
+  value?: any
+  autoFocus?: boolean
+  selectChildren?: JSX.Element[]
+  multiline?: boolean
+  placeholder?: string
+  registerProps?: UseFormRegisterReturn
+  className?: string
+  a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
+}
+
+function createSmartInput({
+  inputComponent: Input = 'input',
+  multilineComponent: Multiline = 'textarea',
+  selectComponent: Select = 'select',
+  checkboxComponent: Checkbox = 'input',
+}: ComponentMappings) {
+  // eslint-disable-next-line react/display-name
+  return ({
+    fieldType,
+    type,
+    value,
+    autoFocus,
+    selectChildren,
+    multiline,
+    placeholder,
+    registerProps,
+    a11yProps,
+    ...props
+  }: SmartInputProps) => {
+    if (!registerProps) return null
+
+    const { name } = registerProps
+
+    if (fieldType === 'boolean') {
+      return (
+        <Checkbox
+          id={name}
+          type={type}
+          {...registerProps}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          defaultChecked={Boolean(value)}
+          {...a11yProps}
+          {...props}
+        />
+      )
+    }
+
+    if (selectChildren) {
+      return (
+        <Select
+          id={name}
+          {...registerProps}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...a11yProps}
+          {...props}
+        >
+          {selectChildren}
+        </Select>
+      )
+    }
+
+    if (multiline) {
+      return (
+        <Multiline
+          id={name}
+          {...registerProps}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...a11yProps}
+          {...props}
+        />
+      )
+    }
+
+    return (
+      <Input
+        id={name}
+        type={type}
+        {...registerProps}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        defaultValue={value}
+        {...a11yProps}
+        {...props}
+      />
+    )
+  }
 }
 
 function createField<Schema extends SomeZodObject>({

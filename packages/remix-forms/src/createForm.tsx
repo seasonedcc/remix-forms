@@ -28,7 +28,7 @@ import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import { coerceToForm, coerceValue } from './coercions'
+import { coerceToForm } from './coercions'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
