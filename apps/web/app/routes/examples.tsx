@@ -86,7 +86,7 @@ export default function Component() {
             useFetcher
           </SidebarLayout.NavLink>
           <SidebarLayout.NavLink to={'/examples/forms/multiple-forms'}>
-            Multiple Forms
+            Multiple forms
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>renderField</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink

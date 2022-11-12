@@ -11,7 +11,7 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
-const title = 'Multiple Forms'
+const title = 'Multiple forms'
 const description =
   'In this example, we show how you can handle multiple forms in the same route.'
 
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default () => {
   return (
-    <Example title={title} description={description}>
+    <>
       <Form
         schema={loginSchema}
         buttonLabel="Login"
@@ -74,7 +74,7 @@ export default () => {
         hiddenFields={['_action']}
         values={{ _action: '/contact' }}
       />
-    </Example>
+    </>
   )
 }`
 
@@ -110,7 +110,7 @@ export const action: ActionFunction = async ({
 
   if (action === '/login') {
     return formAction({
-      request: request.clone(),
+      request,
       mutation: loginMutation,
       schema: loginSchema,
     })
@@ -118,7 +118,7 @@ export const action: ActionFunction = async ({
 
   if (action === '/contact') {
     return formAction({
-      request: request.clone(),
+      request,
       mutation: contactMutation,
       schema: contactSchema,
     })
