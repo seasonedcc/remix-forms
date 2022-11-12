@@ -18,13 +18,13 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const loginSchema = z.object({
-  _action: z.enum(['/login', '/contact']),
+  _action: z.literal('/login'),
   email: z.string().email(),
   password: z.string().min(8),
 })
-
+  
 const contactSchema = z.object({
-  _action: z.enum(['/login', '/contact']),
+  _action: z.literal('/contact'),
   email: z.string().email(),
   message: z.string().min(1),
 })
@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (action === '/login') {
     return formAction({
-      request: request.clone(),
+      request,
       mutation: loginMutation,
       schema: loginSchema,
     })
@@ -51,7 +51,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (action === '/contact') {
     return formAction({
-      request: request.clone(),
+      request,
       mutation: contactMutation,
       schema: contactSchema,
     })
@@ -79,13 +79,13 @@ export default () => {
 }`
 
 const loginSchema = z.object({
-  _action: z.enum(['/login', '/contact']),
+  _action: z.literal('/login'),
   email: z.string().email(),
   password: z.string().min(8),
 })
 
 const contactSchema = z.object({
-  _action: z.enum(['/login', '/contact']),
+  _action: z.literal('/contact'),
   email: z.string().email(),
   message: z.string().min(1),
 })
