@@ -107,12 +107,24 @@ type SmartInputProps = {
   value?: any
   autoFocus?: boolean
   selectChildren?: JSX.Element[]
+  options?: Option[]
   multiline?: boolean
   placeholder?: string
   registerProps?: UseFormRegisterReturn
   className?: string
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
+
+const makeSelectOption = ({ name, value }: Option) => (
+  <option key={String(value)} value={value}>
+    {name}
+  </option>
+)
+
+const makeOptionComponents = (
+  fn: (option: Option) => JSX.Element,
+  options: Option[] | undefined,
+) => (options ? options.map(fn) : undefined)
 
 function createSmartInput({
   inputComponent: Input = 'input',
@@ -126,7 +138,7 @@ function createSmartInput({
     type,
     value,
     autoFocus,
-    selectChildren,
+    options,
     multiline,
     placeholder,
     registerProps,
@@ -152,7 +164,7 @@ function createSmartInput({
       )
     }
 
-    if (selectChildren) {
+    if (options) {
       return (
         <Select
           id={name}
@@ -162,7 +174,7 @@ function createSmartInput({
           {...a11yProps}
           {...props}
         >
-          {selectChildren}
+          {makeOptionComponents(makeSelectOption, options)}
         </Select>
       )
     }
@@ -234,14 +246,6 @@ function createField<Schema extends SomeZodObject>({
       ref,
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
-
-      const selectChildren = options
-        ? options.map(({ name, value }) => (
-            <option key={String(value)} value={value}>
-              {name}
-            </option>
-          ))
-        : undefined
 
       const errorsChildren = errors?.length
         ? errors.map((error) => <Error key={error}>{error}</Error>)
@@ -319,7 +323,11 @@ function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   fieldType,
                   type,
-                  selectChildren,
+                  selectChildren: makeOptionComponents(
+                    makeSelectOption,
+                    options,
+                  ),
+                  options: options,
                   multiline,
                   placeholder,
                   registerProps,
@@ -356,7 +364,7 @@ function createField<Schema extends SomeZodObject>({
                   ...a11yProps,
                   autoFocus,
                   defaultValue: value,
-                  children: selectChildren,
+                  children: makeOptionComponents(makeSelectOption, options),
                   ...child.props,
                 })
               } else if (child.type === Checkbox) {
@@ -399,7 +407,8 @@ function createField<Schema extends SomeZodObject>({
         <SmartInput
           fieldType={fieldType}
           type={type}
-          selectChildren={selectChildren}
+          selectChildren={makeOptionComponents(makeSelectOption, options)}
+          options={options}
           multiline={multiline}
           placeholder={placeholder}
           registerProps={registerProps}
