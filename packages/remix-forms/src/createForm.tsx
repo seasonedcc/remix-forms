@@ -266,8 +266,7 @@ function createForm({
         }))
 
       const fieldOptionsPlusEmpty = () =>
-        fieldOptions &&
-        ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
+        fieldOptions && [{ name: '', value: '' }, ...(fieldOptions ?? [])]
 
       return {
         shape,
