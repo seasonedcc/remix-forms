@@ -85,6 +85,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/forms/use-fetcher'}>
             useFetcher
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/forms/multiple-forms'}>
+            Multiple forms
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>renderField</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink
             to={'/examples/render-field/required-indicator'}
