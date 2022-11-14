@@ -6,6 +6,10 @@ import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
 import { ComponentOrTagName, parseDate } from './prelude'
 
+type Option = { name: string } & Required<
+  Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
+>
+
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
@@ -433,5 +437,5 @@ function createField<Schema extends SomeZodObject>({
   )
 }
 
-export type { FieldType, FieldComponent, ComponentMappings }
+export type { FieldType, FieldComponent, ComponentMappings, Option }
 export { createField }

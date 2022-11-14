@@ -1,12 +1,11 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import {
+import type {
   ComponentOrTagName,
   FormSchema,
-  mapObject,
   ObjectFromSchema,
 } from './prelude'
-import { objectFromSchema } from './prelude'
+import { objectFromSchema, mapObject } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
@@ -21,6 +20,7 @@ import type {
   ComponentMappings,
   FieldComponent,
   FieldType,
+  Option,
 } from './createField'
 import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
@@ -66,10 +66,6 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
 type RenderField<Schema extends SomeZodObject> = (
   props: RenderFieldProps<Schema>,
 ) => JSX.Element
-
-type Option = { name: string } & Required<
-  Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
->
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
@@ -426,12 +422,5 @@ function createForm({
   }
 }
 
-export type {
-  Field,
-  RenderFieldProps,
-  RenderField,
-  Option,
-  FormProps,
-  FormSchema,
-}
+export type { Field, RenderFieldProps, RenderField, FormProps, FormSchema }
 export { createForm }
