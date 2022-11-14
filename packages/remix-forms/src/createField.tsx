@@ -1,17 +1,14 @@
 import * as React from 'react'
 import type { SomeZodObject, z } from 'zod'
-import type { UseFormRegister } from 'react-hook-form'
-import type { FormProps } from '.'
+import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { Field } from './createForm'
 import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
-import type { SmartInputProps } from './createSmartInput'
-import { createSmartInput } from './createSmartInput'
-import { parseDate } from './prelude'
+import { ComponentOrTagName, parseDate } from './prelude'
 
 type Children<Schema extends SomeZodObject> = (
   helpers: FieldBaseProps<Schema> & {
-    Label: React.ComponentType<JSX.IntrinsicElements['label']> | string
+    Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
     Input:
       | React.ForwardRefExoticComponent<
@@ -37,14 +34,21 @@ type Children<Schema extends SomeZodObject> = (
             React.RefAttributes<HTMLInputElement>
         >
       | string
-    CheckboxWrapper: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
+    CheckboxWrapper: ComponentOrTagName<'div'>
+    Errors: ComponentOrTagName<'div'>
+    Error: ComponentOrTagName<'div'>
     ref: React.ForwardedRef<any>
   },
 ) => React.ReactNode
 
 type FieldType = 'string' | 'boolean' | 'number' | 'date'
+
+const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
+  boolean: 'checkbox',
+  string: 'text',
+  number: 'text',
+  date: 'date',
+}
 
 type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
@@ -58,11 +62,134 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
 type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
-  boolean: 'checkbox',
-  string: 'text',
-  number: 'text',
-  date: 'date',
+type FieldComponent<Schema extends SomeZodObject> =
+  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
+
+type ComponentMappings = {
+  fieldComponent?: ComponentOrTagName<'div'>
+  labelComponent?: ComponentOrTagName<'label'>
+  inputComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
+  multilineComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
+  selectComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+          React.RefAttributes<HTMLSelectElement>
+      >
+    | string
+  checkboxComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
+  checkboxWrapperComponent?: ComponentOrTagName<'div'>
+  fieldErrorsComponent?: ComponentOrTagName<'div'>
+  errorComponent?: ComponentOrTagName<'div'>
+}
+
+type SmartInputProps = {
+  fieldType?: FieldType
+  type?: React.HTMLInputTypeAttribute
+  value?: any
+  autoFocus?: boolean
+  selectChildren?: JSX.Element[]
+  multiline?: boolean
+  placeholder?: string
+  registerProps?: UseFormRegisterReturn
+  className?: string
+  a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
+}
+
+function createSmartInput({
+  inputComponent: Input = 'input',
+  multilineComponent: Multiline = 'textarea',
+  selectComponent: Select = 'select',
+  checkboxComponent: Checkbox = 'input',
+}: ComponentMappings) {
+  // eslint-disable-next-line react/display-name
+  return ({
+    fieldType,
+    type,
+    value,
+    autoFocus,
+    selectChildren,
+    multiline,
+    placeholder,
+    registerProps,
+    a11yProps,
+    ...props
+  }: SmartInputProps) => {
+    if (!registerProps) return null
+
+    const { name } = registerProps
+
+    if (fieldType === 'boolean') {
+      return (
+        <Checkbox
+          id={name}
+          type={type}
+          {...registerProps}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          defaultChecked={Boolean(value)}
+          {...a11yProps}
+          {...props}
+        />
+      )
+    }
+
+    if (selectChildren) {
+      return (
+        <Select
+          id={name}
+          {...registerProps}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...a11yProps}
+          {...props}
+        >
+          {selectChildren}
+        </Select>
+      )
+    }
+
+    if (multiline) {
+      return (
+        <Multiline
+          id={name}
+          {...registerProps}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          defaultValue={value}
+          {...a11yProps}
+          {...props}
+        />
+      )
+    }
+
+    return (
+      <Input
+        id={name}
+        type={type}
+        {...registerProps}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        defaultValue={value}
+        {...a11yProps}
+        {...props}
+      />
+    )
+  }
 }
 
 function createField<Schema extends SomeZodObject>({
@@ -76,18 +203,9 @@ function createField<Schema extends SomeZodObject>({
   checkboxWrapperComponent: CheckboxWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
-}: { register: UseFormRegister<any> } & Pick<
-  FormProps<Schema>,
-  | 'fieldComponent'
-  | 'labelComponent'
-  | 'inputComponent'
-  | 'multilineComponent'
-  | 'selectComponent'
-  | 'checkboxComponent'
-  | 'checkboxWrapperComponent'
-  | 'fieldErrorsComponent'
-  | 'errorComponent'
->) {
+}: {
+  register: UseFormRegister<any>
+} & ComponentMappings): FieldComponent<Schema> {
   // eslint-disable-next-line react/display-name
   return React.forwardRef<any, FieldProps<Schema>>(
     (
@@ -273,19 +391,25 @@ function createField<Schema extends SomeZodObject>({
         )
       }
 
+      const smartInput = (
+        <SmartInput
+          fieldType={fieldType}
+          type={type}
+          selectChildren={selectChildren}
+          multiline={multiline}
+          placeholder={placeholder}
+          registerProps={registerProps}
+          autoFocus={autoFocus}
+          value={value}
+          a11yProps={a11yProps}
+        />
+      )
+
       return (
         <Field hidden={hidden} style={style} {...props}>
           {fieldType === 'boolean' ? (
             <CheckboxWrapper>
-              <Checkbox
-                id={String(name)}
-                type={type}
-                {...registerProps}
-                {...a11yProps}
-                placeholder={placeholder}
-                autoFocus={autoFocus}
-                defaultChecked={Boolean(value)}
-              />
+              {smartInput}
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
@@ -295,17 +419,7 @@ function createField<Schema extends SomeZodObject>({
               <Label id={labelId} htmlFor={String(name)}>
                 {label}
               </Label>
-              <SmartInput
-                fieldType={fieldType}
-                type={type}
-                selectChildren={selectChildren}
-                multiline={multiline}
-                placeholder={placeholder}
-                registerProps={registerProps}
-                autoFocus={autoFocus}
-                value={value}
-                a11yProps={a11yProps}
-              />
+              {smartInput}
             </>
           )}
           {Boolean(errorsChildren) && (
@@ -319,5 +433,5 @@ function createField<Schema extends SomeZodObject>({
   )
 }
 
-export type { FieldType, FieldProps }
+export type { FieldType, FieldComponent, ComponentMappings }
 export { createField }

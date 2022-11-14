@@ -1,6 +1,11 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import { FormSchema, mapObject, ObjectFromSchema } from './prelude'
+import {
+  ComponentOrTagName,
+  FormSchema,
+  mapObject,
+  ObjectFromSchema,
+} from './prelude'
 import { objectFromSchema } from './prelude'
 import type {
   UseFormReturn,
@@ -12,14 +17,18 @@ import type {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
-import type { FieldProps, FieldType } from './createField'
+import type {
+  ComponentMappings,
+  FieldComponent,
+  FieldType,
+} from './createField'
 import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import { coerceToForm, coerceValue } from './coercions'
+import { coerceToForm } from './coercions'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
@@ -50,9 +59,6 @@ type Field<SchemaType> = {
   placeholder?: string
 }
 
-type FieldComponent<Schema extends SomeZodObject> =
-  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
-
 type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
@@ -70,9 +76,9 @@ type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 type Children<Schema extends SomeZodObject> = (
   helpers: {
     Field: FieldComponent<Schema>
-    Errors: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Error: React.ComponentType<JSX.IntrinsicElements['div']> | string
-    Button: React.ComponentType<JSX.IntrinsicElements['button']> | string
+    Errors: ComponentOrTagName<'div'>
+    Error: ComponentOrTagName<'div'>
+    Button: ComponentOrTagName<'button'>
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
@@ -90,50 +96,13 @@ type FetcherWithComponents = Transition & {
   submit: SubmitFunction
 }
 
-type FormProps<Schema extends FormSchema> = {
+type FormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: FormComponent
   fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
   renderField?: RenderField<ObjectFromSchema<Schema>>
-  fieldComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  globalErrorsComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
-  fieldErrorsComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
-  errorComponent?: React.ComponentType<JSX.IntrinsicElements['div']> | string
-  labelComponent?: React.ComponentType<JSX.IntrinsicElements['label']> | string
-  inputComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  multilineComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-          React.RefAttributes<HTMLTextAreaElement>
-      >
-    | string
-  selectComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-          React.RefAttributes<HTMLSelectElement>
-      >
-    | string
-  checkboxComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  checkboxWrapperComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['div']>
-    | string
-  buttonComponent?:
-    | React.ComponentType<JSX.IntrinsicElements['button']>
-    | string
+  globalErrorsComponent?: ComponentOrTagName<'div'>
+  buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
