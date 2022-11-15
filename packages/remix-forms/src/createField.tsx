@@ -96,7 +96,14 @@ type ComponentMappings = {
           React.RefAttributes<HTMLInputElement>
       >
     | string
+  radioComponent?:
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
+  radioWrapperComponent?: ComponentOrTagName<'div'>
   fieldErrorsComponent?: ComponentOrTagName<'div'>
   errorComponent?: ComponentOrTagName<'div'>
 }
@@ -109,6 +116,7 @@ type SmartInputProps = {
   selectChildren?: JSX.Element[]
   options?: Option[]
   multiline?: boolean
+  radio?: boolean
   placeholder?: string
   registerProps?: UseFormRegisterReturn
   className?: string
@@ -120,6 +128,17 @@ const makeSelectOption = ({ name, value }: Option) => (
     {name}
   </option>
 )
+
+const makeRadioOption =
+  (props: Record<string, unknown>) =>
+  ({ name, value }: Option) => {
+    return (
+      <>
+        <input type="radio" value={value} {...props} />
+        <label>{name}</label>
+      </>
+    )
+  }
 
 const makeOptionComponents = (
   fn: (option: Option) => JSX.Element,
@@ -141,6 +160,7 @@ function createSmartInput({
     selectChildren,
     options,
     multiline,
+    radio,
     placeholder,
     registerProps,
     a11yProps,
@@ -165,10 +185,12 @@ function createSmartInput({
         defaultChecked={Boolean(value)}
         {...commonProps}
       />
-    ) : selectChildren || options ? (
+    ) : (selectChildren || options) && !radio ? (
       <Select defaultValue={value} {...commonProps}>
         {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
       </Select>
+    ) : options && radio ? (
+      <>{makeOptionComponents(makeRadioOption(commonProps), options)}</>
     ) : multiline ? (
       <Multiline
         placeholder={placeholder}
@@ -193,8 +215,10 @@ function createField<Schema extends SomeZodObject>({
   inputComponent: Input = 'input',
   multilineComponent: Multiline = 'textarea',
   selectComponent: Select = 'select',
+  radioComponent: Radio = 'input',
   checkboxComponent: Checkbox = 'input',
   checkboxWrapperComponent: CheckboxWrapper = 'div',
+  radioWrapperComponent: RadioWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
 }: {
@@ -216,6 +240,7 @@ function createField<Schema extends SomeZodObject>({
         autoFocus = false,
         value: rawValue,
         multiline = false,
+        radio = false,
         placeholder,
         hidden = false,
         children: childrenFn,
@@ -230,7 +255,7 @@ function createField<Schema extends SomeZodObject>({
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
-      const type = typeProp || types[fieldType]
+      const type = typeProp ?? types[fieldType]
 
       const registerProps = register(String(name), {
         setValueAs: (value) => coerceValue(value, shape),
@@ -253,6 +278,7 @@ function createField<Schema extends SomeZodObject>({
             multilineComponent: Multiline,
             selectComponent: Select,
             checkboxComponent: Checkbox,
+            radioComponent: Radio,
           }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [Input, Multiline, Select, Checkbox],
@@ -282,6 +308,7 @@ function createField<Schema extends SomeZodObject>({
           value,
           hidden,
           multiline,
+          radio,
           placeholder,
         })
 
@@ -388,6 +415,7 @@ function createField<Schema extends SomeZodObject>({
           selectChildren={makeOptionComponents(makeSelectOption, options)}
           options={options}
           multiline={multiline}
+          radio={radio}
           placeholder={placeholder}
           registerProps={registerProps}
           autoFocus={autoFocus}
@@ -405,6 +433,8 @@ function createField<Schema extends SomeZodObject>({
                 {label}
               </Label>
             </CheckboxWrapper>
+          ) : type === 'radio' ? (
+            <RadioWrapper>{smartInput}</RadioWrapper>
           ) : (
             <>
               <Label id={labelId} htmlFor={String(name)}>

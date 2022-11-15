@@ -56,6 +56,7 @@ type Field<SchemaType> = {
   value?: any
   hidden?: boolean
   multiline?: boolean
+  radio?: boolean
   placeholder?: string
 }
 
@@ -109,6 +110,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
+  radio?: Array<keyof z.infer<Schema>>
   autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
@@ -150,7 +152,9 @@ function createForm({
     multilineComponent,
     selectComponent,
     checkboxComponent,
+    radioComponent,
     checkboxWrapperComponent,
+    radioWrapperComponent,
     buttonComponent: Button = 'button',
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel = 'OK',
@@ -165,6 +169,7 @@ function createForm({
     options,
     hiddenFields,
     multiline,
+    radio,
     autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
@@ -223,7 +228,9 @@ function createForm({
           multilineComponent,
           selectComponent,
           checkboxComponent,
+          radioComponent,
           checkboxWrapperComponent,
+          radioWrapperComponent,
           fieldErrorsComponent,
           errorComponent: Error,
         }),
@@ -235,7 +242,9 @@ function createForm({
         multilineComponent,
         selectComponent,
         checkboxComponent,
+        radioComponent,
         checkboxWrapperComponent,
+        radioWrapperComponent,
         fieldErrorsComponent,
         Error,
       ],
@@ -278,6 +287,7 @@ function createForm({
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
+        radio: radio && Boolean(radio.find((item) => item === key)),
         placeholder: placeholders && placeholders[key],
       } as Field<SchemaType>
     }
