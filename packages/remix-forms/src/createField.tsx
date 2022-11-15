@@ -160,7 +160,7 @@ function createSmartInput({
 
     return fieldType === 'boolean' ? (
       <Checkbox
-        type={type}
+        type="checkbox"
         placeholder={placeholder}
         defaultChecked={Boolean(value)}
         {...commonProps}
