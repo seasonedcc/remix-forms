@@ -138,6 +138,7 @@ function createSmartInput({
     type,
     value,
     autoFocus,
+    selectChildren,
     options,
     multiline,
     placeholder,
@@ -174,7 +175,7 @@ function createSmartInput({
           {...a11yProps}
           {...props}
         >
-          {makeOptionComponents(makeSelectOption, options)}
+          {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
         </Select>
       )
     }
