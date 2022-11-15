@@ -150,60 +150,37 @@ function createSmartInput({
 
     const { name } = registerProps
 
-    if (fieldType === 'boolean') {
-      return (
-        <Checkbox
-          id={name}
-          type={type}
-          {...registerProps}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          defaultChecked={Boolean(value)}
-          {...a11yProps}
-          {...props}
-        />
-      )
+    const commonProps = {
+      id: name,
+      autoFocus,
+      ...registerProps,
+      ...a11yProps,
+      ...props,
     }
 
-    if (options) {
-      return (
-        <Select
-          id={name}
-          {...registerProps}
-          autoFocus={autoFocus}
-          defaultValue={value}
-          {...a11yProps}
-          {...props}
-        >
-          {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
-        </Select>
-      )
-    }
-
-    if (multiline) {
-      return (
-        <Multiline
-          id={name}
-          {...registerProps}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          defaultValue={value}
-          {...a11yProps}
-          {...props}
-        />
-      )
-    }
-
-    return (
-      <Input
-        id={name}
+    return fieldType === 'boolean' ? (
+      <Checkbox
         type={type}
-        {...registerProps}
         placeholder={placeholder}
-        autoFocus={autoFocus}
+        defaultChecked={Boolean(value)}
+        {...commonProps}
+      />
+    ) : selectChildren || options ? (
+      <Select defaultValue={value} {...commonProps}>
+        {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
+      </Select>
+    ) : multiline ? (
+      <Multiline
+        placeholder={placeholder}
         defaultValue={value}
-        {...a11yProps}
-        {...props}
+        {...commonProps}
+      />
+    ) : (
+      <Input
+        type={type}
+        placeholder={placeholder}
+        defaultValue={value}
+        {...commonProps}
       />
     )
   }
