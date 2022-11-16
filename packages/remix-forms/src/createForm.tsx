@@ -3,6 +3,7 @@ import type { SomeZodObject, z, ZodTypeAny } from 'zod'
 import type {
   ComponentOrTagName,
   FormSchema,
+  KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
 import { objectFromSchema, mapObject } from './prelude'
@@ -110,7 +111,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
-  radio?: Array<keyof z.infer<Schema>>
+  radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
   autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>

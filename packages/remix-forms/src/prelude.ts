@@ -14,6 +14,10 @@ type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>
   | string
 
+type KeysOfStrings<T extends object> = {
+  [K in keyof T]: T[K] extends string ? K : never
+}[keyof T]
+
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema,
 ): ObjectFromSchema<Schema> {
@@ -38,4 +42,4 @@ function parseDate(value?: Date | string) {
 }
 
 export { objectFromSchema, mapObject, parseDate }
-export type { FormSchema, ObjectFromSchema, ComponentOrTagName }
+export type { FormSchema, ObjectFromSchema, ComponentOrTagName, KeysOfStrings }
