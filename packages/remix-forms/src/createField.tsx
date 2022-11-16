@@ -334,6 +334,7 @@ function createField<Schema extends SomeZodObject>({
                   ),
                   options: options,
                   multiline,
+                  radio,
                   placeholder,
                   registerProps,
                   autoFocus,
