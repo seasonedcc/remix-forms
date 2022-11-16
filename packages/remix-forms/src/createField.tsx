@@ -4,7 +4,7 @@ import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { Field } from './createForm'
 import { mapChildren } from './childrenTraversal'
 import { coerceValue } from './coercions'
-import { ComponentOrTagName, parseDate } from './prelude'
+import { ComponentOrTagName, mapObject, parseDate } from './prelude'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -132,10 +132,13 @@ const makeSelectOption = ({ name, value }: Option) => (
 const makeRadioOption =
   (props: Record<string, unknown>) =>
   ({ name, value }: Option) => {
+    const propsWithUniqueId = mapObject(props, (key, propValue) =>
+      key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
+    )
     return (
       <>
-        <input type="radio" value={value} {...props} />
-        <label>{name}</label>
+        <input type="radio" value={value} {...propsWithUniqueId} />
+        <label htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
       </>
     )
   }
