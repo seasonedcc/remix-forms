@@ -79,9 +79,7 @@ class Example {
       `label-for-${field.name}`,
     )
 
-    required
-      ? await expect(field.input).toHaveAttribute('aria-required', 'true')
-      : await expect(field.input).not.toHaveAttribute('aria-required', 'true')
+    await expect(field.input).toHaveAttribute('aria-required', String(required))
   }
 
   async expectSelect(field: Field, options: FieldOptions = {}) {
