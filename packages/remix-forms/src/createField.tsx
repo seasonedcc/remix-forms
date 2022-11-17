@@ -437,8 +437,14 @@ function createField<Schema extends SomeZodObject>({
                 {label}
               </Label>
             </CheckboxWrapper>
-          ) : type === 'radio' ? (
-            <RadioWrapper>{smartInput}</RadioWrapper>
+          ) : radio ? (
+            <>
+              <Label id={labelId} htmlFor={String(name)}>
+                {label}
+              </Label>
+
+              <RadioWrapper>{smartInput}</RadioWrapper>
+            </>
           ) : (
             <>
               <Label id={labelId} htmlFor={String(name)}>
