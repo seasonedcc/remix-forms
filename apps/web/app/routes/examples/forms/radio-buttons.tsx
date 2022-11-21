@@ -19,16 +19,16 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   name: z.string().min(1),
-  roleId: z.number().int(),
+  role: z.enum(['Designer', 'Dev']),
 })
 
 export default () => (
-  <Form schema={schema} radio={['roleId']} pendingButtonLabel="..." />
+  <Form schema={schema} radio={['role']} pendingButtonLabel="..." />
 )`
 
 const schema = z.object({
   name: z.string().min(1),
-  roleId: z.enum(['Designer', 'Dev']),
+  role: z.enum(['Designer', 'Dev']),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} radio={['roleId']} pendingButtonLabel="..." />
+      <Form schema={schema} radio={['role']} pendingButtonLabel="..." />
     </Example>
   )
 }

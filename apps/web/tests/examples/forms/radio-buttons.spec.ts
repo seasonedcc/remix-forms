@@ -5,13 +5,13 @@ const route = '/examples/forms/radio-buttons'
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
   const name = example.field('name')
-  const radio = example.field('roleId')
+  const radio = example.field('role')
 
   await page.goto(route)
 
   // Render
   await example.expectField(name)
-  await example.expectRadioToHaveOptions('roleId', [
+  await example.expectRadioToHaveOptions('role', [
     { name: 'Dev', value: 'Dev' },
     { name: 'Designer', value: 'Designer' },
   ])
@@ -24,7 +24,7 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(name, 'String must contain at least 1 character(s)')
   await example.expectErrorMessage(
-    'roleId',
+    'role',
     "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
   )
 
@@ -38,20 +38,20 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectData({
     name: 'John Corn',
-    roleId: 'Designer',
+    role: 'Designer',
   })
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { button, page } = example
   const name = example.field('name')
-  const radio = example.field('roleId')
+  const radio = example.field('role')
 
   await page.goto(route)
 
   // Render
   await example.expectField(name)
-  await example.expectRadioToHaveOptions('roleId', [
+  await example.expectRadioToHaveOptions('role', [
     { name: 'Dev', value: 'Dev' },
     { name: 'Designer', value: 'Designer' },
   ])
@@ -64,7 +64,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   await example.expectError(name, 'String must contain at least 1 character(s)')
   await example.expectErrorMessage(
-    'roleId',
+    'role',
     "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
   )
 
@@ -78,6 +78,6 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   await example.expectData({
     name: 'John Corn',
-    roleId: 'Designer',
+    role: 'Designer',
   })
 })
