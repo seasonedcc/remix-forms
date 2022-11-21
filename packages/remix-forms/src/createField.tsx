@@ -137,8 +137,8 @@ const makeRadioOption =
     )
     return (
       <>
-        <input type="radio" value={value} {...propsWithUniqueId} />
-        <label htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
+        <input key={String(propsWithUniqueId?.id)} type="radio" value={value} {...propsWithUniqueId} />
+        <label key={`label-${propsWithUniqueId?.id}`} htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
       </>
     )
   }
