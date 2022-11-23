@@ -38,6 +38,13 @@ type Children<Schema extends SomeZodObject> = (
             React.RefAttributes<HTMLInputElement>
         >
       | string
+    Radio:
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
+    RadioWrapper: ComponentOrTagName<'div'>
     CheckboxWrapper: ComponentOrTagName<'div'>
     Errors: ComponentOrTagName<'div'>
     Error: ComponentOrTagName<'div'>
@@ -129,20 +136,6 @@ const makeSelectOption = ({ name, value }: Option) => (
   </option>
 )
 
-const makeRadioOption =
-  (props: Record<string, unknown>) =>
-  ({ name, value }: Option) => {
-    const propsWithUniqueId = mapObject(props, (key, propValue) =>
-      key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
-    )
-    return (
-      <>
-        <input key={String(propsWithUniqueId?.id)} type="radio" value={value} {...propsWithUniqueId} />
-        <label key={`label-${propsWithUniqueId?.id}`} htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
-      </>
-    )
-  }
-
 const makeOptionComponents = (
   fn: (option: Option) => JSX.Element,
   options: Option[] | undefined,
@@ -153,6 +146,7 @@ function createSmartInput({
   multilineComponent: Multiline = 'textarea',
   selectComponent: Select = 'select',
   checkboxComponent: Checkbox = 'input',
+  radioComponent: Radio = 'input',
 }: ComponentMappings) {
   // eslint-disable-next-line react/display-name
   return ({
@@ -170,6 +164,20 @@ function createSmartInput({
     ...props
   }: SmartInputProps) => {
     if (!registerProps) return null
+
+    const makeRadioOption =
+      (props: Record<string, unknown>) =>
+      ({ name, value }: Option) => {
+        const propsWithUniqueId = mapObject(props, (key, propValue) =>
+          key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
+        )
+        return (
+          <>
+            <Radio key={String(propsWithUniqueId?.id)} type="radio" value={value} {...propsWithUniqueId} />
+            <label key={`label-${propsWithUniqueId?.id}`} htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
+          </>
+        )
+      }
 
     const { name } = registerProps
 
@@ -284,7 +292,7 @@ function createField<Schema extends SomeZodObject>({
             radioComponent: Radio,
           }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [Input, Multiline, Select, Checkbox],
+        [Input, Multiline, Select, Checkbox, Radio],
       )
 
       if (childrenFn) {
@@ -295,6 +303,8 @@ function createField<Schema extends SomeZodObject>({
           Multiline,
           Select,
           Checkbox,
+          Radio,
+          RadioWrapper,
           CheckboxWrapper,
           Errors,
           Error,
