@@ -39,6 +39,7 @@ export default () => (
             { name: 'Friend', value: 'fromAFriend' },
             { name: 'Search', value: 'google' },
           ]}
+          radio
         />
         <Field name="message" multiline placeholder="Your message" />
         <Errors />
@@ -81,6 +82,7 @@ export default function Component() {
                 { name: 'Friend', value: 'fromAFriend' },
                 { name: 'Search', value: 'google' },
               ]}
+              radio
             />
             <Field name="message" multiline placeholder="Your message" />
             <Errors />

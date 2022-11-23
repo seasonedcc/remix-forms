@@ -20,13 +20,12 @@ test('With JS enabled', async ({ example }) => {
   await expect(page.locator('form em:visible')).toHaveText(
     "You'll hear from us at this address 👆🏽",
   )
+  await example.expectRadioToHaveOptions('howYouFoundOutAboutUs', [
+    { name: 'Friend', value: 'fromAFriend' },
+    { name: 'Search', value: 'google' },
+  ])
 
-  await example.expectSelect(howYouFoundOutAboutUs, { value: '' })
-  await howYouFoundOutAboutUs.input.selectOption({ value: 'fromAFriend' })
-
-  const options = howYouFoundOutAboutUs.input.locator('option')
-  await expect(options.first()).toHaveText('Friend')
-  await expect(options.last()).toHaveText('Search')
+  await howYouFoundOutAboutUs.input.first().click()
 
   await example.expectField(message, {
     multiline: true,
@@ -65,10 +64,9 @@ test('With JS enabled', async ({ example }) => {
 
   // Make form be valid
   await email.input.fill('john@doe.com')
-  await howYouFoundOutAboutUs.input.selectOption('google')
+  await howYouFoundOutAboutUs.input.last().click()
   await message.input.fill('My message')
   await example.expectValid(email)
-  await example.expectValid(howYouFoundOutAboutUs)
 
   // Submit form
   button.click()
@@ -126,7 +124,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Make form be valid and test selecting an option
   await email.input.fill('john@doe.com')
-  await howYouFoundOutAboutUs.input.selectOption('google')
+  await howYouFoundOutAboutUs.input.last().click()
 
   // Submit form
   await button.click()
