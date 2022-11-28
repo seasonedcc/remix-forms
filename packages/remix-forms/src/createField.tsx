@@ -110,7 +110,7 @@ type ComponentMappings = {
       >
     | string
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
-  radioWrapperComponent?: ComponentOrTagName<'div'>
+  radioGroupComponent?: ComponentOrTagName<'div'>
   fieldErrorsComponent?: ComponentOrTagName<'div'>
   errorComponent?: ComponentOrTagName<'div'>
 }
@@ -229,7 +229,7 @@ function createField<Schema extends SomeZodObject>({
   radioComponent: Radio = 'input',
   checkboxComponent: Checkbox = 'input',
   checkboxWrapperComponent: CheckboxWrapper = 'div',
-  radioWrapperComponent: RadioWrapper = 'div',
+  radioGroupComponent: RadioWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
 }: {

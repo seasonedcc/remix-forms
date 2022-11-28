@@ -41,7 +41,7 @@ export default function Form<Schema extends FormSchema>(
       selectComponent={Select}
       checkboxComponent={Checkbox}
       radioComponent={Radio}
-      radioWrapperComponent={RadioWrapper}
+      radioGroupComponent={RadioWrapper}
       checkboxWrapperComponent={CheckboxWrapper}
       buttonComponent={SubmitButton}
       globalErrorsComponent={Errors}
