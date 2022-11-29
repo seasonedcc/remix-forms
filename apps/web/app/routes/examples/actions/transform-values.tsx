@@ -13,7 +13,7 @@ import Example from '~/ui/example'
 
 const title = 'Transform values'
 const description =
-  'In this example, we use different schemas for the form and the mutation, passing additional mutation input to formAction.'
+  'In this example, we use different schemas for the form and the mutation, transforming the form values before calling the mutation.'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
