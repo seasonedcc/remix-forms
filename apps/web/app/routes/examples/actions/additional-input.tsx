@@ -1,0 +1,71 @@
+import hljs from 'highlight.js/lib/common'
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
+import { json } from '@remix-run/node'
+import { formAction } from '~/formAction'
+import { z } from 'zod'
+import Form from '~/ui/form'
+import { metaTags } from '~/helpers'
+import { makeDomainFunction } from 'domain-functions'
+import Example from '~/ui/example'
+
+const title = 'Additional input'
+const description =
+  'In this example, we use different schemas for the form and the mutation, passing additional mutation input to formAction.'
+
+export const meta: MetaFunction = () => metaTags({ title, description })
+
+const code = `const formSchema = z.object({
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
+})
+
+const mutationSchema = formSchema.extend({
+  country: z.enum(['BR', 'US']),
+})
+
+const mutation = makeDomainFunction(mutationSchema)(async (values) => values)
+
+export const action: ActionFunction = async ({ request }) =>
+  formAction({
+    request,
+    schema: formSchema,
+    mutation,
+    additionalInput: { country: 'US' },
+  })
+
+export default () => <Form schema={schema} />`
+
+const formSchema = z.object({
+  firstName: z.string().min(1),
+  email: z.string().min(1).email(),
+})
+
+const mutationSchema = formSchema.extend({
+  country: z.enum(['BR', 'US']),
+})
+
+export const loader: LoaderFunction = () => ({
+  code: hljs.highlight(code, { language: 'ts' }).value,
+})
+
+const mutation = makeDomainFunction(mutationSchema)(async (values) => values)
+
+export const action: ActionFunction = async ({ request }) =>
+  formAction({
+    request,
+    schema: formSchema,
+    mutation,
+    additionalInput: { country: 'US' },
+  })
+
+export default function Component() {
+  return (
+    <Example title={title} description={description}>
+      <Form schema={formSchema} />
+    </Example>
+  )
+}

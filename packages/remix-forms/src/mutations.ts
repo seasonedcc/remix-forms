@@ -30,6 +30,7 @@ type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   schema: Schema
   mutation: DomainFunction<D>
   environment?: unknown
+  additionalInput?: Record<string, unknown>
 }
 
 type FormActionProps<Schema extends FormSchema, D extends unknown> = {
@@ -60,10 +61,14 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   schema,
   mutation,
   environment,
+  additionalInput = {},
 }: PerformMutationProps<Schema, D>): Promise<
   PerformMutation<z.infer<Schema>, D>
 > {
-  const values = await getFormValues(request, schema)
+  const values = {
+    ...additionalInput,
+    ...(await getFormValues(request, schema)),
+  }
   const result = await mutation(values, environment)
 
   if (result.success) {
@@ -97,6 +102,7 @@ function createFormAction({
     schema,
     mutation,
     environment,
+    additionalInput,
     beforeAction,
     beforeSuccess,
     successPath,
@@ -111,6 +117,7 @@ function createFormAction({
       schema,
       mutation,
       environment,
+      additionalInput,
     })
 
     if (result.success) {
