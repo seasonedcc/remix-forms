@@ -11,7 +11,7 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
-const title = 'Additional input'
+const title = 'Transform values'
 const description =
   'In this example, we use different schemas for the form and the mutation, passing additional mutation input to formAction.'
 
