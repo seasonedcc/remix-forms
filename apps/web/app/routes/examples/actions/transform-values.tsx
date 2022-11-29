@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({ request }) =>
     request,
     schema: formSchema,
     mutation,
-    additionalInput: { country: 'US' },
+    transformValues: (values) => ({ ...values, country: 'US' }),
   })
 
 export default () => <Form schema={schema} />`
@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request }) =>
     request,
     schema: formSchema,
     mutation,
-    additionalInput: { country: 'US' },
+    transformValues: (values) => ({ ...values, country: 'US' }),
   })
 
 export default function Component() {

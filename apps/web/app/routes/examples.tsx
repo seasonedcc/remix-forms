@@ -25,8 +25,8 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/actions/field-error'}>
             Field error
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={'/examples/actions/additional-input'}>
-            Additional input
+          <SidebarLayout.NavLink to={'/examples/actions/transform-values'}>
+            Transform values
           </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Modes</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/examples/modes/on-submit'}>

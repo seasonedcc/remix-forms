@@ -1,6 +1,6 @@
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
-const route = '/examples/actions/additional-input'
+const route = '/examples/actions/transform-values'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
