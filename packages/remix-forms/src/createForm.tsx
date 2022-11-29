@@ -156,6 +156,7 @@ function createForm({
     radioComponent,
     checkboxWrapperComponent,
     radioGroupComponent,
+    radioWrapperComponent,
     buttonComponent: Button = 'button',
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel = 'OK',

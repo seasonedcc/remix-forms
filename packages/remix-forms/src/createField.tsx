@@ -110,6 +110,7 @@ type ComponentMappings = {
       >
     | string
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
+  radioWrapperComponent?: ComponentOrTagName<'div'>
   radioGroupComponent?: ComponentOrTagName<'div'>
   fieldErrorsComponent?: ComponentOrTagName<'div'>
   errorComponent?: ComponentOrTagName<'div'>
@@ -147,6 +148,7 @@ function createSmartInput({
   selectComponent: Select = 'select',
   checkboxComponent: Checkbox = 'input',
   radioComponent: Radio = 'input',
+  radioWrapperComponent: RadioWrapper = React.Fragment
 }: ComponentMappings) {
   // eslint-disable-next-line react/display-name
   return ({
@@ -172,10 +174,10 @@ function createSmartInput({
           key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
         )
         return (
-          <>
+          <RadioWrapper>
             <Radio key={String(propsWithUniqueId?.id)} type="radio" value={value} {...propsWithUniqueId} />
             <label key={`label-${propsWithUniqueId?.id}`} htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
-          </>
+          </RadioWrapper>
         )
       }
 
