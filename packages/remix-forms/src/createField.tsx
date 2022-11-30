@@ -187,7 +187,6 @@ function createSmartInput({
       id: name,
       autoFocus,
       ...registerProps,
-      ...a11yProps,
       ...props,
     }
 
@@ -197,9 +196,10 @@ function createSmartInput({
         placeholder={placeholder}
         defaultChecked={Boolean(value)}
         {...commonProps}
+        {...a11yProps}
       />
     ) : (selectChildren || options) && !radio ? (
-      <Select defaultValue={value} {...commonProps}>
+      <Select defaultValue={value} {...commonProps} {...a11yProps} >
         {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
       </Select>
     ) : options && radio ? (
@@ -209,6 +209,7 @@ function createSmartInput({
         placeholder={placeholder}
         defaultValue={value}
         {...commonProps}
+        {...a11yProps}
       />
     ) : (
       <Input
@@ -216,6 +217,7 @@ function createSmartInput({
         placeholder={placeholder}
         defaultValue={value}
         {...commonProps}
+        {...a11yProps}
       />
     )
   }
@@ -450,7 +452,7 @@ function createField<Schema extends SomeZodObject>({
               </Label>
             </CheckboxWrapper>
           ) : radio ? (
-            <RadioGroup>
+            <RadioGroup {...a11yProps}>
               <legend id={labelId}>
                 {label}
               </legend>
