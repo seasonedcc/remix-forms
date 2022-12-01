@@ -122,7 +122,6 @@ type SmartInputProps = {
   type?: React.HTMLInputTypeAttribute
   value?: any
   autoFocus?: boolean
-  selectChildren?: JSX.Element[]
   options?: Option[]
   multiline?: boolean
   radio?: boolean
@@ -158,7 +157,6 @@ function createSmartInput({
     type,
     value,
     autoFocus,
-    selectChildren,
     options,
     multiline,
     radio,
@@ -170,14 +168,19 @@ function createSmartInput({
     if (!registerProps) return null
 
     const makeRadioOption =
-      (props: Record<string, unknown>) =>
+      (props: Record<string, unknown>, checkedValue: Option['value']) =>
       ({ name, value }: Option) => {
         const propsWithUniqueId = mapObject(props, (key, propValue) =>
           key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
         )
         return (
           <RadioWrapper key={String(propsWithUniqueId?.id)}>
-            <Radio type="radio" value={value} {...propsWithUniqueId} />
+            <Radio
+              type="radio"
+              value={value}
+              defaultChecked={value === checkedValue}
+              {...propsWithUniqueId}
+            />
             <Label htmlFor={String(propsWithUniqueId?.id)}>{name}</Label>
           </RadioWrapper>
         )
@@ -200,12 +203,12 @@ function createSmartInput({
         {...commonProps}
         {...a11yProps}
       />
-    ) : (selectChildren || options) && !radio ? (
+    ) : options && !radio ? (
       <Select defaultValue={value} {...commonProps} {...a11yProps}>
-        {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
+        {makeOptionComponents(makeSelectOption, options)}
       </Select>
     ) : options && radio ? (
-      <>{makeOptionComponents(makeRadioOption(commonProps), options)}</>
+      <>{makeOptionComponents(makeRadioOption(commonProps, value), options)}</>
     ) : multiline ? (
       <Multiline
         placeholder={placeholder}
@@ -351,10 +354,6 @@ function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   fieldType,
                   type,
-                  selectChildren: makeOptionComponents(
-                    makeSelectOption,
-                    options,
-                  ),
                   options: options,
                   multiline,
                   radio,
@@ -436,7 +435,6 @@ function createField<Schema extends SomeZodObject>({
         <SmartInput
           fieldType={fieldType}
           type={type}
-          selectChildren={makeOptionComponents(makeSelectOption, options)}
           options={options}
           multiline={multiline}
           radio={radio}
