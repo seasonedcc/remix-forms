@@ -1,12 +1,12 @@
 import * as React from 'react'
 import type { SomeZodObject, z, ZodTypeAny } from 'zod'
-import {
+import type {
   ComponentOrTagName,
   FormSchema,
-  mapObject,
+  KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
-import { objectFromSchema } from './prelude'
+import { objectFromSchema, mapObject } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
@@ -21,6 +21,7 @@ import type {
   ComponentMappings,
   FieldComponent,
   FieldType,
+  Option,
 } from './createField'
 import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
@@ -56,6 +57,7 @@ type Field<SchemaType> = {
   value?: any
   hidden?: boolean
   multiline?: boolean
+  radio?: boolean
   placeholder?: string
 }
 
@@ -66,10 +68,6 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
 type RenderField<Schema extends SomeZodObject> = (
   props: RenderFieldProps<Schema>,
 ) => JSX.Element
-
-type Option = { name: string } & Required<
-  Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
->
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
@@ -113,6 +111,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
+  radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
   autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
@@ -154,7 +153,10 @@ function createForm({
     multilineComponent,
     selectComponent,
     checkboxComponent,
+    radioComponent,
     checkboxWrapperComponent,
+    radioGroupComponent,
+    radioWrapperComponent,
     buttonComponent: Button = 'button',
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel = 'OK',
@@ -169,6 +171,7 @@ function createForm({
     options,
     hiddenFields,
     multiline,
+    radio,
     autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
@@ -227,7 +230,9 @@ function createForm({
           multilineComponent,
           selectComponent,
           checkboxComponent,
+          radioComponent,
           checkboxWrapperComponent,
+          radioGroupComponent,
           fieldErrorsComponent,
           errorComponent: Error,
         }),
@@ -239,7 +244,9 @@ function createForm({
         multilineComponent,
         selectComponent,
         checkboxComponent,
+        radioComponent,
         checkboxWrapperComponent,
+        radioGroupComponent,
         fieldErrorsComponent,
         Error,
       ],
@@ -266,8 +273,7 @@ function createForm({
         }))
 
       const fieldOptionsPlusEmpty = () =>
-        fieldOptions &&
-        ([{ name: '', value: '' }, ...(fieldOptions ?? [])] as Option[])
+        fieldOptions && [{ name: '', value: '' }, ...(fieldOptions ?? [])]
 
       return {
         shape,
@@ -283,6 +289,7 @@ function createForm({
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
+        radio: radio && Boolean(radio.find((item) => item === key)),
         placeholder: placeholders && placeholders[key],
       } as Field<SchemaType>
     }
@@ -427,12 +434,5 @@ function createForm({
   }
 }
 
-export type {
-  Field,
-  RenderFieldProps,
-  RenderField,
-  Option,
-  FormProps,
-  FormSchema,
-}
+export type { Field, RenderFieldProps, RenderField, FormProps, FormSchema }
 export { createForm }

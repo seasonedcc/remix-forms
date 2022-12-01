@@ -64,6 +64,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/forms/labels-and-options'}>
             Labels, options, etc
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/forms/radio-buttons'}>
+            Radio buttons
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavLink to={'/examples/forms/hidden-field'}>
             Hidden field
           </SidebarLayout.NavLink>

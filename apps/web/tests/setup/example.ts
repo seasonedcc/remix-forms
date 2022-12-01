@@ -16,6 +16,7 @@ type FieldOptions = {
   required?: boolean
   invalid?: boolean
   multiline?: boolean
+  radio?: boolean
   options?: { name: string; value: string }[]
 }
 
@@ -79,9 +80,20 @@ class Example {
       `label-for-${field.name}`,
     )
 
-    required
-      ? await expect(field.input).toHaveAttribute('aria-required', 'true')
-      : await expect(field.input).not.toHaveAttribute('aria-required', 'true')
+    await expect(field.input).toHaveAttribute('aria-required', String(required))
+  }
+
+  async expectRadioToHaveOptions(
+    radioName: string,
+    options: { name: string; value: string }[],
+  ) {
+    Promise.all(
+      options.map(({ name, value }) => {
+        expect(
+          this.page.locator(`[name="${radioName}"][value="${value}"]:visible`),
+        ).toBeVisible()
+      }),
+    )
   }
 
   async expectSelect(field: Field, options: FieldOptions = {}) {
@@ -108,8 +120,11 @@ class Example {
   async expectError(field: Field, message: string) {
     await this.expectInvalid(field)
 
+    await this.expectErrorMessage(field.name, message)
+  }
+  async expectErrorMessage(fieldName: string, message: string) {
     await expect(
-      this.page.locator(`#errors-for-${field.name}:visible`),
+      this.page.locator(`#errors-for-${fieldName}:visible`),
     ).toHaveText(message)
   }
 

@@ -8,7 +8,11 @@ import Label from './label'
 import Select from './select'
 import SubmitButton from './submit-button'
 import Checkbox from './checkbox'
+import Radio from './radio'
+
 import CheckboxWrapper from './checkbox-wrapper'
+import RadioWrapper from './radio-wrapper'
+
 import TextArea from './text-area'
 import {
   Form as RemixForm,
@@ -36,6 +40,8 @@ export default function Form<Schema extends FormSchema>(
       multilineComponent={TextArea}
       selectComponent={Select}
       checkboxComponent={Checkbox}
+      radioComponent={Radio}
+      radioGroupComponent={RadioWrapper}
       checkboxWrapperComponent={CheckboxWrapper}
       buttonComponent={SubmitButton}
       globalErrorsComponent={Errors}
