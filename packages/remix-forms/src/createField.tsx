@@ -15,36 +15,37 @@ type Children<Schema extends SomeZodObject> = (
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
     Input:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
     Multiline:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-      React.RefAttributes<HTMLTextAreaElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+            React.RefAttributes<HTMLTextAreaElement>
+        >
+      | string
     Select:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-      React.RefAttributes<HTMLSelectElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+            React.RefAttributes<HTMLSelectElement>
+        >
+      | string
     Checkbox:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
+    RadioGroup: ComponentOrTagName<'fieldset'>
+    RadioWrapper: ComponentOrTagName<'div'>
     Radio:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
-    RadioWrapper: ComponentOrTagName<'fieldset'>
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
     CheckboxWrapper: ComponentOrTagName<'div'>
     Errors: ComponentOrTagName<'div'>
     Error: ComponentOrTagName<'div'>
@@ -80,35 +81,35 @@ type ComponentMappings = {
   fieldComponent?: ComponentOrTagName<'div'>
   labelComponent?: ComponentOrTagName<'label'>
   inputComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   multilineComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-    React.RefAttributes<HTMLTextAreaElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
   selectComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-    React.RefAttributes<HTMLSelectElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+          React.RefAttributes<HTMLSelectElement>
+      >
+    | string
   checkboxComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   radioComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
   radioWrapperComponent?: ComponentOrTagName<'div'>
   radioGroupComponent?: ComponentOrTagName<'fieldset'>
@@ -121,7 +122,6 @@ type SmartInputProps = {
   type?: React.HTMLInputTypeAttribute
   value?: any
   autoFocus?: boolean
-  selectChildren?: JSX.Element[]
   options?: Option[]
   multiline?: boolean
   radio?: boolean
@@ -147,8 +147,9 @@ function createSmartInput({
   multilineComponent: Multiline = 'textarea',
   selectComponent: Select = 'select',
   checkboxComponent: Checkbox = 'input',
+  labelComponent: Label = 'label',
   radioComponent: Radio = 'input',
-  radioWrapperComponent: RadioWrapper = React.Fragment
+  radioWrapperComponent: RadioWrapper = 'div',
 }: ComponentMappings) {
   // eslint-disable-next-line react/display-name
   return ({
@@ -156,7 +157,6 @@ function createSmartInput({
     type,
     value,
     autoFocus,
-    selectChildren,
     options,
     multiline,
     radio,
@@ -168,18 +168,23 @@ function createSmartInput({
     if (!registerProps) return null
 
     const makeRadioOption =
-      (props: Record<string, unknown>) =>
-        ({ name, value }: Option) => {
-          const propsWithUniqueId = mapObject(props, (key, propValue) =>
-            key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
-          )
-          return (
-            <RadioWrapper>
-              <Radio key={String(propsWithUniqueId?.id)} type="radio" value={value} {...propsWithUniqueId} />
-              <label key={`label-${propsWithUniqueId?.id}`} htmlFor={String(propsWithUniqueId?.id)}>{name}</label>
-            </RadioWrapper>
-          )
-        }
+      (props: Record<string, unknown>, checkedValue: Option['value']) =>
+      ({ name, value }: Option) => {
+        const propsWithUniqueId = mapObject(props, (key, propValue) =>
+          key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
+        )
+        return (
+          <RadioWrapper key={String(propsWithUniqueId?.id)}>
+            <Radio
+              type="radio"
+              value={value}
+              defaultChecked={value === checkedValue}
+              {...propsWithUniqueId}
+            />
+            <Label htmlFor={String(propsWithUniqueId?.id)}>{name}</Label>
+          </RadioWrapper>
+        )
+      }
 
     const { name } = registerProps
 
@@ -198,12 +203,12 @@ function createSmartInput({
         {...commonProps}
         {...a11yProps}
       />
-    ) : (selectChildren || options) && !radio ? (
-      <Select defaultValue={value} {...commonProps} {...a11yProps} >
-        {selectChildren ?? makeOptionComponents(makeSelectOption, options)}
+    ) : options && !radio ? (
+      <Select defaultValue={value} {...commonProps} {...a11yProps}>
+        {makeOptionComponents(makeSelectOption, options)}
       </Select>
     ) : options && radio ? (
-      <>{makeOptionComponents(makeRadioOption(commonProps), options)}</>
+      <>{makeOptionComponents(makeRadioOption(commonProps, value), options)}</>
     ) : multiline ? (
       <Multiline
         placeholder={placeholder}
@@ -234,6 +239,7 @@ function createField<Schema extends SomeZodObject>({
   checkboxComponent: Checkbox = 'input',
   checkboxWrapperComponent: CheckboxWrapper = 'div',
   radioGroupComponent: RadioGroup = 'fieldset',
+  radioWrapperComponent: RadioWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
 }: {
@@ -294,9 +300,11 @@ function createField<Schema extends SomeZodObject>({
             selectComponent: Select,
             checkboxComponent: Checkbox,
             radioComponent: Radio,
+            radioWrapperComponent: RadioWrapper,
+            labelComponent: Label,
           }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [Input, Multiline, Select, Checkbox, Radio],
+        [Input, Multiline, Select, Checkbox, Radio, RadioWrapper, Label],
       )
 
       if (childrenFn) {
@@ -308,7 +316,8 @@ function createField<Schema extends SomeZodObject>({
           Select,
           Checkbox,
           Radio,
-          RadioWrapper: RadioGroup,
+          RadioGroup,
+          RadioWrapper,
           CheckboxWrapper,
           Errors,
           Error,
@@ -345,10 +354,6 @@ function createField<Schema extends SomeZodObject>({
                 return React.cloneElement(child, {
                   fieldType,
                   type,
-                  selectChildren: makeOptionComponents(
-                    makeSelectOption,
-                    options,
-                  ),
                   options: options,
                   multiline,
                   radio,
@@ -430,7 +435,6 @@ function createField<Schema extends SomeZodObject>({
         <SmartInput
           fieldType={fieldType}
           type={type}
-          selectChildren={makeOptionComponents(makeSelectOption, options)}
           options={options}
           multiline={multiline}
           radio={radio}
@@ -452,13 +456,10 @@ function createField<Schema extends SomeZodObject>({
               </Label>
             </CheckboxWrapper>
           ) : radio ? (
-            <RadioGroup {...a11yProps}>
-              <legend id={labelId}>
-                {label}
-              </legend>
-              {smartInput}
-            </RadioGroup>
-
+            <>
+              <Label id={labelId}>{label}</Label>
+              <RadioGroup {...a11yProps}>{smartInput}</RadioGroup>
+            </>
           ) : (
             <>
               <Label id={labelId} htmlFor={String(name)}>

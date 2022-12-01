@@ -10,8 +10,8 @@ import SubmitButton from './submit-button'
 import Checkbox from './checkbox'
 import Radio from './radio'
 
-import CheckboxWrapper from './checkbox-wrapper'
-import RadioWrapper from './radio-wrapper'
+import InputWrapper from './input-wrapper'
+import RadioGroup from './radio-group'
 
 import TextArea from './text-area'
 import {
@@ -39,10 +39,11 @@ export default function Form<Schema extends FormSchema>(
       inputComponent={Input}
       multilineComponent={TextArea}
       selectComponent={Select}
-      checkboxComponent={Checkbox}
       radioComponent={Radio}
-      radioGroupComponent={RadioWrapper}
-      checkboxWrapperComponent={CheckboxWrapper}
+      radioGroupComponent={RadioGroup}
+      radioWrapperComponent={InputWrapper}
+      checkboxWrapperComponent={InputWrapper}
+      checkboxComponent={Checkbox}
       buttonComponent={SubmitButton}
       globalErrorsComponent={Errors}
       errorComponent={Error}

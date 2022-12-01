@@ -4,16 +4,18 @@ const route = '/examples/forms/radio-buttons'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
-  const name = example.field('name')
-  const radio = example.field('role')
+  const role = example.field('role')
 
   await page.goto(route)
 
   // Render
-  await example.expectField(name)
   await example.expectRadioToHaveOptions('role', [
     { name: 'Dev', value: 'Dev' },
     { name: 'Designer', value: 'Designer' },
+  ])
+  await example.expectRadioToHaveOptions('department', [
+    { name: 'HR', value: 'HR' },
+    { name: 'IT', value: 'IT' },
   ])
   await expect(button).toBeEnabled()
 
@@ -22,35 +24,31 @@ test('With JS enabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
 
-  await example.expectError(name, 'String must contain at least 1 character(s)')
   await example.expectErrorMessage(
     'role',
     "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
   )
 
-  await expect(name.input).toBeFocused()
+  await expect(role.input.first()).toBeFocused()
 
-  await name.input.type('John Corn')
-  await radio.input.first().click()
+  await role.input.first().click()
 
   // Submit form
   await button.click()
 
   await example.expectData({
-    name: 'John Corn',
     role: 'Designer',
+    department: 'IT',
   })
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { button, page } = example
-  const name = example.field('name')
-  const radio = example.field('role')
+  const role = example.field('role')
 
   await page.goto(route)
 
   // Render
-  await example.expectField(name)
   await example.expectRadioToHaveOptions('role', [
     { name: 'Dev', value: 'Dev' },
     { name: 'Designer', value: 'Designer' },
@@ -62,22 +60,20 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
 
-  await example.expectError(name, 'String must contain at least 1 character(s)')
   await example.expectErrorMessage(
     'role',
     "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
   )
 
-  await expect(name.input).toBeFocused()
+  await expect(role.input.first()).toBeFocused()
 
-  await name.input.type('John Corn')
-  await radio.input.first().click()
+  await role.input.first().click()
 
   // Submit form
   await button.click()
 
   await example.expectData({
-    name: 'John Corn',
     role: 'Designer',
+    department: 'IT',
   })
 })
