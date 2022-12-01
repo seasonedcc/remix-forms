@@ -23,7 +23,7 @@ const code = `const schema = z.object({
 })
 
 export default () => (
-  <Form schema={schema} radio={['role']} pendingButtonLabel="..." />
+  <Form schema={schema} radio={['role']} />
 )`
 
 const schema = z.object({
@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} radio={['role']} pendingButtonLabel="..." />
+      <Form schema={schema} radio={['role']} />
     </Example>
   )
 }
