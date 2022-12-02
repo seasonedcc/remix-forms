@@ -406,6 +406,11 @@ function createField<Schema extends SomeZodObject>({
                   defaultChecked: Boolean(value),
                   ...child.props,
                 })
+              } else if (child.type === RadioGroup) {
+                return React.cloneElement(child, {
+                  ...a11yProps,
+                  ...child.props,
+                })
               } else if (child.type === Errors) {
                 if (!child.props.children && !errors?.length) return null
 
