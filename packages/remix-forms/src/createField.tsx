@@ -480,9 +480,7 @@ function createField<Schema extends SomeZodObject>({
             </CheckboxWrapper>
           ) : radio ? (
             <>
-              <Label id={labelId} htmlFor={String(name)}>
-                {label}
-              </Label>
+              <Label id={labelId}>{label}</Label>
               <RadioGroup {...a11yProps}>{smartInput}</RadioGroup>
             </>
           ) : (
