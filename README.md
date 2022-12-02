@@ -6,7 +6,7 @@ This repository contains the Remix Forms source code. We're just getting started
 
 For documentation about Remix Forms, please visit [remix-forms.seasoned.cc](https://remix-forms.seasoned.cc).
 
-Also, please [join Remix's community on Discord](https://rmx.as/discord). We'll be there to provide you support on Remix Forms.
+Also, please [join Remix-forms' community on Discord](https://discord.gg/2eahPMwxb8). We'll be there to provide you support on Remix Forms.
 
 ## Development
 
