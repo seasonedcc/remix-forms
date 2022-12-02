@@ -62,6 +62,15 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   date: 'date',
 }
 
+function getInputType(
+  type: FieldType,
+  radio: boolean,
+): React.HTMLInputTypeAttribute {
+  if (radio) return 'radio'
+
+  return types[type]
+}
+
 type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
@@ -276,7 +285,7 @@ function createField<Schema extends SomeZodObject>({
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
-      const type = typeProp ?? types[fieldType]
+      const type = typeProp ?? getInputType(fieldType, radio)
 
       const registerProps = register(String(name), {
         setValueAs: (value) => coerceValue(value, shape),
@@ -409,6 +418,15 @@ function createField<Schema extends SomeZodObject>({
               } else if (child.type === RadioGroup) {
                 return React.cloneElement(child, {
                   ...a11yProps,
+                  ...child.props,
+                })
+              } else if (child.type === Radio) {
+                return React.cloneElement(child, {
+                  id: `${name}-${child.props.value}`,
+                  type,
+                  autoFocus,
+                  ...registerProps,
+                  defaultChecked: value === child.props.value,
                   ...child.props,
                 })
               } else if (child.type === Errors) {
