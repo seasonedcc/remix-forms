@@ -349,13 +349,28 @@ function createField<Schema extends SomeZodObject>({
 
         return (
           <Field hidden={hidden} style={style} {...props}>
-            {mapChildren(children, (child) => {
+            {mapChildren(children, (child, parent) => {
               if (!React.isValidElement(child)) return child
 
               if (child.type === Label) {
+                let radioId: string | null = null
+
+                if (
+                  React.isValidElement(parent) &&
+                  parent.type === RadioWrapper
+                ) {
+                  mapChildren(parent.props.children, (child) => {
+                    if (!React.isValidElement(child)) return child
+                    if (child.type === Radio) {
+                      radioId = `${name}-${child.props.value}`
+                    }
+                    return child
+                  })
+                }
+
                 return React.cloneElement(child, {
-                  id: labelId,
-                  htmlFor: String(name),
+                  id: radioId ? undefined : labelId,
+                  htmlFor: radioId ?? String(name),
                   children: label,
                   ...child.props,
                 })

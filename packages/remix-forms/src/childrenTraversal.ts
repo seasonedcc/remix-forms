@@ -2,7 +2,8 @@ import * as React from 'react'
 
 function mapChildren(
   children: React.ReactNode,
-  fn: (child: React.ReactNode) => React.ReactNode,
+  fn: (child: React.ReactNode, parent?: React.ReactNode) => React.ReactNode,
+  parent?: React.ReactNode,
 ): React.ReactNode {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return fn(child)
@@ -10,11 +11,12 @@ function mapChildren(
       return fn(
         React.cloneElement(child, {
           ...child.props,
-          children: mapChildren(child.props.children, fn),
+          children: mapChildren(child.props.children, fn, child),
         }),
+        parent,
       )
     }
-    return fn(child)
+    return fn(child, parent)
   })
 }
 
