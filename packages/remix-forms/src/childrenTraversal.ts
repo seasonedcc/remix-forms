@@ -30,12 +30,11 @@ function reduceElements<T>(
   React.Children.forEach(children, (child) => {
     if (!React.isValidElement(child)) return
 
+    foldedValue = reducer(foldedValue, child)
     if (child.props.children && typeof child.props.children !== 'function') {
       foldedValue = reduceElements(child.props.children, foldedValue, reducer)
-      return
     }
 
-    foldedValue = reducer(foldedValue, child)
   })
   return foldedValue
 }
