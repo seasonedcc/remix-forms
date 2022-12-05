@@ -312,8 +312,8 @@ export default function Component() {
         </p>
         <p>
           Also, please join{' '}
-          <ExternalLink href="https://rmx.as/discord">
-            Remix&apos;s community on Discord
+          <ExternalLink href="https://discord.gg/2eahPMwxb8">
+            Seasoned&apos;s OSS community on Discord
           </ExternalLink>
           . We&apos;ll be there to provide you support on Remix Forms.
         </p>
