@@ -23,7 +23,7 @@ function reduceElements<T>(
   initialState: T,
   reducer: (
     previousState: T,
-    currentState: React.ReactElement | React.ReactPortal,
+    currentState: React.ReactElement,
   ) => T,
 ): T {
   let foldedValue = initialState
