@@ -2,10 +2,10 @@ import * as React from 'react'
 
 function mapChildren(
   children: React.ReactNode,
-  fn: (child: React.ReactNode) => React.ReactNode,
+  fn: (child: React.ReactElement) => React.ReactElement | null,
 ): React.ReactNode {
   return React.Children.map(children, (child) => {
-    if (!React.isValidElement(child)) return fn(child)
+    if (!React.isValidElement(child)) return child
     if (child.props.children && typeof child.props.children !== 'function') {
       return fn(
         React.cloneElement(child, {

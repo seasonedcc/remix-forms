@@ -312,8 +312,6 @@ function createForm({
         ...form,
       }),
       (child) => {
-        if (!React.isValidElement(child)) return child
-
         if (child.type === Field) {
           const { name } = child.props
           const field = makeField(name)
@@ -417,7 +415,7 @@ function createForm({
       if (firstErroredField) {
         try {
           form.setFocus(firstErroredField as Path<SchemaType>)
-        } catch {}
+        } catch { }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
