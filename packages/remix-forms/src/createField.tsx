@@ -317,7 +317,7 @@ function createField<Schema extends SomeZodObject>({
       )
 
       if (childrenFn) {
-        const children = childrenFn({
+        const childrenDefinition = childrenFn({
           Label,
           SmartInput,
           Input,
@@ -347,107 +347,109 @@ function createField<Schema extends SomeZodObject>({
           placeholder,
         })
 
+        const children = mapChildren(childrenDefinition, (child) => {
+          if (child.type === Label) {
+            return React.cloneElement(child, {
+              id: labelId,
+              htmlFor: String(name),
+              children: label,
+              ...child.props,
+            })
+          } else if (child.type === SmartInput) {
+            return React.cloneElement(child, {
+              fieldType,
+              type,
+              options: options,
+              multiline,
+              radio,
+              placeholder,
+              registerProps,
+              autoFocus,
+              value,
+              a11yProps,
+              ...child.props,
+            })
+          } else if (child.type === Input) {
+            return React.cloneElement(child, {
+              id: String(name),
+              type,
+              ...registerProps,
+              ...a11yProps,
+              placeholder,
+              autoFocus,
+              defaultValue: value,
+              ...child.props,
+            })
+          } else if (child.type === Multiline) {
+            return React.cloneElement(child, {
+              id: String(name),
+              ...registerProps,
+              ...a11yProps,
+              placeholder,
+              autoFocus,
+              defaultValue: value,
+              ...child.props,
+            })
+          } else if (child.type === Select) {
+            return React.cloneElement(child, {
+              id: String(name),
+              ...registerProps,
+              ...a11yProps,
+              autoFocus,
+              defaultValue: value,
+              children: makeOptionComponents(makeSelectOption, options),
+              ...child.props,
+            })
+          } else if (child.type === Checkbox) {
+            return React.cloneElement(child, {
+              id: String(name),
+              type,
+              autoFocus,
+              ...registerProps,
+              ...a11yProps,
+              placeholder,
+              defaultChecked: Boolean(value),
+              ...child.props,
+            })
+          } else if (child.type === RadioGroup) {
+            return React.cloneElement(child, {
+              ...a11yProps,
+              ...child.props,
+            })
+          } else if (child.type === Radio) {
+            return React.cloneElement(child, {
+              id: `${name}-${child.props.value}`,
+              type,
+              autoFocus,
+              ...registerProps,
+              defaultChecked: value === child.props.value,
+              ...child.props,
+            })
+          } else if (child.type === Errors) {
+            if (!child.props.children && !errors?.length) return null
+
+            if (child.props.children || !errors?.length) {
+              return React.cloneElement(child, {
+                id: errorsId,
+                role: 'alert',
+                ...child.props,
+              })
+            }
+
+            return React.cloneElement(child, {
+              id: errorsId,
+              role: 'alert',
+              children: errorsChildren,
+              ...child.props,
+            })
+          } else {
+            return child
+          }
+        })
+
         return (
           <Field hidden={hidden} style={style} {...props}>
-            {mapChildren(children, (child) => {
-              if (child.type === Label) {
-                return React.cloneElement(child, {
-                  id: labelId,
-                  htmlFor: String(name),
-                  children: label,
-                  ...child.props,
-                })
-              } else if (child.type === SmartInput) {
-                return React.cloneElement(child, {
-                  fieldType,
-                  type,
-                  options: options,
-                  multiline,
-                  radio,
-                  placeholder,
-                  registerProps,
-                  autoFocus,
-                  value,
-                  a11yProps,
-                  ...child.props,
-                })
-              } else if (child.type === Input) {
-                return React.cloneElement(child, {
-                  id: String(name),
-                  type,
-                  ...registerProps,
-                  ...a11yProps,
-                  placeholder,
-                  autoFocus,
-                  defaultValue: value,
-                  ...child.props,
-                })
-              } else if (child.type === Multiline) {
-                return React.cloneElement(child, {
-                  id: String(name),
-                  ...registerProps,
-                  ...a11yProps,
-                  placeholder,
-                  autoFocus,
-                  defaultValue: value,
-                  ...child.props,
-                })
-              } else if (child.type === Select) {
-                return React.cloneElement(child, {
-                  id: String(name),
-                  ...registerProps,
-                  ...a11yProps,
-                  autoFocus,
-                  defaultValue: value,
-                  children: makeOptionComponents(makeSelectOption, options),
-                  ...child.props,
-                })
-              } else if (child.type === Checkbox) {
-                return React.cloneElement(child, {
-                  id: String(name),
-                  type,
-                  autoFocus,
-                  ...registerProps,
-                  ...a11yProps,
-                  placeholder,
-                  defaultChecked: Boolean(value),
-                  ...child.props,
-                })
-              } else if (child.type === RadioGroup) {
-                return React.cloneElement(child, {
-                  ...a11yProps,
-                  ...child.props,
-                })
-              } else if (child.type === Radio) {
-                return React.cloneElement(child, {
-                  id: `${name}-${child.props.value}`,
-                  type,
-                  autoFocus,
-                  ...registerProps,
-                  defaultChecked: value === child.props.value,
-                  ...child.props,
-                })
-              } else if (child.type === Errors) {
-                if (!child.props.children && !errors?.length) return null
-
-                if (child.props.children || !errors?.length) {
-                  return React.cloneElement(child, {
-                    id: errorsId,
-                    role: 'alert',
-                    ...child.props,
-                  })
-                }
-
-                return React.cloneElement(child, {
-                  id: errorsId,
-                  role: 'alert',
-                  children: errorsChildren,
-                  ...child.props,
-                })
-              } else {
-                return child
-              }
-            })}
+            {children}
           </Field>
         )
       }
