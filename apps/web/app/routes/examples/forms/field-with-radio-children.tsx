@@ -34,14 +34,7 @@ export default () => (
         <Field name="firstName" placeholder="Your first name" />
         <Field name="email" label="E-mail" placeholder="Your e-mail" />
         <em>You&apos;ll hear from us at this address 👆🏽</em>
-        <Field
-          name="howYouFoundOutAboutUs"
-          options={[
-            { name: 'Friend', value: 'fromAFriend' },
-            { name: 'Search', value: 'google' },
-          ]}
-          radio
-        >
+        <Field name="howYouFoundOutAboutUs">
           {({ Label, RadioGroup, RadioWrapper, Radio }) => (
             <>
               <Label />
@@ -92,14 +85,7 @@ export default function Component() {
             <Field name="firstName" placeholder="Your first name" />
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
             <em>You&apos;ll hear from us at this address 👆🏽</em>
-            <Field
-              name="howYouFoundOutAboutUs"
-              options={[
-                { name: 'Friend', value: 'fromAFriend' },
-                { name: 'Search', value: 'google' },
-              ]}
-              radio
-            >
+            <Field name="howYouFoundOutAboutUs">
               {({ Label, RadioGroup, RadioWrapper, Radio }) => (
                 <>
                   <Label />

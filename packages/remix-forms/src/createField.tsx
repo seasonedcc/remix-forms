@@ -419,7 +419,7 @@ function createField<Schema extends SomeZodObject>({
           } else if (child.type === Radio) {
             return React.cloneElement(child, {
               id: `${name}-${child.props.value}`,
-              type,
+              type: 'radio',
               autoFocus,
               ...registerProps,
               defaultChecked: value === child.props.value,
