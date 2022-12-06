@@ -35,7 +35,7 @@ function findElement(
   )
 }
 
-function parent(
+function findParent(
   root: React.ReactNode,
   child: React.ReactElement,
 ): React.ReactElement | null {
@@ -67,4 +67,4 @@ function reduceElements<T>(
   return foldedValue
 }
 
-export { mapChildren, reduceElements, findElement, parent }
+export { mapChildren, reduceElements, findElement, findParent }
