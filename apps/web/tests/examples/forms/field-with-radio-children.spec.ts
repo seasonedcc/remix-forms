@@ -1,6 +1,6 @@
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
-const route = '/examples/forms/field-with-radio-children'
+const route = '/test-examples/field-with-radio-children'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
