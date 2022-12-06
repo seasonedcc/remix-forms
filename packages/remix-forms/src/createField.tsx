@@ -2,7 +2,7 @@ import * as React from 'react'
 import type { SomeZodObject, z } from 'zod'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { Field } from './createForm'
-import { mapChildren } from './childrenTraversal'
+import { findElement, mapChildren, findParent } from './childrenTraversal'
 import { coerceValue } from './coercions'
 import { ComponentOrTagName, mapObject, parseDate } from './prelude'
 
@@ -15,37 +15,37 @@ type Children<Schema extends SomeZodObject> = (
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
     Input:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
     Multiline:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-      React.RefAttributes<HTMLTextAreaElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+            React.RefAttributes<HTMLTextAreaElement>
+        >
+      | string
     Select:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-      React.RefAttributes<HTMLSelectElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+            React.RefAttributes<HTMLSelectElement>
+        >
+      | string
     Checkbox:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
     RadioGroup: ComponentOrTagName<'fieldset'>
     RadioWrapper: ComponentOrTagName<'div'>
     Radio:
-    | React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-      React.RefAttributes<HTMLInputElement>
-    >
-    | string
+      | React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+            React.RefAttributes<HTMLInputElement>
+        >
+      | string
     CheckboxWrapper: ComponentOrTagName<'div'>
     Errors: ComponentOrTagName<'div'>
     Error: ComponentOrTagName<'div'>
@@ -90,35 +90,35 @@ type ComponentMappings = {
   fieldComponent?: ComponentOrTagName<'div'>
   labelComponent?: ComponentOrTagName<'label'>
   inputComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   multilineComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-    React.RefAttributes<HTMLTextAreaElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
+          React.RefAttributes<HTMLTextAreaElement>
+      >
+    | string
   selectComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-    React.RefAttributes<HTMLSelectElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
+          React.RefAttributes<HTMLSelectElement>
+      >
+    | string
   checkboxComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   radioComponent?:
-  | React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-    React.RefAttributes<HTMLInputElement>
-  >
-  | string
+    | React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
+          React.RefAttributes<HTMLInputElement>
+      >
+    | string
   checkboxWrapperComponent?: ComponentOrTagName<'div'>
   radioWrapperComponent?: ComponentOrTagName<'div'>
   radioGroupComponent?: ComponentOrTagName<'fieldset'>
@@ -178,22 +178,22 @@ function createSmartInput({
 
     const makeRadioOption =
       (props: Record<string, unknown>, checkedValue: Option['value']) =>
-        ({ name, value }: Option) => {
-          const propsWithUniqueId = mapObject(props, (key, propValue) =>
-            key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
-          )
-          return (
-            <RadioWrapper key={String(propsWithUniqueId?.id)}>
-              <Radio
-                type="radio"
-                value={value}
-                defaultChecked={value === checkedValue}
-                {...propsWithUniqueId}
-              />
-              <Label htmlFor={String(propsWithUniqueId?.id)}>{name}</Label>
-            </RadioWrapper>
-          )
-        }
+      ({ name, value }: Option) => {
+        const propsWithUniqueId = mapObject(props, (key, propValue) =>
+          key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
+        )
+        return (
+          <RadioWrapper key={String(propsWithUniqueId?.id)}>
+            <Radio
+              type="radio"
+              value={value}
+              defaultChecked={value === checkedValue}
+              {...propsWithUniqueId}
+            />
+            <Label htmlFor={String(propsWithUniqueId?.id)}>{name}</Label>
+          </RadioWrapper>
+        )
+      }
 
     const { name } = registerProps
 
@@ -447,9 +447,27 @@ function createField<Schema extends SomeZodObject>({
           }
         })
 
+        const fixRadioLabels = (children: React.ReactNode) => mapChildren(children, (child) => {
+          if (child.type === Label) {
+            const parent = findParent(children, child)
+            if (parent && parent.type === RadioWrapper) {
+              const radioChild = findElement(
+                parent.props?.children,
+                (ch) => ch.type === Radio,
+              )
+              if (radioChild) {
+                return React.cloneElement(child, {
+                  htmlFor: radioChild.props.id,
+                })
+              }
+            }
+          }
+          return child
+        })
+
         return (
           <Field hidden={hidden} style={style} {...props}>
-            {children}
+            {fixRadioLabels(children)}
           </Field>
         )
       }
