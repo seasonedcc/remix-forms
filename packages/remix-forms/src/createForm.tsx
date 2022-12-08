@@ -98,6 +98,10 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: FormComponent
   fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
+  reValidateMode?: keyof Pick<
+    ValidationMode,
+    'onBlur' | 'onChange' | 'onSubmit'
+  >
   renderField?: RenderField<ObjectFromSchema<Schema>>
   globalErrorsComponent?: ComponentOrTagName<'div'>
   buttonComponent?: ComponentOrTagName<'button'>
@@ -143,6 +147,7 @@ function createForm({
     component = DefaultComponent,
     fetcher,
     mode = 'onSubmit',
+    reValidateMode = 'onChange',
     renderField = defaultRenderField,
     fieldComponent,
     globalErrorsComponent: Errors = 'div',
@@ -210,6 +215,7 @@ function createForm({
     const form = useForm<SchemaType>({
       resolver: zodResolver(schema),
       mode,
+      reValidateMode,
       defaultValues,
     })
 
@@ -415,7 +421,7 @@ function createForm({
       if (firstErroredField) {
         try {
           form.setFocus(firstErroredField as Path<SchemaType>)
-        } catch { }
+        } catch {}
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
