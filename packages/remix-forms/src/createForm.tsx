@@ -14,7 +14,7 @@ import type {
   ValidationMode,
   DeepPartial,
 } from 'react-hook-form'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormErrors, FormValues } from './mutations'
 import type {
@@ -432,10 +432,12 @@ function createForm({
     }, [transition.state])
 
     return (
-      <Component method={method} onSubmit={onSubmit} {...props}>
-        {beforeChildren}
-        {customChildren ?? defaultChildren()}
-      </Component>
+      <FormProvider {...form}>
+        <Component method={method} onSubmit={onSubmit} {...props}>
+          {beforeChildren}
+          {customChildren ?? defaultChildren()}
+        </Component>
+      </FormProvider>
     )
   }
 }
