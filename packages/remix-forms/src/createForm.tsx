@@ -184,12 +184,12 @@ function createForm({
   }: FormProps<Schema>) {
     type SchemaType = z.infer<Schema>
     const Component = fetcher?.Form ?? component
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const submit = fetcher?.submit ?? useSubmit()
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const transition = fetcher ?? useNavigation()
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const unparsedActionData = fetcher?.data ?? useActionData()
+    const navigationSubmit = useSubmit()
+    const submit = fetcher?.submit ?? navigationSubmit
+    const navigationTransition = useNavigation()
+    const transition = fetcher ?? navigationTransition
+    const navigationActionData = useActionData()
+    const unparsedActionData = fetcher?.data ?? navigationActionData
 
     const actionData =
       parseActionData && unparsedActionData
