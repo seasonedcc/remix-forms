@@ -302,20 +302,28 @@ function createForm({
       } as Field<SchemaType>
     }
 
-    const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
-      const hiddenFieldErrors = fieldErrors(hiddenField)
+    const hiddenFieldsErrorsToGlobal = (globalErrors: string[] = []) => {
+      const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+        const hiddenFieldErrors = fieldErrors(hiddenField)
 
-      if (hiddenFieldErrors?.length) {
-        const hiddenFieldLabel =
-          (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
-        return hiddenFieldErrors.map((error) => `${hiddenFieldLabel}: ${error}`)
-      } else return []
-    })
-    const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
+        if (hiddenFieldErrors?.length) {
+          const hiddenFieldLabel =
+            (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
+          return hiddenFieldErrors.map(
+            (error) => `${hiddenFieldLabel}: ${error}`,
+          )
+        } else return []
+      })
+      const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
 
-    let globalErrors = ([] as string[])
-      .concat(errors?._global || [], hiddenFieldsErrors)
-      .filter((error) => typeof error === 'string')
+      const allGlobalErrors = ([] as string[])
+        .concat(globalErrors, hiddenFieldsErrors)
+        .filter((error) => typeof error === 'string')
+
+      return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
+    }
+
+    let globalErrors = hiddenFieldsErrorsToGlobal(errors?._global)
 
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
@@ -396,7 +404,7 @@ function createForm({
         {Object.keys(schemaShape)
           .map(makeField)
           .map((field) => renderField({ Field, ...field }))}
-        {globalErrors?.length > 0 && (
+        {globalErrors?.length && (
           <Errors role="alert">
             {globalErrors.map((error) => (
               <Error key={error}>{error}</Error>
