@@ -1,4 +1,5 @@
 export { createForm } from './createForm'
+export { useField } from './createField'
 export { createFormAction, performMutation } from './mutations'
 
 export type {
