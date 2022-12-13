@@ -41,5 +41,9 @@ function parseDate(value?: Date | string) {
   return date
 }
 
-export { objectFromSchema, mapObject, parseDate }
+function browser(): boolean {
+  return typeof document === 'object'
+}
+
+export { objectFromSchema, mapObject, parseDate, browser }
 export type { FormSchema, ObjectFromSchema, ComponentOrTagName, KeysOfStrings }

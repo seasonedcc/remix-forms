@@ -1,12 +1,12 @@
 import * as React from 'react'
-import type { SomeZodObject, z, ZodTypeAny } from 'zod'
+import type { SomeZodObject, TypeOf, z, ZodTypeAny } from 'zod'
 import type {
   ComponentOrTagName,
   FormSchema,
   KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
-import { objectFromSchema, mapObject } from './prelude'
+import { objectFromSchema, mapObject, browser } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
@@ -262,9 +262,9 @@ function createForm({
 
     const fieldErrors = (key: keyof SchemaType) => {
       const message = (formErrors[key] as unknown as FieldError)?.message
-      return (message && [message]) || (errors && errors[key])
+      return browser() ? (message && [message]) : (errors && errors[key])
     }
-    const firstErroredField = Object.keys(schemaShape).find(
+    const firstErroredField = () => Object.keys(schemaShape).find(
       (key) => fieldErrors(key)?.length,
     )
     const makeField = (key: string) => {
@@ -292,7 +292,7 @@ function createForm({
         label: (labels && labels[key]) || inferLabel(String(key)),
         options: required ? fieldOptions : fieldOptionsPlusEmpty(),
         errors: fieldErrors(key),
-        autoFocus: key === firstErroredField || key === autoFocusProp,
+        autoFocus: key === firstErroredField() || key === autoFocusProp,
         value: defaultValues[key],
         hidden:
           hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
@@ -322,7 +322,7 @@ function createForm({
           const { name } = child.props
           const field = makeField(name)
 
-          const autoFocus = firstErroredField
+          const autoFocus = firstErroredField()
             ? field?.autoFocus
             : child.props.autoFocus ?? field?.autoFocus
 
@@ -418,10 +418,16 @@ function createForm({
     }, [])
 
     React.useEffect(() => {
-      if (firstErroredField) {
+      Object.keys(errors).forEach((key) => {
+        form.setError(
+          key as Path<TypeOf<Schema>>,
+          { type: 'custom', message: (errors[key] as string[]).join(", ") }
+        )
+      })
+      if (firstErroredField()) {
         try {
-          form.setFocus(firstErroredField as Path<SchemaType>)
-        } catch {}
+          form.setFocus(firstErroredField() as Path<SchemaType>)
+        } catch { }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
