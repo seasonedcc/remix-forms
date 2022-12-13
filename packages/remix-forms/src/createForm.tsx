@@ -302,7 +302,20 @@ function createForm({
       } as Field<SchemaType>
     }
 
-    const globalErrors = errors?._global
+    let hiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+      const hiddenFieldErrors = fieldErrors(hiddenField)
+
+      if (Array.isArray(hiddenFieldErrors)) {
+        const hiddenFieldLabel =
+          (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
+        return hiddenFieldErrors.map((error) => `${hiddenFieldLabel}: ${error}`)
+      }
+    })
+    hiddenFieldsErrors = hiddenFieldsErrors?.flat()
+
+    let globalErrors = []
+      .concat(errors?._global, hiddenFieldsErrors)
+      .filter((error) => typeof error === 'string')
 
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
@@ -383,7 +396,7 @@ function createForm({
         {Object.keys(schemaShape)
           .map(makeField)
           .map((field) => renderField({ Field, ...field }))}
-        {globalErrors?.length && (
+        {globalErrors?.length > 0 && (
           <Errors role="alert">
             {globalErrors.map((error) => (
               <Error key={error}>{error}</Error>
