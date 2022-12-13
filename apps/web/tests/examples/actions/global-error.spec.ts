@@ -46,9 +46,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeDisabled()
 
   // Show global error
-  await expect(page.locator('form > div[role="alert"]:visible')).toHaveText(
-    'Wrong email or password',
-  )
+  await example.expectGlobalError('Wrong email or password')
 
   // Submit valid form
   await password.input.fill('supersafe')

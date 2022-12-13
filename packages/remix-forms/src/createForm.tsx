@@ -302,7 +302,28 @@ function createForm({
       } as Field<SchemaType>
     }
 
-    const globalErrors = errors?._global
+    const hiddenFieldsErrorsToGlobal = (globalErrors: string[] = []) => {
+      const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+        const hiddenFieldErrors = fieldErrors(hiddenField)
+
+        if (hiddenFieldErrors instanceof Array) {
+          const hiddenFieldLabel =
+            (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
+          return hiddenFieldErrors.map(
+            (error) => `${hiddenFieldLabel}: ${error}`,
+          )
+        } else return []
+      })
+      const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
+
+      const allGlobalErrors = ([] as string[])
+        .concat(globalErrors, hiddenFieldsErrors)
+        .filter((error) => typeof error === 'string')
+
+      return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
+    }
+
+    let globalErrors = hiddenFieldsErrorsToGlobal(errors?._global)
 
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel

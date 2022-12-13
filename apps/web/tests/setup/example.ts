@@ -123,6 +123,12 @@ class Example {
     await this.expectErrorMessage(field.name, message)
   }
 
+  async expectGlobalError(message: string) {
+    await expect(
+      this.page.locator('form > div[role="alert"]:visible'),
+    ).toHaveText(message)
+  }
+
   async expectErrorMessage(fieldName: string, message: string) {
     await expect(
       this.page.locator(`#errors-for-${fieldName}:visible`),
