@@ -302,19 +302,19 @@ function createForm({
       } as Field<SchemaType>
     }
 
-    let hiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+    const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
       const hiddenFieldErrors = fieldErrors(hiddenField)
 
-      if (Array.isArray(hiddenFieldErrors)) {
+      if (hiddenFieldErrors?.length) {
         const hiddenFieldLabel =
           (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
         return hiddenFieldErrors.map((error) => `${hiddenFieldLabel}: ${error}`)
-      }
+      } else return []
     })
-    hiddenFieldsErrors = hiddenFieldsErrors?.flat()
+    const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
 
-    let globalErrors = []
-      .concat(errors?._global, hiddenFieldsErrors)
+    let globalErrors = ([] as string[])
+      .concat(errors?._global || [], hiddenFieldsErrors)
       .filter((error) => typeof error === 'string')
 
     const buttonLabel =
