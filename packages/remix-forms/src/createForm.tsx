@@ -306,7 +306,7 @@ function createForm({
       const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
         const hiddenFieldErrors = fieldErrors(hiddenField)
 
-        if (hiddenFieldErrors?.length) {
+        if (hiddenFieldErrors instanceof Array) {
           const hiddenFieldLabel =
             (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
           return hiddenFieldErrors.map(
