@@ -140,6 +140,18 @@ type SmartInputProps = {
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
 
+const FieldContext = React.createContext<
+  Partial<Omit<Field<never>, 'name'>> | undefined
+>(undefined)
+
+export function useField() {
+  const context = React.useContext(FieldContext)
+
+  if (!context) throw new Error('useField used outside of field context')
+
+  return context
+}
+
 const makeSelectOption = ({ name, value }: Option) => (
   <option key={String(value)} value={value}>
     {name}
@@ -279,6 +291,21 @@ function createField<Schema extends SomeZodObject>({
       ref,
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
+      const field = {
+        dirty,
+        autoFocus,
+        errors,
+        fieldType,
+        hidden,
+        label,
+        multiline,
+        options,
+        placeholder,
+        radio,
+        required,
+        shape,
+        value,
+      }
 
       const errorsChildren = errors?.length
         ? errors.map((error) => <Error key={error}>{error}</Error>)
@@ -331,20 +358,9 @@ function createField<Schema extends SomeZodObject>({
           Errors,
           Error,
           ref,
-          shape,
-          fieldType,
           name,
-          required,
-          label,
           type,
-          options,
-          errors,
-          autoFocus,
-          value,
-          hidden,
-          multiline,
-          radio,
-          placeholder,
+          ...field,
         })
 
         const children = mapChildren(childrenDefinition, (child) => {
@@ -418,7 +434,7 @@ function createField<Schema extends SomeZodObject>({
             })
           } else if (child.type === Radio) {
             return React.cloneElement(child, {
-              id: `${name}-${child.props.value}`,
+              id: `${String(name)}-${child.props.value}`,
               type: 'radio',
               autoFocus,
               ...registerProps,
@@ -447,28 +463,31 @@ function createField<Schema extends SomeZodObject>({
           }
         })
 
-        const fixRadioLabels = (children: React.ReactNode) => mapChildren(children, (child) => {
-          if (child.type === Label) {
-            const parent = findParent(children, child)
-            if (parent && parent.type === RadioWrapper) {
-              const radioChild = findElement(
-                parent.props?.children,
-                (ch) => ch.type === Radio,
-              )
-              if (radioChild) {
-                return React.cloneElement(child, {
-                  htmlFor: radioChild.props.id,
-                })
+        const fixRadioLabels = (children: React.ReactNode) =>
+          mapChildren(children, (child) => {
+            if (child.type === Label) {
+              const parent = findParent(children, child)
+              if (parent && parent.type === RadioWrapper) {
+                const radioChild = findElement(
+                  parent.props?.children,
+                  (ch) => ch.type === Radio,
+                )
+                if (radioChild) {
+                  return React.cloneElement(child, {
+                    htmlFor: radioChild.props.id,
+                  })
+                }
               }
             }
-          }
-          return child
-        })
+            return child
+          })
 
         return (
-          <Field hidden={hidden} style={style} {...props}>
-            {fixRadioLabels(children)}
-          </Field>
+          <FieldContext.Provider value={field}>
+            <Field hidden={hidden} style={style} {...props}>
+              {fixRadioLabels(children)}
+            </Field>
+          </FieldContext.Provider>
         )
       }
 
@@ -488,33 +507,35 @@ function createField<Schema extends SomeZodObject>({
       )
 
       return (
-        <Field hidden={hidden} style={style} {...props}>
-          {fieldType === 'boolean' ? (
-            <CheckboxWrapper>
-              {smartInput}
-              <Label id={labelId} htmlFor={String(name)}>
-                {label}
-              </Label>
-            </CheckboxWrapper>
-          ) : radio ? (
-            <>
-              <Label id={labelId}>{label}</Label>
-              <RadioGroup {...a11yProps}>{smartInput}</RadioGroup>
-            </>
-          ) : (
-            <>
-              <Label id={labelId} htmlFor={String(name)}>
-                {label}
-              </Label>
-              {smartInput}
-            </>
-          )}
-          {Boolean(errorsChildren) && (
-            <Errors role="alert" id={errorsId}>
-              {errorsChildren}
-            </Errors>
-          )}
-        </Field>
+        <FieldContext.Provider value={field}>
+          <Field hidden={hidden} style={style} {...props}>
+            {fieldType === 'boolean' ? (
+              <CheckboxWrapper>
+                {smartInput}
+                <Label id={labelId} htmlFor={String(name)}>
+                  {label}
+                </Label>
+              </CheckboxWrapper>
+            ) : radio ? (
+              <>
+                <Label id={labelId}>{label}</Label>
+                <RadioGroup {...a11yProps}>{smartInput}</RadioGroup>
+              </>
+            ) : (
+              <>
+                <Label id={labelId} htmlFor={String(name)}>
+                  {label}
+                </Label>
+                {smartInput}
+              </>
+            )}
+            {Boolean(errorsChildren) && (
+              <Errors role="alert" id={errorsId}>
+                {errorsChildren}
+              </Errors>
+            )}
+          </Field>
+        </FieldContext.Provider>
       )
     },
   )
