@@ -358,20 +358,9 @@ function createField<Schema extends SomeZodObject>({
           Errors,
           Error,
           ref,
-          shape,
-          fieldType,
           name,
-          required,
-          label,
           type,
-          options,
-          errors,
-          autoFocus,
-          value,
-          hidden,
-          multiline,
-          radio,
-          placeholder,
+          ...field,
         })
 
         const children = mapChildren(childrenDefinition, (child) => {
@@ -445,7 +434,7 @@ function createField<Schema extends SomeZodObject>({
             })
           } else if (child.type === Radio) {
             return React.cloneElement(child, {
-              id: `${name}-${child.props.value}`,
+              id: `${String(name)}-${child.props.value}`,
               type: 'radio',
               autoFocus,
               ...registerProps,
@@ -474,23 +463,24 @@ function createField<Schema extends SomeZodObject>({
           }
         })
 
-        const fixRadioLabels = (children: React.ReactNode) => mapChildren(children, (child) => {
-          if (child.type === Label) {
-            const parent = findParent(children, child)
-            if (parent && parent.type === RadioWrapper) {
-              const radioChild = findElement(
-                parent.props?.children,
-                (ch) => ch.type === Radio,
-              )
-              if (radioChild) {
-                return React.cloneElement(child, {
-                  htmlFor: radioChild.props.id,
-                })
+        const fixRadioLabels = (children: React.ReactNode) =>
+          mapChildren(children, (child) => {
+            if (child.type === Label) {
+              const parent = findParent(children, child)
+              if (parent && parent.type === RadioWrapper) {
+                const radioChild = findElement(
+                  parent.props?.children,
+                  (ch) => ch.type === Radio,
+                )
+                if (radioChild) {
+                  return React.cloneElement(child, {
+                    htmlFor: radioChild.props.id,
+                  })
+                }
               }
             }
-          }
-          return child
-        })
+            return child
+          })
 
         return (
           <FieldContext.Provider value={field}>
