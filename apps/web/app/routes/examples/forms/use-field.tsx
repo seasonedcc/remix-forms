@@ -20,7 +20,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().email(),
-  firstName: z.string().min(1),
+  firstName: z.string().optional(),
   preferredSport: z.enum(['Basketball', 'Football', 'Other']),
   newsletter: z.boolean().default(false),
 })
@@ -71,7 +71,7 @@ export default () => (
 
 const schema = z.object({
   email: z.string().email(),
-  firstName: z.string().min(1),
+  firstName: z.string().optional(),
   preferredSport: z.enum(['Basketball', 'Football', 'Other']),
   newsletter: z.boolean().default(false),
 })
@@ -143,14 +143,40 @@ const Select = React.forwardRef<
   )
 })
 
+const Checkbox = React.forwardRef<
+  HTMLInputElement,
+  JSX.IntrinsicElements['input']
+>(({ type = 'checkbox', className, ...props }, ref) => {
+  const { errors, dirty } = useField()
+  return (
+    <input
+      ref={ref}
+      type={type}
+      className={cx(
+        'h-4 w-4 rounded',
+        errors
+          ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
+          : dirty
+          ? 'border-yellow-600 focus:border-yellow-600 focus:ring-yellow-600'
+          : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500',
+      )}
+      {...props}
+    />
+  )
+})
+
 export default () => (
   <Example title={title} description={description}>
     <Form
       schema={schema}
-      values={{ email: 'default@domain.tld', preferredSport: 'Basketball' }}
+      values={{
+        email: 'default@domain.tld',
+        preferredSport: 'Basketball',
+      }}
       labelComponent={Label}
       inputComponent={Input}
       selectComponent={Select}
+      checkboxComponent={Checkbox}
     />
   </Example>
 )
