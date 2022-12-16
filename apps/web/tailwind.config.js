@@ -1,5 +1,10 @@
 module.exports = {
   content: ['./app/**/*.{js,ts,jsx,tsx}'],
+  safelist: [
+    {
+      pattern: /hljs+/,
+    },
+  ],
   theme: {
     extend: {
       typography: ({ theme }) => ({
@@ -11,8 +16,8 @@ module.exports = {
               fontWeight: 'bold',
             },
             'h2, h3, h4, h5, h6': {
-              color: theme('colors.white')
-            }
+              color: theme('colors.white'),
+            },
           },
         },
       }),
