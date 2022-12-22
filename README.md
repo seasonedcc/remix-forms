@@ -37,3 +37,6 @@ Then you can run
 ```sh
 npm run test
 ```
+
+## Need help?
+We provide [DX as a service](https://dx.seasoned.cc).
