@@ -1,7 +1,8 @@
 import type { inputFromForm } from 'domain-functions'
 import type { ZodTypeAny } from 'zod'
 import { parseDate } from './prelude'
-import { ShapeInfo, shapeInfo } from './shapeInfo'
+import type { ShapeInfo } from './shapeInfo'
+import { shapeInfo } from './shapeInfo'
 
 type ParsedQs = Awaited<ReturnType<typeof inputFromForm>>
 

@@ -4,7 +4,8 @@ import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { Field } from './createForm'
 import { findElement, mapChildren, findParent } from './childrenTraversal'
 import { coerceValue } from './coercions'
-import { ComponentOrTagName, mapObject, parseDate } from './prelude'
+import type { ComponentOrTagName } from './prelude'
+import { mapObject, parseDate } from './prelude'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -172,7 +173,6 @@ function createSmartInput({
   radioComponent: Radio = 'input',
   radioWrapperComponent: RadioWrapper = 'div',
 }: ComponentMappings) {
-  // eslint-disable-next-line react/display-name
   return ({
     fieldType,
     type,
@@ -266,7 +266,6 @@ function createField<Schema extends SomeZodObject>({
 }: {
   register: UseFormRegister<any>
 } & ComponentMappings): FieldComponent<Schema> {
-  // eslint-disable-next-line react/display-name
   return React.forwardRef<any, FieldProps<Schema>>(
     (
       {
@@ -339,8 +338,7 @@ function createField<Schema extends SomeZodObject>({
             radioWrapperComponent: RadioWrapper,
             labelComponent: Label,
           }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [Input, Multiline, Select, Checkbox, Radio, RadioWrapper, Label],
+        [],
       )
 
       if (childrenFn) {
