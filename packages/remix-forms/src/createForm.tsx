@@ -243,7 +243,6 @@ function createForm({
           fieldErrorsComponent,
           errorComponent: Error,
         }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         fieldComponent,
         labelComponent,
@@ -257,6 +256,7 @@ function createForm({
         radioWrapperComponent,
         fieldErrorsComponent,
         Error,
+        form.register,
       ],
     )
 
@@ -422,8 +422,7 @@ function createForm({
           : transition.state === 'submitting'
 
       setDisabled(shouldDisable)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [transition.state, formState])
+    }, [transition.state, formState, mode, isValid])
 
     React.useEffect(() => {
       const newDefaults = Object.fromEntries(
@@ -436,6 +435,7 @@ function createForm({
         }),
       )
       reset({ ...defaultValues, ...newDefaults })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     React.useEffect(() => {

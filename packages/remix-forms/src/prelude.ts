@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import type { z } from 'zod'
 
 type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
   | z.ZodEffects<T>
