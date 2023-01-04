@@ -42,7 +42,9 @@ type BaseFormProps = {
 type BaseFormPropsWithHTMLAttributes =
   React.FormHTMLAttributes<HTMLFormElement> & BaseFormProps
 
-type FormComponent = React.ForwardRefExoticComponent<BaseFormProps>
+type FormComponent = React.ForwardRefExoticComponent<
+  React.PropsWithoutRef<BaseFormProps> & React.RefAttributes<HTMLFormElement>
+>
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -77,6 +79,7 @@ type Children<Schema extends SomeZodObject> = (
     Errors: ComponentOrTagName<'div'>
     Error: ComponentOrTagName<'div'>
     Button: ComponentOrTagName<'button'>
+    submit: () => void
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
@@ -226,6 +229,13 @@ function createForm({
       form.handleSubmit(() => submit(event.target))(event)
     }
 
+    const formRef = React.useRef<HTMLFormElement>(null)
+    const doSubmit = () => {
+      formRef.current?.dispatchEvent(
+        new Event('submit', { cancelable: true, bubbles: true }),
+      )
+    }
+
     const Field = React.useMemo(
       () =>
         createField<ObjectFromSchema<Schema>>({
@@ -336,6 +346,7 @@ function createForm({
         Errors,
         Error,
         Button,
+        submit: doSubmit,
         ...form,
       }),
       (child) => {
@@ -460,7 +471,7 @@ function createForm({
 
     return (
       <FormProvider {...form}>
-        <Component method={method} onSubmit={onSubmit} {...props}>
+        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
           {beforeChildren}
           {customChildren ?? defaultChildren()}
         </Component>
