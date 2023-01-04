@@ -81,7 +81,7 @@ const mutation = makeDomainFunction(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/form-action' /* path to your custom formAction */
+const actionCode = `import { formAction } from '~/form-action.server' /* path to your custom formAction */
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
@@ -175,24 +175,8 @@ export default function Component() {
   } = useLoaderData()
 
   return (
-    <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
+    <div className="flex flex-col max-w-2xl px-4 py-8 m-auto space-y-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
-      <SubHeading>Dependencies</SubHeading>
-      <p>
-        Make sure you have{' '}
-        <ExternalLink href="https://github.com/colinhacks/zod">
-          Zod
-        </ExternalLink>
-        ,{' '}
-        <ExternalLink href="https://react-hook-form.com/">
-          React Hook Form
-        </ExternalLink>
-        , and{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
-          Domain Functions
-        </ExternalLink>{' '}
-        in your project before using Remix Forms.
-      </p>
       <SubHeading>Remix or React Router 6.4?</SubHeading>
       <p>
         You can use Remix Forms with{' '}
@@ -216,11 +200,32 @@ export default function Component() {
         First, let's create a <em>formAction</em> function. This will be used in
         your actions.
       </p>
+      <p>
+        Somewhere within your <em>app/</em>, create a file named{' '}
+        <em>
+          <strong>form-action.server.ts</strong>
+        </em>
+        .
+      </p>
+      <Pre>/app/form-action.server.ts</Pre>
+      <p>
+        <strong>Important</strong>: do not forget to include the suffix{' '}
+        <em>
+          <strong>.server</strong>
+        </em>{' '}
+        in the file name otherwise server-side code will leak to the browser,
+        triggering a confusing error.
+      </p>
       <Code>{createFormActionCode}</Code>
       <SubHeading>Create your Form component</SubHeading>
       <p>
         Next, let's create your project's custom <em>Form</em> component:
       </p>
+      <p>
+        Alongside with your <em>form-action.server.ts</em>, create a{' '}
+        <em>form.ts</em> file and include the following code:
+      </p>
+      <Pre>/app/form.ts</Pre>
       <Code>{createFormCode}</Code>
       <SubHeading>Write your schema</SubHeading>
       <p>
