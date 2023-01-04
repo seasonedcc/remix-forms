@@ -222,8 +222,8 @@ export default function Component() {
         Next, let's create your project's custom <em>Form</em> component:
       </p>
       <p>
-        Alongside with your <em>form-action.server.ts</em>, create a{' '}
-        <em>form.ts</em> file and include the following code:
+        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
+        file and include the following code:
       </p>
       <Pre>/app/form.ts</Pre>
       <Code>{createFormCode}</Code>
