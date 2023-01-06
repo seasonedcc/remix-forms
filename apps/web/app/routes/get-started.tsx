@@ -37,17 +37,14 @@ export { formAction }
 `
 
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
-import { createForm } from 'remix-forms'
 // For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
+import { Form as BaseForm } from '@remix-forms/remix'
 // For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
-
-const RemixForm = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
+import { Form as BaseForm } from '@remix-forms/react-router'
 
 function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
   return (
-    <RemixForm<Schema>
+    <BaseForm<Schema>
       className={/* your form classes */}
       fieldComponent={/* your custom Field */}
       labelComponent={/* your custom Label */}
@@ -81,7 +78,8 @@ const mutation = makeDomainFunction(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/form-action.server' /* path to your custom formAction */
+const actionCode = `import { formAction } from '@remix-forms/remix'
+// import { formAction } from '@remix-forms/react-router'
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
@@ -91,7 +89,8 @@ export const action: ActionFunction = async ({ request }) =>
     successPath: '/success', /* path to redirect on success */
   })`
 
-const basicCode = `import { Form } from '~/form' /* path to your custom Form */
+const basicCode = `import { Form } from '@remix-forms/remix'
+// import { Form } from '@remix-forms/react-router'
 
 export default () => <Form schema={schema} />`
 
@@ -175,7 +174,7 @@ export default function Component() {
   } = useLoaderData()
 
   return (
-    <div className="flex flex-col max-w-2xl px-4 py-8 m-auto space-y-8 text-gray-200 sm:px-8 sm:py-16">
+    <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
       <SubHeading>Remix or React Router 6.4?</SubHeading>
       <p>
@@ -195,38 +194,13 @@ export default function Component() {
         packages:
       </p>
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Create your formAction function</SubHeading>
       <p>
-        First, let's create a <em>formAction</em> function. This will be used in
-        your actions.
+        Depending on your framework, you'll also need to install the correct
+        adapter packages:
       </p>
-      <p>
-        Somewhere within your <em>app/</em>, create a file named{' '}
-        <em>
-          <strong>form-action.server.ts</strong>
-        </em>
-        .
-      </p>
-      <Pre>/app/form-action.server.ts</Pre>
-      <p>
-        <strong>Important</strong>: do not forget to include the suffix{' '}
-        <em>
-          <strong>.server</strong>
-        </em>{' '}
-        in the file name otherwise server-side code will leak to the browser,
-        triggering a confusing error.
-      </p>
-      <Code>{createFormActionCode}</Code>
-      <SubHeading>Create your Form component</SubHeading>
-      <p>
-        Next, let's create your project's custom <em>Form</em> component:
-      </p>
-      <p>
-        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
-        file and include the following code:
-      </p>
-      <Pre>/app/form.ts</Pre>
-      <Code>{createFormCode}</Code>
+      <Pre>npm install @remix-forms/remix</Pre>
+      <Pre>npm install @remix-forms/react-router</Pre>
+
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation
@@ -308,6 +282,7 @@ export default function Component() {
           standard html tags if you don&apos;t.
         </p>
       </div>
+
       <SubHeading>That&apos;s it!</SubHeading>
       <div className="flex flex-col space-y-2">
         <p>
@@ -323,6 +298,7 @@ export default function Component() {
           . We&apos;ll be there to provide you support on Remix Forms.
         </p>
       </div>
+
       <SubHeading>Appreciation</SubHeading>
       <p>
         Remix Forms is a thin layer on top of giants. It wouldn&apos;t be
@@ -348,6 +324,45 @@ export default function Component() {
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
       </p>
+      <div className="pt-4 text-center">
+        <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
+      </div>
+
+      <Heading>
+        Support other frameworks or change the default behavior of formAction
+      </Heading>
+
+      <p>
+        To support another framework or change the default behavior of{' '}
+        <em>formAction</em>, all you have to do is to create your own{' '}
+        <em>formAction</em> function and <em>Form</em> adapter.
+      </p>
+
+      <SubHeading>Create your custom formAction function</SubHeading>
+      <p>
+        Somewhere within your <em>app/</em>, create a file named{' '}
+        <em>
+          <strong>form-action.server.ts</strong>
+        </em>
+        .
+      </p>
+      <Pre>/app/form-action.server.ts</Pre>
+      <p>
+        <strong>Important</strong>: do not forget to include the suffix{' '}
+        <em>
+          <strong>.server</strong>
+        </em>{' '}
+        in the file name otherwise server-side code will leak to the browser,
+        triggering a confusing error.
+      </p>
+      <Code>{createFormActionCode}</Code>
+      <SubHeading>Create your base Form adapter</SubHeading>
+      <p>
+        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
+        file and include the following code:
+      </p>
+      <Pre>/app/form.ts</Pre>
+      <Code>{createFormCode}</Code>
       <div className="pt-4 text-center">
         <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
       </div>
