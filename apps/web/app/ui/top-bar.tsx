@@ -44,7 +44,7 @@ export default function TopBar() {
                 Examples
               </SecondaryButtonLink>
               <ExternalLink
-                href="https://github.com/SeasonedSoftware/remix-forms"
+                href="https://github.com/seasonedcc/remix-forms"
                 className="text-white no-underline"
               >
                 <GitHub />

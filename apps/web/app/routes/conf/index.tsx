@@ -41,7 +41,7 @@ export default function Component() {
             Then, we&apos;ll show you how Remix Forms does all the work for you.
           </Feature>
           <Feature icon={GiftIcon} title="With a powerful DX">
-            <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms/tree/main/apps/web/app/routes/conf">
+            <ExternalLink href="https://github.com/seasonedcc/remix-forms/tree/main/apps/web/app/routes/conf">
               Play around
             </ExternalLink>{' '}
             to experience our end-to-end type safety and our flexible API.
@@ -50,7 +50,7 @@ export default function Component() {
       </div>
       <p className="text-lg">
         Check out the{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms-site/tree/main/app/routes/conf">
+        <ExternalLink href="https://github.com/seasonedcc/remix-forms-site/tree/main/app/routes/conf">
           complete code for the examples
         </ExternalLink>
         .
