@@ -2,4 +2,4 @@
 
 Documentation at [remix-forms.seasoned.cc](https://remix-forms.seasoned.cc).
 
-Source code at [https://github.com/SeasonedSoftware/remix-forms](https://github.com/SeasonedSoftware/remix-forms).
+Source code at [https://github.com/seasonedcc/remix-forms](https://github.com/seasonedcc/remix-forms).

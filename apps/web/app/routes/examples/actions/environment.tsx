@@ -71,7 +71,7 @@ export default function Component() {
       description={
         <>
           In this example, we use Remix Domain&apos;s{' '}
-          <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions#taking-parameters-that-are-not-user-input">
+          <ExternalLink href="https://github.com/seasonedcc/domain-functions#taking-parameters-that-are-not-user-input">
             environment
           </ExternalLink>{' '}
           to authorize a specific header.

@@ -12,10 +12,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SeasonedSoftware/remix-forms.git"
+    "url": "git+https://github.com/seasonedcc/remix-forms.git"
   },
   "bugs": {
-    "url": "https://github.com/SeasonedSoftware/remix-forms/issues"
+    "url": "https://github.com/seasonedcc/remix-forms/issues"
   },
   "homepage": "https://remix-forms.seasoned.cc",
   "keywords": [

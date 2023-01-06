@@ -237,7 +237,7 @@ export default function Component() {
       <SubHeading>Create your mutation</SubHeading>
       <p>
         Create a mutation function using{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
+        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
           Domain Functions
         </ExternalLink>
         &apos; <em>makeDomainFunction</em>. It&apos;s a function that receives
@@ -297,7 +297,7 @@ export default function Component() {
       <div className="flex flex-col space-y-2">
         <p>
           Check out{' '}
-          <ExternalLink href="https://github.com/SeasonedSoftware/remix-forms/blob/main/apps/web/app/ui/form.tsx">
+          <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/form.tsx">
             how we customized the styles
           </ExternalLink>{' '}
           for this website. We basically created a bunch of UI components and
@@ -343,7 +343,7 @@ export default function Component() {
           Zod
         </ExternalLink>
         ,{' '}
-        <ExternalLink href="https://github.com/SeasonedSoftware/domain-functions">
+        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
           Domain Functions
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
