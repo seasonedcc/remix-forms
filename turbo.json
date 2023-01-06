@@ -1,27 +1,19 @@
 {
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
     },
     "lint": {
       "outputs": []
     },
     "tsc": {
-      "cache": false,
-      "dependsOn": [
-        "^build"
-      ]
+      "outputs": [],
+      "dependsOn": ["^build"]
     },
     "test": {
       "outputs": [],
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
     },
     "playwright:ci:install": {
       "outputs": []
