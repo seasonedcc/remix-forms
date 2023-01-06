@@ -4,7 +4,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { formAction } from '~/formAction'
+import { formAction } from '@remix-forms/remix'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
@@ -22,7 +22,7 @@ const code = `const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 })
-  
+
 const contactSchema = z.object({
   _action: z.literal('/contact'),
   email: z.string().email(),

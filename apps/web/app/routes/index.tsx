@@ -21,7 +21,7 @@ import Heading from '~/ui/heading'
 import Code from '~/ui/code'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
-import { formAction } from '~/formAction'
+import { formAction } from '@remix-forms/remix'
 
 const title = 'The full-stack form library for Remix and React Router'
 const description =

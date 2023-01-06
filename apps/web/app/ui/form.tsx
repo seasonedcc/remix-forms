@@ -1,5 +1,4 @@
 import type { FormProps, FormSchema } from 'remix-forms'
-import { createForm } from 'remix-forms'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -14,19 +13,7 @@ import InputWrapper from './input-wrapper'
 import RadioGroup from './radio-group'
 
 import TextArea from './text-area'
-import {
-  Form as RemixForm,
-  useActionData,
-  useSubmit,
-  useTransition as useNavigation,
-} from '@remix-run/react'
-
-const BaseForm = createForm({
-  component: RemixForm,
-  useNavigation,
-  useSubmit,
-  useActionData,
-})
+import { Form as BaseForm } from '@remix-forms/remix'
 
 export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,

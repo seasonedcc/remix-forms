@@ -4,7 +4,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { formAction } from '~/formAction'
+import { formAction } from '@remix-forms/remix'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
@@ -23,7 +23,7 @@ const schema = z.object({
 })
 
 export const loader: LoaderFunction = () => ({
-  code: hljs.highlight("", { language: 'ts' }).value,
+  code: hljs.highlight('', { language: 'ts' }).value,
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)

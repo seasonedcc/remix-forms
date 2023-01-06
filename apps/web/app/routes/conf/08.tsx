@@ -8,7 +8,7 @@ import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
-import { formAction } from '~/formAction'
+import { formAction } from '@remix-forms/remix'
 import Form from '~/ui/form'
 
 const title = 'Auto-generated'

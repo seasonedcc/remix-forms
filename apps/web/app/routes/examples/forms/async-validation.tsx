@@ -5,7 +5,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { formAction } from '~/formAction'
+import { formAction } from '@remix-forms/remix'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'

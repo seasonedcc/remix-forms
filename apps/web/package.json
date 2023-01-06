@@ -38,6 +38,7 @@
     "react-hook-form": "^7.31.0",
     "rehype-highlight": "^6.0.0",
     "remix-forms": "*",
+    "@remix-forms/remix": "*",
     "tailwindcss": "^3.0.23",
     "ts-pattern": "~4.0.5",
     "zod": "^3.12.0"
