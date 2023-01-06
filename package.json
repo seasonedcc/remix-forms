@@ -17,9 +17,9 @@
     "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
+    "turbo": "latest",
     "eslint-config-custom": "*",
     "prettier": "latest",
-    "turbo": "^1.6.3",
     "typescript": "~4.5.5"
   },
   "engines": {
