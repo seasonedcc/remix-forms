@@ -14,28 +14,6 @@ const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const createFormCode = `import { createForm } from 'remix-forms'
-// For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
-// For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
-
-const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
-
-export { Form }
-`
-
-const createFormActionCode = `import { createFormAction } from 'remix-forms'
-// For Remix, import it like this
-import { redirect, json } from '@remix-run/node'
-// For React Router 6.4, like this
-import { redirect, json } from 'react-router-dom'
-
-const formAction = createFormAction({ redirect, json })
-
-export { formAction }
-`
-
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
 // For Remix, import it like this
 import { Form as BaseForm } from '@remix-forms/remix'
@@ -146,9 +124,6 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader: LoaderFunction = () => ({
-  createFormCode: hljs.highlight(createFormCode, { language: 'ts' }).value,
-  createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
-    .value,
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
@@ -161,8 +136,6 @@ export const loader: LoaderFunction = () => ({
 
 export default function Component() {
   const {
-    createFormCode,
-    createFormActionCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -176,18 +149,15 @@ export default function Component() {
   return (
     <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
-      <SubHeading>Remix or React Router 6.4?</SubHeading>
+      <SubHeading>Installation</SubHeading>
       <p>
         You can use Remix Forms with{' '}
-        <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
+        <ExternalLink href="https://remix.run/">Remix</ExternalLink> or{' '}
         <ExternalLink href="https://reactrouter.com/">
           React Router 6.4
         </ExternalLink>
-        , or even your custom framework. As long as you pass it a <em>Form</em>{' '}
-        component and a couple of functions and hooks, it will work anywhere
-        React runs.
+        .
       </p>
-      <SubHeading>Installation</SubHeading>
       <p>
         Assuming you already have <em>React</em> and{' '}
         <em>Remix or React Router</em> installed, you'll need the following
@@ -196,10 +166,13 @@ export default function Component() {
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
       <p>
         Depending on your framework, you'll also need to install the correct
-        adapter packages:
+        adapter package:
       </p>
-      <Pre>npm install @remix-forms/remix</Pre>
-      <Pre>npm install @remix-forms/react-router</Pre>
+      <Pre>
+        npm install @remix-forms/remix
+        <br />
+        npm install @remix-forms/react-router
+      </Pre>
 
       <SubHeading>Write your schema</SubHeading>
       <p>
@@ -264,7 +237,7 @@ export default function Component() {
       <SubHeading>[Optional] Customize styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you might want to configure
-        basic styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
+        basic styles for your forms. Let&apos;s edit the default <em>Form</em>{' '}
         component:
       </p>
       <Code>{stylesCode}</Code>
@@ -324,45 +297,6 @@ export default function Component() {
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
       </p>
-      <div className="pt-4 text-center">
-        <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
-      </div>
-
-      <Heading>
-        Support other frameworks or change the default behavior of formAction
-      </Heading>
-
-      <p>
-        To support another framework or change the default behavior of{' '}
-        <em>formAction</em>, all you have to do is to create your own{' '}
-        <em>formAction</em> function and <em>Form</em> adapter.
-      </p>
-
-      <SubHeading>Create your custom formAction function</SubHeading>
-      <p>
-        Somewhere within your <em>app/</em>, create a file named{' '}
-        <em>
-          <strong>form-action.server.ts</strong>
-        </em>
-        .
-      </p>
-      <Pre>/app/form-action.server.ts</Pre>
-      <p>
-        <strong>Important</strong>: do not forget to include the suffix{' '}
-        <em>
-          <strong>.server</strong>
-        </em>{' '}
-        in the file name otherwise server-side code will leak to the browser,
-        triggering a confusing error.
-      </p>
-      <Code>{createFormActionCode}</Code>
-      <SubHeading>Create your base Form adapter</SubHeading>
-      <p>
-        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
-        file and include the following code:
-      </p>
-      <Pre>/app/form.ts</Pre>
-      <Code>{createFormCode}</Code>
       <div className="pt-4 text-center">
         <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
       </div>
