@@ -1,0 +1,27 @@
+{
+  "name": "@remix-forms/react-router",
+  "version": "0.0.1",
+  "description": "React-router adapter for remix-forms",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/*"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeasonedSoftware/remix-forms.git"
+  },
+  "homepage": "https://remix-forms.seasoned.cc",
+  "scripts": {
+    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
+    "lint": "eslint *.ts*",
+    "tsc": "tsc"
+  },
+  "peerDependencies": {
+    "remix-forms": "*",
+    "react-router-dom": ">=6.4.0"
+  }
+}
