@@ -1,8 +1,7 @@
 import { makeDomainFunction } from 'domain-functions'
-import { ActionFunctionArgs } from 'react-router-dom'
+import type { ActionFunctionArgs } from 'react-router-dom'
 import { z } from 'zod'
-import { formAction } from '../formAction'
-import { Form } from '../ui/form'
+import { Form, formAction } from '@remix-forms/react-router'
 
 const schema = z.object({
   firstName: z.string().min(1),
