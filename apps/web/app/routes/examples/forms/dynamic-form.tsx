@@ -49,19 +49,17 @@ const mutation = makeDomainFunction(fieldsSchema(getFields()))(
 )
 
 export function loader(_args: LoaderArgs) {
-  const fields: Field[] = [
-    { name: 'firstName', type: 'string' },
-    { name: 'email', type: 'email' },
-    { name: 'age', type: 'int' },
-  ]
-
-  return { fields }
+  return { fields: getFields() }
 }
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema: fieldsSchema(getFields()), mutation })
 
-export default () => <Form schema={fieldsSchema(fields)} />`
+export default () => {
+  const { fields } = useLoaderData<typeof loader>()
+
+  return <Form schema={fieldsSchema(fields)} />
+}`
 
 type FieldType = 'string' | 'email' | 'int'
 type Field = { name: string; type: FieldType }
@@ -97,15 +95,9 @@ const mutation = makeDomainFunction(fieldsSchema(getFields()))(
 )
 
 export function loader(_args: LoaderArgs) {
-  const fields: Field[] = [
-    { name: 'firstName', type: 'string' },
-    { name: 'email', type: 'email' },
-    { name: 'age', type: 'int' },
-  ]
-
   return {
     code: hljs.highlight(code, { language: 'ts' }).value,
-    fields,
+    fields: getFields(),
   }
 }
 
