@@ -103,6 +103,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/forms/imperative-submit'}>
             Imperative submit
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/forms/dynamic-form'}>
+            Dynamic form
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>renderField</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink
             to={'/examples/render-field/required-indicator'}
