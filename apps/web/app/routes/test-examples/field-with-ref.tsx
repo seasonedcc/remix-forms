@@ -14,12 +14,12 @@ import { useRef } from 'react'
 
 const title = 'Custom input with forward ref'
 const description =
-  "In this example, we use a forward ref to create a stateful tag list."
+  'In this example, we use a forward ref to create a stateful tag list.'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const schema = z.object({
-  tags: z.array(z.string().min(1)).min(1)
+  tags: z.array(z.string().min(1)).min(1),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -56,7 +56,7 @@ export default function Component() {
                     <Input
                       className="block w-full rounded-md border-gray-300 text-gray-800 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                       type="text"
-                      name="tagName"
+                      name="oneTag"
                       ref={tagRef}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter') {
@@ -64,7 +64,7 @@ export default function Component() {
                           if (tagRef.current) {
                             const value = tagRef.current.value
                             if (value) {
-                              setValue('tags', [...tags || [], value])
+                              setValue('tags', [...(tags || []), value])
                             }
                             tagRef.current.value = ''
                           }
