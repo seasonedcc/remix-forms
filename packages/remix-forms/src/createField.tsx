@@ -426,7 +426,7 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === Checkbox) {
+          } else if (child.type === Checkbox && (child.type !== 'input' || child.props.type === 'checkbox')) {
             return React.cloneElement(child, {
               id: String(name),
               type,
