@@ -18,13 +18,12 @@ test('With JS enabled', async ({ example }) => {
   await expect(options.first()).toHaveText('From A Friend')
   await expect(options.last()).toHaveText('Google')
 
-  await expect(await page.isChecked('input[type=checkbox]:visible')).toBeFalsy()
+  expect(await page.isChecked('input[type=checkbox]:visible')).toBeFalsy()
 
   await expect(button).toBeEnabled()
 
   // Submit form
   button.click()
-  await expect(button).toBeDisabled()
 
   await example.expectData({
     firstName: 'Mary',

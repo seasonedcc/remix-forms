@@ -44,7 +44,6 @@ test('With JS enabled', async ({ example }) => {
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { button, page } = example
-  const role = example.field('role')
 
   await page.goto(route)
 
@@ -59,15 +58,16 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
+  await expect(
+    example.page.locator(`[data-headlessui-state="open"] #errors-for-role:visible`),
+  ).toHaveText("Invalid enum value. Expected 'Designer' | 'Dev', received ''")
 
-  await example.expectErrorMessage(
-    'role',
-    "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
-  )
+  const designerRadio = example.page.locator('[data-headlessui-state="open"] [name="role"][value="Designer"]:visible')
 
-  await expect(role.input.first()).toBeFocused()
+  await example.page.waitForLoadState('networkidle')
+  await expect(designerRadio).toBeFocused()
 
-  await role.input.first().click()
+  await designerRadio.click()
 
   // Submit form
   await button.click()
