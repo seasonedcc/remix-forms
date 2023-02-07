@@ -443,7 +443,7 @@ function createField<Schema extends SomeZodObject>({
               ...a11yProps,
               ...child.props,
             })
-          } else if (child.type === Radio) {
+          } else if (child.type === Radio && (child.type !== 'input' || child.props.type === 'radio')) {
             return React.cloneElement(child, {
               id: `${String(name)}-${child.props.value}`,
               type: 'radio',
