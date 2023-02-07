@@ -146,7 +146,7 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
     return parseDate(value as Date | undefined)
   }
 
-  if (typeName === 'ZodEnum' || typeName === 'ZodString') {
+  if (typeName === 'ZodEnum' || typeName === 'ZodString' || typeName === 'ZodNumber') {
     return String(value ?? '')
   }
 
