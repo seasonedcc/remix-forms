@@ -146,11 +146,15 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
     return parseDate(value as Date | undefined)
   }
 
-  if (typeName === 'ZodEnum' || typeName === 'ZodString' || typeName === 'ZodNumber') {
+  if (
+    typeName === 'ZodEnum' ||
+    typeName === 'ZodString' ||
+    typeName === 'ZodNumber'
+  ) {
     return String(value ?? '')
   }
 
-  return value ?? '';
+  return value ?? ''
 }
 
 function createForm({
@@ -468,9 +472,13 @@ function createForm({
 
     React.useEffect(() => {
       Object.keys(errors).forEach((key) => {
+        const message =
+          errors[key] instanceof Array
+            ? (errors[key] as string[]).join(', ')
+            : JSON.stringify(errors[key])
         form.setError(key as Path<TypeOf<Schema>>, {
           type: 'custom',
-          message: (errors[key] as string[]).join(', '),
+          message,
         })
       })
       if (firstErroredField()) {
