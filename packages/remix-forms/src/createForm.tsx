@@ -29,7 +29,8 @@ import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
 import type { ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import { coerceToForm } from './coercions'
+import type { ShapeInfo } from './shapeInfo'
+import { parseDate } from './prelude'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
@@ -133,6 +134,23 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodBoolean: 'boolean',
   ZodDate: 'date',
   ZodEnum: 'string',
+}
+
+function coerceToForm(value: unknown, shape: ShapeInfo) {
+  const { typeName } = shape
+  if (typeName === 'ZodBoolean') {
+    return Boolean(value) ?? false
+  }
+
+  if (typeName === 'ZodDate') {
+    return parseDate(value as Date | undefined)
+  }
+
+  if (typeName === 'ZodEnum' || typeName === 'ZodString' || typeName === 'ZodNumber') {
+    return String(value ?? '')
+  }
+
+  return value ?? '';
 }
 
 function createForm({
@@ -272,11 +290,10 @@ function createForm({
 
     const fieldErrors = (key: keyof SchemaType) => {
       const message = (formErrors[key] as unknown as FieldError)?.message
-      return browser() ? (message && [message]) : (errors && errors[key])
+      return browser() ? message && [message] : errors && errors[key]
     }
-    const firstErroredField = () => Object.keys(schemaShape).find(
-      (key) => fieldErrors(key)?.length,
-    )
+    const firstErroredField = () =>
+      Object.keys(schemaShape).find((key) => fieldErrors(key)?.length)
     const makeField = (key: string) => {
       const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
@@ -451,15 +468,15 @@ function createForm({
 
     React.useEffect(() => {
       Object.keys(errors).forEach((key) => {
-        form.setError(
-          key as Path<TypeOf<Schema>>,
-          { type: 'custom', message: (errors[key] as string[]).join(", ") }
-        )
+        form.setError(key as Path<TypeOf<Schema>>, {
+          type: 'custom',
+          message: (errors[key] as string[]).join(', '),
+        })
       })
       if (firstErroredField()) {
         try {
           form.setFocus(firstErroredField() as Path<SchemaType>)
-        } catch { }
+        } catch {}
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
