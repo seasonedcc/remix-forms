@@ -385,12 +385,11 @@ function createField<Schema extends SomeZodObject>({
               multiline,
               radio,
               placeholder,
-              registerProps: { ...registerProps, ref: registerRef },
+              registerProps: { ...registerProps, ref: mergedRef },
               autoFocus,
               value,
               a11yProps,
               ...child.props,
-              ref: mergedRef,
             })
           } else if (child.type === Input) {
             return React.cloneElement(child, {
@@ -426,7 +425,10 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === Checkbox && (child.type !== 'input' || child.props.type === 'checkbox')) {
+          } else if (
+            child.type === Checkbox &&
+            (child.type !== 'input' || child.props.type === 'checkbox')
+          ) {
             return React.cloneElement(child, {
               id: String(name),
               type,
@@ -443,7 +445,10 @@ function createField<Schema extends SomeZodObject>({
               ...a11yProps,
               ...child.props,
             })
-          } else if (child.type === Radio && (child.type !== 'input' || child.props.type === 'radio')) {
+          } else if (
+            child.type === Radio &&
+            (child.type !== 'input' || child.props.type === 'radio')
+          ) {
             return React.cloneElement(child, {
               id: `${String(name)}-${child.props.value}`,
               type: 'radio',
