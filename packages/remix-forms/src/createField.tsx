@@ -378,7 +378,7 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
             })
           } else if (child.type === SmartInput) {
-            return React.cloneElement(child, {
+            const smartInputProps: SmartInputProps = {
               fieldType,
               type,
               options: options,
@@ -389,6 +389,10 @@ function createField<Schema extends SomeZodObject>({
               autoFocus,
               value,
               a11yProps,
+            }
+
+            return React.cloneElement(child, {
+              ...smartInputProps,
               ...child.props,
             })
           } else if (child.type === Input) {
