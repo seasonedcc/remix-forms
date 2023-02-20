@@ -146,11 +146,15 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
     return parseDate(value as Date | undefined)
   }
 
-  if (typeName === 'ZodEnum' || typeName === 'ZodString' || typeName === 'ZodNumber') {
+  if (
+    typeName === 'ZodEnum' ||
+    typeName === 'ZodString' ||
+    typeName === 'ZodNumber'
+  ) {
     return String(value ?? '')
   }
 
-  return value ?? '';
+  return value ?? ''
 }
 
 function createForm({
@@ -419,6 +423,7 @@ function createForm({
           return React.cloneElement(child, {
             disabled,
             children: buttonLabel,
+            onClick: onSubmit,
             ...child.props,
           })
         } else {
