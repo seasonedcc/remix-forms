@@ -42,7 +42,8 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(password)
 
   // Submit form
-  button.click()
+  await example.expectNoGlobalError()
+  await button.click()
   await expect(button).toBeDisabled()
 
   // Show global error
@@ -50,7 +51,8 @@ test('With JS enabled', async ({ example }) => {
 
   // Submit valid form
   await password.input.fill('supersafe')
-  button.click()
+  await button.click()
+  await example.expectNoGlobalError()
   await example.expectData({ email: 'john@doe.com', password: 'supersafe' })
 })
 
@@ -101,9 +103,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   // Show global error
-  await expect(page.locator('form > div[role="alert"]:visible')).toHaveText(
-    'Wrong email or password',
-  )
+  await example.expectGlobalError('Wrong email or password')
 
   // Submit valid form
   await password.input.fill('supersafe')

@@ -129,6 +129,12 @@ class Example {
     ).toHaveText(message)
   }
 
+  async expectNoGlobalError() {
+    expect(
+      await this.page.locator('form > div[role="alert"]:visible').count(),
+    ).toEqual(0)
+  }
+
   async expectErrorMessage(fieldName: string, message: string) {
     await expect(
       this.page.locator(`#errors-for-${fieldName}:visible`),
