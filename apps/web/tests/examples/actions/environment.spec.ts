@@ -74,9 +74,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Submit form
   await button.click()
   await page.reload()
-  await expect(page.locator('form > div[role="alert"]:visible')).toHaveText(
-    'Missing custom header',
-  )
+  await example.expectGlobalError('Missing custom header')
 
   // Submit with valid headers
   await page.setExtraHTTPHeaders({ customHeader: 'foo' })

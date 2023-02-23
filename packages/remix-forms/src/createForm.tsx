@@ -223,8 +223,16 @@ function createForm({
 
     const actionErrors = actionData?.errors as FormErrors<SchemaType>
     const actionValues = actionData?.values as FormValues<SchemaType>
-    const errors = { ...errorsProp, ...actionErrors }
-    const values = { ...valuesProp, ...actionValues }
+
+    const errors = React.useMemo(
+      () => ({ ...errorsProp, ...actionErrors }),
+      [errorsProp, actionErrors],
+    )
+
+    const values = React.useMemo(
+      () => ({ ...valuesProp, ...actionValues }),
+      [valuesProp, actionValues],
+    )
 
     const schemaShape = objectFromSchema(schema).shape
     const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
@@ -292,10 +300,14 @@ function createForm({
       ],
     )
 
-    const fieldErrors = (key: keyof SchemaType) => {
-      const message = (formErrors[key] as unknown as FieldError)?.message
-      return browser() ? message && [message] : errors && errors[key]
-    }
+    const fieldErrors = React.useCallback(
+      (key: keyof SchemaType) => {
+        const message = (formErrors[key] as unknown as FieldError)?.message
+        return browser() ? message && [message] : errors && errors[key]
+      },
+      [errors, formErrors],
+    )
+
     const firstErroredField = () =>
       Object.keys(schemaShape).find((key) => fieldErrors(key)?.length)
     const makeField = (key: string) => {
@@ -333,33 +345,44 @@ function createForm({
       } as Field<SchemaType>
     }
 
-    const hiddenFieldsErrorsToGlobal = (globalErrors: string[] = []) => {
-      const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
-        const hiddenFieldErrors = fieldErrors(hiddenField)
+    const hiddenFieldsErrorsToGlobal = React.useCallback(
+      (globalErrors: string[] = []) => {
+        const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+          const hiddenFieldErrors = fieldErrors(hiddenField)
 
-        if (hiddenFieldErrors instanceof Array) {
-          const hiddenFieldLabel =
-            (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
-          return hiddenFieldErrors.map(
-            (error) => `${hiddenFieldLabel}: ${error}`,
-          )
-        } else return []
-      })
-      const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
+          if (hiddenFieldErrors instanceof Array) {
+            const hiddenFieldLabel =
+              (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
+            return hiddenFieldErrors.map(
+              (error) => `${hiddenFieldLabel}: ${error}`,
+            )
+          } else return []
+        })
+        const hiddenFieldsErrors: string[] =
+          deepHiddenFieldsErrors?.flat() || []
 
-      const allGlobalErrors = ([] as string[])
-        .concat(globalErrors, hiddenFieldsErrors)
-        .filter((error) => typeof error === 'string')
+        const allGlobalErrors = ([] as string[])
+          .concat(globalErrors, hiddenFieldsErrors)
+          .filter((error) => typeof error === 'string')
 
-      return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
-    }
+        return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
+      },
+      [fieldErrors, hiddenFields, labels],
+    )
 
-    let globalErrors = hiddenFieldsErrorsToGlobal(errors?._global)
+    const globalErrors = React.useMemo(
+      () => hiddenFieldsErrorsToGlobal(errors?._global),
+      [errors?._global, hiddenFieldsErrorsToGlobal],
+    )
 
     const buttonLabel =
       transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
 
     const [disabled, setDisabled] = React.useState(false)
+
+    const [globalErrorsState, setGlobalErrorsState] = React.useState<
+      string[] | undefined
+    >(globalErrors)
 
     const customChildren = mapChildren(
       childrenFn?.({
@@ -403,9 +426,9 @@ function createForm({
             autoFocus,
           })
         } else if (child.type === Errors) {
-          if (!child.props.children && !globalErrors?.length) return null
+          if (!child.props.children && !globalErrorsState?.length) return null
 
-          if (child.props.children || !globalErrors?.length) {
+          if (child.props.children || !globalErrorsState?.length) {
             return React.cloneElement(child, {
               role: 'alert',
               ...child.props,
@@ -414,7 +437,7 @@ function createForm({
 
           return React.cloneElement(child, {
             role: 'alert',
-            children: globalErrors.map((error) => (
+            children: globalErrorsState.map((error) => (
               <Error key={error}>{error}</Error>
             )),
             ...child.props,
@@ -437,9 +460,9 @@ function createForm({
         {Object.keys(schemaShape)
           .map(makeField)
           .map((field) => renderField({ Field, ...field }))}
-        {globalErrors?.length && (
+        {globalErrorsState?.length && (
           <Errors role="alert">
-            {globalErrors.map((error) => (
+            {globalErrorsState.map((error) => (
               <Error key={error}>{error}</Error>
             ))}
           </Errors>
@@ -487,7 +510,15 @@ function createForm({
     }, [errorsProp, unparsedActionData])
 
     React.useEffect(() => {
+      setGlobalErrorsState(globalErrors)
+    }, [globalErrors])
+
+    React.useEffect(() => {
       onTransition && onTransition(form)
+
+      if (transition.state === 'submitting') {
+        setGlobalErrorsState(undefined)
+      }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transition.state])
 
