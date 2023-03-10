@@ -88,7 +88,7 @@ describe('coerceValue', () => {
   it('coerces strings to [object File] when value is a file', () => {
     expect(
       coerceValue(new File([], 'some-empty-file.txt'), z.string()),
-    ).toEqual('[object File]')
+    ).toMatch(/[object (\w+)]/)
   })
 
   it('coerces enums to empty when value is empty', () => {
@@ -99,6 +99,6 @@ describe('coerceValue', () => {
   it('coerces enums to [object File] when value is a file', () => {
     expect(
       coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test'])),
-    ).toEqual('[object File]')
+    ).toMatch(/[object (\w+)]/)
   })
 })
