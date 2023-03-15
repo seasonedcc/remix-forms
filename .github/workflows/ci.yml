@@ -41,6 +41,8 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-v2
+      - name: Typecheck
+        run: npm run tsc
       - name: Install Playwright
         run: npm run playwright:ci:install
       - name: Build

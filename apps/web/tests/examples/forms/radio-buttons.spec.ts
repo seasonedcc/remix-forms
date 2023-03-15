@@ -58,11 +58,13 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await expect(
-    example.page.locator(`[data-headlessui-state="open"] #errors-for-role:visible`),
-  ).toHaveText("Invalid enum value. Expected 'Designer' | 'Dev', received ''")
+  await expect(example.page.locator('#errors-for-role').first()).toHaveText(
+    "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
+  )
 
-  const designerRadio = example.page.locator('[data-headlessui-state="open"] [name="role"][value="Designer"]:visible')
+  const designerRadio = example.page
+    .locator('[name="role"][value="Designer"]')
+    .first()
 
   await example.page.waitForLoadState('networkidle')
   await expect(designerRadio).toBeFocused()
