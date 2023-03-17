@@ -91,12 +91,17 @@ type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type SubmitFunction = ({ target }: { target: any }) => void
+type LegacySubmitFunction = (event: { target: any }) => void
+
+type SubmitFunction = (
+  event: { target: any },
+  options?: { preventScrollReset?: boolean },
+) => void
 
 type FetcherWithComponents = Transition & {
   data: any
   Form: FormComponent
-  submit: SubmitFunction
+  submit: SubmitFunction | LegacySubmitFunction
 }
 
 type FormProps<Schema extends FormSchema> = ComponentMappings & {
@@ -166,7 +171,7 @@ function createForm({
 }: {
   component: FormComponent
   useNavigation: () => Transition
-  useSubmit: () => SubmitFunction
+  useSubmit: (() => SubmitFunction) | (() => LegacySubmitFunction)
   useActionData: () => unknown
 }) {
   return function Form<Schema extends FormSchema>({
@@ -206,6 +211,7 @@ function createForm({
     autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
+    preventScrollReset,
     ...props
   }: FormProps<Schema>) {
     type SchemaType = z.infer<Schema>
@@ -257,7 +263,9 @@ function createForm({
     const { errors: formErrors, isValid } = formState
 
     const onSubmit = (event: any) => {
-      form.handleSubmit(() => submit(event.target))(event)
+      form.handleSubmit(() => submit(event.target, { preventScrollReset }))(
+        event,
+      )
     }
 
     const formRef = React.useRef<HTMLFormElement>(null)
@@ -525,7 +533,13 @@ function createForm({
 
     return (
       <FormProvider {...form}>
-        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
+        <Component
+          ref={formRef}
+          method={method}
+          onSubmit={onSubmit}
+          preventScrollReset={preventScrollReset}
+          {...props}
+        >
           {beforeChildren}
           {customChildren ?? defaultChildren()}
         </Component>
