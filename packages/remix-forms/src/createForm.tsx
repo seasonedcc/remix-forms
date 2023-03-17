@@ -37,6 +37,7 @@ type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 type BaseFormProps = {
   method?: FormMethod
   onSubmit?: React.FormEventHandler<HTMLFormElement>
+  preventScrollReset?: boolean
   children: React.ReactNode
 }
 
