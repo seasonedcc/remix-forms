@@ -211,7 +211,6 @@ function createForm({
     autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
-    preventScrollReset,
     ...props
   }: FormProps<Schema>) {
     type SchemaType = z.infer<Schema>
@@ -263,9 +262,9 @@ function createForm({
     const { errors: formErrors, isValid } = formState
 
     const onSubmit = (event: any) => {
-      form.handleSubmit(() => submit(event.target, { preventScrollReset }))(
-        event,
-      )
+      form.handleSubmit(() =>
+        submit(event.target, { preventScrollReset: props.preventScrollReset }),
+      )(event)
     }
 
     const formRef = React.useRef<HTMLFormElement>(null)
@@ -533,13 +532,7 @@ function createForm({
 
     return (
       <FormProvider {...form}>
-        <Component
-          ref={formRef}
-          method={method}
-          onSubmit={onSubmit}
-          preventScrollReset={preventScrollReset}
-          {...props}
-        >
+        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
           {beforeChildren}
           {customChildren ?? defaultChildren()}
         </Component>
