@@ -32,7 +32,7 @@ import { shapeInfo } from './shapeInfo'
 import type { ShapeInfo } from './shapeInfo'
 import { parseDate } from './prelude'
 
-type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+type FormMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 type BaseFormProps = {
   method?: FormMethod
