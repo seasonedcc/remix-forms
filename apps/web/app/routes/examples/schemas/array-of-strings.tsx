@@ -139,7 +139,7 @@ export default () => {
                             if (value) {
                               setValue(
                                 'tags',
-                                uniq([...(tags || []), value.toLowerCase()]),
+                                uniq([...tags, value.toLowerCase()]),
                                 { shouldValidate: true },
                               )
                             }

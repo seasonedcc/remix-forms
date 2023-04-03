@@ -60,6 +60,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/schemas/array-of-strings'}>
             Array of strings
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/schemas/array-of-objects'}>
+            Array of objects
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Forms</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/examples/forms/auto-generated'}>
             Auto-generated
