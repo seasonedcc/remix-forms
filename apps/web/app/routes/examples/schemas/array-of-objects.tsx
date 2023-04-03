@@ -19,7 +19,19 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `export default () => {
+const code = `const schema = z.object({
+  title: z.string().min(1),
+  contacts: z
+    .array(z.object({ name: z.string().min(1), email: z.string().email() }))
+    .min(1),
+})
+
+const mutation = makeDomainFunction(schema)(async (values) => values)
+
+export const action: ActionFunction = async ({ request }) =>
+  formAction({ request, schema, mutation })
+
+export default () => {
   const nameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
 
