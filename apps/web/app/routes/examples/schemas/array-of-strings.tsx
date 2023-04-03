@@ -13,7 +13,7 @@ import Example from '~/ui/example'
 import { useRef } from 'react'
 import { uniq } from 'lodash'
 
-const title = 'Array of string'
+const title = 'Array of strings'
 const description =
   'In this example, we use custom inputs to manage an array of string tags.'
 
