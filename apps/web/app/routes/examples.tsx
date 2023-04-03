@@ -57,6 +57,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/schemas/zod-effects'}>
             Zod Effects
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/schemas/array-of-strings'}>
+            Array of strings
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavTitle>Forms</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/examples/forms/auto-generated'}>
             Auto-generated
