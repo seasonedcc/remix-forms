@@ -19,7 +19,17 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `export default () => {
+const code = `const schema = z.object({
+  title: z.string().min(1),
+  tags: z.array(z.string()).min(1),
+})
+
+const mutation = makeDomainFunction(schema)(async (values) => values)
+
+export const action: ActionFunction = async ({ request }) =>
+  formAction({ request, schema, mutation })
+
+export default () => {
   const tagRef = useRef<HTMLInputElement>(null)
 
   return (
@@ -139,7 +149,7 @@ export default () => {
                             if (value) {
                               setValue(
                                 'tags',
-                                uniq([...(tags || []), value.toLowerCase()]),
+                                uniq([...tags, value.toLowerCase()]),
                                 { shouldValidate: true },
                               )
                             }
