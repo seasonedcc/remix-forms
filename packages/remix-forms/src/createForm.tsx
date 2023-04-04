@@ -91,11 +91,14 @@ type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type LegacySubmitFunction = (event: { target: any }) => void
+type LegacySubmitFunction = (
+  event: { target: any },
+  options?: { method: FormMethod },
+) => void
 
 type SubmitFunction = (
   event: { target: any },
-  options?: { preventScrollReset?: boolean },
+  options?: { method: FormMethod; preventScrollReset?: boolean },
 ) => void
 
 type FetcherWithComponents = Transition & {
@@ -263,7 +266,10 @@ function createForm({
 
     const onSubmit = (event: any) => {
       form.handleSubmit(() =>
-        submit(event.target, { preventScrollReset: props.preventScrollReset }),
+        submit(event.target, {
+          preventScrollReset: props.preventScrollReset,
+          method,
+        }),
       )(event)
     }
 
