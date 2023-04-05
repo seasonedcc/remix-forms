@@ -105,10 +105,10 @@ function createFormAction({
     beforeAction,
     beforeSuccess,
     successPath,
-  }: FormActionProps<Schema, D>): Promise<Response> {
+  }: FormActionProps<Schema, D>): Promise<D> {
     if (beforeAction) {
       const beforeActionResponse = await beforeAction(request)
-      if (beforeActionResponse) return beforeActionResponse
+      if (beforeActionResponse) return beforeActionResponse as D
     }
 
     const result = await performMutation({
