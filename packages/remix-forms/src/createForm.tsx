@@ -32,20 +32,30 @@ import { shapeInfo } from './shapeInfo'
 import type { ShapeInfo } from './shapeInfo'
 import { parseDate } from './prelude'
 
-type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+type LowerCaseFormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+type UpperCaseFormMethod = Uppercase<LowerCaseFormMethod>
+type HTMLFormMethod = LowerCaseFormMethod | UpperCaseFormMethod
 
 type BaseFormProps = {
-  method?: FormMethod
   onSubmit?: React.FormEventHandler<HTMLFormElement>
   preventScrollReset?: boolean
   children: React.ReactNode
 }
 
-type BaseFormPropsWithHTMLAttributes =
-  React.FormHTMLAttributes<HTMLFormElement> & BaseFormProps
+type BaseFormPropsWithHTMLAttributes = Omit<
+  React.FormHTMLAttributes<HTMLFormElement>,
+  'method'
+> &
+  BaseFormProps
+
+type LegacyFormComponent = React.ForwardRefExoticComponent<
+  React.PropsWithoutRef<BaseFormProps & { method?: LowerCaseFormMethod }> &
+    React.RefAttributes<HTMLFormElement>
+>
 
 type FormComponent = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<BaseFormProps> & React.RefAttributes<HTMLFormElement>
+  React.PropsWithoutRef<BaseFormProps & { method?: HTMLFormMethod }> &
+    React.RefAttributes<HTMLFormElement>
 >
 
 type Field<SchemaType> = {
@@ -93,22 +103,31 @@ type OnTransition<Schema extends SomeZodObject> = (
 
 type LegacySubmitFunction = (
   event: { target: any },
-  options?: { method: FormMethod },
+  options?: { method: LowerCaseFormMethod },
+) => void
+
+type IntermediateSubmitFunction = (
+  event: { target: any },
+  options?: { method: HTMLFormMethod },
 ) => void
 
 type SubmitFunction = (
   event: { target: any },
-  options?: { method: FormMethod; preventScrollReset?: boolean },
+  options?: {
+    method: HTMLFormMethod
+    preventScrollReset?: boolean
+  },
 ) => void
 
 type FetcherWithComponents = Transition & {
   data: any
-  Form: FormComponent
-  submit: SubmitFunction | LegacySubmitFunction
+  Form: FormComponent | LegacyFormComponent
+  submit: SubmitFunction | IntermediateSubmitFunction | LegacySubmitFunction
 }
 
 type FormProps<Schema extends FormSchema> = ComponentMappings & {
-  component?: FormComponent
+  component?: FormComponent | LegacyFormComponent
+  method?: HTMLFormMethod
   fetcher?: FetcherWithComponents
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
@@ -172,9 +191,12 @@ function createForm({
   useSubmit,
   useActionData,
 }: {
-  component: FormComponent
+  component: FormComponent | LegacyFormComponent
   useNavigation: () => Transition
-  useSubmit: (() => SubmitFunction) | (() => LegacySubmitFunction)
+  useSubmit:
+    | (() => SubmitFunction)
+    | (() => IntermediateSubmitFunction)
+    | (() => LegacySubmitFunction)
   useActionData: () => unknown
 }) {
   return function Form<Schema extends FormSchema>({
@@ -199,7 +221,7 @@ function createForm({
     buttonComponent: Button = 'button',
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel = 'OK',
-    method = 'post',
+    method = 'POST',
     schema,
     beforeChildren,
     onTransition,
@@ -268,7 +290,7 @@ function createForm({
       form.handleSubmit(() =>
         submit(event.target, {
           preventScrollReset: props.preventScrollReset,
-          method,
+          method: method as LowerCaseFormMethod,
         }),
       )(event)
     }
@@ -538,7 +560,12 @@ function createForm({
 
     return (
       <FormProvider {...form}>
-        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
+        <Component
+          ref={formRef}
+          method={method as LowerCaseFormMethod}
+          onSubmit={onSubmit}
+          {...props}
+        >
           {beforeChildren}
           {customChildren ?? defaultChildren()}
         </Component>
