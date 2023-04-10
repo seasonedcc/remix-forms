@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const createFormCode = `import { createForm } from 'remix-forms'
 // For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
 // For React Router 6.4, like this
 import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
 
@@ -39,7 +39,7 @@ export { formAction }
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
 import { createForm } from 'remix-forms'
 // For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useTransition as useNavigation } from '@remix-run/react'
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
 // For React Router 6.4, like this
 import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
 
@@ -175,7 +175,7 @@ export default function Component() {
   } = useLoaderData()
 
   return (
-    <div className="flex flex-col max-w-2xl px-4 py-8 m-auto space-y-8 text-gray-200 sm:px-8 sm:py-16">
+    <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
       <SubHeading>Remix or React Router 6.4?</SubHeading>
       <p>
