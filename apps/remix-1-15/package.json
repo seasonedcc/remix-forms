@@ -1,0 +1,34 @@
+{
+  "name": "remix-forms-remix-1-15",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "remix build",
+    "dev": "PORT=3002 remix dev",
+    "start": "remix-serve build",
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "@remix-run/node": "1.15.0",
+    "@remix-run/react": "1.15.0",
+    "@remix-run/serve": "1.15.0",
+    "domain-functions": "^1.0.0",
+    "isbot": "^3.6.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remix-forms": "*",
+    "zod": "^3.12.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "1.15.0",
+    "@remix-run/eslint-config": "1.15.0",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "eslint": "^8.27.0",
+    "eslint-config-custom": "*",
+    "typescript": "~4.5.5"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
