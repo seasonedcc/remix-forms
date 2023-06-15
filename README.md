@@ -1,6 +1,6 @@
-# Welcome to Remix Forms!
+# Welcome to Remix Forms
 
-This repository contains the Remix Forms source code. We're just getting started and the APIs are unstable, so we appreciate your patience as we figure things out.
+This repository contains the Remix Forms source code. Please create issues as you encounter them. We appreciate the contribution!
 
 ## Documentation
 
