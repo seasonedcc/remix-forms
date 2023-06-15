@@ -310,17 +310,13 @@ export default function Component() {
       </div>
       <SubHeading>That&apos;s it!</SubHeading>
       <div className="flex flex-col space-y-2">
+        <p>Now go play 😊</p>
         <p>
-          Now go play! Keep in mind that we&apos;re just getting started and the
-          APIs are unstable, so we appreciate your patience as we figure things
-          out.
-        </p>
-        <p>
-          Also, please join{' '}
-          <ExternalLink href="https://discord.gg/2eahPMwxb8">
-            Seasoned&apos;s OSS community on Discord
-          </ExternalLink>
-          . We&apos;ll be there to provide you support on Remix Forms.
+          Please{' '}
+          <ExternalLink href="https://github.com/seasonedcc/remix-forms/issues">
+            create issues
+          </ExternalLink>{' '}
+          as you encounter them. We appreciate the contribution!
         </p>
       </div>
       <SubHeading>Appreciation</SubHeading>
