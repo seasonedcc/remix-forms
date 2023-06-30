@@ -18,9 +18,11 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
+    "functional-red-black-tree": "^1.0.1",
     "prettier": "latest",
     "turbo": "latest",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "v8-compile-cache": "^2.3.0"
   },
   "engines": {
     "npm": ">=7.0.0",
