@@ -1,6 +1,6 @@
 {
   "name": "remix-forms",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "The full-stack form library for Remix and React Router",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
