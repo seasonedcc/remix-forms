@@ -412,7 +412,7 @@ function createForm({
     )
 
     const buttonLabel =
-      transition.state === 'submitting' ? pendingButtonLabel : rawButtonLabel
+      transition.state !== 'idle' ? pendingButtonLabel : rawButtonLabel
 
     const [disabled, setDisabled] = React.useState(false)
 
