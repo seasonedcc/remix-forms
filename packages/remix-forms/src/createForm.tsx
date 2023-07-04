@@ -220,7 +220,7 @@ function createForm({
     radioWrapperComponent,
     buttonComponent: Button = 'button',
     buttonLabel: rawButtonLabel = 'OK',
-    pendingButtonLabel = 'OK',
+    pendingButtonLabel,
     method = 'POST',
     schema,
     beforeChildren,
@@ -412,7 +412,9 @@ function createForm({
     )
 
     const buttonLabel =
-      transition.state !== 'idle' ? pendingButtonLabel : rawButtonLabel
+      transition.state !== 'idle'
+        ? pendingButtonLabel ?? rawButtonLabel
+        : rawButtonLabel
 
     const [disabled, setDisabled] = React.useState(false)
 
