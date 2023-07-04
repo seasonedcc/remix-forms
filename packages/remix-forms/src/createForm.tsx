@@ -508,10 +508,12 @@ function createForm({
     )
 
     React.useEffect(() => {
+      const submitting = transition.state !== 'idle'
+
       const shouldDisable =
         mode === 'onChange' || mode === 'all'
-          ? transition.state === 'submitting' || !isValid
-          : transition.state === 'submitting'
+          ? submitting || !isValid
+          : submitting
 
       setDisabled(shouldDisable)
     }, [transition.state, formState, mode, isValid])
