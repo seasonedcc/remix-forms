@@ -16,4 +16,5 @@ module.exports = {
       rehypePlugins: [rehypeHighlight],
     }
   },
+  devServerPort: 8002,
 }

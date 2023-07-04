@@ -3,13 +3,14 @@ module.exports = {
   future: {
     v2_routeConvention: true,
   },
-  ignoredRouteFiles: ["**/.*"],
+  ignoredRouteFiles: ['**/.*'],
   server:
     process.env.NETLIFY || process.env.NETLIFY_LOCAL
-      ? "./server.js"
+      ? './server.js'
       : undefined,
-  serverBuildPath: ".netlify/functions-internal/server.js",
+  serverBuildPath: '.netlify/functions-internal/server.js',
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
   // publicPath: "/build/",
-};
+  devServerPort: 8003,
+}
