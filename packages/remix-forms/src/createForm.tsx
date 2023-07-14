@@ -38,6 +38,7 @@ type HTMLFormMethod = LowerCaseFormMethod | UpperCaseFormMethod
 
 type BaseFormProps = {
   onSubmit?: React.FormEventHandler<HTMLFormElement>
+  replace?: boolean
   preventScrollReset?: boolean
   children: React.ReactNode
 }
@@ -115,6 +116,7 @@ type SubmitFunction = (
   event: { target: any },
   options?: {
     method: HTMLFormMethod
+    replace?: boolean
     preventScrollReset?: boolean
   },
 ) => void
@@ -289,6 +291,7 @@ function createForm({
     const onSubmit = (event: any) => {
       form.handleSubmit(() =>
         submit(event.target, {
+          replace: props.replace,
           preventScrollReset: props.preventScrollReset,
           method: method as LowerCaseFormMethod,
         }),
