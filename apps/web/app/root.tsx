@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import type { LinksFunction, MetaFunction, ActionArgs } from '@remix-run/node'
 import {
   Link,
   Links,
