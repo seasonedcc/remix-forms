@@ -30,7 +30,8 @@
   "scripts": {
     "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
-    "lint": "eslint *.ts*",
+    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
+    "prelint": "prettier --check .",
     "tsc": "tsc",
     "test": "vitest run"
   },
@@ -44,7 +45,7 @@
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
     "c8": "^7.11.2",
-    "eslint": "^7.32.0",
+    "eslint": "^8.44.0",
     "eslint-config-custom": "*",
     "react": ">=16.8",
     "tsconfig": "*",

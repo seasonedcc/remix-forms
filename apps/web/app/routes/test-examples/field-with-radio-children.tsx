@@ -26,7 +26,7 @@ const schema = z.object({
 })
 
 export const loader: LoaderFunction = () => ({
-  code: hljs.highlight("", { language: 'ts' }).value,
+  code: hljs.highlight('', { language: 'ts' }).value,
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)

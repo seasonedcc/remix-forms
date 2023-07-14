@@ -94,17 +94,13 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-const loginMutation = makeDomainFunction(loginSchema)(
-  async (values) => values
-)
+const loginMutation = makeDomainFunction(loginSchema)(async (values) => values)
 
 const contactMutation = makeDomainFunction(contactSchema)(
-  async (values) => values
+  async (values) => values,
 )
 
-export const action: ActionFunction = async ({
-  request
-}) => {
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.clone().formData()
   const action = formData.get('_action')
 

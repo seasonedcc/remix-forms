@@ -88,11 +88,11 @@ class Example {
     options: { name: string; value: string }[],
   ) {
     Promise.all(
-      options.map(({ name, value }) => {
+      options.map(({ value }) =>
         expect(
           this.page.locator(`[name="${radioName}"][value="${value}"]:visible`),
-        ).toBeVisible()
-      }),
+        ).toBeVisible(),
+      ),
     )
   }
 

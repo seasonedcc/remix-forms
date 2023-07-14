@@ -1,7 +1,9 @@
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
 const route = '/examples/actions/field-error'
-test('With JS enabled clear server error on the client', async ({ example }) => {
+test('With JS enabled clear server error on the client', async ({
+  example,
+}) => {
   const { email, password, button, page } = example
 
   await page.goto(route)

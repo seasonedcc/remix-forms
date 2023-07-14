@@ -23,7 +23,7 @@ const schema = z.object({
 })
 
 export const loader: LoaderFunction = () => ({
-  code: hljs.highlight("", { language: 'ts' }).value,
+  code: hljs.highlight('', { language: 'ts' }).value,
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
@@ -34,7 +34,11 @@ export const action: ActionFunction = async ({ request }) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} errors={{ _global: ["Some prop error"] }} hiddenFields={["csrfToken"]} />
+      <Form
+        schema={schema}
+        errors={{ _global: ['Some prop error'] }}
+        hiddenFields={['csrfToken']}
+      />
     </Example>
   )
 }
