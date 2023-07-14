@@ -71,16 +71,16 @@ const reservationSchema = z.object({
   specialRequests: z.string().optional(),
 })
 
-const makeReservation = makeDomainFunction(reservationSchema)(
-  async (values) => {
-    if (values.specialRequests?.match(/towels/i)) {
-      throw new InputError("Don't be such a diva!", 'specialRequests')
-    }
+const makeReservation = makeDomainFunction(reservationSchema)(async (
+  values,
+) => {
+  if (values.specialRequests?.match(/towels/i)) {
+    throw new InputError("Don't be such a diva!", 'specialRequests')
+  }
 
-    // Here you would store data instead
-    console.log(values)
-  },
-)
+  // Here you would store data instead
+  console.log(values)
+})
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({

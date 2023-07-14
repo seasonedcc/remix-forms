@@ -15,5 +15,14 @@ module.exports = {
         disallowTypeAnnotations: true,
       },
     ],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
   },
+  ignorePatterns: ['**/*.js', '**/*.mjs', '**/*.d.ts', '**/dist', '**/tsc'],
 }

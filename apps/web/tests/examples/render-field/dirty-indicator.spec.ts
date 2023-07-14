@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { test, expect } from 'tests/setup/tests'
 
 const route = '/examples/render-field/dirty-indicator'
 
