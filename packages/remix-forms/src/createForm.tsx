@@ -484,10 +484,14 @@ function createForm({
             ...child.props,
           })
         } else if (child.type === Button) {
+          const onClick = ['button', 'reset'].includes(child.props.type)
+            ? undefined
+            : onSubmit
+
           return React.cloneElement(child, {
             disabled,
             children: buttonLabel,
-            onClick: onSubmit,
+            onClick,
             ...child.props,
           })
         } else {
