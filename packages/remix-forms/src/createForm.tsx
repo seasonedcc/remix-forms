@@ -288,17 +288,20 @@ function createForm({
     const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
 
+    const formRef = React.useRef<HTMLFormElement>(null)
+
     const onSubmit = (event: any) => {
-      form.handleSubmit(() =>
-        submit(event.target, {
+      form.handleSubmit(() => {
+        if (!formRef.current) return
+
+        return submit(formRef.current, {
           replace: props.replace,
           preventScrollReset: props.preventScrollReset,
           method: method as LowerCaseFormMethod,
-        }),
-      )(event)
+        })
+      })(event)
     }
 
-    const formRef = React.useRef<HTMLFormElement>(null)
     const doSubmit = () => {
       formRef.current?.dispatchEvent(
         new Event('submit', { cancelable: true, bubbles: true }),

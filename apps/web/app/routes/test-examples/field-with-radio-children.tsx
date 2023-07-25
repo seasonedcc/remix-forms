@@ -63,7 +63,9 @@ export default function Component() {
             </Field>
             <Field name="message" multiline placeholder="Your message" />
             <Errors />
-            <Button />
+            <Button>
+              <span>OK</span>
+            </Button>
           </>
         )}
       </Form>
