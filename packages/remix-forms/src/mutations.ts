@@ -1,9 +1,65 @@
-import type { DomainFunction } from 'domain-functions'
-import { inputFromForm, errorMessagesForSchema } from 'domain-functions'
+import type { DomainFunction, SchemaError } from 'domain-functions'
+import { inputFromForm } from 'domain-functions'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+
+type NestedErrors<SchemaType> = {
+  [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
+}
+
+function errorMessagesForSchema<T extends z.ZodTypeAny>(
+  errors: SchemaError[],
+  _schema: T,
+): NestedErrors<z.infer<T>> {
+  type SchemaType = z.infer<T>
+  type ErrorObject = { path: string[]; messages: string[] }
+
+  const nest = (
+    { path, messages }: ErrorObject,
+    root: Record<string, unknown>,
+  ) => {
+    const [head, ...tail] = path
+    root[head] =
+      tail.length === 0
+        ? messages
+        : nest(
+            { path: tail, messages },
+            (root[head] as Record<string, unknown>) ?? {},
+          )
+    return root
+  }
+
+  const compareStringArrays = (a: string[]) => (b: string[]) =>
+    JSON.stringify(a) === JSON.stringify(b)
+
+  const toErrorObject = (errors: SchemaError[]): ErrorObject[] =>
+    errors.map(({ path, message }) => ({
+      path,
+      messages: [message],
+    }))
+
+  const unifyPaths = (errors: SchemaError[]) =>
+    toErrorObject(errors).reduce((memo, error) => {
+      const comparePath = compareStringArrays(error.path)
+      const mergeErrorMessages = ({ path, messages }: ErrorObject) =>
+        comparePath(path)
+          ? { path, messages: [...messages, ...error.messages] }
+          : { path, messages }
+      const existingPath = memo.find(({ path }) => comparePath(path))
+
+      return existingPath ? memo.map(mergeErrorMessages) : [...memo, error]
+    }, [] as ErrorObject[])
+
+  const errorTree = unifyPaths(errors).reduce((memo, schemaError) => {
+    const errorBranch = nest(schemaError, memo)
+
+    return { ...memo, ...errorBranch }
+  }, {}) as NestedErrors<SchemaType>
+
+  return errorTree
+}
 
 type RedirectFunction = (url: string, init?: number | ResponseInit) => Response
 type JsonFunction = <Data>(data: Data, init?: number | ResponseInit) => Response

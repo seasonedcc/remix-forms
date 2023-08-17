@@ -3,14 +3,9 @@ import type { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
 type ParsedQs = Awaited<ReturnType<typeof inputFromForm>>
+type QsValue = ParsedQs[keyof ParsedQs]
 
-type Value =
-  | FormDataEntryValue
-  | ParsedQs
-  | ParsedQs[]
-  | string[]
-  | null
-  | undefined
+type Value = FormDataEntryValue | QsValue | string[] | null | undefined
 
 function makeCoercion<T>(coercion: (value: Value) => T, emptyValue: unknown) {
   return ({
