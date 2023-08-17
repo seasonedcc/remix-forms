@@ -36,7 +36,7 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "domain-functions": ">=1.0.0",
+    "domain-functions": "1.x",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
     "zod": ">=3.12"
