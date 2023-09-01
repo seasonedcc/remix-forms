@@ -147,6 +147,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   labels?: Partial<Record<keyof z.infer<Schema>, string>>
   placeholders?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
+  emptyOptionLabel?: string
   hiddenFields?: Array<keyof z.infer<Schema>>
   multiline?: Array<keyof z.infer<Schema>>
   radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
@@ -232,6 +233,7 @@ function createForm({
     labels,
     placeholders,
     options,
+    emptyOptionLabel = '',
     hiddenFields,
     multiline,
     radio,
@@ -366,7 +368,10 @@ function createForm({
         }))
 
       const fieldOptionsPlusEmpty = () =>
-        fieldOptions && [{ name: '', value: '' }, ...(fieldOptions ?? [])]
+        fieldOptions && [
+          { name: emptyOptionLabel, value: '' },
+          ...(fieldOptions ?? []),
+        ]
 
       return {
         shape,
