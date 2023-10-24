@@ -1,6 +1,6 @@
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
-const route = '/examples/forms/edit-types'
+const route = '/examples/forms/input-types'
 
 test('With JS enabled', async ({ example }) => {
   const { email, password, button, page } = example

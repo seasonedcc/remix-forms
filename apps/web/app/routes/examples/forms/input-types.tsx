@@ -11,22 +11,25 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 
-const title = 'Edit types'
+const title = 'Input types'
 const description =
-  "In this example, we'll edit the input type of certain fields."
+  "In this example, we'll edit the input type of multiple fields without having to pass children to Form."
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().min(1).email(),
   password: z.string().min(8),
+  favColor: z.string().optional(),
 })
 
 export default () => (
   <Form
     schema={schema}
-    fieldTypes={{
+    inputTypes={{
+      email: 'email',
       password: 'password',
+      favColor: 'color',
     }}
   />
 )`
@@ -34,6 +37,7 @@ export default () => (
 const schema = z.object({
   email: z.string().min(1).email(),
   password: z.string().min(8),
+  favColor: z.string().optional(),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -50,8 +54,13 @@ export default function Component() {
     <Example title={title} description={description}>
       <Form
         schema={schema}
-        fieldTypes={{
+        labels={{
+          favColor: 'Favorite color',
+        }}
+        inputTypes={{
+          email: 'email',
           password: 'password',
+          favColor: 'color',
         }}
       />
     </Example>

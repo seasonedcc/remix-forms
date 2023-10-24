@@ -148,7 +148,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   placeholders?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
   hiddenFields?: Array<keyof z.infer<Schema>>
-  fieldTypes?: Partial<
+  inputTypes?: Partial<
     Record<keyof z.infer<Schema>, React.HTMLInputTypeAttribute>
   >
   multiline?: Array<keyof z.infer<Schema>>
@@ -235,7 +235,7 @@ function createForm({
     labels,
     placeholders,
     options,
-    fieldTypes: formFieldTypes,
+    inputTypes: formFieldTypes,
     hiddenFields,
     multiline,
     radio,
