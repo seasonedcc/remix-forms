@@ -25,6 +25,7 @@ class Example {
   readonly firstName: Field
   readonly email: Field
   readonly password: Field
+  readonly favColor: Field
   readonly button: Locator
 
   constructor(page: Page) {
@@ -32,6 +33,7 @@ class Example {
     this.firstName = this.field('firstName')
     this.email = this.field('email')
     this.password = this.field('password')
+    this.favColor = this.field('favColor')
     this.button = page.locator('form button:has-text("OK"):visible')
   }
 
