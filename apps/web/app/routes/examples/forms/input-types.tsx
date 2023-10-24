@@ -20,7 +20,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `const schema = z.object({
   email: z.string().min(1).email(),
   password: z.string().min(8),
-  favColor: z.string().optional(),
+  favColor: z.string(),
 })
 
 export default () => (
@@ -37,7 +37,7 @@ export default () => (
 const schema = z.object({
   email: z.string().min(1).email(),
   password: z.string().min(8),
-  favColor: z.string().optional(),
+  favColor: z.string(),
 })
 
 export const loader: LoaderFunction = () => ({
@@ -55,7 +55,7 @@ export default function Component() {
       <Form
         schema={schema}
         labels={{
-          favColor: 'Favorite color',
+          favColor: 'Favorite Color',
         }}
         inputTypes={{
           email: 'email',
