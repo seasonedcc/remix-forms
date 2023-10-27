@@ -79,6 +79,9 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/forms/edit-values'}>
             Edit values
           </SidebarLayout.NavLink>
+          <SidebarLayout.NavLink to={'/examples/forms/input-types'}>
+            Input types
+          </SidebarLayout.NavLink>
           <SidebarLayout.NavLink to={'/examples/forms/form-with-children'}>
             Form with children
           </SidebarLayout.NavLink>

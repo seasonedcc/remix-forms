@@ -149,6 +149,9 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   options?: Options<z.infer<Schema>>
   emptyOptionLabel?: string
   hiddenFields?: Array<keyof z.infer<Schema>>
+  inputTypes?: Partial<
+    Record<keyof z.infer<Schema>, React.HTMLInputTypeAttribute>
+  >
   multiline?: Array<keyof z.infer<Schema>>
   radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
   autoFocus?: keyof z.infer<Schema>
@@ -233,6 +236,7 @@ function createForm({
     labels,
     placeholders,
     options,
+    inputTypes,
     emptyOptionLabel = '',
     hiddenFields,
     multiline,
@@ -354,6 +358,7 @@ function createForm({
 
     const firstErroredField = () =>
       Object.keys(schemaShape).find((key) => fieldErrors(key)?.length)
+
     const makeField = (key: string) => {
       const shape = schemaShape[key]
       const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
@@ -376,6 +381,7 @@ function createForm({
       return {
         shape,
         fieldType: typeName ? fieldTypes[typeName] : 'string',
+        type: inputTypes?.[key],
         name: key,
         required,
         dirty: key in formState.dirtyFields,
