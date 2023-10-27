@@ -147,6 +147,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   labels?: Partial<Record<keyof z.infer<Schema>, string>>
   placeholders?: Partial<Record<keyof z.infer<Schema>, string>>
   options?: Options<z.infer<Schema>>
+  emptyOptionLabel?: string
   hiddenFields?: Array<keyof z.infer<Schema>>
   inputTypes?: Partial<
     Record<keyof z.infer<Schema>, React.HTMLInputTypeAttribute>
@@ -236,6 +237,7 @@ function createForm({
     placeholders,
     options,
     inputTypes,
+    emptyOptionLabel = '',
     hiddenFields,
     multiline,
     radio,
@@ -292,17 +294,20 @@ function createForm({
     const { formState, reset } = form
     const { errors: formErrors, isValid } = formState
 
+    const formRef = React.useRef<HTMLFormElement>(null)
+
     const onSubmit = (event: any) => {
-      form.handleSubmit(() =>
-        submit(event.target, {
+      form.handleSubmit(() => {
+        if (!formRef.current) return
+
+        return submit(formRef.current, {
           replace: props.replace,
           preventScrollReset: props.preventScrollReset,
           method: method as LowerCaseFormMethod,
-        }),
-      )(event)
+        })
+      })(event)
     }
 
-    const formRef = React.useRef<HTMLFormElement>(null)
     const doSubmit = () => {
       formRef.current?.dispatchEvent(
         new Event('submit', { cancelable: true, bubbles: true }),
@@ -368,7 +373,10 @@ function createForm({
         }))
 
       const fieldOptionsPlusEmpty = () =>
-        fieldOptions && [{ name: '', value: '' }, ...(fieldOptions ?? [])]
+        fieldOptions && [
+          { name: emptyOptionLabel, value: '' },
+          ...(fieldOptions ?? []),
+        ]
 
       return {
         shape,

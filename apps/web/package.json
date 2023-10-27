@@ -29,7 +29,7 @@
     "@remix-run/serve": "1.7.4",
     "@tailwindcss/forms": "^0.4.0",
     "cross-env": "^7.0.3",
-    "domain-functions": "^1.0.0",
+    "domain-functions": "^2.0.0",
     "highlight.js": "^11.4.0",
     "lodash": "^4.17.21",
     "netlify-cli": "^10.7.1",

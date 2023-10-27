@@ -1,6 +1,6 @@
 {
   "name": "remix-forms",
-  "version": "1.6.4",
+  "version": "2.1.0",
   "description": "The full-stack form library for Remix and React Router",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -36,7 +36,7 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "domain-functions": ">=1.0.0",
+    "domain-functions": "2.x",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
     "zod": ">=3.12"

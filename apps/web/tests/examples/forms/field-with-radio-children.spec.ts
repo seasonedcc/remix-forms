@@ -6,6 +6,7 @@ test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
   const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
   const message = example.field('message')
+  const buttonSpan = page.locator('form span:has-text("OK"):visible')
 
   await page.goto(route)
 
@@ -36,7 +37,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeEnabled()
 
   // Client-side validation
-  await button.click()
+  await buttonSpan.click()
 
   // Show field errors and focus on the first field
 
@@ -54,7 +55,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Make first field be valid, focus goes to the second field
   await firstName.input.fill('John')
-  await button.click()
+  await buttonSpan.click()
   await example.expectValid(firstName)
   await expect(email.input).toBeFocused()
 
@@ -69,7 +70,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(email)
 
   // Submit form
-  button.click()
+  await buttonSpan.click()
   await expect(button).toBeDisabled()
 
   await example.expectData({
