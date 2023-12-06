@@ -253,7 +253,7 @@ function createForm({
     const navigationTransition = useNavigation()
     const transition = fetcher ?? navigationTransition
     const navigationActionData = useActionData()
-    const unparsedActionData = fetcher?.data ?? navigationActionData
+    const unparsedActionData = fetcher ? fetcher.data : navigationActionData
 
     const actionData =
       parseActionData && unparsedActionData
