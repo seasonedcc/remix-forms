@@ -40,6 +40,9 @@ type BaseFormProps = {
   onSubmit?: React.FormEventHandler<HTMLFormElement>
   replace?: boolean
   preventScrollReset?: boolean
+  navigate?: boolean
+  fetcherKey?: string
+  unstable_flushSync?: boolean
   children: React.ReactNode
 }
 
@@ -118,6 +121,9 @@ type SubmitFunction = (
     method: HTMLFormMethod
     replace?: boolean
     preventScrollReset?: boolean
+    navigate?: boolean
+    fetcherKey?: string
+    unstable_flushSync?: boolean
   },
 ) => void
 
@@ -244,6 +250,7 @@ function createForm({
     autoFocus: autoFocusProp,
     errors: errorsProp,
     values: valuesProp,
+    unstable_flushSync,
     ...props
   }: FormProps<Schema>) {
     type SchemaType = z.infer<Schema>
@@ -301,9 +308,12 @@ function createForm({
         if (!formRef.current) return
 
         return submit(formRef.current, {
+          method: method as LowerCaseFormMethod,
           replace: props.replace,
           preventScrollReset: props.preventScrollReset,
-          method: method as LowerCaseFormMethod,
+          navigate: props.navigate,
+          fetcherKey: props.fetcherKey,
+          unstable_flushSync,
         })
       })(event)
     }
