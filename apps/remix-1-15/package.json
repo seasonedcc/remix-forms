@@ -23,12 +23,12 @@
   },
   "devDependencies": {
     "@remix-run/dev": "1.15.0",
-    "@remix-run/eslint-config": "1.15.0",
+    "@remix-run/eslint-config": "2.9.1",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
-    "eslint": "^8.44.0",
+    "eslint": "^9.1.1",
     "eslint-config-custom": "*",
-    "typescript": "~4.5.5"
+    "typescript": "~5.4.5"
   },
   "engines": {
     "node": ">=14"
