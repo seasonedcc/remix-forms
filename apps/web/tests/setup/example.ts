@@ -64,7 +64,7 @@ class Example {
     }
 
     await expect(field.input).toHaveValue(value)
-    await expect(field.input).toHaveAttribute('type', type)
+    expect((await field.input.getAttribute('type')) ?? '').toBe(type)
     await expect(field.input).toHaveAttribute('aria-invalid', String(invalid))
 
     placeholder &&
