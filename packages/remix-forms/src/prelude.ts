@@ -7,8 +7,8 @@ type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
 type ObjectFromSchema<T> = T extends z.SomeZodObject
   ? T
   : T extends z.ZodEffects<infer R>
-  ? ObjectFromSchema<R>
-  : never
+    ? ObjectFromSchema<R>
+    : never
 
 type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>

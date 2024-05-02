@@ -75,13 +75,13 @@ type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-type PerformMutation<SchemaType, D extends unknown> =
+type PerformMutation<SchemaType, D> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
 
 type Callback = (request: Request) => Promise<Response | void>
 
-type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
+type PerformMutationProps<Schema extends FormSchema, D> = {
   request: Request
   schema: Schema
   mutation: DomainFunction<D>
@@ -91,7 +91,7 @@ type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   ) => Record<string, unknown>
 }
 
-type FormActionProps<Schema extends FormSchema, D extends unknown> = {
+type FormActionProps<Schema extends FormSchema, D> = {
   beforeAction?: Callback
   beforeSuccess?: Callback
   successPath?: string | ((data: D) => string)
@@ -114,7 +114,7 @@ async function getFormValues<Schema extends FormSchema>(
   return values
 }
 
-async function performMutation<Schema extends FormSchema, D extends unknown>({
+async function performMutation<Schema extends FormSchema, D>({
   request,
   schema,
   mutation,
@@ -152,7 +152,7 @@ function createFormAction({
   redirect: RedirectFunction
   json: JsonFunction
 }) {
-  async function formAction<Schema extends FormSchema, D extends unknown>({
+  async function formAction<Schema extends FormSchema, D>({
     request,
     schema,
     mutation,

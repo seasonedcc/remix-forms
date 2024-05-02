@@ -16,16 +16,17 @@
     "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
-    "eslint": "^9.1.1",
-    "eslint-config-custom": "*",
+    "@remix-run/eslint-config": "^2.9.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.4.0",
+    "prettier-plugin-tailwindcss": "^0.5.14",
     "turbo": "^1.13.3",
     "typescript": "~5.4.5"
   },
   "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
+    "npm": ">=8.0.0",
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
   "packageManager": "npm@8.5.0",
   "volta": {

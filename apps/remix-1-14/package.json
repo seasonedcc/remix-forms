@@ -6,7 +6,7 @@
     "build": "remix build",
     "dev": "PORT=3001 remix dev",
     "start": "cross-env NODE_ENV=production netlify dev",
-    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
+    "lint": "eslint . --max-warnings=0",
     "prelint": "prettier --check .",
     "tsc": "tsc"
   },
@@ -28,8 +28,6 @@
     "@remix-run/serve": "1.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "eslint": "^9.1.1",
-    "eslint-config-custom": "*",
     "typescript": "~5.4.5"
   },
   "engines": {

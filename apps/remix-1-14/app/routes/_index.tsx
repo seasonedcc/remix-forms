@@ -1,5 +1,5 @@
 import { makeDomainFunction } from 'domain-functions'
-import type { ActionFunctionArgs } from 'react-router-dom'
+import type { ActionArgs } from '@remix-run/node'
 import { z } from 'zod'
 import { formAction } from '../formAction'
 import { Form } from '../ui/form'
@@ -11,7 +11,7 @@ const schema = z.object({
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
 
-export function action({ request }: ActionFunctionArgs) {
+export function action({ request }: ActionArgs) {
   return formAction({
     request,
     schema,

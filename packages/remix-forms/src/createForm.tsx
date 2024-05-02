@@ -6,7 +6,7 @@ import type {
   KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
-import { objectFromSchema, mapObject, browser } from './prelude'
+import { objectFromSchema, mapObject, browser, parseDate } from './prelude'
 import type {
   UseFormReturn,
   FieldError,
@@ -27,10 +27,8 @@ import { createField } from './createField'
 import { mapChildren, reduceElements } from './childrenTraversal'
 import { defaultRenderField } from './defaultRenderField'
 import { inferLabel } from './inferLabel'
-import type { ZodTypeName } from './shapeInfo'
+import type { ShapeInfo, ZodTypeName } from './shapeInfo'
 import { shapeInfo } from './shapeInfo'
-import type { ShapeInfo } from './shapeInfo'
-import { parseDate } from './prelude'
 
 type LowerCaseFormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 type UpperCaseFormMethod = Uppercase<LowerCaseFormMethod>
