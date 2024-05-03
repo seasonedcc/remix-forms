@@ -11,6 +11,8 @@ module.exports = {
   future: {
     v2_meta: true,
     v2_routeConvention: true,
+    v2_errorBoundary: true,
+    v2_normalizeFormMethod: true,
   },
   mdx: async (filename) => {
     const [rehypeHighlight] = await Promise.all([
