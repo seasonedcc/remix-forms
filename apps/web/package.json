@@ -22,7 +22,7 @@
     "@headlessui/react": "~1.5.0",
     "@heroicons/react": "^1.0.5",
     "@hookform/resolvers": "^2.8.8",
-    "@netlify/functions": "^1.0.0",
+    "@netlify/functions": "^2.6.0",
     "@remix-run/netlify": "1.7.4",
     "@remix-run/node": "1.7.4",
     "@remix-run/react": "1.7.4",
