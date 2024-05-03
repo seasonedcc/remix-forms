@@ -50,7 +50,7 @@
     "tsconfig": "*",
     "tsup": "^8.0.2",
     "typescript": "~5.4.5",
-    "vitest": "~1.5.3"
+    "vitest": "~1.6.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.8"
