@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -19,7 +15,7 @@ const title = 'Server validations'
 const description =
   "Now let's add server-side validations. To make our lives easier, we'll use zod for that. (It won't work yet 🤫)"
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
 import { ActionFunction, redirect, json } from '@remix-run/node'

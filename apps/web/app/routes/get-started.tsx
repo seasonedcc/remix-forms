@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type { LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
@@ -12,7 +12,7 @@ import SubHeading from '~/ui/sub-heading'
 const title = 'Get Started'
 const description = 'The full-stack form library for Remix and React Router'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const createFormCode = `import { createForm } from 'remix-forms'
 // For Remix, import it like this

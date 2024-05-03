@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -15,7 +11,7 @@ const title = 'Transform values'
 const description =
   'In this example, we use different schemas for the form and the mutation, transforming the form values before calling the mutation.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const formSchema = z.object({
   firstName: z.string().min(1),

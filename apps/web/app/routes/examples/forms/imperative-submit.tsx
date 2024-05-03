@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -15,7 +11,7 @@ const title = 'Imperative submit'
 const description =
   'In this example, we trigger a submit as soon as the user enters 4 characters.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const schema = z.object({ token: z.string().length(4) })
 

@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -21,7 +17,7 @@ const title = 'Client validations'
 const description =
   "Now let's add client-side validations. We'll use the amazing react-hook-form for that."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
 import { ActionFunction, redirect, json } from '@remix-run/node'

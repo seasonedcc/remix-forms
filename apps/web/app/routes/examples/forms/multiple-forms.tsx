@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -15,14 +11,14 @@ const title = 'Multiple forms'
 const description =
   'In this example, we show how you can handle multiple forms in the same route.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const loginSchema = z.object({
   _action: z.literal('/login'),
   email: z.string().email(),
   password: z.string().min(8),
 })
-  
+
 const contactSchema = z.object({
   _action: z.literal('/contact'),
   email: z.string().email(),

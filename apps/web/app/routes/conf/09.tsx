@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
@@ -14,7 +10,7 @@ import Form from '~/ui/form'
 const title = 'Custom layout'
 const description = "Finally, let's make the form look exactly as before."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { ActionFunction } from '@remix-run/node'
 import { z } from 'zod'

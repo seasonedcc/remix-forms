@@ -1,4 +1,3 @@
-import type { MetaFunction } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
@@ -14,7 +13,7 @@ import ButtonLink from '~/ui/button-link'
 const title = 'Remix Conf 2022'
 const description = 'Welcome to the interactive counterpart to our talk 😄'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 export default function Component() {
   return (

@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -27,7 +23,7 @@ const title = 'The full-stack form library for Remix and React Router'
 const description =
   'E2E type-safe, with client + server validations, a11y, pending UI, and focus management'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
 import { makeDomainFunction } from 'domain-functions'

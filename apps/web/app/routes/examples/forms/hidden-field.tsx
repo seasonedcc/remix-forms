@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -14,7 +10,7 @@ import Example from '~/ui/example'
 const title = 'Hidden field'
 const description = 'In this example, we add a hidden field to our form.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   csrfToken: z.string().min(1),

@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
@@ -15,7 +11,7 @@ const title = 'Auto-generated'
 const description =
   "Now let's have Remix Forms do it all for us. We'll still have to customize the layout, but the UX is there. Like magic! 🪄"
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { ActionFunction } from '@remix-run/node'
 import { z } from 'zod'

@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import type { LinksFunction } from '@remix-run/node'
 import {
   Link,
   Links,
@@ -13,20 +13,13 @@ import colors from 'tailwindcss/colors'
 import styles from './styles/app.css'
 import highlightStyles from 'highlight.js/styles/a11y-dark.css'
 import favicon from './favicon.png'
-import social from './social.png'
 import ExternalLink from './ui/external-link'
 import TopBar from './ui/top-bar'
 import ConfTopBar from './ui/conf/top-bar'
 import { GlobalLoading } from './ui/global-loading'
+import { baseMeta } from './helpers'
 
-export const meta: MetaFunction = () => {
-  return {
-    author: 'Seasoned',
-    'og:type': 'website',
-    'og:image': social,
-    'og:site_name': 'Remix Forms',
-  }
-}
+export const meta = () => baseMeta
 
 export const links: LinksFunction = () => {
   return [

@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -19,7 +15,7 @@ const title = 'Type coercions'
 const description =
   "But to make our server validations work, we'll need to coerce our FormData into the correct types. Let's use z.preprocess for that."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
 import { ActionFunction, redirect, json } from '@remix-run/node'

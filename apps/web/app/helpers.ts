@@ -1,5 +1,5 @@
 import { compose, join, reject, isBoolean, isNil, flatten } from 'lodash/fp'
-import type { HtmlMetaDescriptor } from '@remix-run/node'
+import social from './social.png'
 
 const cx = (...args: unknown[]) =>
   compose(join(' '), reject(isBoolean), reject(isNil), flatten)(args)
@@ -8,23 +8,29 @@ function pageTitle(title: string) {
   return `${title} · Remix Forms`
 }
 
+const baseMeta = [
+  { property: 'author', content: 'Seasoned' },
+  { property: 'og:type', content: 'website' },
+  { property: 'og:image', content: social },
+  { property: 'og:site_name', content: 'Remix Forms' },
+]
 function metaTags({
   title: rawTitle,
   description,
-  ...otherTags
-}: Record<string, string>) {
+}: {
+  title: string
+  description?: string
+}) {
   const title = rawTitle ? pageTitle(rawTitle) : null
-  const titleTags = title ? { title, 'og:title': title } : {}
+  const titleTags = title
+    ? [{ title }, { property: 'og:title', content: title }]
+    : []
 
   const descriptionTags = description
-    ? { description, 'og:description': description }
-    : {}
+    ? [{ description }, { property: 'og:description', content: description }]
+    : []
 
-  return {
-    ...titleTags,
-    ...descriptionTags,
-    ...otherTags,
-  } as HtmlMetaDescriptor
+  return [...titleTags, ...descriptionTags, ...baseMeta]
 }
 
-export { cx, pageTitle, metaTags }
+export { cx, pageTitle, metaTags, baseMeta }

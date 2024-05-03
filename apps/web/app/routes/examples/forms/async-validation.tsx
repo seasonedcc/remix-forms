@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
@@ -17,7 +13,7 @@ const title = 'Async validation'
 const description =
   'In this example, we add an async username avaliability check to our form. We also validate it on the server, of course 🙂'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { InputError } from 'domain-functions'
 

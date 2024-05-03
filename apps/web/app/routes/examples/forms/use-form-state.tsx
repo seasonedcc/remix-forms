@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -17,7 +13,7 @@ const title = 'useFormState'
 const description = `In this example, we use the useFormState hook from React Hook Form to access the state of the form in our custom
   components without having to use render props. This makes it easier to have certain functionality in custom components across all forms.`
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const schema = z.object({ age: z.number().min(1) })
 

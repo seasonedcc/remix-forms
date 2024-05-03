@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type { ActionFunction, LoaderArgs } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -12,7 +12,7 @@ const title = 'Dynamic form'
 const description =
   'In this example, we render a dynamic form with the fields coming from the backend.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `type FieldType = 'string' | 'email' | 'int'
 type Field = { name: string; type: FieldType }

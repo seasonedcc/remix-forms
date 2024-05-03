@@ -1,8 +1,4 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { makeDomainFunction } from 'domain-functions'
 import hljs from 'highlight.js/lib/common'
 import * as React from 'react'
@@ -16,7 +12,7 @@ import Form from '~/ui/form'
 const title = 'useField'
 const description = `In this example, we use the useField hook to display error, dirty and required indicators in custom components.`
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().email(),

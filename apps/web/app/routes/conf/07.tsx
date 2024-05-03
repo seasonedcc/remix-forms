@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -22,7 +18,7 @@ const title = 'Focus on error'
 const description =
   "Now let's focus on the first field with error. react-hook-form already does that for client-side errors, but we still might get additional errors from the server."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
 import { ActionFunction, redirect, json } from '@remix-run/node'

@@ -1,9 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { performMutation } from 'remix-forms'
 import { z } from 'zod'
@@ -16,7 +12,7 @@ const title = 'Custom response'
 const description =
   'In this example, a successful submission will render a custom JSON.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta = () => metaTags({ title, description })
 
 const code = `import { performMutation } from 'remix-forms'
 
