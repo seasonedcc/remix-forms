@@ -31,8 +31,5 @@
   "packageManager": "npm@8.5.0",
   "volta": {
     "node": "18.16.1"
-  },
-  "dependencies": {
-    "isbot": "latest"
   }
 }
