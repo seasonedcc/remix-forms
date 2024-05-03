@@ -4,10 +4,10 @@ import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
 import Feature from '~/ui/feature'
 import {
-  ClipboardListIcon,
+  ClipboardDocumentListIcon,
   GiftIcon,
   SparklesIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/24/outline'
 import ExternalLink from '~/ui/external-link'
 import ButtonLink from '~/ui/button-link'
 
@@ -33,7 +33,10 @@ export default function Component() {
           />
         </div>
         <dl className="flex flex-[2] flex-col space-y-8">
-          <Feature icon={ClipboardListIcon} title="A great form UI takes work">
+          <Feature
+            icon={ClipboardDocumentListIcon}
+            title="A great form UI takes work"
+          >
             First, we&apos;ll walk you through the creation of a great form UI
             from scratch.
           </Feature>

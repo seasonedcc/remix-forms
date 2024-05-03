@@ -12,9 +12,9 @@ import {
   ScaleIcon,
   ShieldCheckIcon,
   CloudIcon,
-  ClipboardCheckIcon,
-  CursorClickIcon,
-} from '@heroicons/react/solid'
+  ClipboardDocumentCheckIcon,
+  CursorArrowRaysIcon,
+} from '@heroicons/react/24/solid'
 import Feature from '~/ui/feature'
 import ButtonLink from '~/ui/button-link'
 import Heading from '~/ui/heading'
@@ -135,10 +135,13 @@ export default function Component() {
           <Feature icon={CloudIcon} title="Server-side wiring">
             Perform secure server-side mutations with zero boilerplate.
           </Feature>
-          <Feature icon={ClipboardCheckIcon} title="Full-stack validation">
+          <Feature
+            icon={ClipboardDocumentCheckIcon}
+            title="Full-stack validation"
+          >
             Validate everything both on the client and the server.
           </Feature>
-          <Feature icon={CursorClickIcon} title="Focus management">
+          <Feature icon={CursorArrowRaysIcon} title="Focus management">
             Focus on the first field with error even for server-side failures.
           </Feature>
         </dl>
