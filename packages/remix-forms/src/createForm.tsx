@@ -164,7 +164,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   /** @deprecated use your custom json/useActionData in createFormAction/createForm instead */
   parseActionData?: (data: any) => any
   children?: Children<ObjectFromSchema<Schema>>
-} & Omit<BaseFormPropsWithHTMLAttributes, 'children'>
+} & Omit<BaseFormPropsWithHTMLAttributes, 'children' | 'autoFocus'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
