@@ -9,10 +9,10 @@ test('With JS enabled', async ({ example }) => {
 
   await page.goto(route)
 
-  await token.input.first().type('123')
+  await token.input.first().fill('123')
   expect(page.locator('#action-data > pre')).toBeHidden()
 
-  await token.input.first().type('4')
+  await token.input.first().fill('1234')
 
   await example.expectData({
     token: '1234',

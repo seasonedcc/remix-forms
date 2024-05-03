@@ -9,7 +9,7 @@ test('With JS enabled', async ({ example }) => {
   const nullable = example.field('nullable')
   const defaultField = example.field('default')
 
-  await page.goto(route)
+  await page.goto(route, { waitUntil: 'networkidle' })
 
   // Render
   await example.expectSelect(mandatory, { value: '' })
@@ -44,8 +44,9 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeDisabled()
 
   await page.waitForResponse((response) =>
-    response.url().includes('enums?_data=routes%2Fexamples%2Fschemas%2Fenums'),
+    response.url().includes('enums?_data=routes%2Fexamples.schemas.enums'),
   )
+  await page.waitForLoadState('networkidle')
 
   await example.expectData({
     mandatory: 'one',

@@ -64,11 +64,11 @@ test('With JS enabled we see a refinement validation error', async ({
   const planType = example.field('planType')
   const quantity = example.field('quantity')
 
-  await page.goto(route)
+  await page.goto(route, { waitUntil: 'networkidle' })
 
   // fill
-  await planType.input.selectOption('corporate')
   await quantity.input.fill('1')
+  await planType.input.selectOption({ value: 'corporate' })
 
   // Submit
   await expect(button).toBeEnabled()
