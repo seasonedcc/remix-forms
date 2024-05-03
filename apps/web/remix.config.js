@@ -10,6 +10,7 @@ module.exports = {
   // publicPath: "/build/",
   future: {
     v2_meta: true,
+    v2_routeConvention: true,
   },
   mdx: async (filename) => {
     const [rehypeHighlight] = await Promise.all([
