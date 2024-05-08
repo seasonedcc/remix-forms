@@ -1,9 +1,12 @@
-import { compose, join, reject, isBoolean, isNil, flatten } from 'lodash/fp'
 import social from './social.png'
-import type { V2_MetaDescriptor } from '@remix-run/node'
+import type { MetaDescriptor } from '@remix-run/node'
 
-const cx = (...args: unknown[]) =>
-  compose(join(' '), reject(isBoolean), reject(isNil), flatten)(args)
+function cx(...args: unknown[]): string {
+  return args
+    .flat()
+    .filter((x) => typeof x === 'string')
+    .join(' ')
+}
 
 function pageTitle(title: string) {
   return `${title} · Remix Forms`
@@ -22,13 +25,13 @@ function metaTags({
 }: {
   title: string
   description?: string
-}): V2_MetaDescriptor[] {
+}): MetaDescriptor[] {
   const title = rawTitle ? pageTitle(rawTitle) : null
-  const titleTags: V2_MetaDescriptor[] = title
+  const titleTags: MetaDescriptor[] = title
     ? [{ title }, { property: 'og:title', content: title }]
     : []
 
-  const descriptionTags: V2_MetaDescriptor[] = description
+  const descriptionTags: MetaDescriptor[] = description
     ? [{ description }, { property: 'og:description', content: description }]
     : []
 

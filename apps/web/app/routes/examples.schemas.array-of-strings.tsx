@@ -7,7 +7,7 @@ import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
 import { useRef } from 'react'
-import { uniq } from 'lodash'
+import { uniq } from 'lodash-es'
 
 const title = 'Array of strings'
 const description =

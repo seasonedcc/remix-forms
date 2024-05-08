@@ -1,17 +1,16 @@
 [build]
   command = "cd ../.. && npm install && npm run build"
-  publish = "public"
+  publish = "build/client"
 
 [dev]
-  command = "remix watch"
-  port = 3000
+  command = "npm run dev"
+  framework = "vite"
 
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
+# Set immutable caching for static files, because they have fingerprinted filenames
 
 [[headers]]
-  for = "/build/*"
-  [headers.values]
-    "Cache-Control" = "public, max-age=31536000, s-maxage=31536000"
+for = "/build/*"
+
+[headers.values]
+
+"Cache-Control" = "public, max-age=31560000, immutable"

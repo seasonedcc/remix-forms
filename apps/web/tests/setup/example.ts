@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { startCase } from 'lodash/fp'
+import { startCase } from 'lodash-es'
 
 type Field = {
   name: string
