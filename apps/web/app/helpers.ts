@@ -1,8 +1,12 @@
-import { compose, join, reject, isBoolean, isNil, flatten } from 'lodash/fp'
 import type { HtmlMetaDescriptor } from '@remix-run/node'
 
-const cx = (...args: unknown[]) =>
-  compose(join(' '), reject(isBoolean), reject(isNil), flatten)(args)
+const cx = (...args: unknown[]) => {
+  const flattened = args.flat(Infinity)
+  const filtered = flattened.filter(
+    (arg) => arg != null && typeof arg !== 'boolean',
+  )
+  return filtered.join(' ')
+}
 
 function pageTitle(title: string) {
   return `${title} · Remix Forms`

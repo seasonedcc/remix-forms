@@ -1,7 +1,7 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
   serverBuildTarget: 'netlify',
-  server: './server.js',
+  server: './server.cjs',
   ignoredRouteFiles: ['**/.*'],
   watchPaths: ['../../packages/remix-forms'],
   // appDirectory: "app",
