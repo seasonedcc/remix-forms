@@ -1,11 +1,11 @@
 import type { HtmlMetaDescriptor } from '@remix-run/node'
 
-const cx = (...args: unknown[]) => {
-  const flattened = args.flat(Infinity)
-  const filtered = flattened.filter(
-    (arg) => arg != null && typeof arg !== 'boolean',
-  )
-  return filtered.join(' ')
+function cx(...args: unknown[]) {
+  return args
+    .flat()
+    .filter((x) => typeof x === 'string')
+    .join(' ')
+    .trim()
 }
 
 function pageTitle(title: string) {
