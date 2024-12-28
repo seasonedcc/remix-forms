@@ -2,30 +2,29 @@ import type { LinksFunction, MetaFunction } from '@remix-run/node'
 import {
   Link,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useMatches,
 } from '@remix-run/react'
-import colors from 'tailwindcss/colors'
-import styles from './styles/app.css'
 import highlightStyles from 'highlight.js/styles/a11y-dark.css'
+import colors from 'tailwindcss/colors'
 import favicon from './favicon.png'
 import social from './social.png'
-import ExternalLink from './ui/external-link'
-import TopBar from './ui/top-bar'
+import './tailwind.css'
 import ConfTopBar from './ui/conf/top-bar'
+import ExternalLink from './ui/external-link'
 import { GlobalLoading } from './ui/global-loading'
+import TopBar from './ui/top-bar'
 
 export const meta: MetaFunction = () => {
-  return {
-    author: 'Seasoned',
-    'og:type': 'website',
-    'og:image': social,
-    'og:site_name': 'Remix Forms',
-  }
+  return [
+    { name: 'author', content: 'Seasoned' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:image', content: social },
+    { property: 'og:site_name', content: 'Remix Forms' },
+  ]
 }
 
 export const links: LinksFunction = () => {
@@ -35,7 +34,6 @@ export const links: LinksFunction = () => {
       href: favicon,
       type: 'image/png',
     },
-    { rel: 'stylesheet', href: styles },
     { rel: 'stylesheet', href: highlightStyles },
   ]
 }
@@ -73,7 +71,6 @@ export default function App() {
         </footer>
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   )
