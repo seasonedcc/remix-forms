@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import type { LinksFunction } from '@remix-run/node'
 import {
   Link,
   Links,
@@ -11,21 +11,11 @@ import {
 import 'highlight.js/styles/a11y-dark.css'
 import colors from 'tailwindcss/colors'
 import favicon from './favicon.png'
-import social from './social.png'
 import './tailwind.css'
 import ConfTopBar from './ui/conf/top-bar'
 import ExternalLink from './ui/external-link'
 import { GlobalLoading } from './ui/global-loading'
 import TopBar from './ui/top-bar'
-
-export const meta: MetaFunction = () => {
-  return [
-    { name: 'author', content: 'Seasoned' },
-    { property: 'og:type', content: 'website' },
-    { property: 'og:image', content: social },
-    { property: 'og:site_name', content: 'Remix Forms' },
-  ]
-}
 
 export const links: LinksFunction = () => {
   return [{ rel: 'icon', href: favicon, type: 'image/png' }]
