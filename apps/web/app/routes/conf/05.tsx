@@ -12,7 +12,7 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData, useSubmit, useTransition } from '@remix-run/react'
+import { Form, useActionData, useSubmit, useNavigation } from '@remix-run/react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -97,8 +97,8 @@ export default function Component() {
   const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
-  const transition = useTransition()
-  const submitting = Boolean(transition.submission)
+  const navigation = useNavigation()
+  const submitting = Boolean(navigation.formAction)
 
   return (
     <Form
@@ -229,8 +229,8 @@ export default function Component() {
   const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
-  const transition = useTransition()
-  const submitting = Boolean(transition.submission)
+  const navigation = useNavigation()
+  const submitting = Boolean(navigation.formAction)
 
   return (
     <Example title={title} description={description} countLines>

@@ -18,7 +18,7 @@
   "dependencies": {
     "@headlessui/react": "~1.5.0",
     "@heroicons/react": "^1.0.5",
-    "@hookform/resolvers": "^2.8.8",
+    "@hookform/resolvers": "3.9.1",
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",
     "@remix-run/serve": "^2.15.2",

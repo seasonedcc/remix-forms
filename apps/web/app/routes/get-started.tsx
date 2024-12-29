@@ -1,6 +1,6 @@
-import hljs from 'highlight.js/lib/common'
-import type { LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import hljs from 'highlight.js/lib/common'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
@@ -146,18 +146,23 @@ const customInputCode = `<Form schema={schema}>
   )}
 </Form>`
 
-export const loader: LoaderFunction = () => ({
-  createFormCode: hljs.highlight(createFormCode, { language: 'ts' }).value,
+export const loader = () => ({
+  createFormCode: hljs.highlight(createFormCode, { language: 'ts' })
+    .value as string,
   createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
-    .value,
-  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
-  schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
-  mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
-  actionCode: hljs.highlight(actionCode, { language: 'ts' }).value,
-  basicCode: hljs.highlight(basicCode, { language: 'ts' }).value,
-  customFormCode: hljs.highlight(customFormCode, { language: 'ts' }).value,
-  customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' }).value,
-  customInputCode: hljs.highlight(customInputCode, { language: 'ts' }).value,
+    .value as string,
+  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
+  schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
+  mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
+    .value as string,
+  actionCode: hljs.highlight(actionCode, { language: 'ts' }).value as string,
+  basicCode: hljs.highlight(basicCode, { language: 'ts' }).value as string,
+  customFormCode: hljs.highlight(customFormCode, { language: 'ts' })
+    .value as string,
+  customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' })
+    .value as string,
+  customInputCode: hljs.highlight(customInputCode, { language: 'ts' })
+    .value as string,
 })
 
 export default function Component() {
@@ -172,7 +177,7 @@ export default function Component() {
     customFormCode,
     customFieldCode,
     customInputCode,
-  } = useLoaderData()
+  } = useLoaderData<typeof loader>()
 
   return (
     <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">

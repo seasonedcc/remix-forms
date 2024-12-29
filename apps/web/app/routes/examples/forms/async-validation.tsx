@@ -51,7 +51,7 @@ export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<{ message: string }>()
   const message = fetcher.data?.message
 
   return (
@@ -78,7 +78,7 @@ export default function Component() {
           </Field>
           <Field name="password" />
           <Errors />
-          <Button disabled={message} />
+          <Button disabled={Boolean(message)} />
         </>
       )}
     </Form>
@@ -120,7 +120,7 @@ export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<{ message: string }>()
   const message = fetcher.data?.message
 
   return (
@@ -148,7 +148,7 @@ export default function Component() {
             </Field>
             <Field name="password" />
             <Errors />
-            <Button disabled={message} />
+            <Button disabled={Boolean(message)} />
           </>
         )}
       </Form>
