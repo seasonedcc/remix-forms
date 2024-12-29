@@ -17,8 +17,8 @@ export default function Example({
   children,
   countLines = false,
 }: Props) {
-  const code = String(useLoaderData()?.code)
-  const actionData = useActionData()
+  const code = String(useLoaderData<{ code: string }>()?.code)
+  const actionData = useActionData<{ errors?: {} }>()
   const data = actionData?.errors ? null : actionData
 
   const lineCount = countLines

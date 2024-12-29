@@ -1,4 +1,4 @@
-import type { HtmlMetaDescriptor } from '@remix-run/node'
+import type { MetaDescriptor } from '@remix-run/node'
 
 function cx(...args: unknown[]) {
   return args
@@ -24,11 +24,14 @@ function metaTags({
     ? { description, 'og:description': description }
     : {}
 
-  return {
-    ...titleTags,
-    ...descriptionTags,
-    ...otherTags,
-  } as HtmlMetaDescriptor
+  return [
+    ...Object.entries(titleTags).map(([name, content]) => ({ name, content })),
+    ...Object.entries(descriptionTags).map(([name, content]) => ({
+      name,
+      content,
+    })),
+    ...Object.entries(otherTags).map(([name, content]) => ({ name, content })),
+  ] as MetaDescriptor[]
 }
 
 export { cx, pageTitle, metaTags }

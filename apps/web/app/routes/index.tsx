@@ -1,27 +1,23 @@
-import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
-import { z } from 'zod'
-import Form from '~/ui/form'
 import {
   BeakerIcon,
+  ClipboardCheckIcon,
+  CloudIcon,
+  CursorClickIcon,
   ScaleIcon,
   ShieldCheckIcon,
-  CloudIcon,
-  ClipboardCheckIcon,
-  CursorClickIcon,
 } from '@heroicons/react/solid'
-import Feature from '~/ui/feature'
-import ButtonLink from '~/ui/button-link'
-import Heading from '~/ui/heading'
-import Code from '~/ui/code'
-import { metaTags } from '~/helpers'
+import type { ActionFunction, MetaFunction } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { makeDomainFunction } from 'domain-functions'
+import hljs from 'highlight.js/lib/common'
+import { z } from 'zod'
 import { formAction } from '~/formAction'
+import { metaTags } from '~/helpers'
+import ButtonLink from '~/ui/button-link'
+import Code from '~/ui/code'
+import Feature from '~/ui/feature'
+import Form from '~/ui/form'
+import Heading from '~/ui/heading'
 
 const title = 'The full-stack form library for Remix and React Router'
 const description =
@@ -59,8 +55,8 @@ const schema = z.object({
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
-export const loader: LoaderFunction = () => ({
-  code: hljs.highlight(code, { language: 'ts' }).value,
+export const loader = () => ({
+  code: hljs.highlight(code, { language: 'ts' }).value as string,
 })
 
 const mutation = makeDomainFunction(schema)(async (values) => values)
@@ -74,7 +70,7 @@ export const action: ActionFunction = async ({ request }) =>
   })
 
 export default function Component() {
-  const { code } = useLoaderData()
+  const { code } = useLoaderData<typeof loader>()
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-16">

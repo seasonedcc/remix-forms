@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useMatches,
 } from '@remix-run/react'
-import highlightStyles from 'highlight.js/styles/a11y-dark.css'
+import 'highlight.js/styles/a11y-dark.css'
 import colors from 'tailwindcss/colors'
 import favicon from './favicon.png'
 import social from './social.png'
@@ -28,14 +28,7 @@ export const meta: MetaFunction = () => {
 }
 
 export const links: LinksFunction = () => {
-  return [
-    {
-      rel: 'icon',
-      href: favicon,
-      type: 'image/png',
-    },
-    { rel: 'stylesheet', href: highlightStyles },
-  ]
+  return [{ rel: 'icon', href: favicon, type: 'image/png' }]
 }
 
 export default function App() {
