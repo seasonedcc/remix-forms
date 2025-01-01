@@ -27,7 +27,7 @@ function metaTags({
     { property: 'og:type', content: 'website' },
     { property: 'og:image', content: social },
     { property: 'og:site_name', content: 'Remix Forms' },
-    { name: 'title', content: title },
+    { title },
     { name: 'og:title', content: title },
     { name: 'description', content: description },
     { name: 'og:description', content: description },
