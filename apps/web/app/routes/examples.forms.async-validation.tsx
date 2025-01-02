@@ -4,7 +4,6 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { json } from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -33,7 +32,7 @@ export const loader: LoaderFunction = ({ request }) => {
   const username = url.searchParams.get('username')
 
   if (username && takenUsernames.includes(username)) {
-    return json({ message: 'Already taken' })
+    return { message: 'Already taken' }
   }
 
   return null
@@ -97,10 +96,10 @@ export const loader: LoaderFunction = ({ request }) => {
   const username = url.searchParams.get('username')
 
   if (username && takenUsernames.includes(username)) {
-    return json({
+    return {
       code: hljs.highlight(code, { language: 'ts' }).value,
       message: 'Already taken',
-    })
+    }
   }
 
   return {
