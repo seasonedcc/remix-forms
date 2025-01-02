@@ -31,7 +31,7 @@ test('With JS enabled', async ({ example }) => {
   await Promise.all([
     username.input.type('fo'),
     page.waitForResponse((response) =>
-      response.url().includes('async-validation?username=fo'),
+      response.url().includes('async-validation.data?username=fo'),
     ),
   ])
 
@@ -40,7 +40,7 @@ test('With JS enabled', async ({ example }) => {
   await Promise.all([
     username.input.type('o'),
     page.waitForResponse((response) =>
-      response.url().includes('async-validation?username=foo'),
+      response.url().includes('async-validation.data?username=foo'),
     ),
   ])
 
