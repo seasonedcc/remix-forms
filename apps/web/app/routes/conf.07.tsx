@@ -375,7 +375,6 @@ export default function Component() {
 
     const field = fields.find((name) => serverErrorFor(name))
     field && setFocus(field)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverErrors])
 
   return (
