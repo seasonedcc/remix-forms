@@ -1,5 +1,9 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type {
+  ActionFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from '@remix-run/node'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
@@ -48,7 +52,7 @@ const mutation = makeDomainFunction(fieldsSchema(getFields()))(
   async (values) => values,
 )
 
-export function loader(_args: LoaderArgs) {
+export function loader(_args: LoaderFunctionArgs) {
   return { fields: getFields() }
 }
 
@@ -94,7 +98,7 @@ const mutation = makeDomainFunction(fieldsSchema(getFields()))(
   async (values) => values,
 )
 
-export function loader(_args: LoaderArgs) {
+export function loader(_args: LoaderFunctionArgs) {
   return {
     code: hljs.highlight(code, { language: 'ts' }).value,
     fields: getFields(),

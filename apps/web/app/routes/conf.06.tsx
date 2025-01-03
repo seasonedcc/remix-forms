@@ -12,14 +12,14 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData, useSubmit, useTransition } from '@remix-run/react'
+import { Form, useActionData, useSubmit, useNavigation } from '@remix-run/react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-const title = 'Pending UI'
+const title = 'Accessibility'
 const description =
-  "Now let's change the text of the submit button and disable it while submitting."
+  "Now let's add some a11y to our form. We'll define the roles and describe the errors so everyone can interact with our app."
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -63,14 +63,14 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/05')
+    return redirect('conf/success/06')
   }
 
   return json<ActionData>({ errors: result.error.issues })
 }
 
 function Error(props: JSX.IntrinsicElements['div']) {
-  return <div {...props} className="mt-1 text-red-500" />
+  return <div {...props} className="mt-1 text-red-500" role="alert" />
 }
 
 function ServerError({ name }: { name: string }) {
@@ -79,14 +79,14 @@ function ServerError({ name }: { name: string }) {
 
   if (!message) return null
 
-  return <Error>{message}</Error>
+  return <Error id={\`error-for-\${name}\`}>{message}</Error>
 }
 
 function FieldError({ name, errors }: { name: string; errors: any }) {
   const message = errors[name]?.message
 
   if (message) {
-    return <Error>{message}</Error>
+    return <Error id={\`error-for-\${name}\`}>{message}</Error>
   }
 
   return <ServerError name={name} />
@@ -97,8 +97,19 @@ export default function Component() {
   const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
-  const transition = useTransition()
-  const submitting = Boolean(transition.submission)
+  const navigation = useNavigation()
+  const submitting = Boolean(navigation.formAction)
+  const serverErrors = useActionData<ActionData>()?.errors
+
+  function serverErrorFor(name: string) {
+    return serverErrors?.find(({ path }) => path[0] === name)?.message
+  }
+
+  const hasErrors = (name: string) =>
+    Boolean(serverErrorFor(name) || errors[name])
+
+  const describedBy = (name: string) =>
+    hasErrors(name) ? \`error-for-\${name}\` : undefined
 
   return (
     <Form
@@ -109,8 +120,17 @@ export default function Component() {
       }}
     >
       <div>
-        <Label htmlFor="city">City</Label>
-        <Select {...register('city')} id="city">
+        <Label id="label-for-city" htmlFor="city">
+          City
+        </Label>
+        <Select
+          {...register('city')}
+          id="city"
+          aria-labelledby="label-for-city"
+          aria-required
+          aria-invalid={hasErrors('city')}
+          aria-describedby={describedBy('city')}
+        >
           <option value="saltLakeCity">Salt Lake City</option>
           <option value="lasVegas">Las Vegas</option>
           <option value="losAngeles">Los Angeles</option>
@@ -119,36 +139,91 @@ export default function Component() {
       </div>
       <div className="flex w-full space-x-4">
         <div className="flex-1">
-          <Label htmlFor="checkIn">Check In</Label>
-          <Input {...register('checkIn')} id="checkIn" type="date" />
+          <Label id="label-for-check-in" htmlFor="checkIn">
+            Check In
+          </Label>
+          <Input
+            {...register('checkIn')}
+            id="checkIn"
+            type="date"
+            aria-labelledby="label-for-check-in"
+            aria-required
+            aria-invalid={hasErrors('checkIn')}
+            aria-describedby={describedBy('checkIn')}
+          />
           <FieldError name="checkIn" errors={errors} />
         </div>
         <div className="flex-1">
-          <Label htmlFor="checkOut">Check Out</Label>
-          <Input {...register('checkOut')} id="checkOut" type="date" />
+          <Label id="label-for-check-out" htmlFor="checkOut">
+            Check Out
+          </Label>
+          <Input
+            {...register('checkOut')}
+            id="checkOut"
+            type="date"
+            aria-labelledby="label-for-check-out"
+            aria-required
+            aria-invalid={hasErrors('checkOut')}
+            aria-describedby={describedBy('checkOut')}
+          />
           <FieldError name="checkOut" errors={errors} />
         </div>
       </div>
       <div className="flex w-full space-x-4">
         <div className="flex-1">
-          <Label htmlFor="adults">Adults</Label>
-          <Input {...register('adults')} id="adults" />
+          <Label id="label-for-adults" htmlFor="adults">
+            Adults
+          </Label>
+          <Input
+            {...register('adults')}
+            id="adults"
+            aria-labelledby="label-for-adults"
+            aria-required
+            aria-invalid={hasErrors('adults')}
+            aria-describedby={describedBy('adults')}
+          />
           <FieldError name="adults" errors={errors} />
         </div>
         <div className="flex-1">
-          <Label htmlFor="children">Children</Label>
-          <Input {...register('children')} id="children" />
+          <Label id="label-for-children" htmlFor="children">
+            Children
+          </Label>
+          <Input
+            {...register('children')}
+            id="children"
+            aria-labelledby="label-for-children"
+            aria-required
+            aria-invalid={hasErrors('children')}
+            aria-describedby={describedBy('children')}
+          />
           <FieldError name="children" errors={errors} />
         </div>
         <div className="flex-1">
-          <Label htmlFor="bedrooms">Bedrooms</Label>
-          <Input {...register('bedrooms')} id="bedrooms" />
+          <Label id="label-for-bedrooms" htmlFor="bedrooms">
+            Bedrooms
+          </Label>
+          <Input
+            {...register('bedrooms')}
+            id="bedrooms"
+            aria-labelledby="label-for-bedrooms"
+            aria-required
+            aria-invalid={hasErrors('bedrooms')}
+            aria-describedby={describedBy('bedrooms')}
+          />
           <FieldError name="bedrooms" errors={errors} />
         </div>
       </div>
       <div>
-        <Label htmlFor="specialRequests">Special Requests</Label>
-        <TextArea {...register('specialRequests')} id="specialRequests" />
+        <Label id="label-for-special-requests" htmlFor="specialRequests">
+          Special Requests
+        </Label>
+        <TextArea
+          {...register('specialRequests')}
+          id="specialRequests"
+          aria-labelledby="label-for-special-requests"
+          aria-invalid={hasErrors('specialRequests')}
+          aria-describedby={describedBy('specialRequests')}
+        />
         <FieldError name="specialRequests" errors={errors} />
       </div>
       <Button disabled={submitting} className="w-48">
@@ -190,14 +265,14 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/05')
+    return redirect('conf/success/06')
   }
 
   return json<ActionData>({ errors: result.error.issues })
 }
 
 function Error(props: JSX.IntrinsicElements['div']) {
-  return <div {...props} className="mt-1 text-red-500" />
+  return <div {...props} className="mt-1 text-red-500" role="alert" />
 }
 
 function ServerError({ name }: { name: string }) {
@@ -206,22 +281,22 @@ function ServerError({ name }: { name: string }) {
 
   if (!message) return null
 
-  return <Error>{message}</Error>
+  return <Error id={`error-for-${name}`}>{message}</Error>
 }
 
 function FieldError({ name, errors }: { name: string; errors: any }) {
   const message = errors[name]?.message
 
   if (message) {
-    return <Error>{message}</Error>
+    return <Error id={`error-for-${name}`}>{message}</Error>
   }
 
   return <ServerError name={name} />
 }
 
 export const handle = {
-  previous: '04',
-  next: '06',
+  previous: '05',
+  next: '07',
 }
 
 export default function Component() {
@@ -229,8 +304,19 @@ export default function Component() {
   const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
-  const transition = useTransition()
-  const submitting = Boolean(transition.submission)
+  const navigation = useNavigation()
+  const submitting = Boolean(navigation.formAction)
+  const serverErrors = useActionData<ActionData>()?.errors
+
+  function serverErrorFor(name: string) {
+    return serverErrors?.find(({ path }) => path[0] === name)?.message
+  }
+
+  const hasErrors = (name: string) =>
+    Boolean(serverErrorFor(name) || errors[name])
+
+  const describedBy = (name: string) =>
+    hasErrors(name) ? `error-for-${name}` : undefined
 
   return (
     <Example title={title} description={description} countLines>
@@ -242,8 +328,17 @@ export default function Component() {
         }}
       >
         <div>
-          <Label htmlFor="city">City</Label>
-          <Select {...register('city')} id="city">
+          <Label id="label-for-city" htmlFor="city">
+            City
+          </Label>
+          <Select
+            {...register('city')}
+            id="city"
+            aria-labelledby="label-for-city"
+            aria-required
+            aria-invalid={hasErrors('city')}
+            aria-describedby={describedBy('city')}
+          >
             <option value="saltLakeCity">Salt Lake City</option>
             <option value="lasVegas">Las Vegas</option>
             <option value="losAngeles">Los Angeles</option>
@@ -252,36 +347,91 @@ export default function Component() {
         </div>
         <div className="flex w-full space-x-4">
           <div className="flex-1">
-            <Label htmlFor="checkIn">Check In</Label>
-            <Input {...register('checkIn')} id="checkIn" type="date" />
+            <Label id="label-for-check-in" htmlFor="checkIn">
+              Check In
+            </Label>
+            <Input
+              {...register('checkIn')}
+              id="checkIn"
+              type="date"
+              aria-labelledby="label-for-check-in"
+              aria-required
+              aria-invalid={hasErrors('checkIn')}
+              aria-describedby={describedBy('checkIn')}
+            />
             <FieldError name="checkIn" errors={errors} />
           </div>
           <div className="flex-1">
-            <Label htmlFor="checkOut">Check Out</Label>
-            <Input {...register('checkOut')} id="checkOut" type="date" />
+            <Label id="label-for-check-out" htmlFor="checkOut">
+              Check Out
+            </Label>
+            <Input
+              {...register('checkOut')}
+              id="checkOut"
+              type="date"
+              aria-labelledby="label-for-check-out"
+              aria-required
+              aria-invalid={hasErrors('checkOut')}
+              aria-describedby={describedBy('checkOut')}
+            />
             <FieldError name="checkOut" errors={errors} />
           </div>
         </div>
         <div className="flex w-full space-x-4">
           <div className="flex-1">
-            <Label htmlFor="adults">Adults</Label>
-            <Input {...register('adults')} id="adults" />
+            <Label id="label-for-adults" htmlFor="adults">
+              Adults
+            </Label>
+            <Input
+              {...register('adults')}
+              id="adults"
+              aria-labelledby="label-for-adults"
+              aria-required
+              aria-invalid={hasErrors('adults')}
+              aria-describedby={describedBy('adults')}
+            />
             <FieldError name="adults" errors={errors} />
           </div>
           <div className="flex-1">
-            <Label htmlFor="children">Children</Label>
-            <Input {...register('children')} id="children" />
+            <Label id="label-for-children" htmlFor="children">
+              Children
+            </Label>
+            <Input
+              {...register('children')}
+              id="children"
+              aria-labelledby="label-for-children"
+              aria-required
+              aria-invalid={hasErrors('children')}
+              aria-describedby={describedBy('children')}
+            />
             <FieldError name="children" errors={errors} />
           </div>
           <div className="flex-1">
-            <Label htmlFor="bedrooms">Bedrooms</Label>
-            <Input {...register('bedrooms')} id="bedrooms" />
+            <Label id="label-for-bedrooms" htmlFor="bedrooms">
+              Bedrooms
+            </Label>
+            <Input
+              {...register('bedrooms')}
+              id="bedrooms"
+              aria-labelledby="label-for-bedrooms"
+              aria-required
+              aria-invalid={hasErrors('bedrooms')}
+              aria-describedby={describedBy('bedrooms')}
+            />
             <FieldError name="bedrooms" errors={errors} />
           </div>
         </div>
         <div>
-          <Label htmlFor="specialRequests">Special Requests</Label>
-          <TextArea {...register('specialRequests')} id="specialRequests" />
+          <Label id="label-for-special-requests" htmlFor="specialRequests">
+            Special Requests
+          </Label>
+          <TextArea
+            {...register('specialRequests')}
+            id="specialRequests"
+            aria-labelledby="label-for-special-requests"
+            aria-invalid={hasErrors('specialRequests')}
+            aria-describedby={describedBy('specialRequests')}
+          />
           <FieldError name="specialRequests" errors={errors} />
         </div>
         <Button disabled={submitting} className="w-48">

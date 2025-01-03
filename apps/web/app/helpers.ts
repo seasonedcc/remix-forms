@@ -1,4 +1,5 @@
-import type { HtmlMetaDescriptor } from '@remix-run/node'
+import type { MetaDescriptor } from '@remix-run/node'
+import social from './social.png'
 
 function cx(...args: unknown[]) {
   return args
@@ -15,20 +16,22 @@ function pageTitle(title: string) {
 function metaTags({
   title: rawTitle,
   description,
-  ...otherTags
-}: Record<string, string>) {
+}: {
+  title: string
+  description: string
+}): MetaDescriptor[] {
   const title = rawTitle ? pageTitle(rawTitle) : null
-  const titleTags = title ? { title, 'og:title': title } : {}
 
-  const descriptionTags = description
-    ? { description, 'og:description': description }
-    : {}
-
-  return {
-    ...titleTags,
-    ...descriptionTags,
-    ...otherTags,
-  } as HtmlMetaDescriptor
+  return [
+    { name: 'author', content: 'Seasoned' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:image', content: social },
+    { property: 'og:site_name', content: 'Remix Forms' },
+    { title },
+    { name: 'og:title', content: title },
+    { name: 'description', content: description },
+    { name: 'og:description', content: description },
+  ]
 }
 
-export { cx, pageTitle, metaTags }
+export { cx, metaTags, pageTitle }

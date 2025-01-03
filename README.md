@@ -20,7 +20,7 @@ $ npm run dev
 
 Note: we had issues running the turborepo `dev` command on Node 18. We recommend using Node 16 for development.
 
-This will run the website at http://localhost:3000.
+This will run the website at http://localhost:5173.
 
 ## Testing
 

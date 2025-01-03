@@ -440,7 +440,7 @@ function createForm({
 
     const buttonLabel =
       transition.state !== 'idle'
-        ? pendingButtonLabel ?? rawButtonLabel
+        ? (pendingButtonLabel ?? rawButtonLabel)
         : rawButtonLabel
 
     const [disabled, setDisabled] = React.useState(false)
@@ -465,7 +465,7 @@ function createForm({
 
           const autoFocus = firstErroredField()
             ? field?.autoFocus
-            : child.props.autoFocus ?? field?.autoFocus
+            : (child.props.autoFocus ?? field?.autoFocus)
 
           if (!child.props.children && field) {
             return renderField({
@@ -562,7 +562,6 @@ function createForm({
         }),
       )
       reset({ ...defaultValues, ...newDefaults })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     React.useEffect(() => {
@@ -577,7 +576,6 @@ function createForm({
           form.setFocus(firstErroredField() as Path<SchemaType>)
         } catch {}
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorsProp, unparsedActionData])
 
     React.useEffect(() => {
@@ -590,7 +588,6 @@ function createForm({
       if (transition.state === 'submitting') {
         setGlobalErrorsState(undefined)
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transition.state])
 
     return (

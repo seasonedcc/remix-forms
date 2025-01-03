@@ -67,7 +67,9 @@ function NavLink({
       className={({ isActive }) =>
         cx(
           isActive ? 'bg-pink-900' : 'hover:bg-pink-700',
-          typeof className === 'function' ? className({ isActive }) : className,
+          typeof className === 'function'
+            ? className({ isActive, isPending: false, isTransitioning: false })
+            : className,
         )
       }
       onClick={type === 'popover' ? () => close() : undefined}

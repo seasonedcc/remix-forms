@@ -27,8 +27,8 @@ export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })
 
 export default () => {
-  const fetcher = useFetcher()
-  const name = fetcher.submission?.formData.get('name') || fetcher.data?.name
+  const fetcher = useFetcher<{ name: string }>()
+  const name = String(fetcher.formData?.get('name')) || fetcher.data?.name
 
   return (
     <Form
@@ -37,7 +37,7 @@ export default () => {
       onTransition={({ setFocus, reset, formState }) => {
         const { isDirty } = formState
 
-        if (fetcher.submission && isDirty) {
+        if (fetcher.formAction && isDirty) {
           setFocus('name')
           reset()
         }
@@ -86,8 +86,8 @@ export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {
-  const fetcher = useFetcher()
-  const name = fetcher.submission?.formData.get('name') || fetcher.data?.name
+  const fetcher = useFetcher<{ name: string }>()
+  const name = String(fetcher.formData?.get('name')) || fetcher.data?.name
 
   return (
     <Example title={title} description={description}>
@@ -97,7 +97,7 @@ export default function Component() {
         onTransition={({ setFocus, reset, formState }) => {
           const { isDirty } = formState
 
-          if (fetcher.submission && isDirty) {
+          if (fetcher.formAction && isDirty) {
             setFocus('name')
             reset()
           }

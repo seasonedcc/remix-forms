@@ -44,14 +44,14 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeDisabled()
 
   await page.waitForResponse((response) =>
-    response.url().includes('enums?_data=routes%2Fexamples%2Fschemas%2Fenums'),
+    response.url().includes('enums.data'),
   )
 
   await example.expectData({
+    default: 'one',
     mandatory: 'one',
     optional: 'two',
     nullable: 'three',
-    default: 'one',
   })
 })
 

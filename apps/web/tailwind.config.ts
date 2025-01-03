@@ -1,5 +1,7 @@
-module.exports = {
-  content: ['./app/**/*.{js,ts,jsx,tsx}'],
+import type { Config } from 'tailwindcss'
+
+export default {
+  content: ['./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}'],
   safelist: [
     {
       pattern: /hljs+/,
@@ -7,7 +9,19 @@ module.exports = {
   ],
   theme: {
     extend: {
-      typography: ({ theme }) => ({
+      fontFamily: {
+        sans: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji',
+        ],
+      },
+      typography: ({ theme }: { theme: (index: string) => unknown }) => ({
         DEFAULT: {
           css: {
             color: theme('colors.white'),
@@ -28,4 +42,4 @@ module.exports = {
     require('tailwind-scrollbar'),
     require('@tailwindcss/typography'),
   ],
-}
+} satisfies Config

@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "description": "The full-stack form library for Remix and React Router",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
   "files": [
@@ -11,6 +11,14 @@
     "./dist/*"
   ],
   "license": "MIT",
+  "scripts": {
+    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
+    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
+    "prelint": "prettier --check .",
+    "tsc": "tsc",
+    "test": "vitest run"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seasonedcc/remix-forms.git"
@@ -28,14 +36,6 @@
     "react-hook-form"
   ],
   "author": "Daniel Weinmann",
-  "scripts": {
-    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
-    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
-    "prelint": "prettier --check .",
-    "tsc": "tsc",
-    "test": "vitest run"
-  },
   "peerDependencies": {
     "domain-functions": "2.x",
     "react": ">=16.8",
@@ -52,9 +52,9 @@
     "react": ">=16.8",
     "prettier": "^3.0.0",
     "tsconfig": "*",
-    "tsup": "^6.1.3",
+    "tsup": "^8.3.5",
     "typescript": "5.7.2",
-    "vite": "6.0.6",
+    "vite": "5.4.11",
     "vitest": "2.1.8"
   },
   "dependencies": {
