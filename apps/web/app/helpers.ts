@@ -1,4 +1,4 @@
-import type { MetaDescriptor } from '@remix-run/node'
+import type { MetaDescriptor } from 'react-router';
 import social from './social.png'
 
 function cx(...args: unknown[]) {

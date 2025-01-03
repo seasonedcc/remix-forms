@@ -1,5 +1,5 @@
-import type { MetaFunction } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
+import type { MetaFunction } from 'react-router';
+import { useLoaderData } from 'react-router';
 import hljs from 'highlight.js/lib/common'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'

@@ -14,12 +14,7 @@ import InputWrapper from './input-wrapper'
 import RadioGroup from './radio-group'
 
 import TextArea from './text-area'
-import {
-  Form as RemixForm,
-  useActionData,
-  useSubmit,
-  useNavigation,
-} from '@remix-run/react'
+import { Form as RemixForm, useActionData, useSubmit, useNavigation } from 'react-router';
 
 const BaseForm = createForm({
   component: RemixForm,

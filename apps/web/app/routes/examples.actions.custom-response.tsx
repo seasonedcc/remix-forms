@@ -1,10 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
-import { data } from '@remix-run/node'
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
+import { data } from 'react-router';
 import { performMutation } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'

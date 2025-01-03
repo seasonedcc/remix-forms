@@ -3,7 +3,7 @@ import { Disclosure, Popover } from '@headlessui/react'
 import { cx } from '~/helpers'
 import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
 import UINavLink from '~/ui/nav-link'
-import type { RemixNavLinkProps } from '@remix-run/react/dist/components'
+import type { RemixNavLinkProps } from '@react-router/react/dist/components';
 
 type SidebarType = 'disclosure' | 'popover'
 

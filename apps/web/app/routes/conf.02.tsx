@@ -1,10 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
+import { json, redirect } from 'react-router';
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -12,7 +8,7 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData } from '@remix-run/react'
+import { Form, useActionData } from 'react-router';
 import { z } from 'zod'
 
 const title = 'Server validations'

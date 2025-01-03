@@ -1,13 +1,5 @@
-import type { LinksFunction } from '@remix-run/node'
-import {
-  Link,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useMatches,
-} from '@remix-run/react'
+import type { LinksFunction } from 'react-router';
+import { Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useMatches } from 'react-router';
 import 'highlight.js/styles/a11y-dark.css'
 import colors from 'tailwindcss/colors'
 import favicon from './favicon.png'
