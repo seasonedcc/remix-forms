@@ -1,6 +1,7 @@
 import { createFormAction } from 'remix-forms'
-import { redirect, data } from 'react-router'
+import { redirect } from 'react-router'
 
-const formAction = createFormAction({ redirect, data })
+// @ts-ignore
+const formAction = createFormAction({ redirect })
 
 export { formAction }

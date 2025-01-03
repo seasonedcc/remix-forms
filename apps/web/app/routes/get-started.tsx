@@ -1,5 +1,5 @@
-import type { MetaFunction } from 'react-router';
-import { useLoaderData } from 'react-router';
+import type { MetaFunction } from 'react-router'
+import { useLoaderData } from 'react-router'
 import hljs from 'highlight.js/lib/common'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
@@ -15,10 +15,7 @@ const description = 'The full-stack form library for Remix and React Router'
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const createFormCode = `import { createForm } from 'remix-forms'
-// For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
-// For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router'
 
 const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
 
@@ -26,12 +23,9 @@ export { Form }
 `
 
 const createFormActionCode = `import { createFormAction } from 'remix-forms'
-// For Remix, import it like this
-import { redirect, json } from '@remix-run/node'
-// For React Router 6.4, like this
-import { redirect, json } from 'react-router-dom'
+import { redirect } from 'react-router'
 
-const formAction = createFormAction({ redirect, json })
+const formAction = createFormAction({ redirect })
 
 export { formAction }
 `

@@ -61,9 +61,6 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
   return errorTree
 }
 
-type RedirectFunction = (url: string, init?: number | ResponseInit) => Response
-type JsonFunction = <Data>(data: Data, init?: number | ResponseInit) => Response
-
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
   values: FormValues<SchemaType>
@@ -79,7 +76,7 @@ type PerformMutation<SchemaType, D extends unknown> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
 
-type Callback = (request: Request) => Promise<Response | void>
+type Callback = (request: Request) => Promise<Redirect | void>
 
 type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
@@ -145,13 +142,11 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-function createFormAction({
-  redirect,
-  json,
-}: {
-  redirect: RedirectFunction
-  json: JsonFunction
-}) {
+type RedirectFunction = (url: string, init?: number | ResponseInit) => Redirect
+type Redirect = Response & { [redirectSymbol]: never }
+declare const redirectSymbol: unique symbol
+
+function createFormAction({ redirect }: { redirect: RedirectFunction }) {
   async function formAction<Schema extends FormSchema, D extends unknown>({
     request,
     schema,
@@ -161,10 +156,10 @@ function createFormAction({
     beforeAction,
     beforeSuccess,
     successPath,
-  }: FormActionProps<Schema, D>): Promise<Response> {
+  }: FormActionProps<Schema, D>): Promise<Redirect | D> {
     if (beforeAction) {
-      const beforeActionResponse = await beforeAction(request)
-      if (beforeActionResponse) return beforeActionResponse
+      const beforeActionRedirect = await beforeAction(request)
+      if (beforeActionRedirect) return beforeActionRedirect
     }
 
     const result = await performMutation({
@@ -177,8 +172,8 @@ function createFormAction({
 
     if (result.success) {
       if (beforeSuccess) {
-        const beforeSuccessResponse = await beforeSuccess(request)
-        if (beforeSuccessResponse) return beforeSuccessResponse
+        const beforeSuccessRedirect = await beforeSuccess(request)
+        if (beforeSuccessRedirect) return beforeSuccessRedirect
       }
 
       const path =
@@ -186,9 +181,9 @@ function createFormAction({
           ? successPath(result.data)
           : successPath
 
-      return path ? redirect(path) : json(result.data)
+      return path ? redirect(path) : result.data
     } else {
-      return json({ errors: result.errors, values: result.values })
+      return { errors: result.errors, values: result.values } as D
     }
   }
 

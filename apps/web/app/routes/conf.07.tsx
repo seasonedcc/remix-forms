@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
-import { json, redirect } from 'react-router';
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
+import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -8,7 +8,7 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData, useSubmit, useNavigation } from 'react-router';
+import { Form, useActionData, useSubmit, useNavigation } from 'react-router'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,7 +21,7 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
-import { ActionFunction, redirect, json } from '@remix-run/node'
+import { ActionFunction, redirect } from '@remix-run/node'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     if (result.data.specialRequests?.match(/towels/i)) {
-      return json<ActionData>({
+      return {
         errors: [
           {
             code: 'custom',
@@ -68,14 +68,14 @@ export const action: ActionFunction = async ({ request }) => {
             message: "Don't be such a diva!",
           },
         ],
-      })
+      }
     }
 
     await makeReservation(result.data)
     return redirect('conf/success/07')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function Error(props: JSX.IntrinsicElements['div']) {
@@ -291,7 +291,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     if (result.data.specialRequests?.match(/towels/i)) {
-      return json<ActionData>({
+      return {
         errors: [
           {
             code: 'custom',
@@ -299,14 +299,14 @@ export const action: ActionFunction = async ({ request }) => {
             message: "Don't be such a diva!",
           },
         ],
-      })
+      }
     }
 
     await makeReservation(result.data)
     return redirect('conf/success/07')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function Error(props: JSX.IntrinsicElements['div']) {

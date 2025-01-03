@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
-import { json, redirect } from 'react-router';
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
+import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -8,7 +8,7 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData } from 'react-router';
+import { Form, useActionData } from 'react-router'
 import { z } from 'zod'
 
 const title = 'Type coercions'
@@ -18,7 +18,7 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { Form } from '@remix-run/react'
-import { ActionFunction, redirect, json } from '@remix-run/node'
+import { ActionFunction, redirect } from '@remix-run/node'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect('conf/success/03')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function renderError(name: string) {
@@ -157,7 +157,7 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect('conf/success/03')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function FieldError({ name }: { name: string }) {
