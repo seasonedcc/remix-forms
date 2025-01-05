@@ -288,7 +288,7 @@ function createForm({
         shape,
       )
 
-      return [key, defaultValue]
+      return [key, defaultValue] as never
     }) as DeepPartial<SchemaType>
 
     const form = useForm<SchemaType>({
@@ -568,7 +568,7 @@ function createForm({
       Object.keys(errors).forEach((key) => {
         form.setError(key as Path<TypeOf<Schema>>, {
           type: 'custom',
-          message: (errors[key] as string[]).join(', '),
+          message: (errors[key] ?? []).join(', '),
         })
       })
       if (firstErroredField()) {
