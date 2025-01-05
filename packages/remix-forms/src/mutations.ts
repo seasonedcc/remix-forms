@@ -1,5 +1,5 @@
 import type { ComposableWithSchema } from 'composable-functions'
-import { inputFromForm, InputError } from 'composable-functions'
+import { inputFromForm, InputError, isInputError } from 'composable-functions'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
@@ -17,7 +17,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
   type SchemaType = z.infer<T>
   type ErrorObject = { path: string[]; messages: string[] }
 
-  const inputErrors = errors.filter((e) => e instanceof InputError)
+  const inputErrors = errors.filter(isInputError) as InputError[]
 
   const nest = (
     { path, messages }: ErrorObject,
@@ -129,7 +129,7 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   if (result.success) {
     return { success: true, data: result.data }
   } else {
-    const global = result.errors.filter((e) => !(e instanceof InputError))
+    const global = result.errors.filter((e) => !isInputError(e))
 
     return {
       success: false,

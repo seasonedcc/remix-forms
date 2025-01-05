@@ -24,7 +24,7 @@ const takenEmails = ['foo@bar.com', 'bar@foo.com']
 
 const mutation = applySchema(schema)(async (values) => {
   if (takenEmails.includes(values.email)) {
-    throw new InputError('Email already taken', 'email')
+    throw new InputError('Email already taken', ['email'])
   }
 
   return values
@@ -48,7 +48,7 @@ const takenEmails = ['foo@bar.com', 'bar@foo.com']
 
 const mutation = applySchema(schema)(async (values) => {
   if (takenEmails.includes(values.email)) {
-    throw new InputError('Email already taken', 'email')
+    throw new InputError('Email already taken', ['email'])
   }
 
   return values

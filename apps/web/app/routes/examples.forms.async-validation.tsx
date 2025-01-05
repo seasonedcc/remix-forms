@@ -36,7 +36,7 @@ export const loader: LoaderFunction = ({ request }) => {
 
 const mutation = applySchema(schema)(async (values) => {
   if (takenUsernames.includes(values.username)) {
-    throw new InputError('Already taken', 'username')
+    throw new InputError('Already taken', ['username'])
   }
 
   return values
@@ -105,7 +105,7 @@ export const loader: LoaderFunction = ({ request }) => {
 
 const mutation = applySchema(schema)(async (values) => {
   if (takenUsernames.includes(values.username)) {
-    throw new InputError('Already taken', 'username')
+    throw new InputError('Already taken', ['username'])
   }
 
   return values

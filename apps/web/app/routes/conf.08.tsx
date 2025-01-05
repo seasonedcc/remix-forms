@@ -33,7 +33,7 @@ const reservationSchema = z.object({
 const makeReservation = applySchema(reservationSchema)(
   async (values) => {
     if (values.specialRequests?.match(/towels/i)) {
-      throw new InputError("Don't be such a diva!", 'specialRequests')
+      throw new InputError("Don't be such a diva!", ['specialRequests'])
     }
 
     // Here you would store data instead
@@ -69,7 +69,7 @@ const reservationSchema = z.object({
 
 const makeReservation = applySchema(reservationSchema)(async (values) => {
   if (values.specialRequests?.match(/towels/i)) {
-    throw new InputError("Don't be such a diva!", 'specialRequests')
+    throw new InputError("Don't be such a diva!", ['specialRequests'])
   }
 
   // Here you would store data instead

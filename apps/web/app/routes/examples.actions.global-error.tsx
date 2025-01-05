@@ -20,7 +20,7 @@ const code = `const schema = z.object({
 
 const mutation = applySchema(schema)(async (values) => {
   if (values.password !== 'supersafe') {
-    throw 'Wrong email or password'
+    throw new Error('Wrong email or password')
   }
 
   return values
@@ -53,7 +53,7 @@ export const loader: LoaderFunction = () => ({
 
 const mutation = applySchema(schema)(async (values) => {
   if (values.password !== 'supersafe') {
-    throw 'Wrong email or password'
+    throw new Error('Wrong email or password')
   }
 
   return values
