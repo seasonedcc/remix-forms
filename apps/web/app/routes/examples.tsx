@@ -16,8 +16,8 @@ export default function Component() {
           <SidebarLayout.NavLink to={'/examples/actions/custom-response'}>
             Custom response
           </SidebarLayout.NavLink>
-          <SidebarLayout.NavLink to={'/examples/actions/environment'}>
-            Environment
+          <SidebarLayout.NavLink to={'/examples/actions/context'}>
+            Context
           </SidebarLayout.NavLink>
           <SidebarLayout.NavLink to={'/examples/actions/global-error'}>
             Global error

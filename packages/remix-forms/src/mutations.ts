@@ -85,7 +85,7 @@ type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
   schema: Schema
   mutation: ComposableWithSchema<D>
-  environment?: unknown
+  context?: unknown
   transformValues?: (
     values: FormValues<z.infer<Schema>>,
   ) => Record<string, unknown>
@@ -118,13 +118,13 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
-  environment,
+  context,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<
   PerformMutation<z.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema)
-  const result = await mutation(transformValues(values), environment)
+  const result = await mutation(transformValues(values), context)
 
   if (result.success) {
     return { success: true, data: result.data }
@@ -149,7 +149,7 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
-  environment,
+  context,
   transformValues,
   beforeAction,
   beforeSuccess,
@@ -164,7 +164,7 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
     request,
     schema,
     mutation,
-    environment,
+    context,
     transformValues,
   })
 

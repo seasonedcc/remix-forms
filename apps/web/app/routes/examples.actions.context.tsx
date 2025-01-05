@@ -8,21 +8,21 @@ import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
 import { formAction } from 'remix-forms'
 
-const title = 'Environment'
+const title = 'Context'
 const description =
-  "In this example, we use Remix Domain's environment to authorize a specific origin."
+  "In this example, we use Composable Function's context to authorize a specific origin."
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({ email: z.string().min(1).email() })
 
-const environmentSchema = z.object({
+const contextSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
 })
 
 const mutation = applySchema(
   schema,
-  environmentSchema,
+  contextSchema,
 )(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) => {
@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
     request,
     schema,
     mutation,
-    environment: { customHeader: request.headers.get('customHeader') },
+    context: { customHeader: request.headers.get('customHeader') },
   })
 }
 
@@ -53,7 +53,7 @@ export const action: ActionFunction = async ({ request }) => {
     request,
     schema,
     mutation,
-    environment: { customHeader: request.headers.get('customHeader') },
+    context: { customHeader: request.headers.get('customHeader') },
   })
 }
 
@@ -63,9 +63,9 @@ export default function Component() {
       title={title}
       description={
         <>
-          In this example, we use Remix Domain&apos;s{' '}
-          <ExternalLink href="https://github.com/seasonedcc/domain-functions#taking-parameters-that-are-not-user-input">
-            environment
+          In this example, we use Composable Function&apos;s{' '}
+          <ExternalLink href="https://github.com/seasonedcc/composable-functions/blob/main/context.md">
+            context
           </ExternalLink>{' '}
           to authorize a specific header.
         </>

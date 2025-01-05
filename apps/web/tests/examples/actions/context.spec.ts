@@ -1,7 +1,7 @@
 //import { test, expect } from '@playwright/test'
 import { test, testWithoutJS, expect } from 'tests/setup/tests'
 
-const route = '/examples/actions/environment'
+const route = '/examples/actions/context'
 
 test('With JS enabled', async ({ example }) => {
   const { email, button, page } = example
