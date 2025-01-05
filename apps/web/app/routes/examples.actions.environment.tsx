@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
 import { formAction } from 'remix-forms'
@@ -20,7 +20,7 @@ const environmentSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
 })
 
-const mutation = makeDomainFunction(
+const mutation = applySchema(
   schema,
   environmentSchema,
 )(async (values) => values)
@@ -38,7 +38,7 @@ export default () => <Form schema={schema} />`
 
 const schema = z.object({ email: z.string().min(1).email() })
 
-const environmentSchema = z.object({
+const contextSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
 })
 
@@ -46,10 +46,7 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-const mutation = makeDomainFunction(
-  schema,
-  environmentSchema,
-)(async (values) => values)
+const mutation = applySchema(schema, contextSchema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) => {
   return formAction({

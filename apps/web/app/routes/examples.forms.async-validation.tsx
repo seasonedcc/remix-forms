@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { InputError, makeDomainFunction } from 'domain-functions'
+import { InputError, applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { useFetcher } from 'react-router'
 import { formAction } from 'remix-forms'
@@ -14,7 +14,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { InputError } from 'domain-functions'
+const code = `import { InputError } from 'composable-functions'
 
 const schema = z.object({
   username: z.string().min(1),
@@ -34,7 +34,7 @@ export const loader: LoaderFunction = ({ request }) => {
   return null
 }
 
-const mutation = makeDomainFunction(schema)(async (values) => {
+const mutation = applySchema(schema)(async (values) => {
   if (takenUsernames.includes(values.username)) {
     throw new InputError('Already taken', 'username')
   }
@@ -103,7 +103,7 @@ export const loader: LoaderFunction = ({ request }) => {
   }
 }
 
-const mutation = makeDomainFunction(schema)(async (values) => {
+const mutation = applySchema(schema)(async (values) => {
   if (takenUsernames.includes(values.username)) {
     throw new InputError('Already taken', 'username')
   }

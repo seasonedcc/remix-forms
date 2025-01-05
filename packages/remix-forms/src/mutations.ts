@@ -1,5 +1,5 @@
-import type { DomainFunction, SchemaError } from 'domain-functions'
-import { inputFromForm } from 'domain-functions'
+import type { ComposableWithSchema } from 'composable-functions'
+import { inputFromForm, InputError } from 'composable-functions'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
@@ -11,11 +11,13 @@ type NestedErrors<SchemaType> = {
 }
 
 function errorMessagesForSchema<T extends z.ZodTypeAny>(
-  errors: SchemaError[],
+  errors: Error[],
   _schema: T,
 ): NestedErrors<z.infer<T>> {
   type SchemaType = z.infer<T>
   type ErrorObject = { path: string[]; messages: string[] }
+
+  const inputErrors = errors.filter((e) => e instanceof InputError)
 
   const nest = (
     { path, messages }: ErrorObject,
@@ -35,13 +37,13 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
   const compareStringArrays = (a: string[]) => (b: string[]) =>
     JSON.stringify(a) === JSON.stringify(b)
 
-  const toErrorObject = (errors: SchemaError[]): ErrorObject[] =>
+  const toErrorObject = (errors: InputError[]): ErrorObject[] =>
     errors.map(({ path, message }) => ({
       path,
       messages: [message],
     }))
 
-  const unifyPaths = (errors: SchemaError[]) =>
+  const unifyPaths = (errors: InputError[]) =>
     toErrorObject(errors).reduce((memo, error) => {
       const comparePath = compareStringArrays(error.path)
       const mergeErrorMessages = ({ path, messages }: ErrorObject) =>
@@ -53,7 +55,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
       return existingPath ? memo.map(mergeErrorMessages) : [...memo, error]
     }, [] as ErrorObject[])
 
-  const errorTree = unifyPaths(errors).reduce((memo, schemaError) => {
+  const errorTree = unifyPaths(inputErrors).reduce((memo, schemaError) => {
     const errorBranch = nest(schemaError, memo)
 
     return { ...memo, ...errorBranch }
@@ -82,7 +84,7 @@ type Callback = (request: Request) => Promise<Redirect | void>
 type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
   schema: Schema
-  mutation: DomainFunction<D>
+  mutation: ComposableWithSchema<D>
   environment?: unknown
   transformValues?: (
     values: FormValues<z.infer<Schema>>,
@@ -127,16 +129,15 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   if (result.success) {
     return { success: true, data: result.data }
   } else {
+    const global = result.errors.filter((e) => !(e instanceof InputError))
+
     return {
       success: false,
       errors: {
-        ...errorMessagesForSchema(result.inputErrors, schema),
-        _global:
-          result.errors.length || result.environmentErrors.length
-            ? [...result.errors, ...result.environmentErrors].map(
-                (error) => error.message,
-              )
-            : undefined,
+        ...errorMessagesForSchema(result.errors, schema),
+        _global: global.length
+          ? global.map((error) => error.message)
+          : undefined,
       } as FormErrors<Schema>,
       values,
     }

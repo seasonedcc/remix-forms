@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
 
@@ -25,11 +25,11 @@ const contactSchema = z.object({
   message: z.string().min(1),
 })
 
-const loginMutation = makeDomainFunction(loginSchema)(
+const loginMutation = applySchema(loginSchema)(
   async (values) => values
 )
 
-const contactMutation = makeDomainFunction(contactSchema)(
+const contactMutation = applySchema(contactSchema)(
   async (values) => values
 )
 
@@ -90,11 +90,9 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-const loginMutation = makeDomainFunction(loginSchema)(async (values) => values)
+const loginMutation = applySchema(loginSchema)(async (values) => values)
 
-const contactMutation = makeDomainFunction(contactSchema)(
-  async (values) => values,
-)
+const contactMutation = applySchema(contactSchema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.clone().formData()

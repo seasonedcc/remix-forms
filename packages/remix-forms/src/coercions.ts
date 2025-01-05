@@ -1,4 +1,4 @@
-import type { inputFromForm } from 'domain-functions'
+import type { inputFromForm } from 'composable-functions'
 import type { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 

@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { useFetcher } from 'react-router'
 import { formAction } from 'remix-forms'
@@ -26,7 +26,7 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight('', { language: 'ts' }).value,
 })
 
-const mutation = makeDomainFunction(schema)(async () => {
+const mutation = applySchema(schema)(async () => {
   throw new Error('This error should not show inside the fetcher form')
 })
 

@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { InputError, makeDomainFunction } from 'domain-functions'
+import { InputError, applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
 
@@ -13,7 +13,7 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { InputError } from 'domain-functions'
+const code = `import { InputError } from 'composable-functions'
 
 const schema = z.object({
   email: z.string().min(1).email(),
@@ -22,7 +22,7 @@ const schema = z.object({
 
 const takenEmails = ['foo@bar.com', 'bar@foo.com']
 
-const mutation = makeDomainFunction(schema)(async (values) => {
+const mutation = applySchema(schema)(async (values) => {
   if (takenEmails.includes(values.email)) {
     throw new InputError('Email already taken', 'email')
   }
@@ -46,7 +46,7 @@ export const loader: LoaderFunction = () => ({
 
 const takenEmails = ['foo@bar.com', 'bar@foo.com']
 
-const mutation = makeDomainFunction(schema)(async (values) => {
+const mutation = applySchema(schema)(async (values) => {
   if (takenEmails.includes(values.email)) {
     throw new InputError('Email already taken', 'email')
   }

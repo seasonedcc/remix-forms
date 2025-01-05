@@ -55,9 +55,9 @@ const schema = z.object({
   email: z.string().min(1).email(),
 })`
 
-const mutationCode = `import { makeDomainFunction } from 'domain-functions'
+const mutationCode = `import { applySchema } from 'composable-functions'
 
-const mutation = makeDomainFunction(schema)(async (values) => (
+const mutation = applySchema(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
@@ -145,7 +145,6 @@ export const loader = () => ({
 
 export default function Component() {
   const {
-    createFormCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -164,16 +163,9 @@ export default function Component() {
         Assuming you already have <em>React</em> and <em>React Router</em>{' '}
         installed, you'll need the following packages:
       </p>
-      <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Create your Form component</SubHeading>
-      <p>
-        Next, let's create your project's custom <em>Form</em> component:
-      </p>
-      <p>
-        Create a <em>form.ts</em> file and include the following code:
-      </p>
-      <Pre>/app/form.ts</Pre>
-      <Code>{createFormCode}</Code>
+      <Pre>
+        npm install remix-forms composable-functions zod react-hook-form
+      </Pre>
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation
@@ -184,17 +176,17 @@ export default function Component() {
       <SubHeading>Create your mutation</SubHeading>
       <p>
         Create a mutation function using{' '}
-        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
-          Domain Functions
+        <ExternalLink href="https://github.com/seasonedcc/composable-functions">
+          Composable Functions
         </ExternalLink>
-        &apos; <em>makeDomainFunction</em>. It&apos;s a function that receives
-        the values from the form and performs the necessary mutations, such as
+        &apos; <em>applySchema</em>. It&apos;s a function that receives the
+        values from the form and performs the necessary mutations, such as
         storing data on a database.
       </p>
       <p>
-        Domain Functions will parse the request&apos;s <em>formData</em> and
+        Composable Functions will parse the request&apos;s <em>formData</em> and
         perform the mutation only if everything is valid. If something goes bad,
-        it will return structured error messages for us.
+        it will return list of error for us.
       </p>
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
@@ -286,8 +278,8 @@ export default function Component() {
           Zod
         </ExternalLink>
         ,{' '}
-        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
-          Domain Functions
+        <ExternalLink href="https://github.com/seasonedcc/composable-functions">
+          Composable Functions
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
       </p>
