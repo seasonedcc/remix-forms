@@ -3,14 +3,14 @@ import type {
   ActionFunction,
   LoaderFunctionArgs,
   MetaFunction,
-} from '@remix-run/node'
+} from 'react-router'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
-import { useLoaderData } from '@remix-run/react'
+import { useLoaderData } from 'react-router'
 
 const title = 'Dynamic form'
 const description =

@@ -1,16 +1,12 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
-import { useFetcher } from '@remix-run/react'
+import { useFetcher } from 'react-router'
 import Checkbox from '~/ui/checkbox'
 
 const title = 'useFetcher'

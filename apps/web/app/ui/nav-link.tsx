@@ -1,8 +1,8 @@
-import { NavLink as RemixNavLink } from '@remix-run/react'
-import type { RemixNavLinkProps } from '@remix-run/react/dist/components'
+import type { NavLinkProps } from 'react-router'
+import { NavLink as RemixNavLink } from 'react-router'
 import { cx } from '~/helpers'
 
-export default function NavLink({ className, ...props }: RemixNavLinkProps) {
+export default function NavLink({ className, ...props }: NavLinkProps) {
   return (
     <RemixNavLink
       className={({ isActive }) =>

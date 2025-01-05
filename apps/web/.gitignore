@@ -9,3 +9,4 @@ node_modules
 test-results/
 playwright-report/
 .netlify/
+.react-router/

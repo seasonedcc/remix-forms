@@ -6,8 +6,8 @@ import {
   ScaleIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/solid'
-import type { ActionFunction, MetaFunction } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
+import type { ActionFunction, MetaFunction } from 'react-router'
+import { useLoaderData } from 'react-router'
 import { makeDomainFunction } from 'domain-functions'
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'

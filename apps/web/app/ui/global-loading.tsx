@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useNavigation } from '@remix-run/react'
+import { useNavigation } from 'react-router'
 import { cx } from '~/helpers'
 import { match, P } from 'ts-pattern'
 

@@ -1,8 +1,4 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { makeDomainFunction } from 'domain-functions'
 import hljs from 'highlight.js/lib/common'
 import * as React from 'react'

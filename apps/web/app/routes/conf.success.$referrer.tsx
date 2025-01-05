@@ -1,4 +1,4 @@
-import { useParams } from '@remix-run/react'
+import { useParams } from 'react-router'
 import ButtonLink from '~/ui/button-link'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
