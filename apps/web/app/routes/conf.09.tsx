@@ -12,7 +12,7 @@ const description = "Finally, let's make the form look exactly as before."
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { ActionFunction } from '@remix-run/node'
+const code = `import { ActionFunction } from 'react-router'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
 // Learn how to create these files on "Get Started" 👇🏽
