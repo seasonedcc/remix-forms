@@ -4,8 +4,8 @@ import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
-import { formAction } from '~/formAction'
 import Form from '~/ui/form'
+import { formAction } from 'remix-forms'
 
 const title = 'Custom layout'
 const description = "Finally, let's make the form look exactly as before."
@@ -16,7 +16,7 @@ const code = `import { ActionFunction } from '@remix-run/node'
 import { z } from 'zod'
 import { InputError, makeDomainFunction } from 'domain-functions'
 // Learn how to create these files on "Get Started" 👇🏽
-import { formAction } from '~/form-action'
+import { formAction } from 'remix-forms'
 import { Form } from '~/form'
 
 const reservationSchema = z.object({

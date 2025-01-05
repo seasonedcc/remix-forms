@@ -11,13 +11,13 @@ import { useLoaderData } from 'react-router'
 import { makeDomainFunction } from 'domain-functions'
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import { formAction } from '~/formAction'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import Feature from '~/ui/feature'
 import Form from '~/ui/form'
 import Heading from '~/ui/heading'
+import { formAction } from 'remix-forms'
 
 const title = 'The full-stack form library for Remix and React Router'
 const description =
@@ -28,7 +28,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 const code = `import { z } from 'zod'
 import { makeDomainFunction } from 'domain-functions'
 // Learn how to create these files on "Get Started" 👇🏽
-import { formAction } from '~/form-action'
+import { formAction } from 'remix-forms'
 import { Form } from '~/form'
 
 const schema = z.object({

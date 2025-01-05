@@ -22,14 +22,6 @@ const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, us
 export { Form }
 `
 
-const createFormActionCode = `import { createFormAction } from 'remix-forms'
-import { redirect } from 'react-router'
-
-const formAction = createFormAction({ redirect })
-
-export { formAction }
-`
-
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
 import { createForm } from 'remix-forms'
 // For Remix, import it like this
@@ -75,7 +67,7 @@ const mutation = makeDomainFunction(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/form-action.server' /* path to your custom formAction */
+const actionCode = `import { formAction } from 'remix-forms' /* path to your custom formAction */
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
@@ -143,8 +135,6 @@ const customInputCode = `<Form schema={schema}>
 export const loader = () => ({
   createFormCode: hljs.highlight(createFormCode, { language: 'ts' })
     .value as string,
-  createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
-    .value as string,
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
@@ -162,7 +152,6 @@ export const loader = () => ({
 export default function Component() {
   const {
     createFormCode,
-    createFormActionCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -194,35 +183,12 @@ export default function Component() {
         packages:
       </p>
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Create your formAction function</SubHeading>
-      <p>
-        First, let's create a <em>formAction</em> function. This will be used in
-        your actions.
-      </p>
-      <p>
-        Somewhere within your <em>app/</em>, create a file named{' '}
-        <em>
-          <strong>form-action.server.ts</strong>
-        </em>
-        .
-      </p>
-      <Pre>/app/form-action.server.ts</Pre>
-      <p>
-        <strong>Important</strong>: do not forget to include the suffix{' '}
-        <em>
-          <strong>.server</strong>
-        </em>{' '}
-        in the file name otherwise server-side code will leak to the browser,
-        triggering a confusing error.
-      </p>
-      <Code>{createFormActionCode}</Code>
       <SubHeading>Create your Form component</SubHeading>
       <p>
         Next, let's create your project's custom <em>Form</em> component:
       </p>
       <p>
-        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
-        file and include the following code:
+        Create a <em>form.ts</em> file and include the following code:
       </p>
       <Pre>/app/form.ts</Pre>
       <Code>{createFormCode}</Code>
