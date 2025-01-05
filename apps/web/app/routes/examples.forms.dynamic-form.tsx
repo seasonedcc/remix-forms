@@ -1,12 +1,16 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunctionArgs, MetaFunction } from 'react-router';
+import type {
+  ActionFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from 'react-router'
 import { formAction } from '~/formAction'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { makeDomainFunction } from 'domain-functions'
 import Example from '~/ui/example'
-import { useLoaderData } from 'react-router';
+import { useLoaderData } from 'react-router'
 
 const title = 'Dynamic form'
 const description =

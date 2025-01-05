@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from 'react-router'
 import SecondaryButton from './secondary-button'
 
 export default function SecondaryButtonLink({

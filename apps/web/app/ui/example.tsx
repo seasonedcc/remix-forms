@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useActionData, useLoaderData } from 'react-router';
+import { useActionData, useLoaderData } from 'react-router'
 import Code from '~/ui/code'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'

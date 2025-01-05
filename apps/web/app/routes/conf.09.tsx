@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'

@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from 'react-router'
 
 export default function TopBar({ children }: { children: React.ReactNode }) {
   return (

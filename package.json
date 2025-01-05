@@ -17,6 +17,7 @@
     "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^8.19.0",
     "eslint": "^8.44.0",
     "eslint-config-custom": "*",
     "prettier": "^3.0.0",

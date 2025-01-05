@@ -3,7 +3,7 @@ import { Disclosure, Popover } from '@headlessui/react'
 import { cx } from '~/helpers'
 import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
 import UINavLink from '~/ui/nav-link'
-import type { RemixNavLinkProps } from '@react-router/react/dist/components';
+import type { NavLinkProps } from 'react-router'
 
 type SidebarType = 'disclosure' | 'popover'
 
@@ -51,17 +51,15 @@ function NavTitle({ className, ...props }: JSX.IntrinsicElements['h4']) {
   )
 }
 
-type NavLinkProps = {
-  type?: SidebarType
-  close?: Function
-} & RemixNavLinkProps
-
 function NavLink({
   className,
   type = 'disclosure',
   close = () => {},
   ...props
-}: NavLinkProps) {
+}: NavLinkProps & {
+  type?: SidebarType
+  close?: Function
+}) {
   return (
     <UINavLink
       className={({ isActive }) =>

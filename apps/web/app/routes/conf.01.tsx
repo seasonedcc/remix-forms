@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router';
-import { redirect } from 'react-router';
+import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
+import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -8,7 +8,7 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form } from 'react-router';
+import { Form } from 'react-router'
 
 const title = 'Quick and dirty'
 const description =

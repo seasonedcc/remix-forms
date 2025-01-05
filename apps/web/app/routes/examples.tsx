@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router';
+import { Outlet } from 'react-router'
 import SidebarLayout from '~/ui/sidebar-layout'
 
 export default function Component() {
