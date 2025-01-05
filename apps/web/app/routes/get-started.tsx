@@ -14,6 +14,14 @@ const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
+const createFormCode = `import { createForm } from 'remix-forms'
+import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router'
+
+const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
+
+export { Form }
+`
+
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
 import { SchemaForm } from 'remix-forms'
 
@@ -119,6 +127,8 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader = () => ({
+  createFormCode: hljs.highlight(createFormCode, { language: 'ts' })
+    .value as string,
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
@@ -135,6 +145,7 @@ export const loader = () => ({
 
 export default function Component() {
   const {
+    createFormCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -154,6 +165,15 @@ export default function Component() {
         installed, you'll need the following packages:
       </p>
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
+      <SubHeading>Create your Form component</SubHeading>
+      <p>
+        Next, let's create your project's custom <em>Form</em> component:
+      </p>
+      <p>
+        Create a <em>form.ts</em> file and include the following code:
+      </p>
+      <Pre>/app/form.ts</Pre>
+      <Code>{createFormCode}</Code>
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation
