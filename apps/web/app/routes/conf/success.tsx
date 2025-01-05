@@ -12,7 +12,7 @@ export default function Component() {
       <SubHeading>
         You&apos;ve been redirected here from our successful form!
       </SubHeading>
-      <ButtonLink to={`../${referrer}`}>Go back</ButtonLink>
+      <ButtonLink to={`/conf/${referrer}`}>Go back</ButtonLink>
     </div>
   )
 }

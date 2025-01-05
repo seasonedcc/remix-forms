@@ -7,8 +7,9 @@ import { InputError, applySchema } from 'composable-functions'
 import Form from '~/ui/form'
 import { formAction } from 'remix-forms'
 
-const title = 'Custom layout'
-const description = "Finally, let's make the form look exactly as before."
+const title = 'Auto-generated'
+const description =
+  "Now let's have Remix Forms do it all for us. We'll still have to customize the layout, but the UX is there. Like magic! 🪄"
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -45,31 +46,11 @@ export const action: ActionFunction = async ({ request }) =>
     request,
     schema: reservationSchema,
     mutation: makeReservation,
-    successPath: 'conf/success/09',
+    successPath: '/conf/success/08',
   })
 
 export default function Component() {
-  return (
-    <Form schema={reservationSchema}>
-      {({ Field, Errors, Button }) => (
-        <>
-          <Field name="city" />
-          <div className="flex w-full space-x-4">
-            <Field name="checkIn" className="flex-1" />
-            <Field name="checkOut" className="flex-1" />
-          </div>
-          <div className="flex w-full space-x-4">
-            <Field name="adults" />
-            <Field name="children" />
-            <Field name="bedrooms" />
-          </div>
-          <Field name="specialRequests" multiline />
-          <Errors />
-          <Button>Make reservation</Button>
-        </>
-      )}
-    </Form>
-  )
+  return <Form schema={reservationSchema} />
 }`
 
 export const loader: LoaderFunction = () => ({
@@ -100,35 +81,18 @@ export const action: ActionFunction = async ({ request }) =>
     request,
     schema: reservationSchema,
     mutation: makeReservation,
-    successPath: 'conf/success/09',
+    successPath: '/conf/success/08',
   })
 
 export const handle = {
-  previous: '08',
+  previous: '07',
+  next: '09',
 }
 
 export default function Component() {
   return (
     <Example title={title} description={description} countLines>
-      <Form schema={reservationSchema}>
-        {({ Field, Errors, Button }) => (
-          <>
-            <Field name="city" />
-            <div className="flex w-full space-x-4">
-              <Field name="checkIn" className="flex-1" />
-              <Field name="checkOut" className="flex-1" />
-            </div>
-            <div className="flex w-full space-x-4">
-              <Field name="adults" className="flex-1" />
-              <Field name="children" className="flex-1" />
-              <Field name="bedrooms" className="flex-1" />
-            </div>
-            <Field name="specialRequests" multiline />
-            <Errors />
-            <Button>Make reservation</Button>
-          </>
-        )}
-      </Form>
+      <Form schema={reservationSchema} />
     </Example>
   )
 }

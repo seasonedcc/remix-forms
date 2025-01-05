@@ -59,7 +59,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/05')
+    return redirect('/conf/success/05')
   }
 
   return { errors: result.error.issues }
@@ -186,7 +186,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/05')
+    return redirect('/conf/success/05')
   }
 
   return { errors: result.error.issues }

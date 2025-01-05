@@ -12,11 +12,10 @@ import { Form, useActionData, useSubmit, useNavigation } from 'react-router'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 
-const title = 'Focus on error'
+const title = 'Accessibility'
 const description =
-  "Now let's focus on the first field with error. react-hook-form already does that for client-side errors, but we still might get additional errors from the server."
+  "Now let's add some a11y to our form. We'll define the roles and describe the errors so everyone can interact with our app."
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -59,20 +58,8 @@ export const action: ActionFunction = async ({ request }) => {
   const result = reservationSchema.safeParse(formValues)
 
   if (result.success) {
-    if (result.data.specialRequests?.match(/towels/i)) {
-      return {
-        errors: [
-          {
-            code: 'custom',
-            path: ['specialRequests'],
-            message: "Don't be such a diva!",
-          },
-        ],
-      }
-    }
-
     await makeReservation(result.data)
-    return redirect('conf/success/07')
+    return redirect('/conf/success/06')
   }
 
   return { errors: result.error.issues }
@@ -103,7 +90,7 @@ function FieldError({ name, errors }: { name: string; errors: any }) {
 
 export default function Component() {
   const resolver = zodResolver(reservationSchema)
-  const { register, handleSubmit, formState, setFocus } = useForm({ resolver })
+  const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
   const navigation = useNavigation()
@@ -119,23 +106,6 @@ export default function Component() {
 
   const describedBy = (name: string) =>
     hasErrors(name) ? \`error-for-\${name}\` : undefined
-
-  const fields = [
-    'city',
-    'checkIn',
-    'checkOut',
-    'adults',
-    'children',
-    'bedrooms',
-    'specialRequests',
-  ]
-
-  useEffect(() => {
-    if (!serverErrors) return
-
-    const field = fields.find((name) => serverErrorFor(name))
-    field && setFocus(field)
-  }, [serverErrors])
 
   return (
     <Form
@@ -290,20 +260,8 @@ export const action: ActionFunction = async ({ request }) => {
   const result = reservationSchema.safeParse(formValues)
 
   if (result.success) {
-    if (result.data.specialRequests?.match(/towels/i)) {
-      return {
-        errors: [
-          {
-            code: 'custom',
-            path: ['specialRequests'],
-            message: "Don't be such a diva!",
-          },
-        ],
-      }
-    }
-
     await makeReservation(result.data)
-    return redirect('conf/success/07')
+    return redirect('/conf/success/06')
   }
 
   return { errors: result.error.issues }
@@ -333,13 +291,13 @@ function FieldError({ name, errors }: { name: string; errors: any }) {
 }
 
 export const handle = {
-  previous: '06',
-  next: '08',
+  previous: '05',
+  next: '07',
 }
 
 export default function Component() {
   const resolver = zodResolver(reservationSchema)
-  const { register, handleSubmit, formState, setFocus } = useForm({ resolver })
+  const { register, handleSubmit, formState } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
   const navigation = useNavigation()
@@ -355,23 +313,6 @@ export default function Component() {
 
   const describedBy = (name: string) =>
     hasErrors(name) ? `error-for-${name}` : undefined
-
-  const fields = [
-    'city',
-    'checkIn',
-    'checkOut',
-    'adults',
-    'children',
-    'bedrooms',
-    'specialRequests',
-  ]
-
-  useEffect(() => {
-    if (!serverErrors) return
-
-    const field = fields.find((name) => serverErrorFor(name))
-    field && setFocus(field)
-  }, [serverErrors])
 
   return (
     <Example title={title} description={description} countLines>

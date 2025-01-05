@@ -23,7 +23,7 @@ export const links: LinksFunction = () => {
 
 export default function App() {
   const matches = useMatches()
-  const conf = matches.find((match) => match.pathname === '/conf')
+  const conf = matches.find((match) => match.pathname.startsWith('/conf'))
 
   return (
     <html lang="en" className="h-full overflow-x-hidden">

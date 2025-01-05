@@ -8,14 +8,12 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData, useSubmit } from 'react-router'
+import { Form, useActionData } from 'react-router'
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
-const title = 'Client validations'
+const title = 'Server validations'
 const description =
-  "Now let's add client-side validations. We'll use the amazing react-hook-form for that."
+  "Now let's add server-side validations. To make our lives easier, we'll use zod for that. (It won't work yet 🤫)"
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
@@ -28,21 +26,14 @@ import TextArea from '~/ui/text-area'
 import Button from '~/ui/button'
 import { useActionData } from 'react-router'
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-
-function parseDate(value: unknown) {
-  const [year, month, day] = String(value).split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
 
 const reservationSchema = z.object({
   city: z.enum(['saltLakeCity', 'lasVegas', 'losAngeles']),
-  checkIn: z.preprocess(parseDate, z.date()),
-  checkOut: z.preprocess(parseDate, z.date()),
-  adults: z.preprocess(Number, z.number().int().positive()),
-  children: z.preprocess(Number, z.number().int()),
-  bedrooms: z.preprocess(Number, z.number().int().positive()),
+  checkIn: z.date(),
+  checkOut: z.date(),
+  adults: z.number().int().positive(),
+  children: z.number().int(),
+  bedrooms: z.number().int().positive(),
   specialRequests: z.string().optional(),
 })
 
@@ -59,91 +50,66 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/04')
+    return redirect('/conf/success/02')
   }
 
   return { errors: result.error.issues }
 }
 
-function Error(props: JSX.IntrinsicElements['div']) {
-  return <div {...props} className="mt-1 text-red-500" />
-}
-
-function ServerError({ name }: { name: string }) {
+function FieldError({ name }: { name: string }) {
   const errors = useActionData<ActionData>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
 
-  return <Error>{message}</Error>
-}
-
-function FieldError({ name, errors }: { name: string; errors: any }) {
-  const message = errors[name]?.message
-
-  if (message) {
-    return <Error>{message}</Error>
-  }
-
-  return <ServerError name={name} />
+  return <div className="mt-1 text-red-500">{message}</div>
 }
 
 export default function Component() {
-  const resolver = zodResolver(reservationSchema)
-  const { register, handleSubmit, formState } = useForm({ resolver })
-  const { errors } = formState
-  const submit = useSubmit()
-
   return (
-    <Form
-      method="post"
-      className="flex flex-col space-y-4"
-      onSubmit={(event: any) => {
-        handleSubmit(() => submit(event.target))(event)
-      }}
-    >
+    <Form method="post" className="flex flex-col space-y-4">
       <div>
         <Label htmlFor="city">City</Label>
-        <Select {...register('city')} id="city">
+        <Select name="city" id="city">
           <option value="saltLakeCity">Salt Lake City</option>
           <option value="lasVegas">Las Vegas</option>
           <option value="losAngeles">Los Angeles</option>
         </Select>
-        <FieldError name="city" errors={errors} />
+        <FieldError name="city" />
       </div>
       <div className="flex w-full space-x-4">
         <div className="flex-1">
           <Label htmlFor="checkIn">Check In</Label>
-          <Input {...register('checkIn')} id="checkIn" type="date" />
-          <FieldError name="checkIn" errors={errors} />
+          <Input name="checkIn" id="checkIn" type="date" />
+          <FieldError name="checkIn" />
         </div>
         <div className="flex-1">
           <Label htmlFor="checkOut">Check Out</Label>
-          <Input {...register('checkOut')} id="checkOut" type="date" />
-          <FieldError name="checkOut" errors={errors} />
+          <Input name="checkOut" id="checkOut" type="date" />
+          <FieldError name="checkOut" />
         </div>
       </div>
       <div className="flex w-full space-x-4">
         <div className="flex-1">
           <Label htmlFor="adults">Adults</Label>
-          <Input {...register('adults')} id="adults" />
-          <FieldError name="adults" errors={errors} />
+          <Input name="adults" id="adults" />
+          <FieldError name="adults" />
         </div>
         <div className="flex-1">
           <Label htmlFor="children">Children</Label>
-          <Input {...register('children')} id="children" />
-          <FieldError name="children" errors={errors} />
+          <Input name="children" id="children" />
+          <FieldError name="children" />
         </div>
         <div className="flex-1">
           <Label htmlFor="bedrooms">Bedrooms</Label>
-          <Input {...register('bedrooms')} id="bedrooms" />
-          <FieldError name="bedrooms" errors={errors} />
+          <Input name="bedrooms" id="bedrooms" />
+          <FieldError name="bedrooms" />
         </div>
       </div>
       <div>
         <Label htmlFor="specialRequests">Special Requests</Label>
-        <TextArea {...register('specialRequests')} id="specialRequests" />
-        <FieldError name="specialRequests" errors={errors} />
+        <TextArea name="specialRequests" id="specialRequests" />
+        <FieldError name="specialRequests" />
       </div>
       <Button>Make reservation</Button>
     </Form>
@@ -155,18 +121,13 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-function parseDate(value: unknown) {
-  const [year, month, day] = String(value).split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
-
 const reservationSchema = z.object({
   city: z.enum(['saltLakeCity', 'lasVegas', 'losAngeles']),
-  checkIn: z.preprocess(parseDate, z.date()),
-  checkOut: z.preprocess(parseDate, z.date()),
-  adults: z.preprocess(Number, z.number().int().positive()),
-  children: z.preprocess(Number, z.number().int()),
-  bedrooms: z.preprocess(Number, z.number().int().positive()),
+  checkIn: z.date(),
+  checkOut: z.date(),
+  adults: z.number().int().positive(),
+  children: z.number().int(),
+  bedrooms: z.number().int().positive(),
   specialRequests: z.string().optional(),
 })
 
@@ -183,97 +144,72 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/04')
+    return redirect('/conf/success/02')
   }
 
   return { errors: result.error.issues }
 }
 
-function Error(props: JSX.IntrinsicElements['div']) {
-  return <div {...props} className="mt-1 text-red-500" />
-}
-
-function ServerError({ name }: { name: string }) {
+function FieldError({ name }: { name: string }) {
   const errors = useActionData<ActionData>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
 
-  return <Error>{message}</Error>
-}
-
-function FieldError({ name, errors }: { name: string; errors: any }) {
-  const message = errors[name]?.message
-
-  if (message) {
-    return <Error>{message}</Error>
-  }
-
-  return <ServerError name={name} />
+  return <div className="mt-1 text-red-500">{message}</div>
 }
 
 export const handle = {
-  previous: '03',
-  next: '05',
+  previous: '01',
+  next: '03',
 }
 
 export default function Component() {
-  const resolver = zodResolver(reservationSchema)
-  const { register, handleSubmit, formState } = useForm({ resolver })
-  const { errors } = formState
-  const submit = useSubmit()
-
   return (
     <Example title={title} description={description} countLines>
-      <Form
-        method="post"
-        className="flex flex-col space-y-4"
-        onSubmit={(event: any) => {
-          handleSubmit(() => submit(event.target))(event)
-        }}
-      >
+      <Form method="post" className="flex flex-col space-y-4">
         <div>
           <Label htmlFor="city">City</Label>
-          <Select {...register('city')} id="city">
+          <Select name="city" id="city">
             <option value="saltLakeCity">Salt Lake City</option>
             <option value="lasVegas">Las Vegas</option>
             <option value="losAngeles">Los Angeles</option>
           </Select>
-          <FieldError name="city" errors={errors} />
+          <FieldError name="city" />
         </div>
         <div className="flex w-full space-x-4">
           <div className="flex-1">
             <Label htmlFor="checkIn">Check In</Label>
-            <Input {...register('checkIn')} id="checkIn" type="date" />
-            <FieldError name="checkIn" errors={errors} />
+            <Input name="checkIn" id="checkIn" type="date" />
+            <FieldError name="checkIn" />
           </div>
           <div className="flex-1">
             <Label htmlFor="checkOut">Check Out</Label>
-            <Input {...register('checkOut')} id="checkOut" type="date" />
-            <FieldError name="checkOut" errors={errors} />
+            <Input name="checkOut" id="checkOut" type="date" />
+            <FieldError name="checkOut" />
           </div>
         </div>
         <div className="flex w-full space-x-4">
           <div className="flex-1">
             <Label htmlFor="adults">Adults</Label>
-            <Input {...register('adults')} id="adults" />
-            <FieldError name="adults" errors={errors} />
+            <Input name="adults" id="adults" />
+            <FieldError name="adults" />
           </div>
           <div className="flex-1">
             <Label htmlFor="children">Children</Label>
-            <Input {...register('children')} id="children" />
-            <FieldError name="children" errors={errors} />
+            <Input name="children" id="children" />
+            <FieldError name="children" />
           </div>
           <div className="flex-1">
             <Label htmlFor="bedrooms">Bedrooms</Label>
-            <Input {...register('bedrooms')} id="bedrooms" />
-            <FieldError name="bedrooms" errors={errors} />
+            <Input name="bedrooms" id="bedrooms" />
+            <FieldError name="bedrooms" />
           </div>
         </div>
         <div>
           <Label htmlFor="specialRequests">Special Requests</Label>
-          <TextArea {...register('specialRequests')} id="specialRequests" />
-          <FieldError name="specialRequests" errors={errors} />
+          <TextArea name="specialRequests" id="specialRequests" />
+          <FieldError name="specialRequests" />
         </div>
         <Button>Make reservation</Button>
       </Form>
