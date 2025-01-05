@@ -163,8 +163,6 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
-  /** @deprecated use your custom json/useActionData in createFormAction/createForm instead */
-  parseActionData?: (data: any) => any
   children?: Children<ObjectFromSchema<Schema>>
 } & Omit<BaseFormPropsWithHTMLAttributes, 'children'>
 
@@ -237,7 +235,6 @@ function createForm({
     schema,
     beforeChildren,
     onTransition,
-    parseActionData,
     children: childrenFn,
     labels,
     placeholders,
@@ -260,13 +257,7 @@ function createForm({
     const navigationTransition = useNavigation()
     const transition = fetcher ?? navigationTransition
     const navigationActionData = useActionData()
-    const unparsedActionData = fetcher ? fetcher.data : navigationActionData
-
-    const actionData =
-      parseActionData && unparsedActionData
-        ? parseActionData(unparsedActionData)
-        : unparsedActionData
-
+    const actionData = fetcher ? fetcher.data : navigationActionData
     const actionErrors = actionData?.errors as FormErrors<SchemaType>
     const actionValues = actionData?.values as FormValues<SchemaType>
 
@@ -576,7 +567,7 @@ function createForm({
           form.setFocus(firstErroredField() as Path<SchemaType>)
         } catch {}
       }
-    }, [errorsProp, unparsedActionData])
+    }, [errorsProp, actionData])
 
     React.useEffect(() => {
       setGlobalErrorsState(globalErrors)
