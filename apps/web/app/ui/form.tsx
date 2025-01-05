@@ -1,5 +1,4 @@
-import type { FormProps, FormSchema } from 'remix-forms'
-import { createForm } from 'remix-forms'
+import { SchemaForm, type FormProps, type FormSchema } from 'remix-forms'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -14,25 +13,12 @@ import InputWrapper from './input-wrapper'
 import RadioGroup from './radio-group'
 
 import TextArea from './text-area'
-import {
-  Form as RemixForm,
-  useActionData,
-  useSubmit,
-  useNavigation,
-} from 'react-router'
-
-const BaseForm = createForm({
-  component: RemixForm,
-  useNavigation,
-  useSubmit,
-  useActionData,
-})
 
 export default function Form<Schema extends FormSchema>(
   props: FormProps<Schema>,
 ) {
   return (
-    <BaseForm
+    <SchemaForm
       className="flex flex-col space-y-6"
       fieldComponent={Field}
       labelComponent={Label}
