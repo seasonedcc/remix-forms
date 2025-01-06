@@ -3,7 +3,7 @@ import ExternalLink from '~/ui/external-link'
 import SidebarLayout from '~/ui/sidebar-layout'
 import SecondaryButtonLink from '~/ui/secondary-button-link'
 import TopBar from '~/ui/conf/top-bar'
-import { Route } from '../layouts/+types/conf'
+import { Route } from './+types/layout'
 
 export default function Component({ matches }: Route.ComponentProps) {
   const { previous, next } =
