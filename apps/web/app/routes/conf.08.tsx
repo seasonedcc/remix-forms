@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'domain-functions'
+import { InputError, applySchema } from 'composable-functions'
 import Form from '~/ui/form'
 import { formAction } from 'remix-forms'
 
@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { ActionFunction } from 'react-router'
 import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'domain-functions'
+import { InputError, applySchema } from 'composable-functions'
 // Learn how to create these files on "Get Started" 👇🏽
 import { formAction } from 'remix-forms'
 import { Form } from '~/form'
@@ -30,10 +30,10 @@ const reservationSchema = z.object({
   specialRequests: z.string().optional(),
 })
 
-const makeReservation = makeDomainFunction(reservationSchema)(
+const makeReservation = applySchema(reservationSchema)(
   async (values) => {
     if (values.specialRequests?.match(/towels/i)) {
-      throw new InputError("Don't be such a diva!", 'specialRequests')
+      throw new InputError("Don't be such a diva!", ['specialRequests'])
     }
 
     // Here you would store data instead
@@ -67,11 +67,9 @@ const reservationSchema = z.object({
   specialRequests: z.string().optional(),
 })
 
-const makeReservation = makeDomainFunction(reservationSchema)(async (
-  values,
-) => {
+const makeReservation = applySchema(reservationSchema)(async (values) => {
   if (values.specialRequests?.match(/towels/i)) {
-    throw new InputError("Don't be such a diva!", 'specialRequests')
+    throw new InputError("Don't be such a diva!", ['specialRequests'])
   }
 
   // Here you would store data instead

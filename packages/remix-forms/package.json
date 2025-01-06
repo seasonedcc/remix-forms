@@ -37,7 +37,7 @@
   ],
   "author": "Daniel Weinmann",
   "peerDependencies": {
-    "domain-functions": "2.x",
+    "composable-functions": ">=4",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
     "react-router": ">=7",

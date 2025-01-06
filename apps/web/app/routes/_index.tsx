@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/solid'
 import type { ActionFunction, MetaFunction } from 'react-router'
 import { useLoaderData } from 'react-router'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
@@ -26,7 +26,7 @@ const description =
 export const meta: MetaFunction = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 // Learn how to create these files on "Get Started" 👇🏽
 import { formAction } from 'remix-forms'
 import { Form } from '~/form'
@@ -37,7 +37,7 @@ const schema = z.object({
   howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
@@ -59,7 +59,7 @@ export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value as string,
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({

@@ -7,7 +7,7 @@ import type {
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { useLoaderData } from 'react-router'
 import { formAction } from 'remix-forms'
@@ -48,7 +48,7 @@ const fieldsSchema = (fields: Field[]) =>
     ),
   )
 
-const mutation = makeDomainFunction(fieldsSchema(getFields()))(
+const mutation = applySchema(fieldsSchema(getFields()))(
   async (values) => values,
 )
 
@@ -94,7 +94,7 @@ const fieldsSchema = (fields: Field[]) =>
     ),
   )
 
-const mutation = makeDomainFunction(fieldsSchema(getFields()))(
+const mutation = applySchema(fieldsSchema(getFields()))(
   async (values) => values,
 )
 

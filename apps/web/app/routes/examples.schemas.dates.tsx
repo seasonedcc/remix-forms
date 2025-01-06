@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
 
@@ -20,7 +20,7 @@ const code = `const schema = z.object({
   default: z.date().default(new Date()),
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })
@@ -38,7 +38,7 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({ request, schema, mutation })

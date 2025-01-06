@@ -5,7 +5,7 @@ import { performMutation } from 'remix-forms'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
-import { makeDomainFunction } from 'domain-functions'
+import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 
 const title = 'Custom response'
@@ -21,7 +21,7 @@ const schema = z.object({
   email: z.string().min(1).email(),
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) => {
   const result = await performMutation({ request, schema, mutation })
@@ -42,7 +42,7 @@ export const loader: LoaderFunction = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
-const mutation = makeDomainFunction(schema)(async (values) => values)
+const mutation = applySchema(schema)(async (values) => values)
 
 export const action: ActionFunction = async ({ request }) => {
   const result = await performMutation({ request, schema, mutation })
