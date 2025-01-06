@@ -1,4 +1,3 @@
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import * as React from 'react'
@@ -7,11 +6,12 @@ import { z } from 'zod'
 import { cx, metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Form from '~/ui/form'
+import { Route } from './+types/use-field'
 
 const title = 'useField'
 const description = `In this example, we use the useField hook to display error, dirty and required indicators in custom components.`
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().email(),
@@ -43,13 +43,13 @@ const schema = z.object({
   email: z.string().email(),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
 const mutation = applySchema(schema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 const Input = React.forwardRef<

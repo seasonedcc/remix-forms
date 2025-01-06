@@ -1,21 +1,19 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
 import { InputError, applySchema } from 'composable-functions'
 import Form from '~/ui/form'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/09'
 
 const title = 'Custom layout'
 const description = "Finally, let's make the form look exactly as before."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const code = `import { ActionFunction } from 'react-router'
-import { z } from 'zod'
+const code = `import { z } from 'zod'
 import { InputError, applySchema } from 'composable-functions'
-// Learn how to create these files on "Get Started" 👇🏽
 import { formAction } from 'remix-forms'
 import { Form } from '~/form'
 
@@ -40,7 +38,7 @@ const makeReservation = applySchema(reservationSchema)(
   },
 )
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: reservationSchema,
@@ -72,7 +70,7 @@ export default function Component() {
   )
 }`
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -95,7 +93,7 @@ const makeReservation = applySchema(reservationSchema)(async (values) => {
   console.log(values)
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: reservationSchema,

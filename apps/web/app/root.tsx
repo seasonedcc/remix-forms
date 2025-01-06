@@ -6,7 +6,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useMatches,
 } from 'react-router'
 import 'highlight.js/styles/a11y-dark.css'
 import colors from 'tailwindcss/colors'
@@ -16,14 +15,14 @@ import ConfTopBar from './ui/conf/top-bar'
 import ExternalLink from './ui/external-link'
 import { GlobalLoading } from './ui/global-loading'
 import TopBar from './ui/top-bar'
+import { Route } from './+types/root'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'icon', href: favicon, type: 'image/png' }]
 }
 
-export default function App() {
-  const matches = useMatches()
-  const conf = matches.find((match) => match.pathname.startsWith('/conf'))
+export default function App({ matches }: Route.ComponentProps) {
+  const conf = matches.find((match) => match?.pathname.startsWith('/conf'))
 
   return (
     <html lang="en" className="h-full overflow-x-hidden">

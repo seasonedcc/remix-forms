@@ -1,5 +1,4 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -13,15 +12,16 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
+import { Route } from './+types/07'
 
 const title = 'Focus on error'
 const description =
   "Now let's focus on the first field with error. react-hook-form already does that for client-side errors, but we still might get additional errors from the server."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { Form } from 'react-router'
-import { ActionFunction, redirect } from 'react-router'
+import { redirect } from 'react-router'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
@@ -52,9 +52,7 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
@@ -83,7 +81,7 @@ function Error(props: JSX.IntrinsicElements['div']) {
 }
 
 function ServerError({ name }: { name: string }) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
@@ -101,14 +99,14 @@ function FieldError({ name, errors }: { name: string; errors: any }) {
   return <ServerError name={name} />
 }
 
-export default function Component() {
+export default function Component({ actionData }: Route.ComponentProps) {
   const resolver = zodResolver(reservationSchema)
   const { register, handleSubmit, formState, setFocus } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
   const navigation = useNavigation()
   const submitting = Boolean(navigation.formAction)
-  const serverErrors = useActionData<ActionData>()?.errors
+  const serverErrors = actionData?.errors
 
   function serverErrorFor(name: string) {
     return serverErrors?.find(({ path }) => path[0] === name)?.message
@@ -259,7 +257,7 @@ export default function Component() {
   )
 }`
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -283,9 +281,7 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
@@ -314,7 +310,7 @@ function Error(props: JSX.IntrinsicElements['div']) {
 }
 
 function ServerError({ name }: { name: string }) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
@@ -337,14 +333,14 @@ export const handle = {
   next: '08',
 }
 
-export default function Component() {
+export default function Component({ actionData }: Route.ComponentProps) {
   const resolver = zodResolver(reservationSchema)
   const { register, handleSubmit, formState, setFocus } = useForm({ resolver })
   const { errors } = formState
   const submit = useSubmit()
   const navigation = useNavigation()
   const submitting = Boolean(navigation.formAction)
-  const serverErrors = useActionData<ActionData>()?.errors
+  const serverErrors = actionData?.errors
 
   function serverErrorFor(name: string) {
     return serverErrors?.find(({ path }) => path[0] === name)?.message

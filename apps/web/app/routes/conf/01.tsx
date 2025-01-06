@@ -1,5 +1,4 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
@@ -9,15 +8,16 @@ import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
 import { Form } from 'react-router'
+import { Route } from './+types/01'
 
 const title = 'Quick and dirty'
 const description =
   "First, we'll create a barebones prototype without any validations."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { Form } from 'react-router'
-import { ActionFunction, redirect } from 'react-router'
+import { redirect } from 'react-router'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
@@ -29,7 +29,7 @@ async function makeReservation(values: Record<string, FormDataEntryValue>) {
   console.log(values)
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const values = Object.fromEntries(await request.formData())
   await makeReservation(values)
   return redirect('success/01')
@@ -80,7 +80,7 @@ export default function Component() {
 }
 `
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -89,7 +89,7 @@ async function makeReservation(values: Record<string, FormDataEntryValue>) {
   console.log(values)
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const values = Object.fromEntries(await request.formData())
   await makeReservation(values)
   return redirect('/conf/success/01')

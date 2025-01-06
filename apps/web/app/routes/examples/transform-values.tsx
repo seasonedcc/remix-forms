@@ -1,17 +1,17 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/transform-values'
 
 const title = 'Transform values'
 const description =
   'In this example, we use different schemas for the form and the mutation, transforming the form values before calling the mutation.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const formSchema = z.object({
   firstName: z.string().min(1),
@@ -24,7 +24,7 @@ const mutationSchema = formSchema.extend({
 
 const mutation = applySchema(mutationSchema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: formSchema,
@@ -43,13 +43,13 @@ const mutationSchema = formSchema.extend({
   country: z.enum(['BR', 'US']),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
 const mutation = applySchema(mutationSchema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: formSchema,

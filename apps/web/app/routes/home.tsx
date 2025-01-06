@@ -6,8 +6,6 @@ import {
   ScaleIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/solid'
-import type { ActionFunction, MetaFunction } from 'react-router'
-import { useLoaderData } from 'react-router'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
@@ -18,18 +16,17 @@ import Feature from '~/ui/feature'
 import Form from '~/ui/form'
 import Heading from '~/ui/heading'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/home'
 
 const title = 'The full-stack form library for Remix and React Router'
 const description =
   'E2E type-safe, with client + server validations, a11y, pending UI, and focus management'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { z } from 'zod'
 import { applySchema } from 'composable-functions'
-// Learn how to create these files on "Get Started" 👇🏽
-import { formAction } from 'remix-forms'
-import { Form } from '~/form'
+import { formAction, SchemaForm } from 'remix-forms'
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -39,7 +36,7 @@ const schema = z.object({
 
 const mutation = applySchema(schema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema,
@@ -47,7 +44,7 @@ export const action: ActionFunction = async ({ request }) =>
     successPath: '/success',
   })
 
-export default () => <Form schema={schema} />`
+export default () => <SchemaForm schema={schema} />`
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -61,7 +58,7 @@ export const loader = () => ({
 
 const mutation = applySchema(schema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema,
@@ -69,8 +66,8 @@ export const action: ActionFunction = async ({ request }) =>
     successPath: '/success',
   })
 
-export default function Component() {
-  const { code } = useLoaderData<typeof loader>()
+export default function Component({ loaderData }: Route.ComponentProps) {
+  const { code } = loaderData
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-16">

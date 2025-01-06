@@ -1,17 +1,16 @@
-import { Link, Outlet, type UIMatch, useMatches } from 'react-router'
+import { Link, Outlet } from 'react-router'
 import ExternalLink from '~/ui/external-link'
 import SidebarLayout from '~/ui/sidebar-layout'
 import SecondaryButtonLink from '~/ui/secondary-button-link'
 import TopBar from '~/ui/conf/top-bar'
+import { Route } from '../layouts/+types/conf'
 
-export default function Component() {
-  const matches = useMatches() as UIMatch<
-    {},
-    { previous: string; next: string }
-  >[]
-
+export default function Component({ matches }: Route.ComponentProps) {
   const { previous, next } =
-    matches.filter((match) => match.handle)[0]?.handle || {}
+    (matches.filter((match) => match?.handle)[0]?.handle as {
+      previous?: string
+      next?: string
+    }) || {}
 
   return (
     <div className="relative isolate flex grow flex-col">

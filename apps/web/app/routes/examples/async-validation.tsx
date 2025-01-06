@@ -1,5 +1,4 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
@@ -7,12 +6,13 @@ import { InputError, applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { useFetcher } from 'react-router'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/async-validation'
 
 const title = 'Async validation'
 const description =
   'In this example, we add an async username avaliability check to our form. We also validate it on the server, of course 🙂'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { InputError } from 'composable-functions'
 
@@ -23,7 +23,7 @@ const schema = z.object({
 
 const takenUsernames = ['foo', 'bar']
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader = ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url)
   const username = url.searchParams.get('username')
 
@@ -42,7 +42,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {
@@ -87,7 +87,7 @@ const schema = z.object({
 
 const takenUsernames = ['foo', 'bar']
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader = ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url)
   const username = url.searchParams.get('username')
 
@@ -111,7 +111,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {

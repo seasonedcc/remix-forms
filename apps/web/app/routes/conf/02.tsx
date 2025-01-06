@@ -1,6 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
-import { redirect } from 'react-router'
+import { redirect, useActionData } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -8,17 +7,18 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData } from 'react-router'
+import { Form } from 'react-router'
 import { z } from 'zod'
+import { Route } from './+types/02'
 
 const title = 'Server validations'
 const description =
   "Now let's add server-side validations. To make our lives easier, we'll use zod for that. (It won't work yet 🤫)"
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { Form } from 'react-router'
-import { ActionFunction, redirect } from 'react-router'
+import { redirect } from 'react-router'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
@@ -42,9 +42,7 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
@@ -57,7 +55,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 function FieldError({ name }: { name: string }) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
@@ -117,7 +115,7 @@ export default function Component() {
 }
 `
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -136,9 +134,7 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
@@ -151,7 +147,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 function FieldError({ name }: { name: string }) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null

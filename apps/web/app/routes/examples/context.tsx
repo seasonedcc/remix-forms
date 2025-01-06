@@ -1,5 +1,4 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
@@ -7,12 +6,13 @@ import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/context'
 
 const title = 'Context'
 const description =
   "In this example, we use Composable Function's context to authorize a specific origin."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({ email: z.string().min(1).email() })
 
@@ -25,7 +25,7 @@ const mutation = applySchema(
   contextSchema,
 )(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   return formAction({
     request,
     schema,
@@ -42,13 +42,13 @@ const contextSchema = z.object({
   customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
 const mutation = applySchema(schema, contextSchema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   return formAction({
     request,
     schema,

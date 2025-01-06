@@ -1,17 +1,17 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { InputError, applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/field-error'
 
 const title = 'Field error'
 const description =
   'In this example, we return a server-side field error if the email is already taken.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { InputError } from 'composable-functions'
 
@@ -30,7 +30,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default () => <Form schema={schema} />`
@@ -40,7 +40,7 @@ const schema = z.object({
   password: z.string().min(1),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -54,7 +54,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {

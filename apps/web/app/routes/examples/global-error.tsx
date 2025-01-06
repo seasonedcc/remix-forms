@@ -1,17 +1,17 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/global-error'
 
 const title = 'Global error'
 const description =
   'In this example, we return a global error if the password is incorrect.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   email: z.string().min(1).email(),
@@ -26,7 +26,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default () => (
@@ -47,7 +47,7 @@ const schema = z.object({
   password: z.string().min(1),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -59,7 +59,7 @@ const mutation = applySchema(schema)(async (values) => {
   return values
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {

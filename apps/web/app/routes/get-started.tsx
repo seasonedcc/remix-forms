@@ -1,5 +1,3 @@
-import type { MetaFunction } from 'react-router'
-import { useLoaderData } from 'react-router'
 import hljs from 'highlight.js/lib/common'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
@@ -8,19 +6,12 @@ import ExternalLink from '~/ui/external-link'
 import Heading from '~/ui/heading'
 import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
+import { Route } from './+types/get-started'
 
 const title = 'Get Started'
 const description = 'The full-stack form library for Remix and React Router'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
-
-const createFormCode = `import { createForm } from 'remix-forms'
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router'
-
-const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
-
-export { Form }
-`
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
 import { SchemaForm } from 'remix-forms'
@@ -61,9 +52,9 @@ const mutation = applySchema(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from 'remix-forms' /* path to your custom formAction */
+const actionCode = `import { formAction } from 'remix-forms'
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema,
@@ -127,8 +118,6 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader = () => ({
-  createFormCode: hljs.highlight(createFormCode, { language: 'ts' })
-    .value as string,
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
@@ -143,7 +132,7 @@ export const loader = () => ({
     .value as string,
 })
 
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
   const {
     stylesCode,
     schemaCode,
@@ -153,7 +142,7 @@ export default function Component() {
     customFormCode,
     customFieldCode,
     customInputCode,
-  } = useLoaderData<typeof loader>()
+  } = loaderData
 
   return (
     <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">

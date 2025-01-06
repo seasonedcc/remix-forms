@@ -1,17 +1,17 @@
 import hljs from 'highlight.js/lib/common'
-import type { ActionFunction, LoaderFunction, MetaFunction } from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/field-with-radio-children'
 
 const title = 'Field with children'
 const description =
   'In this example, we pass a children function to gain control over the Field UI.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const schema = z.object({
   csrfToken: z.string().min(1),
@@ -21,13 +21,13 @@ const schema = z.object({
   message: z.string().optional(),
 })
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight('', { language: 'ts' }).value,
 })
 
 const mutation = applySchema(schema)(async (values) => values)
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {

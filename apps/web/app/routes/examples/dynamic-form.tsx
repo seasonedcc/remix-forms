@@ -1,22 +1,17 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from 'react-router'
 import { z } from 'zod'
 import Form from '~/ui/form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
-import { useLoaderData } from 'react-router'
 import { formAction } from 'remix-forms'
+import { Route } from './+types/dynamic-form'
 
 const title = 'Dynamic form'
 const description =
   'In this example, we render a dynamic form with the fields coming from the backend.'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `type FieldType = 'string' | 'email' | 'int'
 type Field = { name: string; type: FieldType }
@@ -52,17 +47,15 @@ const mutation = applySchema(fieldsSchema(getFields()))(
   async (values) => values,
 )
 
-export function loader(_args: LoaderFunctionArgs) {
+export function loader() {
   return { fields: getFields() }
 }
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema: fieldsSchema(getFields()), mutation })
 
-export default () => {
-  const { fields } = useLoaderData<typeof loader>()
-
-  return <Form schema={fieldsSchema(fields)} />
+export default ({ loaderData }: Route.ComponentProps) => {
+  return <Form schema={fieldsSchema(loaderData.fields)} />
 }`
 
 type FieldType = 'string' | 'email' | 'int'
@@ -98,18 +91,18 @@ const mutation = applySchema(fieldsSchema(getFields()))(
   async (values) => values,
 )
 
-export function loader(_args: LoaderFunctionArgs) {
+export function loader() {
   return {
     code: hljs.highlight(code, { language: 'ts' }).value,
     fields: getFields(),
   }
 }
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema: fieldsSchema(getFields()), mutation })
 
-export default function Component() {
-  const { fields } = useLoaderData<typeof loader>()
+export default function Component({ loaderData }: Route.ComponentProps) {
+  const { fields } = loaderData
 
   return (
     <Example title={title} description={description}>
