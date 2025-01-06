@@ -14,34 +14,12 @@ const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const createFormCode = `import { createForm } from 'remix-forms'
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router'
-
-const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
-
-export { Form }
-`
-
-const createFormActionCode = `import { createFormAction } from 'remix-forms'
-import { redirect } from 'react-router'
-
-const formAction = createFormAction({ redirect })
-
-export { formAction }
-`
-
 const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
-import { createForm } from 'remix-forms'
-// For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
-// For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
-
-const RemixForm = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
+import { SchemaForm } from 'remix-forms'
 
 function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
   return (
-    <RemixForm<Schema>
+    <SchemaForm<Schema>
       className={/* your form classes */}
       fieldComponent={/* your custom Field */}
       labelComponent={/* your custom Label */}
@@ -75,7 +53,7 @@ const mutation = makeDomainFunction(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/form-action.server' /* path to your custom formAction */
+const actionCode = `import { formAction } from 'remix-forms' /* path to your custom formAction */
 
 export const action: ActionFunction = async ({ request }) =>
   formAction({
@@ -141,10 +119,6 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader = () => ({
-  createFormCode: hljs.highlight(createFormCode, { language: 'ts' })
-    .value as string,
-  createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
-    .value as string,
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
@@ -161,8 +135,6 @@ export const loader = () => ({
 
 export default function Component() {
   const {
-    createFormCode,
-    createFormActionCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -176,56 +148,12 @@ export default function Component() {
   return (
     <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
-      <SubHeading>Remix or React Router 6.4?</SubHeading>
-      <p>
-        You can use Remix Forms with{' '}
-        <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
-        <ExternalLink href="https://reactrouter.com/">
-          React Router 6.4
-        </ExternalLink>
-        , or even your custom framework. As long as you pass it a <em>Form</em>{' '}
-        component and a couple of functions and hooks, it will work anywhere
-        React runs.
-      </p>
       <SubHeading>Installation</SubHeading>
       <p>
-        Assuming you already have <em>React</em> and{' '}
-        <em>Remix or React Router</em> installed, you'll need the following
-        packages:
+        Assuming you already have <em>React</em> and <em>React Router</em>{' '}
+        installed, you'll need the following packages:
       </p>
       <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Create your formAction function</SubHeading>
-      <p>
-        First, let's create a <em>formAction</em> function. This will be used in
-        your actions.
-      </p>
-      <p>
-        Somewhere within your <em>app/</em>, create a file named{' '}
-        <em>
-          <strong>form-action.server.ts</strong>
-        </em>
-        .
-      </p>
-      <Pre>/app/form-action.server.ts</Pre>
-      <p>
-        <strong>Important</strong>: do not forget to include the suffix{' '}
-        <em>
-          <strong>.server</strong>
-        </em>{' '}
-        in the file name otherwise server-side code will leak to the browser,
-        triggering a confusing error.
-      </p>
-      <Code>{createFormActionCode}</Code>
-      <SubHeading>Create your Form component</SubHeading>
-      <p>
-        Next, let's create your project's custom <em>Form</em> component:
-      </p>
-      <p>
-        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
-        file and include the following code:
-      </p>
-      <Pre>/app/form.ts</Pre>
-      <Code>{createFormCode}</Code>
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation

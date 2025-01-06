@@ -1,7 +1,7 @@
 import * as React from 'react'
 import type { SomeZodObject, z } from 'zod'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { Field } from './createForm'
+import type { Field } from './schemaForm'
 import { findElement, mapChildren, findParent } from './childrenTraversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'

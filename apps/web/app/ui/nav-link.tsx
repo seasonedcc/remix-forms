@@ -1,10 +1,10 @@
 import type { NavLinkProps } from 'react-router'
-import { NavLink as RemixNavLink } from 'react-router'
+import { NavLink as RRNavLink } from 'react-router'
 import { cx } from '~/helpers'
 
 export default function NavLink({ className, ...props }: NavLinkProps) {
   return (
-    <RemixNavLink
+    <RRNavLink
       className={({ isActive }) =>
         cx(
           isActive ? 'text-white' : 'text-gray-100 hover:text-white',

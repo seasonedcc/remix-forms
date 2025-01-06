@@ -4,6 +4,7 @@ import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+import { redirect } from 'react-router'
 
 type NestedErrors<SchemaType> = {
   [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
@@ -142,52 +143,43 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-type RedirectFunction = (url: string, init?: number | ResponseInit) => Redirect
-type Redirect = Response & { [redirectSymbol]: never }
-declare const redirectSymbol: unique symbol
+type Redirect = ReturnType<typeof redirect>
+async function formAction<Schema extends FormSchema, D extends unknown>({
+  request,
+  schema,
+  mutation,
+  environment,
+  transformValues,
+  beforeAction,
+  beforeSuccess,
+  successPath,
+}: FormActionProps<Schema, D>): Promise<D | Redirect> {
+  if (beforeAction) {
+    const beforeActionRedirect = await beforeAction(request)
+    if (beforeActionRedirect) return beforeActionRedirect
+  }
 
-function createFormAction({ redirect }: { redirect: RedirectFunction }) {
-  async function formAction<Schema extends FormSchema, D extends unknown>({
+  const result = await performMutation({
     request,
     schema,
     mutation,
     environment,
     transformValues,
-    beforeAction,
-    beforeSuccess,
-    successPath,
-  }: FormActionProps<Schema, D>): Promise<Redirect | D> {
-    if (beforeAction) {
-      const beforeActionRedirect = await beforeAction(request)
-      if (beforeActionRedirect) return beforeActionRedirect
+  })
+
+  if (result.success) {
+    if (beforeSuccess) {
+      const beforeSuccessRedirect = await beforeSuccess(request)
+      if (beforeSuccessRedirect) return beforeSuccessRedirect
     }
 
-    const result = await performMutation({
-      request,
-      schema,
-      mutation,
-      environment,
-      transformValues,
-    })
+    const path =
+      typeof successPath === 'function' ? successPath(result.data) : successPath
 
-    if (result.success) {
-      if (beforeSuccess) {
-        const beforeSuccessRedirect = await beforeSuccess(request)
-        if (beforeSuccessRedirect) return beforeSuccessRedirect
-      }
-
-      const path =
-        typeof successPath === 'function'
-          ? successPath(result.data)
-          : successPath
-
-      return path ? redirect(path) : result.data
-    } else {
-      return { errors: result.errors, values: result.values } as D
-    }
+    return path ? redirect(path) : result.data
+  } else {
+    return { errors: result.errors, values: result.values } as D
   }
-
-  return formAction
 }
 
 export type {
@@ -199,4 +191,4 @@ export type {
   FormActionProps,
 }
 
-export { performMutation, createFormAction }
+export { performMutation, formAction }

@@ -17,14 +17,14 @@ const description =
 
 export const meta: MetaFunction = () => metaTags({ title, description })
 
-const code = `import { Form } from '@remix-run/react'
-import { ActionFunction, redirect } from '@remix-run/node'
+const code = `import { Form } from 'react-router'
+import { ActionFunction, redirect } from 'react-router'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
 import Button from '~/ui/button'
-import { useActionData } from '@remix-run/react'
+import { useActionData } from 'react-router'
 import { z } from 'zod'
 
 const reservationSchema = z.object({
