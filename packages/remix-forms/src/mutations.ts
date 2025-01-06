@@ -4,7 +4,7 @@ import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
-import { redirect, RedirectFunction } from 'react-router'
+import { redirect } from 'react-router'
 
 type NestedErrors<SchemaType> = {
   [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
