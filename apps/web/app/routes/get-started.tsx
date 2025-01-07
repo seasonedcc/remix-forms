@@ -118,18 +118,14 @@ const customInputCode = `<Form schema={schema}>
 </Form>`
 
 export const loader = () => ({
-  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value as string,
-  schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value as string,
-  mutationCode: hljs.highlight(mutationCode, { language: 'ts' })
-    .value as string,
-  actionCode: hljs.highlight(actionCode, { language: 'ts' }).value as string,
-  basicCode: hljs.highlight(basicCode, { language: 'ts' }).value as string,
-  customFormCode: hljs.highlight(customFormCode, { language: 'ts' })
-    .value as string,
-  customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' })
-    .value as string,
-  customInputCode: hljs.highlight(customInputCode, { language: 'ts' })
-    .value as string,
+  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
+  schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
+  mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
+  actionCode: hljs.highlight(actionCode, { language: 'ts' }).value,
+  basicCode: hljs.highlight(basicCode, { language: 'ts' }).value,
+  customFormCode: hljs.highlight(customFormCode, { language: 'ts' }).value,
+  customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' }).value,
+  customInputCode: hljs.highlight(customInputCode, { language: 'ts' }).value,
 })
 
 export default function Component({ loaderData }: Route.ComponentProps) {
@@ -164,18 +160,18 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <Code>{schemaCode}</Code>
       <SubHeading>Create your mutation</SubHeading>
       <p>
-        Create a mutation function using{' '}
+        Create a mutation function wrapped by{' '}
         <ExternalLink href="https://github.com/seasonedcc/composable-functions">
           Composable Functions
         </ExternalLink>
-        &apos; <em>applySchema</em>. It&apos;s a function that receives the
-        values from the form and performs the necessary mutations, such as
-        storing data on a database.
+        &apos; <em>applySchema</em>. Remix Forms will parse the request&apos;s{' '}
+        <em>formData</em> and send it to the mutation.
       </p>
       <p>
-        Composable Functions will parse the request&apos;s <em>formData</em> and
-        perform the mutation only if everything is valid. If something goes bad,
-        it will return list of error for us.
+        <em>applySchema</em> will ensure the mutation only performs if the
+        arguments are valid.
+        <br />
+        If something goes bad, it will return a list of errors for us.
       </p>
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
