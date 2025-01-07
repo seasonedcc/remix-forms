@@ -101,5 +101,5 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Submit form
   await button.click()
   await page.reload()
-  await expect(page).toHaveURL('/success')
+  await expect(page).toHaveURL('/success/')
 })

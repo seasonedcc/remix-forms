@@ -27,27 +27,18 @@ test('With JS enabled', async ({ example }) => {
     'String must contain at least 1 character(s)',
   )
 
-  // Type in the username
-  await Promise.all([
-    username.input.type('fo'),
-    page.waitForResponse((response) =>
-      response.url().includes('async-validation.data?username=fo'),
-    ),
-  ])
-
   await expect(button).toBeEnabled()
 
-  await Promise.all([
-    username.input.type('o'),
-    page.waitForResponse((response) =>
-      response.url().includes('async-validation.data?username=foo'),
-    ),
-  ])
+  // Type in the username
+  await username.input.pressSequentially('foo')
+  await page.waitForResponse((response) =>
+    response.url().includes('async-validation.data?username=foo'),
+  )
 
-  await expect(button).toBeDisabled()
   await expect(page.locator('[name=username] + div')).toHaveText(
     'Already taken',
   )
+  await expect(button).toBeDisabled()
 
   // Make first field be valid, focus goes to the second field
   await username.input.fill('john')
