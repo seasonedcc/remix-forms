@@ -47,25 +47,6 @@ export default function Component({ matches }: Route.ComponentProps) {
           </SidebarLayout.NavLink>
         </SidebarLayout.Nav>
         <SidebarLayout.Content>
-          <TopBar>
-            <div className="hidden flex-1 lg:block">
-              This is the{' '}
-              <Link to={'/conf'} className="underline">
-                interactive counterpart
-              </Link>{' '}
-              to our talk at Remix Conf 2022.{' '}
-              <ExternalLink href="https://docs.google.com/presentation/d/1Mp961HsJD9qVElS5VD-szYJ9CkZhnVjJBwMfUahwwek/edit#slide=id.p">
-                Get the full slides
-              </ExternalLink>
-              .
-            </div>
-            <div className="flex-1 lg:hidden">
-              <ExternalLink href="https://docs.google.com/presentation/d/1Mp961HsJD9qVElS5VD-szYJ9CkZhnVjJBwMfUahwwek/edit#slide=id.p">
-                Get the full slides
-              </ExternalLink>
-              .
-            </div>
-          </TopBar>
           <div className="flex flex-col space-y-4 p-4 text-gray-200 sm:space-y-8 sm:p-8">
             <Outlet />
           </div>
@@ -89,4 +70,28 @@ export default function Component({ matches }: Route.ComponentProps) {
       </SidebarLayout>
     </div>
   )
+}
+
+export const handle = {
+  topBar: (
+    <TopBar>
+      <div className="hidden flex-1 lg:block">
+        This is the{' '}
+        <Link to={'/conf'} className="underline">
+          interactive counterpart
+        </Link>{' '}
+        to our talk at Remix Conf 2022.{' '}
+        <ExternalLink href="https://docs.google.com/presentation/d/1Mp961HsJD9qVElS5VD-szYJ9CkZhnVjJBwMfUahwwek/edit#slide=id.p">
+          Get the full slides
+        </ExternalLink>
+        .
+      </div>
+      <div className="flex-1 lg:hidden">
+        <ExternalLink href="https://docs.google.com/presentation/d/1Mp961HsJD9qVElS5VD-szYJ9CkZhnVjJBwMfUahwwek/edit#slide=id.p">
+          Get the full slides
+        </ExternalLink>
+        .
+      </div>
+    </TopBar>
+  ),
 }

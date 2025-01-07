@@ -1,4 +1,4 @@
-import type { LinksFunction } from 'react-router'
+import type { LinksFunction, UIMatch } from 'react-router'
 import {
   Link,
   Links,
@@ -22,7 +22,17 @@ export const links: LinksFunction = () => {
 }
 
 export default function App({ matches }: Route.ComponentProps) {
-  const conf = matches.find((match) => match?.pathname.startsWith('/conf'))
+  const match = matches.find(
+    (match) => match?.handle && 'topBar' in (match.handle as any),
+  ) as UIMatch<unknown, { topBar: React.ReactNode }>
+  const secondTopBar = match?.handle.topBar || (
+    <ConfTopBar>
+      <Link to={'/conf'} className="underline">
+        Check out our talk
+      </Link>{' '}
+      at Remix Conf!
+    </ConfTopBar>
+  )
 
   return (
     <html lang="en" className="h-full overflow-x-hidden">
@@ -36,14 +46,7 @@ export default function App({ matches }: Route.ComponentProps) {
       <body className="flex min-h-screen w-screen max-w-[100vw] flex-col overflow-y-auto bg-gradient-to-r from-gray-900 to-gray-600 antialiased overflow-x-hidden scrollbar-thin scrollbar-track-gray-500 scrollbar-thumb-gray-700">
         <GlobalLoading />
         <TopBar />
-        {!conf && (
-          <ConfTopBar>
-            <Link to={'/conf'} className="underline">
-              Check out our talk
-            </Link>{' '}
-            at Remix Conf!
-          </ConfTopBar>
-        )}
+        {secondTopBar}
         <main className="flex flex-1 flex-col">
           <Outlet />
         </main>
