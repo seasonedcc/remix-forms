@@ -9,20 +9,15 @@
 
   sub,
   sup {
-    font-size: 60%;
-    line-height: 0;
-    position: relative;
-    vertical-align: baseline;
+    @apply font-[60%] leading-[0] relative align-baseline;
   }
 
   sup {
-    top: 0;
-    vertical-align: super;
+    @apply top-0 align-super;
   }
 
   sub {
-    bottom: 0;
-    vertical-align: sub;
+    @apply bottom-0 align-sub;
   }
   body {
     @apply text-base text-white;
