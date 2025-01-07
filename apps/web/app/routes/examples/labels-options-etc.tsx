@@ -5,7 +5,7 @@ import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/labels-and-options'
+import { Route } from './+types/labels-options-etc'
 
 const title = 'Labels and options'
 const description =
