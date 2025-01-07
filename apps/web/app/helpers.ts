@@ -34,4 +34,8 @@ function metaTags({
   ]
 }
 
-export { cx, metaTags, pageTitle }
+function times<T>(n: number, fn: (i: number) => T) {
+  return Array.from({ length: n }, (_, i) => fn(i + 1))
+}
+
+export { cx, metaTags, pageTitle, times }
