@@ -8,7 +8,11 @@ import {
   PopoverPanel,
 } from '@headlessui/react'
 import { cx } from '~/helpers'
-import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
+import {
+  Bars3BottomLeftIcon,
+  Bars3BottomRightIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 import UINavLink from '~/ui/nav-link'
 import type { NavLinkProps } from 'react-router'
 
@@ -103,7 +107,7 @@ function Closed({ type }: { type: SidebarType }) {
     <div className={cx('absolute inset-y-0 w-10 bg-pink-600 p-1 md:relative')}>
       <div className="relative h-full">
         <Button className="sticky top-0 inline-flex items-center justify-center rounded-md p-1 text-[#480803] hover:bg-pink-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-          <MenuAlt2Icon className="block h-6 w-6" />
+          <Bars3BottomLeftIcon className="block h-6 w-6" />
         </Button>
       </div>
     </div>
