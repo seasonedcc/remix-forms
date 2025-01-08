@@ -19,6 +19,7 @@
       "outputs": []
     },
     "dev": {
+      "persistent": true,
       "cache": false
     }
   }
