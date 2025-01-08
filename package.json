@@ -17,11 +17,11 @@
     "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^8.19.0",
-    "eslint": "^8.44.0",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.4.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "turbo": "^1.10.8",
     "typescript": "5.7.2"
   },
