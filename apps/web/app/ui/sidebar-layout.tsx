@@ -1,7 +1,18 @@
 import * as React from 'react'
-import { Disclosure, Popover } from '@headlessui/react'
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+} from '@headlessui/react'
 import { cx } from '~/helpers'
-import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
+import {
+  Bars3BottomLeftIcon,
+  Bars3BottomRightIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 import UINavLink from '~/ui/nav-link'
 import type { NavLinkProps } from 'react-router'
 
@@ -10,12 +21,12 @@ type SidebarType = 'disclosure' | 'popover'
 type NavProps = {
   type?: SidebarType
   close?: Function
-} & JSX.IntrinsicElements['nav']
+} & Omit<JSX.IntrinsicElements['nav'], 'ref'>
 
 function Nav({ children, type = 'disclosure', close, ...props }: NavProps) {
-  const Panel = type === 'disclosure' ? Disclosure.Panel : Popover.Panel
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
-  const Icon = type === 'disclosure' ? MenuAlt3Icon : XIcon
+  const Panel = type === 'disclosure' ? DisclosurePanel : PopoverPanel
+  const Button = type === 'disclosure' ? DisclosureButton : PopoverButton
+  const Icon = type === 'disclosure' ? Bars3BottomRightIcon : XMarkIcon
   const classes = type === 'disclosure' ? 'min-h-full' : 'absolute top-0'
 
   return (
@@ -90,13 +101,13 @@ function Content({ children, type, className, ...props }: ContentProps) {
 }
 
 function Closed({ type }: { type: SidebarType }) {
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
+  const Button = type === 'disclosure' ? DisclosureButton : PopoverButton
 
   return (
     <div className={cx('absolute inset-y-0 w-10 bg-pink-600 p-1 md:relative')}>
       <div className="relative h-full">
         <Button className="sticky top-0 inline-flex items-center justify-center rounded-md p-1 text-[#480803] hover:bg-pink-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-          <MenuAlt2Icon className="block h-6 w-6" />
+          <Bars3BottomLeftIcon className="block h-6 w-6" />
         </Button>
       </div>
     </div>
@@ -135,7 +146,7 @@ function SidebarRoot({
   children,
   className,
   ...props
-}: JSX.IntrinsicElements['div']) {
+}: Omit<JSX.IntrinsicElements['div'], 'ref'>) {
   return (
     <>
       <Disclosure

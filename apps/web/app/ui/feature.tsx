@@ -1,5 +1,12 @@
+import { RefAttributes, SVGProps } from 'react'
+
 type Props = {
-  icon: React.ComponentType<JSX.IntrinsicElements['svg']>
+  icon: React.ComponentType<
+    Omit<SVGProps<SVGSVGElement>, 'ref'> & {
+      title?: string | undefined
+      titleId?: string | undefined
+    } & RefAttributes<SVGSVGElement>
+  >
   title: string
   children: React.ReactNode
 }

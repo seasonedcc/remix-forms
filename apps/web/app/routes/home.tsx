@@ -1,11 +1,11 @@
 import {
   BeakerIcon,
-  ClipboardCheckIcon,
+  ClipboardDocumentCheckIcon,
   CloudIcon,
-  CursorClickIcon,
+  CursorArrowRaysIcon,
   ScaleIcon,
   ShieldCheckIcon,
-} from '@heroicons/react/solid'
+} from '@heroicons/react/20/solid'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
@@ -128,10 +128,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <Feature icon={CloudIcon} title="Server-side wiring">
             Perform secure server-side mutations with zero boilerplate.
           </Feature>
-          <Feature icon={ClipboardCheckIcon} title="Full-stack validation">
+          <Feature
+            icon={ClipboardDocumentCheckIcon}
+            title="Full-stack validation"
+          >
             Validate everything both on the client and the server.
           </Feature>
-          <Feature icon={CursorClickIcon} title="Focus management">
+          <Feature icon={CursorArrowRaysIcon} title="Focus management">
             Focus on the first field with error even for server-side failures.
           </Feature>
         </dl>
