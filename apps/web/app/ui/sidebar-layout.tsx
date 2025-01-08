@@ -1,5 +1,12 @@
 import * as React from 'react'
-import { Disclosure, Popover } from '@headlessui/react'
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+} from '@headlessui/react'
 import { cx } from '~/helpers'
 import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
 import UINavLink from '~/ui/nav-link'
@@ -10,12 +17,12 @@ type SidebarType = 'disclosure' | 'popover'
 type NavProps = {
   type?: SidebarType
   close?: Function
-} & JSX.IntrinsicElements['nav']
+} & Omit<JSX.IntrinsicElements['nav'], 'ref'>
 
 function Nav({ children, type = 'disclosure', close, ...props }: NavProps) {
-  const Panel = type === 'disclosure' ? Disclosure.Panel : Popover.Panel
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
-  const Icon = type === 'disclosure' ? MenuAlt3Icon : XIcon
+  const Panel = type === 'disclosure' ? DisclosurePanel : PopoverPanel
+  const Button = type === 'disclosure' ? DisclosureButton : PopoverButton
+  const Icon = type === 'disclosure' ? Bars3BottomRightIcon : XMarkIcon
   const classes = type === 'disclosure' ? 'min-h-full' : 'absolute top-0'
 
   return (
@@ -90,7 +97,7 @@ function Content({ children, type, className, ...props }: ContentProps) {
 }
 
 function Closed({ type }: { type: SidebarType }) {
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
+  const Button = type === 'disclosure' ? DisclosureButton : PopoverButton
 
   return (
     <div className={cx('absolute inset-y-0 w-10 bg-pink-600 p-1 md:relative')}>
@@ -135,7 +142,7 @@ function SidebarRoot({
   children,
   className,
   ...props
-}: JSX.IntrinsicElements['div']) {
+}: Omit<JSX.IntrinsicElements['div'], 'ref'>) {
   return (
     <>
       <Disclosure

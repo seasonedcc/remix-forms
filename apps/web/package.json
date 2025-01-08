@@ -16,8 +16,8 @@
     "test:ci": "playwright test"
   },
   "dependencies": {
-    "@headlessui/react": "~1.5.0",
     "@heroicons/react": "^1.0.6",
+    "@headlessui/react": "~2.2.0",
     "@hookform/resolvers": "3.10.0",
     "@react-router/node": "^7.1.1",
     "@react-router/serve": "^7.1.1",
