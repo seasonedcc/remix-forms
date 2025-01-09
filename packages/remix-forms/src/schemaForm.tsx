@@ -32,18 +32,13 @@ import { shapeInfo } from './shapeInfo'
 import type { ShapeInfo } from './shapeInfo'
 import { parseDate } from './prelude'
 import {
-  Form as DefaultComponent,
+  Form as ReactRouterForm,
   FetcherWithComponents,
-  HTMLFormMethod,
   useActionData,
   useNavigation,
   useSubmit,
-  type FormProps as RRFormProps,
+  type FormProps as ReactRouterFormProps,
 } from 'react-router'
-
-type FormComponent = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<RRFormProps> & React.RefAttributes<HTMLFormElement>
->
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -87,8 +82,7 @@ type OnTransition<Schema extends SomeZodObject> = (
 ) => void
 
 type FormProps<Schema extends FormSchema> = ComponentMappings & {
-  component?: FormComponent
-  method?: HTMLFormMethod
+  component?: typeof ReactRouterForm
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
@@ -118,7 +112,7 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
   children?: Children<ObjectFromSchema<Schema>>
   flushSync?: boolean
-} & Omit<RRFormProps, 'children'>
+} & Omit<ReactRouterFormProps, 'children'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
@@ -150,7 +144,7 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
 }
 
 function SchemaForm<Schema extends FormSchema>({
-  component = DefaultComponent,
+  component = ReactRouterForm,
   fetcher,
   mode = 'onSubmit',
   reValidateMode = 'onChange',
@@ -239,7 +233,7 @@ function SchemaForm<Schema extends FormSchema>({
       if (!formRef.current) return
 
       return submit(formRef.current, {
-        method: method as HTMLFormMethod,
+        method,
         replace: props.replace,
         preventScrollReset: props.preventScrollReset,
         navigate: props.navigate,
@@ -522,12 +516,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   return (
     <FormProvider {...form}>
-      <Component
-        ref={formRef}
-        method={method as HTMLFormMethod}
-        onSubmit={onSubmit}
-        {...props}
-      >
+      <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
         {beforeChildren}
         {customChildren ?? defaultChildren()}
       </Component>
