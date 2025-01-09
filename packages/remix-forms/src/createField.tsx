@@ -78,6 +78,7 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
 > & {
   name: keyof z.infer<Schema>
   type?: JSX.IntrinsicElements['input']['type']
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
   children?: Children<Schema>
 }
 
@@ -139,6 +140,7 @@ type SmartInputProps = {
   registerProps?: UseFormRegisterReturn
   className?: string
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
 }
 
 const FieldContext = React.createContext<
@@ -285,6 +287,7 @@ function createField<Schema extends SomeZodObject>({
         placeholder,
         hidden = false,
         children: childrenFn,
+        autoComplete,
         ...props
       },
       ref,
@@ -524,6 +527,7 @@ function createField<Schema extends SomeZodObject>({
           autoFocus={autoFocus}
           value={value}
           a11yProps={a11yProps}
+          autoComplete={autoComplete}
         />
       )
 
