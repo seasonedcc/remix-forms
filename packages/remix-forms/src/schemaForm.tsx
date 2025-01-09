@@ -81,7 +81,7 @@ type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type FormProps<Schema extends FormSchema> = ComponentMappings & {
+type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: typeof ReactRouterForm
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
@@ -183,7 +183,7 @@ function SchemaForm<Schema extends FormSchema>({
   values: valuesProp,
   flushSync,
   ...props
-}: FormProps<Schema>) {
+}: SchemaFormProps<Schema>) {
   type SchemaType = z.infer<Schema>
   const Component = fetcher?.Form ?? component
   const navigationSubmit = useSubmit()
@@ -524,5 +524,12 @@ function SchemaForm<Schema extends FormSchema>({
   )
 }
 
-export type { Field, RenderFieldProps, RenderField, FormProps, FormSchema }
+export type {
+  Field,
+  RenderFieldProps,
+  RenderField,
+  SchemaFormProps,
+  FormSchema,
+}
+
 export { SchemaForm }
