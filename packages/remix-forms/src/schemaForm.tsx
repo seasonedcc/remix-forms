@@ -33,39 +33,16 @@ import type { ShapeInfo } from './shapeInfo'
 import { parseDate } from './prelude'
 import {
   Form as DefaultComponent,
+  FetcherWithComponents,
+  HTMLFormMethod,
   useActionData,
   useNavigation,
   useSubmit,
+  type FormProps as RRFormProps,
 } from 'react-router'
 
-type LowerCaseFormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
-type UpperCaseFormMethod = Uppercase<LowerCaseFormMethod>
-type HTMLFormMethod = LowerCaseFormMethod | UpperCaseFormMethod
-
-type BaseFormProps = {
-  onSubmit?: React.FormEventHandler<HTMLFormElement>
-  replace?: boolean
-  preventScrollReset?: boolean
-  navigate?: boolean
-  fetcherKey?: string
-  unstable_flushSync?: boolean
-  children: React.ReactNode
-}
-
-type BaseFormPropsWithHTMLAttributes = Omit<
-  React.FormHTMLAttributes<HTMLFormElement>,
-  'method'
-> &
-  BaseFormProps
-
-type LegacyFormComponent = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<BaseFormProps & { method?: LowerCaseFormMethod }> &
-    React.RefAttributes<HTMLFormElement>
->
-
 type FormComponent = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<BaseFormProps & { method?: HTMLFormMethod }> &
-    React.RefAttributes<HTMLFormElement>
+  React.PropsWithoutRef<RRFormProps> & React.RefAttributes<HTMLFormElement>
 >
 
 type Field<SchemaType> = {
@@ -105,44 +82,14 @@ type Children<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
-type Transition = { state: 'idle' | 'loading' | 'submitting' }
-
 type OnTransition<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
-type LegacySubmitFunction = (
-  event: { target: any },
-  options?: { method: LowerCaseFormMethod },
-) => void
-
-type IntermediateSubmitFunction = (
-  event: { target: any },
-  options?: { method: HTMLFormMethod },
-) => void
-
-type SubmitFunction = (
-  event: { target: any },
-  options?: {
-    method: HTMLFormMethod
-    replace?: boolean
-    preventScrollReset?: boolean
-    navigate?: boolean
-    fetcherKey?: string
-    unstable_flushSync?: boolean
-  },
-) => void
-
-type FetcherWithComponents = Transition & {
-  data: any
-  Form: FormComponent | LegacyFormComponent
-  submit: SubmitFunction | IntermediateSubmitFunction | LegacySubmitFunction
-}
-
 type FormProps<Schema extends FormSchema> = ComponentMappings & {
-  component?: FormComponent | LegacyFormComponent
+  component?: FormComponent
   method?: HTMLFormMethod
-  fetcher?: FetcherWithComponents
+  fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
     ValidationMode,
@@ -170,7 +117,8 @@ type FormProps<Schema extends FormSchema> = ComponentMappings & {
   beforeChildren?: React.ReactNode
   onTransition?: OnTransition<ObjectFromSchema<Schema>>
   children?: Children<ObjectFromSchema<Schema>>
-} & Omit<BaseFormPropsWithHTMLAttributes, 'children'>
+  flushSync?: boolean
+} & Omit<RRFormProps, 'children'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
@@ -201,7 +149,7 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
   return value ?? ''
 }
 
-function Form<Schema extends FormSchema>({
+function SchemaForm<Schema extends FormSchema>({
   component = DefaultComponent,
   fetcher,
   mode = 'onSubmit',
@@ -239,7 +187,7 @@ function Form<Schema extends FormSchema>({
   autoFocus: autoFocusProp,
   errors: errorsProp,
   values: valuesProp,
-  unstable_flushSync,
+  flushSync,
   ...props
 }: FormProps<Schema>) {
   type SchemaType = z.infer<Schema>
@@ -291,12 +239,12 @@ function Form<Schema extends FormSchema>({
       if (!formRef.current) return
 
       return submit(formRef.current, {
-        method: method as LowerCaseFormMethod,
+        method: method as HTMLFormMethod,
         replace: props.replace,
         preventScrollReset: props.preventScrollReset,
         navigate: props.navigate,
         fetcherKey: props.fetcherKey,
-        unstable_flushSync,
+        flushSync,
       })
     })(event)
   }
@@ -576,7 +524,7 @@ function Form<Schema extends FormSchema>({
     <FormProvider {...form}>
       <Component
         ref={formRef}
-        method={method as LowerCaseFormMethod}
+        method={method as HTMLFormMethod}
         onSubmit={onSubmit}
         {...props}
       >
@@ -588,4 +536,4 @@ function Form<Schema extends FormSchema>({
 }
 
 export type { Field, RenderFieldProps, RenderField, FormProps, FormSchema }
-export { Form as SchemaForm }
+export { SchemaForm }

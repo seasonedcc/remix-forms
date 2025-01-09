@@ -1,4 +1,3 @@
-import * as React from 'react'
 import type { SomeZodObject } from 'zod'
 import type { RenderFieldProps } from './schemaForm'
 
