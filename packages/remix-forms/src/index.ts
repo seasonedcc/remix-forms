@@ -3,7 +3,7 @@ export { useField } from './createField'
 export { formAction, performMutation } from './mutations'
 
 export type {
-  FormProps,
+  SchemaFormProps,
   RenderFieldProps,
   RenderField,
   FormSchema,

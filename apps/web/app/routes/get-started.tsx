@@ -13,10 +13,10 @@ const description = 'The full-stack form library for Remix and React Router'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
+const stylesCode = `import type { SchemaFormProps, FormSchema } from 'remix-forms'
 import { SchemaForm } from 'remix-forms'
 
-function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
+function Form<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <SchemaForm<Schema>
       className={/* your form classes */}

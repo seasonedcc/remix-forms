@@ -1,4 +1,4 @@
-import { SchemaForm, type FormProps, type FormSchema } from 'remix-forms'
+import { SchemaForm, type SchemaFormProps, type FormSchema } from 'remix-forms'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -15,7 +15,7 @@ import RadioGroup from './radio-group'
 import TextArea from './text-area'
 
 export default function Form<Schema extends FormSchema>(
-  props: FormProps<Schema>,
+  props: SchemaFormProps<Schema>,
 ) {
   return (
     <SchemaForm
