@@ -9,4 +9,4 @@ export type {
   FormSchema,
 } from './schemaForm'
 
-export type { FormActionProps, Callback, PerformMutation } from './mutations'
+export type { FormActionProps, MutationResult } from './mutations'

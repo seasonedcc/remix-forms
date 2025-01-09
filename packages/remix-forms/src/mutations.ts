@@ -75,11 +75,9 @@ type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-type PerformMutation<SchemaType, D extends unknown> =
+type MutationResult<SchemaType, D extends unknown> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
-
-type Callback = (request: Request) => Promise<Redirect | void>
 
 type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
@@ -89,12 +87,13 @@ type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   transformValues?: (
     values: FormValues<z.infer<Schema>>,
   ) => Record<string, unknown>
+  transformResult?: (
+    result: MutationResult<Schema, D>,
+  ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
 }
 
 type FormActionProps<Schema extends FormSchema, D extends unknown> = {
-  beforeAction?: Callback
-  beforeSuccess?: Callback
-  successPath?: string | ((data: D) => string)
+  successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
 
 async function getFormValues<Schema extends FormSchema>(
@@ -121,7 +120,7 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   context,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<
-  PerformMutation<z.infer<Schema>, D>
+  MutationResult<z.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema)
   const result = await mutation(transformValues(values), context)
@@ -145,37 +144,28 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
 }
 
 type Redirect = ReturnType<typeof redirect>
+
 async function formAction<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
   context,
-  transformValues,
-  beforeAction,
-  beforeSuccess,
   successPath,
+  ...performMutationOptions
 }: FormActionProps<Schema, D>): Promise<D | Redirect> {
-  if (beforeAction) {
-    const beforeActionRedirect = await beforeAction(request)
-    if (beforeActionRedirect) return beforeActionRedirect
-  }
-
   const result = await performMutation({
     request,
     schema,
     mutation,
     context,
-    transformValues,
+    ...performMutationOptions,
   })
 
   if (result.success) {
-    if (beforeSuccess) {
-      const beforeSuccessRedirect = await beforeSuccess(request)
-      if (beforeSuccessRedirect) return beforeSuccessRedirect
-    }
-
     const path =
-      typeof successPath === 'function' ? successPath(result.data) : successPath
+      typeof successPath === 'function'
+        ? await successPath(result.data)
+        : successPath
 
     return path ? redirect(path) : result.data
   } else {
@@ -186,8 +176,7 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
 export type {
   FormValues,
   FormErrors,
-  PerformMutation,
-  Callback,
+  MutationResult,
   PerformMutationProps,
   FormActionProps,
 }
