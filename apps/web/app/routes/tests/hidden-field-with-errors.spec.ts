@@ -43,6 +43,6 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   )
 
   await example.expectGlobalError(
-    'Csrf Token: String must contain at least 1 character(s)',
+    'Some prop errorCsrf Token: String must contain at least 1 character(s)',
   )
 })
