@@ -150,15 +150,15 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
   schema,
   mutation,
   context,
-  transformValues,
   successPath,
+  ...performMutationOptions
 }: FormActionProps<Schema, D>): Promise<D | Redirect> {
   const result = await performMutation({
     request,
     schema,
     mutation,
     context,
-    transformValues,
+    ...performMutationOptions,
   })
 
   if (result.success) {
