@@ -1,11 +1,9 @@
-import type { inputFromForm } from 'composable-functions'
+import type { QueryStringRecord } from 'composable-functions'
 import type { ZodTypeAny } from 'zod'
 import { shapeInfo } from './shapeInfo'
 
-type ParsedQs = Awaited<ReturnType<typeof inputFromForm>>
-type QsValue = ParsedQs[keyof ParsedQs]
-
-type Value = FormDataEntryValue | QsValue | string[] | null | undefined
+type QsValue = QueryStringRecord[keyof QueryStringRecord]
+type Value = FormDataEntryValue | QsValue | null
 
 function makeCoercion<T>(coercion: (value: Value) => T, emptyValue: unknown) {
   return ({
