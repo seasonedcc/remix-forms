@@ -231,8 +231,10 @@ export default function Component() {
       <p>
         Compose a zod schema that will be used in your action, mutation
         function, form generation, server-side validation, and client-side
-        validation.
+        validation. You can either do this in a route where you'll be submitting
+        a form or somewhere in your app directory of your choosing, like:
       </p>
+      <Pre>/app/schemas/schemaName.ts</Pre>
       <Code>{schemaCode}</Code>
       <SubHeading>Create your mutation</SubHeading>
       <p>
@@ -247,10 +249,22 @@ export default function Component() {
       <p>
         Domain Functions will parse the request&apos;s <em>formData</em> and
         perform the mutation only if everything is valid. If something goes bad,
-        it will return structured error messages for us.
+        it will return structured error messages for us. We typically use
+        mutations in our actions, which we'll set up in the next step. You don't
+        want your mutation to be sent to the client since it will usually have
+        server side code, so you can choose to put them in a separate file like
+      </p>
+      <Pre>/app/domain/some-domain.ts</Pre>
+      <p>
+        and import the domain for use in your action, or write your mutation
+        inline in the <em>formAction</em> in the following step.
       </p>
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
+      <p>
+        Create an action in the route where you'll be submitting a form, and
+        return a <em>formAction</em> from it.
+      </p>
       <p>
         If the mutation is successful, <em>formAction</em> will redirect to{' '}
         <em>successPath</em>. If not, it will return <em>errors</em> and{' '}
@@ -258,6 +272,10 @@ export default function Component() {
       </p>
       <Code>{actionCode}</Code>
       <SubHeading>Create a basic form</SubHeading>
+      <p>
+        Now it's time to head down into the component and return a <em>Form</em>
+        .
+      </p>
       <p>
         If you don&apos;t want any custom UI in the form, you can render{' '}
         <em>Form</em> without <em>children</em> and it will generate all the
