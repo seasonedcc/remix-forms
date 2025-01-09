@@ -132,12 +132,16 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
 
     return {
       success: false,
-      errors: {
-        ...errorMessagesForSchema(result.errors, schema),
-        _global: global.length
-          ? global.map((error) => error.message)
-          : undefined,
-      } as FormErrors<Schema>,
+      errors:
+        global.length > 0
+          ? ({
+              ...errorMessagesForSchema(result.errors, schema),
+              _global: global.map((error) => error.message),
+            } as FormErrors<Schema>)
+          : (errorMessagesForSchema(
+              result.errors,
+              schema,
+            ) as FormErrors<Schema>),
       values,
     }
   }

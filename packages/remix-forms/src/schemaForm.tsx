@@ -369,9 +369,8 @@ function SchemaForm<Schema extends FormSchema>({
 
   const [disabled, setDisabled] = React.useState(false)
 
-  const [globalErrorsState, setGlobalErrorsState] = React.useState<
-    string[] | undefined
-  >(globalErrors)
+  const globalErrorsToDisplay =
+    transition.state === 'submitting' ? undefined : globalErrors
 
   const customChildren = mapChildren(
     childrenFn?.({
@@ -415,9 +414,9 @@ function SchemaForm<Schema extends FormSchema>({
           autoFocus,
         })
       } else if (child.type === Errors) {
-        if (!child.props.children && !globalErrorsState?.length) return null
+        if (!child.props.children && !globalErrorsToDisplay?.length) return null
 
-        if (child.props.children || !globalErrorsState?.length) {
+        if (child.props.children || !globalErrorsToDisplay?.length) {
           return React.cloneElement(child, {
             role: 'alert',
             ...child.props,
@@ -426,7 +425,7 @@ function SchemaForm<Schema extends FormSchema>({
 
         return React.cloneElement(child, {
           role: 'alert',
-          children: globalErrorsState.map((error) => (
+          children: globalErrorsToDisplay.map((error) => (
             <Error key={error}>{error}</Error>
           )),
           ...child.props,
@@ -453,9 +452,9 @@ function SchemaForm<Schema extends FormSchema>({
       {Object.keys(schemaShape)
         .map(makeField)
         .map((field) => renderField({ Field, ...field }))}
-      {globalErrorsState?.length && (
+      {globalErrorsToDisplay?.length && (
         <Errors role="alert">
-          {globalErrorsState.map((error) => (
+          {globalErrorsToDisplay.map((error) => (
             <Error key={error}>{error}</Error>
           ))}
         </Errors>
@@ -503,15 +502,7 @@ function SchemaForm<Schema extends FormSchema>({
   }, [errorsProp, actionData])
 
   React.useEffect(() => {
-    setGlobalErrorsState(globalErrors)
-  }, [globalErrors])
-
-  React.useEffect(() => {
     onTransition && onTransition(form)
-
-    if (transition.state === 'submitting') {
-      setGlobalErrorsState(undefined)
-    }
   }, [transition.state])
 
   return (
