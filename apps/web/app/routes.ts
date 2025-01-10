@@ -57,12 +57,14 @@ const testRoutes = [
   'hidden-field-with-errors',
 ]
 
-export const exampleRoutes = Object.entries(exampleRouteGroups)
+export const exampleRoutesToPrerender = Object.entries(exampleRouteGroups)
   .map(([group, paths]) =>
     paths.map((path) => `/examples/${kebabCase(group)}/${kebabCase(path)}`),
   )
   .flat()
-  .filter((path) => !path.endsWith('async-validation')) // issues when prerendering
+  // Async validation example has a loader with dynamic response depending
+  // on the search params. Thus, it can't be pre-rendered
+  .filter((path) => !path.endsWith('async-validation'))
 
 export const confRoutes = times(9, (i) => `/conf/${String(i).padStart(2, '0')}`)
 
