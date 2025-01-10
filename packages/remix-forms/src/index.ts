@@ -1,5 +1,5 @@
-export { SchemaForm } from './schemaForm'
-export { useField } from './createField'
+export { SchemaForm } from './schema-form'
+export { useField } from './create-field'
 export { formAction, performMutation } from './mutations'
 
 export type {
@@ -7,6 +7,6 @@ export type {
   RenderFieldProps,
   RenderField,
   FormSchema,
-} from './schemaForm'
+} from './schema-form'
 
 export type { FormActionProps, MutationResult } from './mutations'
