@@ -1,6 +1,6 @@
 import type { QueryStringRecord } from 'composable-functions'
 import type { ZodTypeAny } from 'zod'
-import { shapeInfo } from './shapeInfo'
+import { shapeInfo } from './shape-info'
 
 type QsValue = QueryStringRecord[keyof QueryStringRecord]
 type Value = FormDataEntryValue | QsValue | null

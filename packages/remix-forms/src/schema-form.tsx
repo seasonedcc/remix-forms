@@ -22,14 +22,14 @@ import type {
   FieldComponent,
   FieldType,
   Option,
-} from './createField'
-import { createField } from './createField'
-import { mapChildren, reduceElements } from './childrenTraversal'
-import { defaultRenderField } from './defaultRenderField'
-import { inferLabel } from './inferLabel'
-import type { ZodTypeName } from './shapeInfo'
-import { shapeInfo } from './shapeInfo'
-import type { ShapeInfo } from './shapeInfo'
+} from './create-field'
+import { createField } from './create-field'
+import { mapChildren, reduceElements } from './children-traversal'
+import { defaultRenderField } from './default-render-field'
+import { inferLabel } from './infer-label'
+import type { ZodTypeName } from './shape-info'
+import { shapeInfo } from './shape-info'
+import type { ShapeInfo } from './shape-info'
 import { parseDate } from './prelude'
 import {
   Form as ReactRouterForm,
