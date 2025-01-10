@@ -27,10 +27,14 @@ test('With JS enabled', async ({ example }) => {
     'String must contain at least 1 character(s)',
   )
 
+  await username.input.pressSequentially('fo')
+  await page.waitForResponse((response) =>
+    response.url().includes('async-validation.data?username=fo'),
+  )
   await expect(button).toBeEnabled()
 
   // Type in the username
-  await username.input.pressSequentially('foo')
+  await username.input.pressSequentially('o')
   await page.waitForResponse((response) =>
     response.url().includes('async-validation.data?username=foo'),
   )
