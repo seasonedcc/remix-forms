@@ -27,8 +27,8 @@ test('With JS enabled clear server error on the client', async ({
   await example.expectError(email, 'Email already taken')
 
   // Submit valid form
-  await email.input.fill('john@doe.com')
-  button.click()
+  await page.waitForTimeout(100)
+  await email.input.pressSequentially('o')
   await example.expectValid(email)
 })
 
@@ -80,8 +80,6 @@ test('With JS enabled', async ({ example }) => {
 
   // Submit valid form
   await email.input.fill('john@doe.com')
-  // For some reason this happens on playwright but wont happen on manual tests,
-  // so I wouldn't have to press this button, instead I would just type the new email and it would be valid
   button.click()
   await example.expectData({ email: 'john@doe.com', password: '123456' })
 })
