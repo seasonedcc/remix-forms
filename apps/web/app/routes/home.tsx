@@ -13,7 +13,7 @@ import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import Feature from '~/ui/feature'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import Heading from '~/ui/heading'
 import { formAction } from 'remix-forms'
 import { Route } from './+types/home'
@@ -98,7 +98,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 focus management
               </span>
             </h2>
-            <Form schema={schema}>
+            <SchemaForm schema={schema}>
               {({ Field, Errors, Button }) => (
                 <>
                   <Field name="firstName" />
@@ -113,7 +113,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   </div>
                 </>
               )}
-            </Form>
+            </SchemaForm>
           </div>
         </div>
         <dl className="auto-rows-min space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 md:space-y-0 xl:grid-cols-3">

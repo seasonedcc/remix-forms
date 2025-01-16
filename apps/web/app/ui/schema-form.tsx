@@ -1,4 +1,8 @@
-import { SchemaForm, type SchemaFormProps, type FormSchema } from 'remix-forms'
+import {
+  SchemaForm as BaseForm,
+  type SchemaFormProps,
+  type FormSchema,
+} from 'remix-forms'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
@@ -14,11 +18,9 @@ import RadioGroup from './radio-group'
 
 import TextArea from './text-area'
 
-export default function Form<Schema extends FormSchema>(
-  props: SchemaFormProps<Schema>,
-) {
+function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
-    <SchemaForm
+    <BaseForm
       className="flex flex-col space-y-6"
       fieldComponent={Field}
       labelComponent={Label}
@@ -37,3 +39,5 @@ export default function Form<Schema extends FormSchema>(
     />
   )
 }
+
+export { SchemaForm }

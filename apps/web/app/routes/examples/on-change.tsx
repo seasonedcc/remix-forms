@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -23,7 +23,7 @@ const mutation = applySchema(schema)(async (values) => values)
 export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
-export default () => <Form schema={schema} mode="onChange" />`
+export default () => <SchemaForm schema={schema} mode="onChange" />`
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -42,7 +42,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} mode="onChange" />
+      <SchemaForm schema={schema} mode="onChange" />
     </Example>
   )
 }

@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -20,7 +20,7 @@ const code = `const schema = z.object({
 })
 
 export default () => (
-  <Form schema={schema}>
+  <SchemaForm schema={schema}>
     {({ Field, Errors, Button, register }) => (
       <>
         <Field name="firstName" />
@@ -41,7 +41,7 @@ export default () => (
         <Button />
       </>
     )}
-  </Form>
+  </SchemaForm>
 )`
 
 const schema = z.object({
@@ -72,7 +72,7 @@ export default function Component() {
         </>
       }
     >
-      <Form schema={schema}>
+      <SchemaForm schema={schema}>
         {({ Field, Errors, Button, register }) => (
           <>
             <Field name="firstName" />
@@ -93,7 +93,7 @@ export default function Component() {
             <Button />
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

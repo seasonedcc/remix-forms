@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -38,8 +38,8 @@ export default function Component() {
 
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} id="form" />
-      <Form schema={fetcherSchema} fetcher={fetcher} id="fetcher-form" />
+      <SchemaForm schema={schema} id="form" />
+      <SchemaForm schema={fetcherSchema} fetcher={fetcher} id="fetcher-form" />
     </Example>
   )
 }

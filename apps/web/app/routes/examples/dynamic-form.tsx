@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -55,7 +55,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema: fieldsSchema(getFields()), mutation })
 
 export default ({ loaderData }: Route.ComponentProps) => {
-  return <Form schema={fieldsSchema(loaderData.fields)} />
+  return <SchemaForm schema={fieldsSchema(loaderData.fields)} />
 }`
 
 type FieldType = 'string' | 'email' | 'int'
@@ -106,7 +106,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
   return (
     <Example title={title} description={description}>
-      <Form schema={fieldsSchema(fields)} />
+      <SchemaForm schema={fieldsSchema(fields)} />
     </Example>
   )
 }

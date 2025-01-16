@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { InputError, applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -50,7 +50,7 @@ export default function Component() {
   const message = fetcher.data?.message
 
   return (
-    <Form schema={schema}>
+    <SchemaForm schema={schema}>
       {({ Field, Errors, Button, clearErrors }) => (
         <>
           <Field name="username">
@@ -76,7 +76,7 @@ export default function Component() {
           <Button disabled={Boolean(message)} />
         </>
       )}
-    </Form>
+    </SchemaForm>
   )
 }`
 
@@ -120,7 +120,7 @@ export default function Component() {
 
   return (
     <Example title={title} description={description}>
-      <Form schema={schema}>
+      <SchemaForm schema={schema}>
         {({ Field, Errors, Button, clearErrors }) => (
           <>
             <Field name="username">
@@ -146,7 +146,7 @@ export default function Component() {
             <Button disabled={Boolean(message)} />
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

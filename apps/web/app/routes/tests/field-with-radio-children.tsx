@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -33,7 +33,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema}>
+      <SchemaForm schema={schema}>
         {({ Field, Errors, Button }) => (
           <>
             <Field name="csrfToken" value="abc123" hidden />
@@ -64,7 +64,7 @@ export default function Component() {
             </Button>
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

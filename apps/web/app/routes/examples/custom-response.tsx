@@ -2,7 +2,7 @@ import hljs from 'highlight.js/lib/common'
 import { data } from 'react-router'
 import { performMutation } from 'remix-forms'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -31,7 +31,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   return { customName: result.data.firstName }
 }
 
-export default () => <Form schema={schema} />`
+export default () => <SchemaForm schema={schema} />`
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -55,7 +55,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} />
+      <SchemaForm schema={schema} />
     </Example>
   )
 }

@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -27,7 +27,7 @@ const Button = ({ children, ...props }: JSX.IntrinsicElements['button']) => {
 }
 
 export default () => (
-    <Form schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} buttonComponent={Button} />
   )
 }`
 
@@ -53,6 +53,6 @@ const Button = ({ children, ...props }: JSX.IntrinsicElements['button']) => {
 
 export default () => (
   <Example title={title} description={description}>
-    <Form schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} buttonComponent={Button} />
   </Example>
 )

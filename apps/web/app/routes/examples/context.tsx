@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -34,7 +34,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   })
 }
 
-export default () => <Form schema={schema} />`
+export default () => <SchemaForm schema={schema} />`
 
 const schema = z.object({ email: z.string().min(1).email() })
 
@@ -71,7 +71,7 @@ export default function Component() {
         </>
       }
     >
-      <Form schema={schema} />
+      <SchemaForm schema={schema} />
     </Example>
   )
 }
