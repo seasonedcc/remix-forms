@@ -9,16 +9,16 @@ import SubHeading from '~/ui/sub-heading'
 import { Route } from './+types/get-started'
 
 const title = 'Get Started'
-const description = 'The full-stack form library for Remix and React Router'
+const description = 'The full-stack form library for React Router v7'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const stylesCode = `import type { SchemaFormProps, FormSchema } from 'remix-forms'
-import { SchemaForm } from 'remix-forms'
+import { SchemaForm as BaseForm } from 'remix-forms'
 
-function Form<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
+function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
-    <SchemaForm<Schema>
+    <BaseForm<Schema>
       className={/* your form classes */}
       fieldComponent={/* your custom Field */}
       labelComponent={/* your custom Label */}
@@ -36,7 +36,7 @@ function Form<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   )
 }
 
-export { Form }
+export { SchemaForm }
 `
 
 const schemaCode = `import { z } from 'zod'
@@ -62,11 +62,11 @@ export const action = async ({ request }: Route.ActionArgs) =>
     successPath: '/success', /* path to redirect on success */
   })`
 
-const basicCode = `import { Form } from '~/form' /* path to your custom Form */
+const basicCode = `import { SchemaForm } from 'remix-forms'
 
-export default () => <Form schema={schema} />`
+export default () => <SchemaForm schema={schema} />`
 
-const customFormCode = `<Form schema={schema}>
+const customFormCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -76,9 +76,9 @@ const customFormCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
-const customFieldCode = `<Form schema={schema}>
+const customFieldCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -96,9 +96,9 @@ const customFieldCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
-const customInputCode = `<Form schema={schema}>
+const customInputCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button, register }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -115,7 +115,7 @@ const customInputCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
 export const loader = () => ({
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
@@ -145,7 +145,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <Heading>Get Started</Heading>
       <SubHeading>Installation</SubHeading>
       <p>
-        Assuming you already have <em>React</em> and <em>React Router</em>{' '}
+        Assuming you already have <em>React</em> and <em>React Router v7</em>{' '}
         installed, you'll need the following packages:
       </p>
       <Pre>
@@ -178,23 +178,23 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <p>
         If the mutation is successful, <em>formAction</em> will redirect to{' '}
         <em>successPath</em>. If not, it will return <em>errors</em> and{' '}
-        <em>values</em> to pass to <em>Form</em>.
+        <em>values</em> to pass to <em>SchemaForm</em>.
       </p>
       <Code>{actionCode}</Code>
       <SubHeading>Create a basic form</SubHeading>
       <p>
         If you don&apos;t want any custom UI in the form, you can render{' '}
-        <em>Form</em> without <em>children</em> and it will generate all the
-        inputs, labels, error messages and button for you.
+        <em>SchemaForm</em> without <em>children</em> and it will generate all
+        the inputs, labels, error messages and button for you.
       </p>
       <Code>{basicCode}</Code>
-      <SubHeading>Custom Form, standard components</SubHeading>
+      <SubHeading>Custom form, standard components</SubHeading>
       <p>
         If you want a custom UI for your form, but don&apos;t need to customize
         the rendering of fields, errors, and buttons, do it like this:
       </p>
       <Code>{customFormCode}</Code>
-      <SubHeading>Custom Field, standard components</SubHeading>
+      <SubHeading>Custom field, standard components</SubHeading>
       <p>
         If you want a custom UI for a specific field, but don&apos;t need to
         customize the rendering of the label, input/select, and errors, do this:
@@ -207,21 +207,21 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           React Hook Form
         </ExternalLink>
         &apos;s <em>register</em> (and everything else) through the{' '}
-        <em>Form</em>
+        <em>SchemaForm</em>
         &apos;s <em>children</em> and go nuts:
       </p>
       <Code>{customInputCode}</Code>
       <SubHeading>[Optional] Customize styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you might want to configure
-        basic styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
-        component:
+        basic styles for your forms. Let&apos;s edit our custom{' '}
+        <em>SchemaForm</em> component:
       </p>
       <Code>{stylesCode}</Code>
       <div className="flex flex-col space-y-2">
         <p>
           Check out{' '}
-          <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/form.tsx">
+          <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/schema-form.tsx">
             how we customized the styles
           </ExternalLink>{' '}
           for this website. We basically created a bunch of UI components and

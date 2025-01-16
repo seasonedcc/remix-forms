@@ -13,12 +13,13 @@ import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import Feature from '~/ui/feature'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import Heading from '~/ui/heading'
 import { formAction } from 'remix-forms'
 import { Route } from './+types/home'
 
-const title = 'The full-stack form library for Remix and React Router'
+const title = 'The full-stack form library for React Router v7'
+
 const description =
   'E2E type-safe, with client + server validations, a11y, pending UI, and focus management'
 
@@ -75,7 +76,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <Heading className="text-center">
           The full-stack form library
           <br />
-          for Remix and React Router
+          for React Router v7
         </Heading>
         <div className="flex flex-col space-y-6 space-x-0 xl:flex-row xl:space-x-6 xl:space-y-0">
           <Code>{code}</Code>
@@ -97,7 +98,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 focus management
               </span>
             </h2>
-            <Form schema={schema}>
+            <SchemaForm schema={schema}>
               {({ Field, Errors, Button }) => (
                 <>
                   <Field name="firstName" />
@@ -112,7 +113,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   </div>
                 </>
               )}
-            </Form>
+            </SchemaForm>
           </div>
         </div>
         <dl className="auto-rows-min space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 md:space-y-0 xl:grid-cols-3">

@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -21,7 +21,7 @@ const code = `const schema = z.object({
 })
 
 export default () => (
-  <Form schema={schema} autoFocus="street">
+  <SchemaForm schema={schema} autoFocus="street">
     {({ Field, Errors, Button }) => (
       <>
         <div className="flex space-x-4">
@@ -37,7 +37,7 @@ export default () => (
         <Button />
       </>
     )}
-  </Form>
+  </SchemaForm>
 )`
 
 const schema = z.object({
@@ -60,7 +60,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} autoFocus="street">
+      <SchemaForm schema={schema} autoFocus="street">
         {({ Field, Errors, Button }) => (
           <>
             <div className="flex space-x-4">
@@ -76,7 +76,7 @@ export default function Component() {
             <Button />
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

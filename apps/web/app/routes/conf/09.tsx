@@ -3,7 +3,7 @@ import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
 import { InputError, applySchema } from 'composable-functions'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { formAction } from 'remix-forms'
 import { Route } from './+types/09'
 
@@ -15,7 +15,7 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 const code = `import { z } from 'zod'
 import { InputError, applySchema } from 'composable-functions'
 import { formAction } from 'remix-forms'
-import { Form } from '~/form'
+import { SchemaForm } from '~/schema-form'
 
 const reservationSchema = z.object({
   city: z.enum(['saltLakeCity', 'lasVegas', 'losAngeles']),
@@ -108,7 +108,7 @@ export const handle = {
 export default function Component() {
   return (
     <Example title={title} description={description} countLines>
-      <Form schema={reservationSchema}>
+      <SchemaForm schema={reservationSchema}>
         {({ Field, Errors, Button }) => (
           <>
             <Field name="city" />
@@ -126,7 +126,7 @@ export default function Component() {
             <Button>Make reservation</Button>
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

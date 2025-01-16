@@ -5,7 +5,7 @@ import { formAction, useField } from 'remix-forms'
 import { z } from 'zod'
 import { cx, metaTags } from '~/helpers'
 import Example from '~/ui/example'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { Route } from './+types/use-field'
 
 const title = 'useField'
@@ -36,7 +36,7 @@ const Input = React.forwardRef<
 })
 
 export default () => (
-  <Form schema={schema} inputComponent={Input} />
+  <SchemaForm schema={schema} inputComponent={Input} />
 )`
 
 const schema = z.object({
@@ -74,6 +74,6 @@ const Input = React.forwardRef<
 
 export default () => (
   <Example title={title} description={description}>
-    <Form schema={schema} inputComponent={Input} />
+    <SchemaForm schema={schema} inputComponent={Input} />
   </Example>
 )

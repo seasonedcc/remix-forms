@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import { z } from 'zod'
-import Form from '~/ui/form'
+import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
@@ -32,7 +32,7 @@ export default () => {
   const emailRef = useRef<HTMLInputElement>(null)
 
   return (
-    <Form schema={schema} values={{ contacts: [] }}>
+    <SchemaForm schema={schema} values={{ contacts: [] }}>
       {({ Field, Errors, Button, watch, setValue }) => {
         const contacts = watch('contacts')
 
@@ -126,7 +126,7 @@ export default () => {
           </>
         )
       }}
-    </Form>
+    </SchemaForm>
   )
 }`
 
@@ -152,7 +152,7 @@ export default () => {
 
   return (
     <Example title={title} description={description}>
-      <Form schema={schema} values={{ contacts: [] }}>
+      <SchemaForm schema={schema} values={{ contacts: [] }}>
         {({ Field, Errors, Button, watch, setValue }) => {
           const contacts = watch('contacts')
 
@@ -244,7 +244,7 @@ export default () => {
             </>
           )
         }}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }
