@@ -147,8 +147,6 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   }
 }
 
-type Redirect = ReturnType<typeof redirect>
-
 async function formAction<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
@@ -156,7 +154,7 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
   context,
   successPath,
   ...performMutationOptions
-}: FormActionProps<Schema, D>): Promise<D | Redirect> {
+}: FormActionProps<Schema, D>): Promise<D> {
   const result = await performMutation({
     request,
     schema,
@@ -171,7 +169,11 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
         ? await successPath(result.data)
         : successPath
 
-    return path ? redirect(path) : result.data
+    if (path) {
+      throw redirect(path)
+    }
+
+    return result.data
   } else {
     return { errors: result.errors, values: result.values } as D
   }
