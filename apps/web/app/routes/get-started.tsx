@@ -62,7 +62,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
     successPath: '/success', /* path to redirect on success */
   })`
 
-const basicCode = `import { SchemaForm } from '~/schema-form' /* path to your custom SchemaForm */
+const basicCode = `import { SchemaForm } from 'remix-forms'
 
 export default () => <SchemaForm schema={schema} />`
 
