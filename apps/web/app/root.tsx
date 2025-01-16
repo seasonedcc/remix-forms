@@ -26,14 +26,7 @@ export default function App({ matches }: Route.ComponentProps) {
   const match = matches.find(
     (match) => match?.handle && 'topBar' in (match.handle as any),
   ) as UIMatch<unknown, { topBar: React.ReactNode }>
-  const secondTopBar = match?.handle.topBar || (
-    <ConfTopBar>
-      <Link to={'/conf'} className="underline">
-        Check out our talk
-      </Link>{' '}
-      at Remix Conf!
-    </ConfTopBar>
-  )
+  const secondTopBar = match?.handle.topBar || null
 
   return (
     <html lang="en" className="h-full overflow-x-hidden">
