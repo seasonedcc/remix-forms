@@ -9,7 +9,7 @@ import SubHeading from '~/ui/sub-heading'
 import { Route } from './+types/get-started'
 
 const title = 'Get Started'
-const description = 'The full-stack form library for Remix and React Router'
+const description = 'The full-stack form library for React Router v7'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
