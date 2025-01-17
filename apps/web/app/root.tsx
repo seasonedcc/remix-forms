@@ -29,7 +29,7 @@ export default function App({ matches }: Route.ComponentProps) {
   const secondTopBar = match?.handle.topBar || null
 
   return (
-    <html lang="en" className="h-full overflow-x-hidden">
+    <html lang="en" className="h-full overflow-x-hidden bg-gray-900">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
