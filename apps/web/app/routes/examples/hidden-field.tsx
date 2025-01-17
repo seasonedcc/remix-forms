@@ -16,7 +16,7 @@ const code = `const schema = z.object({
   csrfToken: z.string().min(1),
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 export default () => (
@@ -31,7 +31,7 @@ const schema = z.object({
   csrfToken: z.string().min(1),
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 export const loader = () => ({

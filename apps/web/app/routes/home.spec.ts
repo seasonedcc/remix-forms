@@ -4,16 +4,16 @@ const route = '/'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
-  const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
+  const howDidYouFindUs = example.field('howDidYouFindUs')
 
   await page.goto(route)
 
   // Render
   await example.expectField(firstName)
   await example.expectField(email)
-  await example.expectSelect(howYouFoundOutAboutUs, { value: '' })
-  const options = howYouFoundOutAboutUs.input.locator('option')
-  await expect(options.first()).toHaveText('From A Friend')
+  await example.expectSelect(howDidYouFindUs, { value: '' })
+  const options = howDidYouFindUs.input.locator('option')
+  await expect(options.first()).toHaveText('A Friend')
   await expect(options.last()).toHaveText('Google')
   await expect(button).toBeEnabled()
 
@@ -47,7 +47,7 @@ test('With JS enabled', async ({ example }) => {
   // Make form be valid
   await email.input.fill('john@doe.com')
   await example.expectValid(email)
-  await howYouFoundOutAboutUs.input.selectOption({ value: 'fromAFriend' })
+  await howDidYouFindUs.input.selectOption({ value: 'aFriend' })
 
   // Submit form
   button.click()
@@ -57,7 +57,7 @@ test('With JS enabled', async ({ example }) => {
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { firstName, email, button, page } = example
-  const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
+  const howDidYouFindUs = example.field('howDidYouFindUs')
 
   await page.goto(route)
 
@@ -96,7 +96,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Make form be valid and test selecting an option
   await email.input.fill('john@doe.com')
-  await howYouFoundOutAboutUs.input.selectOption('google')
+  await howDidYouFindUs.input.selectOption('google')
 
   // Submit form
   await button.click()

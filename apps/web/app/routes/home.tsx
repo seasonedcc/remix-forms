@@ -32,7 +32,7 @@ import { formAction, SchemaForm } from 'remix-forms'
 const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 const mutation = applySchema(schema)(async (values) => values)
@@ -50,7 +50,7 @@ export default () => <SchemaForm schema={schema} />`
 const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 export const loader = () => ({
@@ -103,7 +103,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 <>
                   <Field name="firstName" />
                   <Field name="email" />
-                  <Field name="howYouFoundOutAboutUs" />
+                  <Field name="howDidYouFindUs" />
                   <Errors />
                   <div className="flex items-center space-x-4">
                     <h4 className="flex-1 text-center text-gray-500">
