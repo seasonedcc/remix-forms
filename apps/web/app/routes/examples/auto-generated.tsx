@@ -16,7 +16,7 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 const code = `const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 export default () => <SchemaForm schema={schema} />`
@@ -24,7 +24,7 @@ export default () => <SchemaForm schema={schema} />`
 const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
 })
 
 export const loader = () => ({

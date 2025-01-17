@@ -17,7 +17,7 @@ const code = `const schema = z.object({
   csrfToken: z.string().min(1),
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
   message: z.string().optional(),
 })
 
@@ -30,9 +30,9 @@ export default () => (
         <Field name="email" label="E-mail" placeholder="Your e-mail" />
         <em>You'll hear from us at this address 👆🏽</em>
         <Field
-          name="howYouFoundOutAboutUs"
+          name="howDidYouFindUs"
           options={[
-            { name: 'Friend', value: 'fromAFriend' },
+            { name: 'Friend', value: 'aFriend' },
             { name: 'Search', value: 'google' },
           ]}
           radio
@@ -49,7 +49,7 @@ const schema = z.object({
   csrfToken: z.string().min(1),
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
   message: z.string().optional(),
 })
 
@@ -73,9 +73,9 @@ export default function Component() {
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
             <em>You&apos;ll hear from us at this address 👆🏽</em>
             <Field
-              name="howYouFoundOutAboutUs"
+              name="howDidYouFindUs"
               options={[
-                { name: 'Friend', value: 'fromAFriend' },
+                { name: 'Friend', value: 'aFriend' },
                 { name: 'Search', value: 'google' },
               ]}
               radio

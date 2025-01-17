@@ -16,7 +16,7 @@ const code = `const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
   companySize: z.number(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
   subscribeToNewsletter: z.boolean().default(true),
 })
 
@@ -27,7 +27,7 @@ export default () => (
       firstName: 'Mary',
       email: 'mary@company.com',
       companySize: 0,
-      howYouFoundOutAboutUs: 'google',
+      howDidYouFindUs: 'google',
       subscribeToNewsletter: false,
     }}
   />
@@ -37,7 +37,7 @@ const schema = z.object({
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
   companySize: z.number(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
   subscribeToNewsletter: z.boolean().default(true),
 })
 
@@ -59,7 +59,7 @@ export default function Component() {
           firstName: 'Mary',
           email: 'mary@company.com',
           companySize: 0,
-          howYouFoundOutAboutUs: 'google',
+          howDidYouFindUs: 'google',
           subscribeToNewsletter: false,
         }}
       />

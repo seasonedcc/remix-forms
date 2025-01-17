@@ -17,7 +17,7 @@ const schema = z.object({
   csrfToken: z.string().min(1),
   firstName: z.string().min(1),
   email: z.string().min(1).email(),
-  howYouFoundOutAboutUs: z.enum(['fromAFriend', 'google']),
+  howDidYouFindUs: z.enum(['aFriend', 'google']),
   message: z.string().optional(),
 })
 
@@ -40,7 +40,7 @@ export default function Component() {
             <Field name="firstName" placeholder="Your first name" />
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
             <em>You&apos;ll hear from us at this address 👆🏽</em>
-            <Field name="howYouFoundOutAboutUs">
+            <Field name="howDidYouFindUs">
               {({ Label, RadioGroup, RadioWrapper, Radio }) => (
                 <>
                   <Label />
@@ -50,7 +50,7 @@ export default function Component() {
                       <Label>Google</Label>
                     </RadioWrapper>
                     <RadioWrapper>
-                      <Radio value="fromAFriend" />
+                      <Radio value="aFriend" />
                       <Label>From a friend</Label>
                     </RadioWrapper>
                   </RadioGroup>

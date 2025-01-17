@@ -5,7 +5,7 @@ const route = '/examples/forms/edit-values'
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
   const companySize = example.field('companySize')
-  const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
+  const howDidYouFindUs = example.field('howDidYouFindUs')
 
   await page.goto(route)
 
@@ -13,9 +13,9 @@ test('With JS enabled', async ({ example }) => {
   await example.expectField(firstName, { value: 'Mary' })
   await example.expectField(email, { value: 'mary@company.com' })
   await example.expectField(companySize, { value: '0' })
-  await example.expectSelect(howYouFoundOutAboutUs, { value: 'google' })
-  const options = howYouFoundOutAboutUs.input.locator('option')
-  await expect(options.first()).toHaveText('From A Friend')
+  await example.expectSelect(howDidYouFindUs, { value: 'google' })
+  const options = howDidYouFindUs.input.locator('option')
+  await expect(options.first()).toHaveText('A Friend')
   await expect(options.last()).toHaveText('Google')
 
   expect(await page.isChecked('input[type=checkbox]:visible')).toBeFalsy()
@@ -29,7 +29,7 @@ test('With JS enabled', async ({ example }) => {
     firstName: 'Mary',
     email: 'mary@company.com',
     companySize: 0,
-    howYouFoundOutAboutUs: 'google',
+    howDidYouFindUs: 'google',
     subscribeToNewsletter: false,
   })
 })
@@ -46,7 +46,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
     firstName: 'Mary',
     email: 'mary@company.com',
     companySize: 0,
-    howYouFoundOutAboutUs: 'google',
+    howDidYouFindUs: 'google',
     subscribeToNewsletter: false,
   })
 })

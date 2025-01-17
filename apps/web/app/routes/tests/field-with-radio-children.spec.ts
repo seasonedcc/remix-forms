@@ -4,7 +4,7 @@ const route = '/test-examples/field-with-radio-children'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
-  const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
+  const howDidYouFindUs = example.field('howDidYouFindUs')
   const message = example.field('message')
   const buttonSpan = page.locator('form span:has-text("OK"):visible')
 
@@ -21,12 +21,12 @@ test('With JS enabled', async ({ example }) => {
   await expect(page.locator('form em:visible')).toHaveText(
     "You'll hear from us at this address 👆🏽",
   )
-  await example.expectRadioToHaveOptions('howYouFoundOutAboutUs', [
-    { name: 'Friend', value: 'fromAFriend' },
+  await example.expectRadioToHaveOptions('howDidYouFindUs', [
+    { name: 'Friend', value: 'aFriend' },
     { name: 'Search', value: 'google' },
   ])
 
-  await howYouFoundOutAboutUs.input.first().click()
+  await howDidYouFindUs.input.first().click()
 
   await example.expectField(message, {
     multiline: true,
@@ -65,7 +65,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Make form be valid
   await email.input.fill('john@doe.com')
-  await howYouFoundOutAboutUs.input.last().click()
+  await howDidYouFindUs.input.last().click()
   await message.input.fill('My message')
   await example.expectValid(email)
 
@@ -77,14 +77,14 @@ test('With JS enabled', async ({ example }) => {
     csrfToken: 'abc123',
     firstName: 'John',
     email: 'john@doe.com',
-    howYouFoundOutAboutUs: 'fromAFriend',
+    howDidYouFindUs: 'aFriend',
     message: 'My message',
   })
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { firstName, email, button, page } = example
-  const howYouFoundOutAboutUs = example.field('howYouFoundOutAboutUs')
+  const howDidYouFindUs = example.field('howDidYouFindUs')
   const message = example.field('message')
 
   await page.goto(route)
@@ -125,7 +125,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Make form be valid and test selecting an option
   await email.input.fill('john@doe.com')
-  await howYouFoundOutAboutUs.input.last().click()
+  await howDidYouFindUs.input.last().click()
 
   // Submit form
   await button.click()
@@ -135,7 +135,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
     csrfToken: 'abc123',
     firstName: 'John',
     email: 'john@doe.com',
-    howYouFoundOutAboutUs: 'fromAFriend',
+    howDidYouFindUs: 'aFriend',
     message: 'My message',
   })
 })
