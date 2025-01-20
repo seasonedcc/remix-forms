@@ -15,7 +15,7 @@ export default function Component({ matches }: Route.ComponentProps) {
   return (
     <div className="relative isolate flex grow flex-col">
       <SidebarLayout>
-        <SidebarLayout.Nav menuTitle="View steps">
+        <SidebarLayout.Nav menuTitle="All steps">
           <SidebarLayout.NavTitle>From scratch</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/conf/01'}>
             01. Quick and dirty
