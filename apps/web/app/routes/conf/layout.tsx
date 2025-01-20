@@ -7,7 +7,7 @@ import { Route } from './+types/layout'
 
 export default function Component({ matches }: Route.ComponentProps) {
   const { previous, next } =
-    (matches.filter((match) => match?.handle)[0]?.handle as {
+    (matches.filter((match) => match?.handle).at(-1)?.handle as {
       previous?: string
       next?: string
     }) || {}
