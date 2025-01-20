@@ -1,21 +1,33 @@
 {
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "cache": false,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "lint": {
+      "cache": false,
       "outputs": []
     },
     "tsc": {
       "cache": false,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
+      "cache": false,
       "outputs": [],
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "playwright:ci:install": {
+      "cache": false,
       "outputs": []
     },
     "dev": {
