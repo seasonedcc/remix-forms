@@ -2,7 +2,7 @@ import { kebabCase } from 'lodash-es'
 import { Fragment } from 'react'
 import { Outlet } from 'react-router'
 import { exampleRouteGroups } from '~/routes'
-import SidebarLayout from '~/ui/sidebar-layout'
+import { SidebarLayout } from '~/ui/sidebar-layout'
 
 export default function Component() {
   return (
