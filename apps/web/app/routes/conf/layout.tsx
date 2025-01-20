@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import ExternalLink from '~/ui/external-link'
-import SidebarLayout from '~/ui/sidebar-layout'
+import { SidebarLayout } from '~/ui/sidebar-layout'
 import SecondaryButtonLink from '~/ui/secondary-button-link'
 import TopBar from '~/ui/conf/top-bar'
 import { Route } from './+types/layout'
@@ -15,7 +15,7 @@ export default function Component({ matches }: Route.ComponentProps) {
   return (
     <div className="relative isolate flex grow flex-col">
       <SidebarLayout>
-        <SidebarLayout.Nav>
+        <SidebarLayout.Nav menuTitle="View steps">
           <SidebarLayout.NavTitle>From scratch</SidebarLayout.NavTitle>
           <SidebarLayout.NavLink to={'/conf/01'}>
             01. Quick and dirty

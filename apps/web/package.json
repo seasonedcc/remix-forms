@@ -16,9 +16,9 @@
     "test:ci": "playwright test"
   },
   "dependencies": {
-    "@headlessui/react": "~2.2.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "3.10.0",
+    "@radix-ui/react-collapsible": "^1.1.2",
     "@react-router/node": "^7.1.1",
     "@react-router/serve": "^7.1.1",
     "@tailwindcss/forms": "0.5.10",
