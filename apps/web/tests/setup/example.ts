@@ -164,7 +164,7 @@ class Example {
       await this.page.locator('#action-data > pre:visible').first().innerText(),
     )
 
-    expect(actionData).toEqual(data)
+    expect(actionData.data).toEqual(data)
   }
 }
 
