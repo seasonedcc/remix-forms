@@ -4,7 +4,9 @@ import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
-import { redirect } from 'react-router'
+import { data, redirect } from 'react-router'
+
+type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
 type NestedErrors<SchemaType> = {
   [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
@@ -149,20 +151,12 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
 }
 
 async function formAction<Schema extends FormSchema, D extends unknown>({
-  request,
-  schema,
-  mutation,
-  context,
   successPath,
   ...performMutationOptions
-}: FormActionProps<Schema, D>): Promise<D> {
-  const result = await performMutation({
-    request,
-    schema,
-    mutation,
-    context,
-    ...performMutationOptions,
-  })
+}: FormActionProps<Schema, D>): Promise<
+  DataWithResponseInit<MutationResult<z.infer<Schema>, D>>
+> {
+  const result = await performMutation(performMutationOptions)
 
   if (result.success) {
     const path =
@@ -174,9 +168,9 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
       throw redirect(path)
     }
 
-    return result.data
+    return data(result)
   } else {
-    return { errors: result.errors, values: result.values } as D
+    return data(result, { status: 422 })
   }
 }
 

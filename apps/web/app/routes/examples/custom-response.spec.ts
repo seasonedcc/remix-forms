@@ -43,7 +43,12 @@ test('With JS enabled', async ({ example }) => {
   // Submit form
   button.click()
   await expect(button).toBeDisabled()
-  await example.expectData({ customName: 'John' })
+
+  const actionData = JSON.parse(
+    await page.locator('#action-data > pre:visible').first().innerText(),
+  )
+
+  expect(actionData).toEqual({ customName: 'John' })
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
@@ -90,5 +95,10 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Submit form
   await button.click()
   await page.reload()
-  await example.expectData({ customName: 'John' })
+
+  const actionData = JSON.parse(
+    await page.locator('#action-data > pre:visible').first().innerText(),
+  )
+
+  expect(actionData).toEqual({ customName: 'John' })
 })
