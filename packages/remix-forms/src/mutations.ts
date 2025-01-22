@@ -118,6 +118,7 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   schema,
   mutation,
   context,
+  transformResult = (result) => result,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<
   MutationResult<z.infer<Schema>, D>
@@ -126,11 +127,11 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   const result = await mutation(transformValues(values), context)
 
   if (result.success) {
-    return { success: true, data: result.data }
+    return transformResult({ success: true, data: result.data })
   } else {
     const global = result.errors.filter((e) => !isInputError(e))
 
-    return {
+    return transformResult({
       success: false,
       errors:
         global.length > 0
@@ -143,7 +144,7 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
               schema,
             ) as FormErrors<Schema>),
       values,
-    }
+    })
   }
 }
 
