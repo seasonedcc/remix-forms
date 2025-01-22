@@ -55,8 +55,8 @@ export default function Example({
       {data ? (
         <div id="action-data" className="flex flex-col space-y-4">
           <h4>
-            This data was returned by our <em>action</em>. We got it by calling{' '}
-            <em>useActionData()</em> inside our component.
+            This data was returned by our <em>action</em>. We got it through the{' '}
+            <em>actionData</em> prop passed to our route component.
           </h4>
           <Code>{JSON.stringify(data, null, 2)}</Code>
         </div>
