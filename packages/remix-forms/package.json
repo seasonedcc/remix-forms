@@ -1,8 +1,8 @@
 {
   "name": "remix-forms",
-  "version": "2.3.0",
+  "version": "3.0.0-alpha.1",
   "description": "The full-stack form library for React Router v7",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
+    "build": "rm -rf dist && tsup ./src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
     "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
     "prelint": "prettier --check .",
