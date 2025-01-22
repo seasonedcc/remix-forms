@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
+    "build": "rm -rf dist && tsup ./src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
     "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
     "prelint": "prettier --check .",
