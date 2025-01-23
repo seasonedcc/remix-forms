@@ -30,7 +30,7 @@ export default () => {
     <SchemaForm
       schema={schema}
       fetcher={fetcher}
-      onTransition={({ setFocus, reset, formState }) => {
+      onNavigation={({ setFocus, reset, formState }) => {
         const { isDirty } = formState
 
         if (fetcher.formAction && isDirty) {
@@ -90,7 +90,7 @@ export default function Component() {
       <SchemaForm
         schema={schema}
         fetcher={fetcher}
-        onTransition={({ setFocus, reset, formState }) => {
+        onNavigation={({ setFocus, reset, formState }) => {
           const { isDirty } = formState
 
           if (fetcher.formAction && isDirty) {

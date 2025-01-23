@@ -77,7 +77,7 @@ type Children<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>,
 ) => React.ReactNode
 
-type OnTransition<Schema extends SomeZodObject> = (
+type OnNavigation<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>,
 ) => void
 
@@ -109,7 +109,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
   autoFocus?: keyof z.infer<Schema>
   beforeChildren?: React.ReactNode
-  onTransition?: OnTransition<ObjectFromSchema<Schema>>
+  onNavigation?: OnNavigation<ObjectFromSchema<Schema>>
   children?: Children<ObjectFromSchema<Schema>>
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children'>
@@ -168,7 +168,7 @@ function SchemaForm<Schema extends FormSchema>({
   method = 'POST',
   schema,
   beforeChildren,
-  onTransition,
+  onNavigation,
   children: childrenFn,
   labels,
   placeholders,
@@ -188,8 +188,8 @@ function SchemaForm<Schema extends FormSchema>({
   const Component = fetcher?.Form ?? component
   const navigationSubmit = useSubmit()
   const submit = fetcher?.submit ?? navigationSubmit
-  const navigationTransition = useNavigation()
-  const transition = fetcher ?? navigationTransition
+  const navigation = useNavigation()
+  const navigationState = fetcher ? fetcher.state : navigation.state
   const navigationActionData = useActionData()
   const actionData = fetcher ? fetcher.data : navigationActionData
   const actionErrors = actionData?.errors as FormErrors<SchemaType>
@@ -363,14 +363,14 @@ function SchemaForm<Schema extends FormSchema>({
   )
 
   const buttonLabel =
-    transition.state !== 'idle'
+    navigationState !== 'idle'
       ? (pendingButtonLabel ?? rawButtonLabel)
       : rawButtonLabel
 
   const [disabled, setDisabled] = React.useState(false)
 
   const globalErrorsToDisplay =
-    transition.state === 'submitting' ? undefined : globalErrors
+    navigationState !== 'idle' ? undefined : globalErrors
 
   const customChildren = mapChildren(
     childrenFn?.({
@@ -464,7 +464,7 @@ function SchemaForm<Schema extends FormSchema>({
   )
 
   React.useEffect(() => {
-    const submitting = transition.state !== 'idle'
+    const submitting = navigationState !== 'idle'
 
     const shouldDisable =
       mode === 'onChange' || mode === 'all'
@@ -472,7 +472,7 @@ function SchemaForm<Schema extends FormSchema>({
         : submitting
 
     setDisabled(shouldDisable)
-  }, [transition.state, formState, mode, isValid])
+  }, [navigationState, formState, mode, isValid])
 
   React.useEffect(() => {
     const newDefaults = Object.fromEntries(
@@ -502,8 +502,8 @@ function SchemaForm<Schema extends FormSchema>({
   }, [errorsProp, actionData])
 
   React.useEffect(() => {
-    onTransition && onTransition(form)
-  }, [transition.state])
+    onNavigation && onNavigation(form)
+  }, [navigationState])
 
   return (
     <FormProvider {...form}>
