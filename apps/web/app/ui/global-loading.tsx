@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { useTransition } from '@remix-run/react'
+import { useNavigation } from 'react-router'
 import { cx } from '~/helpers'
 import { match, P } from 'ts-pattern'
 
 function GlobalLoading() {
-  const transition = useTransition()
-  const active = transition.state !== 'idle'
+  const navigation = useNavigation()
+  const active = navigation.state !== 'idle'
 
   const ref = React.useRef<HTMLDivElement>(null)
   const [animating, setAnimating] = React.useState(false)
@@ -30,7 +30,7 @@ function GlobalLoading() {
         ref={ref}
         className={cx(
           'h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-500 ease-in-out',
-          match([transition.state, animating])
+          match([navigation.state, animating])
             .with(['idle', false], () => 'w-0 opacity-0 transition-none')
             .with(['submitting', P._], () => 'w-5/12')
             .with(['loading', P._], () => 'w-10/12')

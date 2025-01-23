@@ -1,13 +1,13 @@
-import type { MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from 'react-router'
 import { metaTags } from '~/helpers'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
 import Feature from '~/ui/feature'
 import {
-  ClipboardListIcon,
+  ClipboardDocumentListIcon,
   GiftIcon,
   SparklesIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/24/outline'
 import ExternalLink from '~/ui/external-link'
 import ButtonLink from '~/ui/button-link'
 
@@ -27,13 +27,15 @@ export default function Component() {
             className="aspect-video w-full"
             src="https://www.youtube.com/embed/IN-TElTkVmU"
             title="YouTube video player"
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
         </div>
         <dl className="flex flex-[2] flex-col space-y-8">
-          <Feature icon={ClipboardListIcon} title="A great form UI takes work">
+          <Feature
+            icon={ClipboardDocumentListIcon}
+            title="A great form UI takes work"
+          >
             First, we&apos;ll walk you through the creation of a great form UI
             from scratch.
           </Feature>

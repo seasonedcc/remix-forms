@@ -1,6 +1,4 @@
 import hljs from 'highlight.js/lib/common'
-import type { LoaderFunction, MetaFunction } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
@@ -8,46 +6,19 @@ import ExternalLink from '~/ui/external-link'
 import Heading from '~/ui/heading'
 import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
+import { Route } from './+types/get-started'
 
 const title = 'Get Started'
-const description = 'The full-stack form library for Remix and React Router'
+const description = 'The full-stack form library for React Router v7'
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const createFormCode = `import { createForm } from 'remix-forms'
-// For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
-// For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
+const stylesCode = `import type { SchemaFormProps, FormSchema } from 'remix-forms'
+import { SchemaForm as BaseForm } from 'remix-forms'
 
-const Form = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
-
-export { Form }
-`
-
-const createFormActionCode = `import { createFormAction } from 'remix-forms'
-// For Remix, import it like this
-import { redirect, json } from '@remix-run/node'
-// For React Router 6.4, like this
-import { redirect, json } from 'react-router-dom'
-
-const formAction = createFormAction({ redirect, json })
-
-export { formAction }
-`
-
-const stylesCode = `import type { FormProps, FormSchema } from 'remix-forms'
-import { createForm } from 'remix-forms'
-// For Remix, import it like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from '@remix-run/react'
-// For React Router 6.4, like this
-import { Form as FrameworkForm, useActionData, useSubmit, useNavigation } from 'react-router-dom'
-
-const RemixForm = createForm({ component: FrameworkForm, useNavigation, useSubmit, useActionData })
-
-function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
+function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
-    <RemixForm<Schema>
+    <BaseForm<Schema>
       className={/* your form classes */}
       fieldComponent={/* your custom Field */}
       labelComponent={/* your custom Label */}
@@ -65,7 +36,7 @@ function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
   )
 }
 
-export { Form }
+export { SchemaForm }
 `
 
 const schemaCode = `import { z } from 'zod'
@@ -75,15 +46,15 @@ const schema = z.object({
   email: z.string().min(1).email(),
 })`
 
-const mutationCode = `import { makeDomainFunction } from 'domain-functions'
+const mutationCode = `import { applySchema } from 'composable-functions'
 
-const mutation = makeDomainFunction(schema)(async (values) => (
+const mutation = applySchema(schema)(async (values) => (
   console.log(values) /* or anything else, like saveMyValues(values) */
 ))`
 
-const actionCode = `import { formAction } from '~/form-action.server' /* path to your custom formAction */
+const actionCode = `import { formAction } from 'remix-forms'
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema,
@@ -91,11 +62,11 @@ export const action: ActionFunction = async ({ request }) =>
     successPath: '/success', /* path to redirect on success */
   })`
 
-const basicCode = `import { Form } from '~/form' /* path to your custom Form */
+const basicCode = `import { SchemaForm } from 'remix-forms'
 
-export default () => <Form schema={schema} />`
+export default () => <SchemaForm schema={schema} />`
 
-const customFormCode = `<Form schema={schema}>
+const customFormCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -105,9 +76,9 @@ const customFormCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
-const customFieldCode = `<Form schema={schema}>
+const customFieldCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -125,9 +96,9 @@ const customFieldCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
-const customInputCode = `<Form schema={schema}>
+const customInputCode = `<SchemaForm schema={schema}>
   {({ Field, Errors, Button, register }) => (
     <>
       <Field name="firstName" label="First name" />
@@ -144,12 +115,9 @@ const customInputCode = `<Form schema={schema}>
       <Button />
     </>
   )}
-</Form>`
+</SchemaForm>`
 
-export const loader: LoaderFunction = () => ({
-  createFormCode: hljs.highlight(createFormCode, { language: 'ts' }).value,
-  createFormActionCode: hljs.highlight(createFormActionCode, { language: 'ts' })
-    .value,
+export const loader = () => ({
   stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
   schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
   mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
@@ -160,10 +128,8 @@ export const loader: LoaderFunction = () => ({
   customInputCode: hljs.highlight(customInputCode, { language: 'ts' }).value,
 })
 
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
   const {
-    createFormCode,
-    createFormActionCode,
     stylesCode,
     schemaCode,
     mutationCode,
@@ -172,61 +138,19 @@ export default function Component() {
     customFormCode,
     customFieldCode,
     customInputCode,
-  } = useLoaderData()
+  } = loaderData
 
   return (
     <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
       <Heading>Get Started</Heading>
-      <SubHeading>Remix or React Router 6.4?</SubHeading>
-      <p>
-        You can use Remix Forms with{' '}
-        <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
-        <ExternalLink href="https://reactrouter.com/">
-          React Router 6.4
-        </ExternalLink>
-        , or even your custom framework. As long as you pass it a <em>Form</em>{' '}
-        component and a couple of functions and hooks, it will work anywhere
-        React runs.
-      </p>
       <SubHeading>Installation</SubHeading>
       <p>
-        Assuming you already have <em>React</em> and{' '}
-        <em>Remix or React Router</em> installed, you'll need the following
-        packages:
+        Assuming you already have <em>React</em> and <em>React Router v7</em>{' '}
+        installed, you'll need the following packages:
       </p>
-      <Pre>npm install remix-forms domain-functions zod react-hook-form</Pre>
-      <SubHeading>Create your formAction function</SubHeading>
-      <p>
-        First, let's create a <em>formAction</em> function. This will be used in
-        your actions.
-      </p>
-      <p>
-        Somewhere within your <em>app/</em>, create a file named{' '}
-        <em>
-          <strong>form-action.server.ts</strong>
-        </em>
-        .
-      </p>
-      <Pre>/app/form-action.server.ts</Pre>
-      <p>
-        <strong>Important</strong>: do not forget to include the suffix{' '}
-        <em>
-          <strong>.server</strong>
-        </em>{' '}
-        in the file name otherwise server-side code will leak to the browser,
-        triggering a confusing error.
-      </p>
-      <Code>{createFormActionCode}</Code>
-      <SubHeading>Create your Form component</SubHeading>
-      <p>
-        Next, let's create your project's custom <em>Form</em> component:
-      </p>
-      <p>
-        Alongside your <em>form-action.server.ts</em>, create a <em>form.ts</em>{' '}
-        file and include the following code:
-      </p>
-      <Pre>/app/form.ts</Pre>
-      <Code>{createFormCode}</Code>
+      <Pre>
+        npm install remix-forms composable-functions zod react-hook-form
+      </Pre>
       <SubHeading>Write your schema</SubHeading>
       <p>
         Compose a zod schema that will be used in your action, mutation
@@ -236,41 +160,41 @@ export default function Component() {
       <Code>{schemaCode}</Code>
       <SubHeading>Create your mutation</SubHeading>
       <p>
-        Create a mutation function using{' '}
-        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
-          Domain Functions
+        Create a mutation function wrapped by{' '}
+        <ExternalLink href="https://github.com/seasonedcc/composable-functions">
+          Composable Functions
         </ExternalLink>
-        &apos; <em>makeDomainFunction</em>. It&apos;s a function that receives
-        the values from the form and performs the necessary mutations, such as
-        storing data on a database.
+        &apos; <em>applySchema</em>. Remix Forms will parse the request&apos;s{' '}
+        <em>formData</em> and send it to the mutation.
       </p>
       <p>
-        Domain Functions will parse the request&apos;s <em>formData</em> and
-        perform the mutation only if everything is valid. If something goes bad,
-        it will return structured error messages for us.
+        <em>applySchema</em> will ensure the mutation only performs if the
+        arguments are valid.
+        <br />
+        If something goes bad, it will return a list of errors for us.
       </p>
       <Code>{mutationCode}</Code>
       <SubHeading>Create your action</SubHeading>
       <p>
         If the mutation is successful, <em>formAction</em> will redirect to{' '}
         <em>successPath</em>. If not, it will return <em>errors</em> and{' '}
-        <em>values</em> to pass to <em>Form</em>.
+        <em>values</em> to pass to <em>SchemaForm</em>.
       </p>
       <Code>{actionCode}</Code>
       <SubHeading>Create a basic form</SubHeading>
       <p>
         If you don&apos;t want any custom UI in the form, you can render{' '}
-        <em>Form</em> without <em>children</em> and it will generate all the
-        inputs, labels, error messages and button for you.
+        <em>SchemaForm</em> without <em>children</em> and it will generate all
+        the inputs, labels, error messages and button for you.
       </p>
       <Code>{basicCode}</Code>
-      <SubHeading>Custom Form, standard components</SubHeading>
+      <SubHeading>Custom form, standard components</SubHeading>
       <p>
         If you want a custom UI for your form, but don&apos;t need to customize
         the rendering of fields, errors, and buttons, do it like this:
       </p>
       <Code>{customFormCode}</Code>
-      <SubHeading>Custom Field, standard components</SubHeading>
+      <SubHeading>Custom field, standard components</SubHeading>
       <p>
         If you want a custom UI for a specific field, but don&apos;t need to
         customize the rendering of the label, input/select, and errors, do this:
@@ -283,21 +207,21 @@ export default function Component() {
           React Hook Form
         </ExternalLink>
         &apos;s <em>register</em> (and everything else) through the{' '}
-        <em>Form</em>
+        <em>SchemaForm</em>
         &apos;s <em>children</em> and go nuts:
       </p>
       <Code>{customInputCode}</Code>
       <SubHeading>[Optional] Customize styles</SubHeading>
       <p>
         Remix Forms doesn&apos;t ship any styles, so you might want to configure
-        basic styles for your forms. Let&apos;s edit our custom <em>Form</em>{' '}
-        component:
+        basic styles for your forms. Let&apos;s edit our custom{' '}
+        <em>SchemaForm</em> component:
       </p>
       <Code>{stylesCode}</Code>
       <div className="flex flex-col space-y-2">
         <p>
           Check out{' '}
-          <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/form.tsx">
+          <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/schema-form.tsx">
             how we customized the styles
           </ExternalLink>{' '}
           for this website. We basically created a bunch of UI components and
@@ -339,8 +263,8 @@ export default function Component() {
           Zod
         </ExternalLink>
         ,{' '}
-        <ExternalLink href="https://github.com/seasonedcc/domain-functions">
-          Domain Functions
+        <ExternalLink href="https://github.com/seasonedcc/composable-functions">
+          Composable Functions
         </ExternalLink>
         , and a multitude of other open-source projects. Thank you!
       </p>

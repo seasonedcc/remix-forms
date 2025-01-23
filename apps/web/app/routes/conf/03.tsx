@@ -1,10 +1,5 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
+import { redirect } from 'react-router'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
@@ -12,23 +7,24 @@ import Label from '~/ui/conf/label'
 import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData } from '@remix-run/react'
+import { Form, useActionData } from 'react-router'
 import { z } from 'zod'
+import { Route } from './+types/03'
 
 const title = 'Type coercions'
 const description =
   "But to make our server validations work, we'll need to coerce our FormData into the correct types. Let's use z.preprocess for that."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const code = `import { Form } from '@remix-run/react'
-import { ActionFunction, redirect, json } from '@remix-run/node'
+const code = `import { Form } from 'react-router'
+import { redirect } from 'react-router'
 import Label from '~/ui/label'
 import Input from '~/ui/input'
 import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
 import Button from '~/ui/button'
-import { useActionData } from '@remix-run/react'
+import { useActionData } from 'react-router'
 import { z } from 'zod'
 
 function parseDate(value: unknown) {
@@ -51,22 +47,20 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/03')
+    return redirect('/conf/success/03')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function renderError(name: string) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null
@@ -126,7 +120,7 @@ export default function Component() {
 }
 `
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -150,22 +144,20 @@ async function makeReservation(values: z.infer<typeof reservationSchema>) {
   console.log(values)
 }
 
-type ActionData = { errors: z.ZodIssue[] }
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formValues = Object.fromEntries(await request.formData())
   const result = reservationSchema.safeParse(formValues)
 
   if (result.success) {
     await makeReservation(result.data)
-    return redirect('conf/success/03')
+    return redirect('/conf/success/03')
   }
 
-  return json<ActionData>({ errors: result.error.issues })
+  return { errors: result.error.issues }
 }
 
 function FieldError({ name }: { name: string }) {
-  const errors = useActionData<ActionData>()?.errors
+  const errors = useActionData<Route.ComponentProps['actionData']>()?.errors
   const message = errors?.find(({ path }) => path[0] === name)?.message
 
   if (!message) return null

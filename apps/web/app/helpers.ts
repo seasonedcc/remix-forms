@@ -1,8 +1,13 @@
-import { compose, join, reject, isBoolean, isNil, flatten } from 'lodash/fp'
-import type { HtmlMetaDescriptor } from '@remix-run/node'
+import type { MetaDescriptor } from 'react-router'
+import social from './social.png'
 
-const cx = (...args: unknown[]) =>
-  compose(join(' '), reject(isBoolean), reject(isNil), flatten)(args)
+function cx(...args: unknown[]) {
+  return args
+    .flat()
+    .filter((x) => typeof x === 'string')
+    .join(' ')
+    .trim()
+}
 
 function pageTitle(title: string) {
   return `${title} · Remix Forms`
@@ -11,20 +16,26 @@ function pageTitle(title: string) {
 function metaTags({
   title: rawTitle,
   description,
-  ...otherTags
-}: Record<string, string>) {
+}: {
+  title: string
+  description: string
+}): MetaDescriptor[] {
   const title = rawTitle ? pageTitle(rawTitle) : null
-  const titleTags = title ? { title, 'og:title': title } : {}
 
-  const descriptionTags = description
-    ? { description, 'og:description': description }
-    : {}
-
-  return {
-    ...titleTags,
-    ...descriptionTags,
-    ...otherTags,
-  } as HtmlMetaDescriptor
+  return [
+    { name: 'author', content: 'Seasoned' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:image', content: social },
+    { property: 'og:site_name', content: 'Remix Forms' },
+    { title },
+    { name: 'og:title', content: title },
+    { name: 'description', content: description },
+    { name: 'og:description', content: description },
+  ]
 }
 
-export { cx, pageTitle, metaTags }
+function times<T>(n: number, fn: (i: number) => T) {
+  return Array.from({ length: n }, (_, i) => fn(i + 1))
+}
+
+export { cx, metaTags, pageTitle, times }

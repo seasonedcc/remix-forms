@@ -1,27 +1,21 @@
 import hljs from 'highlight.js/lib/common'
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'domain-functions'
-import { formAction } from '~/formAction'
-import Form from '~/ui/form'
+import { InputError, applySchema } from 'composable-functions'
+import { SchemaForm } from '~/ui/schema-form'
+import { formAction } from 'remix-forms'
+import { Route } from './+types/09'
 
 const title = 'Custom layout'
 const description = "Finally, let's make the form look exactly as before."
 
-export const meta: MetaFunction = () => metaTags({ title, description })
+export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const code = `import { ActionFunction } from '@remix-run/node'
-import { z } from 'zod'
-import { InputError, makeDomainFunction } from 'domain-functions'
-// Learn how to create these files on "Get Started" 👇🏽
-import { formAction } from '~/form-action'
-import { Form } from '~/form'
+const code = `import { z } from 'zod'
+import { InputError, applySchema } from 'composable-functions'
+import { formAction } from 'remix-forms'
+import { SchemaForm } from '~/schema-form'
 
 const reservationSchema = z.object({
   city: z.enum(['saltLakeCity', 'lasVegas', 'losAngeles']),
@@ -33,10 +27,10 @@ const reservationSchema = z.object({
   specialRequests: z.string().optional(),
 })
 
-const makeReservation = makeDomainFunction(reservationSchema)(
+const makeReservation = applySchema(reservationSchema)(
   async (values) => {
     if (values.specialRequests?.match(/towels/i)) {
-      throw new InputError("Don't be such a diva!", 'specialRequests')
+      throw new InputError("Don't be such a diva!", ['specialRequests'])
     }
 
     // Here you would store data instead
@@ -44,12 +38,12 @@ const makeReservation = makeDomainFunction(reservationSchema)(
   },
 )
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: reservationSchema,
     mutation: makeReservation,
-    successPath: 'conf/success/09',
+    successPath: '/conf/success/09',
   })
 
 export default function Component() {
@@ -76,7 +70,7 @@ export default function Component() {
   )
 }`
 
-export const loader: LoaderFunction = () => ({
+export const loader = () => ({
   code: hljs.highlight(code, { language: 'ts' }).value,
 })
 
@@ -90,23 +84,21 @@ const reservationSchema = z.object({
   specialRequests: z.string().optional(),
 })
 
-const makeReservation = makeDomainFunction(reservationSchema)(async (
-  values,
-) => {
+const makeReservation = applySchema(reservationSchema)(async (values) => {
   if (values.specialRequests?.match(/towels/i)) {
-    throw new InputError("Don't be such a diva!", 'specialRequests')
+    throw new InputError("Don't be such a diva!", ['specialRequests'])
   }
 
   // Here you would store data instead
   console.log(values)
 })
 
-export const action: ActionFunction = async ({ request }) =>
+export const action = async ({ request }: Route.ActionArgs) =>
   formAction({
     request,
     schema: reservationSchema,
     mutation: makeReservation,
-    successPath: 'conf/success/09',
+    successPath: '/conf/success/09',
   })
 
 export const handle = {
@@ -116,7 +108,7 @@ export const handle = {
 export default function Component() {
   return (
     <Example title={title} description={description} countLines>
-      <Form schema={reservationSchema}>
+      <SchemaForm schema={reservationSchema}>
         {({ Field, Errors, Button }) => (
           <>
             <Field name="city" />
@@ -134,7 +126,7 @@ export default function Component() {
             <Button>Make reservation</Button>
           </>
         )}
-      </Form>
+      </SchemaForm>
     </Example>
   )
 }

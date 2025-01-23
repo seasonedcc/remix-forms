@@ -1,168 +1,88 @@
-import * as React from 'react'
-import { Disclosure, Popover } from '@headlessui/react'
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import * as Collapsible from '@radix-ui/react-collapsible'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useLocation, type NavLinkProps } from 'react-router'
 import { cx } from '~/helpers'
-import { MenuAlt2Icon, MenuAlt3Icon, XIcon } from '@heroicons/react/outline'
 import UINavLink from '~/ui/nav-link'
-import type { RemixNavLinkProps } from '@remix-run/react/dist/components'
+import SecondaryButton from './secondary-button'
 
-type SidebarType = 'disclosure' | 'popover'
+function Nav({
+  children,
+  menuTitle = 'More examples',
+}: {
+  children: ReactNode
+  menuTitle?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const location = useLocation()
 
-type NavProps = {
-  type?: SidebarType
-  close?: Function
-} & JSX.IntrinsicElements['nav']
-
-function Nav({ children, type = 'disclosure', close, ...props }: NavProps) {
-  const Panel = type === 'disclosure' ? Disclosure.Panel : Popover.Panel
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
-  const Icon = type === 'disclosure' ? MenuAlt3Icon : XIcon
-  const classes = type === 'disclosure' ? 'min-h-full' : 'absolute top-0'
+  useEffect(() => {
+    setOpen(false)
+  }, [location])
 
   return (
-    <Panel as="nav" {...props}>
-      <div className={cx('z-10 w-[14rem] bg-pink-600 p-2 pb-4', classes)}>
-        <div className="flex justify-end p-1">
-          <Button className="inline-flex items-center justify-center rounded-md p-1 text-[#480803] hover:bg-pink-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-            <Icon className="block h-6 w-6" />
-          </Button>
+    <Collapsible.Root open={open} onOpenChange={setOpen} asChild>
+      <nav className="relative">
+        <Collapsible.Trigger asChild>
+          <div className="md:hidden px-4 flex w-full">
+            {open ? (
+              <button className="absolute top-1 right-1 inline-flex items-center justify-center rounded-md p-2 text-pink-900 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+              </button>
+            ) : (
+              <SecondaryButton className="flex-1 mt-2">
+                <span>{menuTitle}</span>
+                <ChevronDownIcon className="size-6" aria-hidden="true" />
+              </SecondaryButton>
+            )}
+          </div>
+        </Collapsible.Trigger>
+        <Collapsible.Content asChild>
+          <div className="block md:hidden rounded bg-pink-600 p-2">
+            <div className="flex flex-col gap-2 pb-2">{children}</div>
+          </div>
+        </Collapsible.Content>
+        <div className="md:block hidden w-[14rem] bg-pink-600 p-2 min-h-full">
+          <div className="flex flex-col gap-2 pb-2">{children}</div>
         </div>
-        <div className="-mt-4 flex flex-col space-y-2">
-          {React.Children.map(children, (child) => {
-            if (!React.isValidElement(child)) return child
-
-            if (child.type === NavLink) {
-              return React.cloneElement(child, {
-                type,
-                close,
-              } as React.HTMLAttributes<unknown>)
-            }
-
-            return child
-          })}
-        </div>
-      </div>
-    </Panel>
+      </nav>
+    </Collapsible.Root>
   )
 }
 
-function NavTitle({ className, ...props }: JSX.IntrinsicElements['h4']) {
-  return (
-    <h4 className={cx('font-medium text-[#480803]', className)} {...props} />
-  )
+function NavTitle({ children }: { children: ReactNode }) {
+  return <h4 className="font-medium text-[#480803]">{children}</h4>
 }
 
-type NavLinkProps = {
-  type?: SidebarType
-  close?: Function
-} & RemixNavLinkProps
-
-function NavLink({
-  className,
-  type = 'disclosure',
-  close = () => {},
-  ...props
-}: NavLinkProps) {
+function NavLink({ className, ...props }: NavLinkProps) {
   return (
     <UINavLink
-      className={({ isActive }) =>
+      className={({ isActive, isPending, isTransitioning }) =>
         cx(
           isActive ? 'bg-pink-900' : 'hover:bg-pink-700',
-          typeof className === 'function' ? className({ isActive }) : className,
+          typeof className === 'function'
+            ? className({ isActive, isPending, isTransitioning })
+            : className,
         )
       }
-      onClick={type === 'popover' ? () => close() : undefined}
       {...props}
     />
   )
 }
 
-type ContentProps = { type?: SidebarType } & JSX.IntrinsicElements['div']
-
-function Content({ children, type, className, ...props }: ContentProps) {
-  return (
-    <div
-      className={cx(type === 'disclosure' ? 'flex-1' : 'pl-10', className)}
-      {...props}
-    >
-      {children}
-    </div>
-  )
+function Content({ children }: { children: ReactNode }) {
+  return <div className="flex-1">{children}</div>
 }
 
-function Closed({ type }: { type: SidebarType }) {
-  const Button = type === 'disclosure' ? Disclosure.Button : Popover.Button
-
-  return (
-    <div className={cx('absolute inset-y-0 w-10 bg-pink-600 p-1 md:relative')}>
-      <div className="relative h-full">
-        <Button className="sticky top-0 inline-flex items-center justify-center rounded-md p-1 text-[#480803] hover:bg-pink-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-          <MenuAlt2Icon className="block h-6 w-6" />
-        </Button>
-      </div>
-    </div>
-  )
+function SidebarRoot({ children }: { children: ReactNode }) {
+  return <div className="flex md:flex-row flex-col p-2 md:p-0">{children}</div>
 }
 
-type MapChildren = {
-  children: React.ReactNode
-  type: SidebarType
-  open: boolean
-  close: Function
-}
+const SidebarLayout = Object.assign(SidebarRoot, {
+  Nav,
+  NavTitle,
+  NavLink,
+  Content,
+})
 
-function mapChildren({ children, type, close }: MapChildren) {
-  return React.Children.map(children, (child) => {
-    if (!React.isValidElement(child)) return child
-
-    if (child.type === Nav) {
-      return React.cloneElement(child, {
-        type,
-        close,
-      } as React.HTMLAttributes<unknown>)
-    }
-
-    if (child.type === Content) {
-      return React.cloneElement(child, {
-        type,
-      } as React.HTMLAttributes<unknown>)
-    }
-
-    return child
-  })
-}
-
-function SidebarRoot({
-  children,
-  className,
-  ...props
-}: JSX.IntrinsicElements['div']) {
-  return (
-    <>
-      <Disclosure
-        as="div"
-        defaultOpen
-        className={cx('hidden grow md:flex', className)}
-        {...props}
-      >
-        {({ open, close }) => (
-          <>
-            {!open && <Closed type="disclosure" />}
-            {mapChildren({ children, type: 'disclosure', open, close })}
-          </>
-        )}
-      </Disclosure>
-      <Popover as="div" className={cx('md:hidden', className)} {...props}>
-        {({ open, close }) => (
-          <>
-            {!open && <Closed type="popover" />}
-            {mapChildren({ children, type: 'popover', open, close })}
-          </>
-        )}
-      </Popover>
-    </>
-  )
-}
-
-const Sidebar = Object.assign(SidebarRoot, { Nav, NavTitle, NavLink, Content })
-
-export default Sidebar
+export { SidebarLayout }

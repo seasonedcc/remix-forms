@@ -1,20 +1,25 @@
-import type { DomainFunction, SchemaError } from 'domain-functions'
-import { inputFromForm } from 'domain-functions'
+import type { ComposableWithSchema } from 'composable-functions'
+import { inputFromForm, InputError, isInputError } from 'composable-functions'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+import { data, redirect } from 'react-router'
+
+type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
 type NestedErrors<SchemaType> = {
   [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
 }
 
 function errorMessagesForSchema<T extends z.ZodTypeAny>(
-  errors: SchemaError[],
+  errors: Error[],
   _schema: T,
 ): NestedErrors<z.infer<T>> {
   type SchemaType = z.infer<T>
   type ErrorObject = { path: string[]; messages: string[] }
+
+  const inputErrors = errors.filter(isInputError) as InputError[]
 
   const nest = (
     { path, messages }: ErrorObject,
@@ -34,13 +39,13 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
   const compareStringArrays = (a: string[]) => (b: string[]) =>
     JSON.stringify(a) === JSON.stringify(b)
 
-  const toErrorObject = (errors: SchemaError[]): ErrorObject[] =>
+  const toErrorObject = (errors: InputError[]): ErrorObject[] =>
     errors.map(({ path, message }) => ({
       path,
       messages: [message],
     }))
 
-  const unifyPaths = (errors: SchemaError[]) =>
+  const unifyPaths = (errors: InputError[]) =>
     toErrorObject(errors).reduce((memo, error) => {
       const comparePath = compareStringArrays(error.path)
       const mergeErrorMessages = ({ path, messages }: ErrorObject) =>
@@ -52,7 +57,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
       return existingPath ? memo.map(mergeErrorMessages) : [...memo, error]
     }, [] as ErrorObject[])
 
-  const errorTree = unifyPaths(errors).reduce((memo, schemaError) => {
+  const errorTree = unifyPaths(inputErrors).reduce((memo, schemaError) => {
     const errorBranch = nest(schemaError, memo)
 
     return { ...memo, ...errorBranch }
@@ -60,9 +65,6 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
 
   return errorTree
 }
-
-type RedirectFunction = (url: string, init?: number | ResponseInit) => Response
-type JsonFunction = <Data>(data: Data, init?: number | ResponseInit) => Response
 
 type FormActionFailure<SchemaType> = {
   errors: FormErrors<SchemaType>
@@ -75,26 +77,25 @@ type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-type PerformMutation<SchemaType, D extends unknown> =
+type MutationResult<SchemaType, D extends unknown> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
-
-type Callback = (request: Request) => Promise<Response | void>
 
 type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
   request: Request
   schema: Schema
-  mutation: DomainFunction<D>
-  environment?: unknown
+  mutation: ComposableWithSchema<D>
+  context?: unknown
   transformValues?: (
     values: FormValues<z.infer<Schema>>,
   ) => Record<string, unknown>
+  transformResult?: (
+    result: MutationResult<Schema, D>,
+  ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
 }
 
 type FormActionProps<Schema extends FormSchema, D extends unknown> = {
-  beforeAction?: Callback
-  beforeSuccess?: Callback
-  successPath?: string | ((data: D) => string)
+  successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
 
 async function getFormValues<Schema extends FormSchema>(
@@ -118,90 +119,67 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
   request,
   schema,
   mutation,
-  environment,
+  context,
+  transformResult = (result) => result,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<
-  PerformMutation<z.infer<Schema>, D>
+  MutationResult<z.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema)
-  const result = await mutation(transformValues(values), environment)
+  const result = await mutation(transformValues(values), context)
 
   if (result.success) {
-    return { success: true, data: result.data }
+    return transformResult({ success: true, data: result.data })
   } else {
-    return {
+    const global = result.errors.filter((e) => !isInputError(e))
+
+    return transformResult({
       success: false,
-      errors: {
-        ...errorMessagesForSchema(result.inputErrors, schema),
-        _global:
-          result.errors.length || result.environmentErrors.length
-            ? [...result.errors, ...result.environmentErrors].map(
-                (error) => error.message,
-              )
-            : undefined,
-      } as FormErrors<Schema>,
+      errors:
+        global.length > 0
+          ? ({
+              ...errorMessagesForSchema(result.errors, schema),
+              _global: global.map((error) => error.message),
+            } as FormErrors<Schema>)
+          : (errorMessagesForSchema(
+              result.errors,
+              schema,
+            ) as FormErrors<Schema>),
       values,
-    }
+    })
   }
 }
 
-function createFormAction({
-  redirect,
-  json,
-}: {
-  redirect: RedirectFunction
-  json: JsonFunction
-}) {
-  async function formAction<Schema extends FormSchema, D extends unknown>({
-    request,
-    schema,
-    mutation,
-    environment,
-    transformValues,
-    beforeAction,
-    beforeSuccess,
-    successPath,
-  }: FormActionProps<Schema, D>): Promise<Response> {
-    if (beforeAction) {
-      const beforeActionResponse = await beforeAction(request)
-      if (beforeActionResponse) return beforeActionResponse
+async function formAction<Schema extends FormSchema, D extends unknown>({
+  successPath,
+  ...performMutationOptions
+}: FormActionProps<Schema, D>): Promise<
+  DataWithResponseInit<MutationResult<z.infer<Schema>, D>>
+> {
+  const result = await performMutation(performMutationOptions)
+
+  if (result.success) {
+    const path =
+      typeof successPath === 'function'
+        ? await successPath(result.data)
+        : successPath
+
+    if (path) {
+      throw redirect(path)
     }
 
-    const result = await performMutation({
-      request,
-      schema,
-      mutation,
-      environment,
-      transformValues,
-    })
-
-    if (result.success) {
-      if (beforeSuccess) {
-        const beforeSuccessResponse = await beforeSuccess(request)
-        if (beforeSuccessResponse) return beforeSuccessResponse
-      }
-
-      const path =
-        typeof successPath === 'function'
-          ? successPath(result.data)
-          : successPath
-
-      return path ? redirect(path) : json(result.data)
-    } else {
-      return json({ errors: result.errors, values: result.values })
-    }
+    return data(result)
+  } else {
+    return data(result, { status: 422 })
   }
-
-  return formAction
 }
 
 export type {
   FormValues,
   FormErrors,
-  PerformMutation,
-  Callback,
+  MutationResult,
   PerformMutationProps,
   FormActionProps,
 }
 
-export { performMutation, createFormAction }
+export { performMutation, formAction }

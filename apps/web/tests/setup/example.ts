@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { startCase } from 'lodash/fp'
+import { startCase } from 'lodash-es'
 
 type Field = {
   name: string
@@ -64,7 +64,7 @@ class Example {
     }
 
     await expect(field.input).toHaveValue(value)
-    await expect(field.input).toHaveAttribute('type', type)
+    type && (await expect(field.input).toHaveAttribute('type', type))
     await expect(field.input).toHaveAttribute('aria-invalid', String(invalid))
 
     placeholder &&
@@ -164,7 +164,7 @@ class Example {
       await this.page.locator('#action-data > pre:visible').first().innerText(),
     )
 
-    expect(actionData).toEqual(data)
+    expect(actionData.data).toEqual(data)
   }
 }
 

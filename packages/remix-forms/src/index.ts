@@ -1,12 +1,12 @@
-export { createForm } from './createForm'
-export { useField } from './createField'
-export { createFormAction, performMutation } from './mutations'
+export { SchemaForm } from './schema-form'
+export { useField } from './create-field'
+export { formAction, performMutation } from './mutations'
 
 export type {
-  FormProps,
+  SchemaFormProps,
   RenderFieldProps,
   RenderField,
   FormSchema,
-} from './createForm'
+} from './schema-form'
 
-export type { FormActionProps, Callback, PerformMutation } from './mutations'
+export type { FormActionProps, MutationResult } from './mutations'

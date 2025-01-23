@@ -1,6 +1,7 @@
 {
-  "pipeline": {
+  "tasks": {
     "build": {
+      "cache": false,
       "dependsOn": [
         "^build"
       ],
@@ -9,6 +10,7 @@
       ]
     },
     "lint": {
+      "cache": false,
       "outputs": []
     },
     "tsc": {
@@ -18,15 +20,18 @@
       ]
     },
     "test": {
+      "cache": false,
       "outputs": [],
       "dependsOn": [
         "^build"
       ]
     },
     "playwright:ci:install": {
+      "cache": false,
       "outputs": []
     },
     "dev": {
+      "persistent": true,
       "cache": false
     }
   }

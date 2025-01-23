@@ -1,15 +1,24 @@
 {
   "name": "remix-forms",
-  "version": "2.3.0",
-  "description": "The full-stack form library for Remix and React Router",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "version": "3.0.0-alpha.4",
+  "description": "The full-stack form library for React Router v7",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "type": "module",
   "types": "./dist/index.d.ts",
   "files": [
     "README.md",
     "./dist/*"
   ],
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsup ./src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
+    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
+    "prelint": "prettier --check .",
+    "tsc": "tsc",
+    "test": "vitest run"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seasonedcc/remix-forms.git"
@@ -27,32 +36,22 @@
     "react-hook-form"
   ],
   "author": "Daniel Weinmann",
-  "scripts": {
-    "build": "tsup ./src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
-    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
-    "prelint": "prettier --check .",
-    "tsc": "tsc",
-    "test": "vitest run"
-  },
   "peerDependencies": {
-    "domain-functions": "2.x",
+    "composable-functions": ">=4",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
+    "react-router": ">=7",
     "zod": ">=3.12"
   },
   "devDependencies": {
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
-    "c8": "^7.11.2",
-    "eslint": "^8.44.0",
-    "eslint-config-custom": "*",
     "react": ">=16.8",
-    "prettier": "^3.0.0",
-    "tsconfig": "*",
-    "tsup": "^6.1.3",
+    "react-router": "7.1.3",
+    "tsup": "^8.3.5",
     "typescript": "5.7.2",
-    "vitest": "~0.10.0"
+    "vite": "6.0.7",
+    "vitest": "2.1.8"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.8"
