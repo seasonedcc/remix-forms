@@ -1,12 +1,12 @@
+import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { data } from 'react-router'
 import { performMutation } from 'remix-forms'
 import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
 import { metaTags } from '~/helpers'
-import { applySchema } from 'composable-functions'
 import Example from '~/ui/example'
-import { Route } from './+types/custom-response'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/custom-response'
 
 const title = 'Custom response'
 const description =

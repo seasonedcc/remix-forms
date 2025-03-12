@@ -1,11 +1,11 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
+import hljs from 'highlight.js/lib/common'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/dynamic-form'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/dynamic-form'
 
 const title = 'Dynamic form'
 const description =
@@ -83,12 +83,12 @@ const fieldsSchema = (fields: Field[]) =>
   z.object(
     fields.reduce(
       (obj, field) => ({ ...obj, [field.name]: fieldSchema(field.type) }),
-      {},
-    ),
+      {}
+    )
   )
 
 const mutation = applySchema(fieldsSchema(getFields()))(
-  async (values) => values,
+  async (values) => values
 )
 
 export function loader() {

@@ -1,7 +1,7 @@
 import ButtonLink from '~/ui/button-link'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
-import { Route } from './+types/success'
+import type { Route } from './+types/success'
 
 export default function Component({ params }: Route.ComponentProps) {
   return (

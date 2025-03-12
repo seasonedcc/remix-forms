@@ -1,6 +1,11 @@
-import { index, layout, route, RouteConfig } from '@react-router/dev/routes'
-import { times } from './helpers'
+import {
+  type RouteConfig,
+  index,
+  layout,
+  route,
+} from '@react-router/dev/routes'
 import { kebabCase } from 'lodash-es'
+import { times } from './helpers'
 
 export const exampleRouteGroups = {
   Actions: [
@@ -58,10 +63,9 @@ const testRoutes = [
 ]
 
 export const exampleRoutesToPrerender = Object.entries(exampleRouteGroups)
-  .map(([group, paths]) =>
-    paths.map((path) => `/examples/${kebabCase(group)}/${kebabCase(path)}`),
+  .flatMap(([group, paths]) =>
+    paths.map((path) => `/examples/${kebabCase(group)}/${kebabCase(path)}`)
   )
-  .flat()
   // Async validation example has a loader with dynamic response depending
   // on the search params. Thus, it can't be pre-rendered
   .filter((path) => !path.endsWith('async-validation'))
@@ -74,18 +78,16 @@ export default [
   route('success', './routes/success.tsx'),
   layout('./routes/examples/layout.tsx', [
     route('/examples', './routes/examples/index.ts'),
-    ...Object.entries(exampleRouteGroups)
-      .map(([group, paths]) =>
-        paths.map((path) =>
-          route(
-            `examples/${kebabCase(group)}/${kebabCase(path)}`,
-            `./routes/examples/${kebabCase(path)}.tsx`,
-          ),
-        ),
+    ...Object.entries(exampleRouteGroups).flatMap(([group, paths]) =>
+      paths.map((path) =>
+        route(
+          `examples/${kebabCase(group)}/${kebabCase(path)}`,
+          `./routes/examples/${kebabCase(path)}.tsx`
+        )
       )
-      .flat(),
+    ),
     ...testRoutes.map((path) =>
-      route(`/test-examples/${path}`, `./routes/tests/${path}.tsx`),
+      route(`/test-examples/${path}`, `./routes/tests/${path}.tsx`)
     ),
   ]),
   layout('./routes/conf/layout.tsx', [

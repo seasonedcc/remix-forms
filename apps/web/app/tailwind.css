@@ -25,7 +25,8 @@
   body * {
     @apply font-[inherit] text-current;
   }
-  h1, .h1 {
+  h1,
+  .h1 {
     @apply text-2xl font-bold leading-7  sm:text-5xl  text-pink-500;
   }
 }

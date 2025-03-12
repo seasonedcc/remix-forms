@@ -1,8 +1,0 @@
-node_modules
-build
-public/build
-dist
-tsc
-*.css
-*.html
-.netlify

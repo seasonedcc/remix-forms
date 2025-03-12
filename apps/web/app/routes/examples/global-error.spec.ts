@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/actions/global-error'
 
@@ -18,11 +18,11 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   // Make first field be valid, focus goes to the second field
@@ -69,12 +69,12 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectErrors(
     email,
     'String must contain at least 1 character(s)',
-    'Invalid email',
+    'Invalid email'
   )
 
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectAutoFocus(email)

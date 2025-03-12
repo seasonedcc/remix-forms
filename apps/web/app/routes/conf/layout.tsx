@@ -1,9 +1,9 @@
 import { Link, Outlet } from 'react-router'
-import ExternalLink from '~/ui/external-link'
-import { SidebarLayout } from '~/ui/sidebar-layout'
-import SecondaryButtonLink from '~/ui/secondary-button-link'
 import TopBar from '~/ui/conf/top-bar'
-import { Route } from './+types/layout'
+import ExternalLink from '~/ui/external-link'
+import SecondaryButtonLink from '~/ui/secondary-button-link'
+import { SidebarLayout } from '~/ui/sidebar-layout'
+import type { Route } from './+types/layout'
 
 export default function Component({ matches }: Route.ComponentProps) {
   const { previous, next } =

@@ -8,8 +8,6 @@
     "dev": "react-router dev",
     "playwright:ci:install": "playwright install chromium",
     "start": "react-router-serve ./build/server/index.js",
-    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
-    "prelint": "prettier --check .",
     "tsc": "react-router typegen && tsc",
     "test": "playwright test",
     "pretest:ci": "npm run build",

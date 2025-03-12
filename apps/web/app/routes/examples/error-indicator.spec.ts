@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/render-field/error-indicator'
 
@@ -28,7 +28,7 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   const errorClass =

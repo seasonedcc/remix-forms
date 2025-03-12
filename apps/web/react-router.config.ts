@@ -1,5 +1,5 @@
 import type { Config } from '@react-router/dev/config'
-import { exampleRoutesToPrerender, confRoutes } from './app/routes'
+import { confRoutes, exampleRoutesToPrerender } from './app/routes'
 
 export default {
   ssr: true,

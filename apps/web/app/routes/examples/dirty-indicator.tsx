@@ -1,11 +1,11 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
+import hljs from 'highlight.js/lib/common'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/dirty-indicator'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/dirty-indicator'
 
 const title = 'Dirty indicator'
 const description =

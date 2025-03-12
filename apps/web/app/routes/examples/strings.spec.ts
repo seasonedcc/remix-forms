@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/schemas/strings'
 
@@ -34,17 +34,17 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     nonEmpty,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectValid(optional)
   await example.expectValid(nullable)
   await example.expectError(
     minLength,
-    'String must contain at least 5 character(s)',
+    'String must contain at least 5 character(s)'
   )
   await example.expectError(
     maxLength,
-    'String must contain at most 10 character(s)',
+    'String must contain at most 10 character(s)'
   )
   await example.expectError(email, 'Invalid email')
   await example.expectError(url, 'Invalid url')
@@ -116,15 +116,15 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     nonEmpty,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     minLength,
-    'String must contain at least 5 character(s)',
+    'String must contain at least 5 character(s)'
   )
   await example.expectError(
     maxLength,
-    'String must contain at most 10 character(s)',
+    'String must contain at most 10 character(s)'
   )
   await example.expectError(email, 'Invalid email')
   await example.expectError(url, 'Invalid url')

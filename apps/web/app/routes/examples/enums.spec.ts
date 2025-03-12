@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/schemas/enums'
 
@@ -44,7 +44,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeDisabled()
 
   await page.waitForResponse((response) =>
-    response.url().includes('enums.data'),
+    response.url().includes('enums.data')
   )
 
   await example.expectData({

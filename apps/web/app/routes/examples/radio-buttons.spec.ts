@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/forms/radio-buttons'
 
@@ -26,7 +26,7 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectErrorMessage(
     'role',
-    "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
+    "Invalid enum value. Expected 'Designer' | 'Dev', received ''"
   )
 
   await expect(role.input.first()).toBeFocused()
@@ -59,7 +59,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
   await expect(example.page.locator('#errors-for-role').first()).toHaveText(
-    "Invalid enum value. Expected 'Designer' | 'Dev', received ''",
+    "Invalid enum value. Expected 'Designer' | 'Dev', received ''"
   )
 
   const designerRadio = example.page

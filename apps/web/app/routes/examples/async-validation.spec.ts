@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/forms/async-validation'
 
@@ -19,28 +19,28 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     username,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await username.input.pressSequentially('fo')
   await page.waitForResponse((response) =>
-    response.url().includes('async-validation.data?username=fo'),
+    response.url().includes('async-validation.data?username=fo')
   )
   await expect(button).toBeEnabled()
 
   // Type in the username
   await username.input.pressSequentially('o')
   await page.waitForResponse((response) =>
-    response.url().includes('async-validation.data?username=foo'),
+    response.url().includes('async-validation.data?username=foo')
   )
 
   await expect(page.locator('[name=username] + div')).toHaveText(
-    'Already taken',
+    'Already taken'
   )
   await expect(button).toBeDisabled()
 
@@ -74,12 +74,12 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     username,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectAutoFocus(username)

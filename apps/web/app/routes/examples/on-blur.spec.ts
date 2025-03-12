@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/modes/on-blur'
 
@@ -19,11 +19,11 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await button.click()
@@ -61,13 +61,13 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectErrors(
     email,
     'String must contain at least 1 character(s)',
-    'Invalid email',
+    'Invalid email'
   )
 
   await example.expectAutoFocus(firstName)

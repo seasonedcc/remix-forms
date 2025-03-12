@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import * as z from 'zod'
 import { coerceValue } from './coercions'
 
@@ -21,26 +21,28 @@ describe('coerceValue', () => {
     'returns null when value is missing and shape %s is nullable',
     (shape) => {
       expect(coerceValue(null, shape.nullable())).toEqual(null)
-    },
+    }
   )
 
   it.each(supportedShapes)(
     'returns null when value is missing and shape %s is nullable and optional',
     (shape) => {
       expect(coerceValue(null, shape.nullable().optional())).toEqual(null)
-    },
+    }
   )
 
   it.each(supportedShapes)(
     'returns undefined when value is missing and shape %s is optional',
     (shape) => {
       expect(coerceValue(null, shape.optional())).toEqual(undefined)
-    },
+    }
   )
 
   it('returns NaN when trying to coerce things that do not make sense into numbers', () => {
-    expect(coerceValue('not a number', z.number())).toEqual(NaN)
-    expect(coerceValue(new File([], 'empty-file.txt'), z.number())).toEqual(NaN)
+    expect(coerceValue('not a number', z.number())).toEqual(Number.NaN)
+    expect(coerceValue(new File([], 'empty-file.txt'), z.number())).toEqual(
+      Number.NaN
+    )
   })
 
   it('returns number when trying to coerce strings that can be read as numbers into numbers', () => {
@@ -68,7 +70,7 @@ describe('coerceValue', () => {
     expect(coerceValue('', z.date())).toEqual(null)
     expect(coerceValue(null, z.date())).toEqual(null)
     expect(
-      coerceValue(new File([], 'definitely-not-a-date.txt'), z.date()),
+      coerceValue(new File([], 'definitely-not-a-date.txt'), z.date())
     ).toEqual(null)
   })
 
@@ -87,7 +89,7 @@ describe('coerceValue', () => {
 
   it('coerces strings to [object File] when value is a file', () => {
     expect(
-      coerceValue(new File([], 'some-empty-file.txt'), z.string()),
+      coerceValue(new File([], 'some-empty-file.txt'), z.string())
     ).toMatch(/[object (File|Blob)]/)
   })
 
@@ -98,7 +100,7 @@ describe('coerceValue', () => {
 
   it('coerces enums to [object File] when value is a file', () => {
     expect(
-      coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test'])),
+      coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test']))
     ).toMatch(/[object (File|Blob)]/)
   })
 })

@@ -1,5 +1,6 @@
 import type { z } from 'zod'
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
   | z.ZodEffects<T>
   | z.SomeZodObject
@@ -19,17 +20,17 @@ type KeysOfStrings<T extends object> = {
 }[keyof T]
 
 function objectFromSchema<Schema extends FormSchema>(
-  schema: Schema,
+  schema: Schema
 ): ObjectFromSchema<Schema> {
   return 'shape' in schema ? schema : objectFromSchema(schema._def.schema)
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
   obj: T,
-  mapFunction: (key: string, value: V) => [string, NewValue],
+  mapFunction: (key: string, value: V) => [string, NewValue]
 ) {
   return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => mapFunction(key, value)),
+    Object.entries(obj).map(([key, value]) => mapFunction(key, value))
   )
 }
 

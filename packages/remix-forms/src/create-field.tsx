@@ -1,11 +1,11 @@
 import * as React from 'react'
-import type { SomeZodObject, z } from 'zod'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { Field } from './schema-form'
-import { findElement, mapChildren, findParent } from './children-traversal'
+import type { SomeZodObject, z } from 'zod'
+import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'
 import { mapObject, parseDate } from './prelude'
+import type { Field } from './schema-form'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -50,8 +50,9 @@ type Children<Schema extends SomeZodObject> = (
     CheckboxWrapper: ComponentOrTagName<'div'>
     Errors: ComponentOrTagName<'div'>
     Error: ComponentOrTagName<'div'>
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     ref: React.ForwardedRef<any>
-  },
+  }
 ) => React.ReactNode
 
 type FieldType = 'string' | 'boolean' | 'number' | 'date'
@@ -65,7 +66,7 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
 
 function getInputType(
   type: FieldType,
-  radio: boolean,
+  radio: boolean
 ): React.HTMLInputTypeAttribute {
   if (radio) return 'radio'
 
@@ -85,6 +86,7 @@ type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
 type FieldComponent<Schema extends SomeZodObject> =
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
 type ComponentMappings = {
@@ -130,6 +132,7 @@ type ComponentMappings = {
 type SmartInputProps = {
   fieldType?: FieldType
   type?: React.HTMLInputTypeAttribute
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   value?: any
   autoFocus?: boolean
   options?: Option[]
@@ -161,7 +164,7 @@ const makeSelectOption = ({ name, value }: Option) => (
 
 const makeOptionComponents = (
   fn: (option: Option) => JSX.Element,
-  options: Option[] | undefined,
+  options: Option[] | undefined
 ) => (options ? options.map(fn) : undefined)
 
 function createSmartInput({
@@ -192,7 +195,7 @@ function createSmartInput({
       (props: Record<string, unknown>, checkedValue: Option['value']) =>
       ({ name, value }: Option) => {
         const propsWithUniqueId = mapObject(props, (key, propValue) =>
-          key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue],
+          key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue]
         )
         return (
           <RadioWrapper key={String(propsWithUniqueId?.id)}>
@@ -264,8 +267,10 @@ function createField<Schema extends SomeZodObject>({
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
 }: {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
 } & ComponentMappings): FieldComponent<Schema> {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return React.forwardRef<any, FieldProps<Schema>>(
     (
       {
@@ -287,7 +292,7 @@ function createField<Schema extends SomeZodObject>({
         children: childrenFn,
         ...props
       },
-      ref,
+      ref
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
       const field = {
@@ -338,7 +343,7 @@ function createField<Schema extends SomeZodObject>({
             radioWrapperComponent: RadioWrapper,
             labelComponent: Label,
           }),
-        [],
+        []
       )
 
       if (childrenFn) {
@@ -364,6 +369,7 @@ function createField<Schema extends SomeZodObject>({
         const children = mapChildren(childrenDefinition, (child) => {
           const mergedRef = (instance: unknown) => {
             registerRef(instance)
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             const { ref: childRef } = child as any
             if (childRef) {
               childRef.current = instance
@@ -377,7 +383,8 @@ function createField<Schema extends SomeZodObject>({
               children: label,
               ...child.props,
             })
-          } else if (child.type === SmartInput) {
+          }
+          if (child.type === SmartInput) {
             const smartInputProps: SmartInputProps = {
               fieldType,
               type,
@@ -395,7 +402,8 @@ function createField<Schema extends SomeZodObject>({
               ...smartInputProps,
               ...child.props,
             })
-          } else if (child.type === Input) {
+          }
+          if (child.type === Input) {
             return React.cloneElement(child, {
               id: String(name),
               type,
@@ -407,7 +415,8 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === Multiline) {
+          }
+          if (child.type === Multiline) {
             return React.cloneElement(child, {
               id: String(name),
               ...registerProps,
@@ -418,7 +427,8 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === Select) {
+          }
+          if (child.type === Select) {
             return React.cloneElement(child, {
               id: String(name),
               ...registerProps,
@@ -429,7 +439,8 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (
+          }
+          if (
             child.type === Checkbox &&
             (child.type !== 'input' || child.props.type === 'checkbox')
           ) {
@@ -444,12 +455,14 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === RadioGroup) {
+          }
+          if (child.type === RadioGroup) {
             return React.cloneElement(child, {
               ...a11yProps,
               ...child.props,
             })
-          } else if (
+          }
+          if (
             child.type === Radio &&
             (child.type !== 'input' || child.props.type === 'radio')
           ) {
@@ -462,7 +475,8 @@ function createField<Schema extends SomeZodObject>({
               ...child.props,
               ref: mergedRef,
             })
-          } else if (child.type === Errors) {
+          }
+          if (child.type === Errors) {
             if (!child.props.children && !errors?.length) return null
 
             if (child.props.children || !errors?.length) {
@@ -479,9 +493,8 @@ function createField<Schema extends SomeZodObject>({
               children: errorsChildren,
               ...child.props,
             })
-          } else {
-            return child
           }
+          return child
         })
 
         const fixRadioLabels = (children: React.ReactNode) =>
@@ -491,7 +504,7 @@ function createField<Schema extends SomeZodObject>({
               if (parent && parent.type === RadioWrapper) {
                 const radioChild = findElement(
                   parent.props?.children,
-                  (ch) => ch.type === Radio,
+                  (ch) => ch.type === Radio
                 )
                 if (radioChild) {
                   return React.cloneElement(child, {
@@ -558,7 +571,7 @@ function createField<Schema extends SomeZodObject>({
           </Field>
         </FieldContext.Provider>
       )
-    },
+    }
   )
 }
 

@@ -1,13 +1,13 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
-import { useRef } from 'react'
+import hljs from 'highlight.js/lib/common'
 import { uniq } from 'lodash-es'
+import { useRef } from 'react'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/array-of-objects'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/array-of-objects'
 
 const title = 'Array of objects'
 const description =
@@ -188,7 +188,7 @@ export default () => {
                             setValue(
                               'contacts',
                               uniq([...contacts, { name, email }]),
-                              { shouldValidate: true },
+                              { shouldValidate: true }
                             )
                             nameRef.current.value = ''
                             emailRef.current.value = ''
@@ -212,9 +212,9 @@ export default () => {
                                   setValue(
                                     'contacts',
                                     contacts.filter(
-                                      ({ email }) => email !== contact.email,
+                                      ({ email }) => email !== contact.email
                                     ),
-                                    { shouldValidate: true },
+                                    { shouldValidate: true }
                                   )
                                 }}
                               >

@@ -1,4 +1,4 @@
-import { RefAttributes, SVGProps } from 'react'
+import type { RefAttributes, SVGProps } from 'react'
 
 type Props = {
   icon: React.ComponentType<
@@ -18,7 +18,7 @@ export default function Feature({ icon: Icon, title, children }: Props) {
         <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-pink-500 text-white">
           <Icon className="h-6 w-6" aria-hidden="true" />
         </div>
-        <h4 className="ml-16 text-lg font-medium leading-6 text-gray-300">
+        <h4 className="ml-16 font-medium text-gray-300 text-lg leading-6">
           {title}
         </h4>
       </dt>

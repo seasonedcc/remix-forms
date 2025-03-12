@@ -1,22 +1,23 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
-import type { SomeZodObject, TypeOf, z, ZodTypeAny } from 'zod'
 import type {
-  ComponentOrTagName,
-  FormSchema,
-  KeysOfStrings,
-  ObjectFromSchema,
-} from './prelude'
-import { objectFromSchema, mapObject, browser } from './prelude'
-import type {
-  UseFormReturn,
+  DeepPartial,
   FieldError,
   Path,
+  UseFormReturn,
   ValidationMode,
-  DeepPartial,
 } from 'react-hook-form'
-import { useForm, FormProvider } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import type { FormErrors, FormValues } from './mutations'
+import { FormProvider, useForm } from 'react-hook-form'
+import {
+  type FetcherWithComponents,
+  Form as ReactRouterForm,
+  type FormProps as ReactRouterFormProps,
+  useActionData,
+  useNavigation,
+  useSubmit,
+} from 'react-router'
+import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
+import { mapChildren, reduceElements } from './children-traversal'
 import type {
   ComponentMappings,
   FieldComponent,
@@ -24,21 +25,20 @@ import type {
   Option,
 } from './create-field'
 import { createField } from './create-field'
-import { mapChildren, reduceElements } from './children-traversal'
 import { defaultRenderField } from './default-render-field'
 import { inferLabel } from './infer-label'
+import type { FormErrors, FormValues } from './mutations'
+import type {
+  ComponentOrTagName,
+  FormSchema,
+  KeysOfStrings,
+  ObjectFromSchema,
+} from './prelude'
+import { browser, mapObject, objectFromSchema } from './prelude'
+import { parseDate } from './prelude'
 import type { ZodTypeName } from './shape-info'
 import { shapeInfo } from './shape-info'
 import type { ShapeInfo } from './shape-info'
-import { parseDate } from './prelude'
-import {
-  Form as ReactRouterForm,
-  FetcherWithComponents,
-  useActionData,
-  useNavigation,
-  useSubmit,
-  type FormProps as ReactRouterFormProps,
-} from 'react-router'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -50,6 +50,7 @@ type Field<SchemaType> = {
   options?: Option[]
   errors?: string[]
   autoFocus?: boolean
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   value?: any
   hidden?: boolean
   multiline?: boolean
@@ -62,7 +63,7 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
 }
 
 type RenderField<Schema extends SomeZodObject> = (
-  props: RenderFieldProps<Schema>,
+  props: RenderFieldProps<Schema>
 ) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
@@ -74,15 +75,18 @@ type Children<Schema extends SomeZodObject> = (
     Error: ComponentOrTagName<'div'>
     Button: ComponentOrTagName<'button'>
     submit: () => void
-  } & UseFormReturn<z.infer<Schema>, any>,
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  } & UseFormReturn<z.infer<Schema>, any>
 ) => React.ReactNode
 
 type OnNavigation<Schema extends SomeZodObject> = (
-  helpers: UseFormReturn<z.infer<Schema>, any>,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void
 
 type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: typeof ReactRouterForm
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
@@ -197,12 +201,12 @@ function SchemaForm<Schema extends FormSchema>({
 
   const errors = React.useMemo(
     () => ({ ...errorsProp, ...actionErrors }),
-    [errorsProp, actionErrors],
+    [errorsProp, actionErrors]
   )
 
   const values = React.useMemo(
     () => ({ ...valuesProp, ...actionValues }),
-    [valuesProp, actionValues],
+    [valuesProp, actionValues]
   )
 
   const schemaShape = objectFromSchema(schema).shape
@@ -210,7 +214,7 @@ function SchemaForm<Schema extends FormSchema>({
     const shape = shapeInfo(fieldShape as z.ZodTypeAny)
     const defaultValue = coerceToForm(
       values[key] ?? shape?.getDefaultValue?.(),
-      shape,
+      shape
     )
 
     return [key, defaultValue] as never
@@ -228,6 +232,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const formRef = React.useRef<HTMLFormElement>(null)
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const onSubmit = (event: any) => {
     form.handleSubmit(() => {
       if (!formRef.current) return
@@ -245,7 +250,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const doSubmit = () => {
     formRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true }),
+      new Event('submit', { cancelable: true, bubbles: true })
     )
   }
 
@@ -280,15 +285,15 @@ function SchemaForm<Schema extends FormSchema>({
       fieldErrorsComponent,
       Error,
       form.register,
-    ],
+    ]
   )
 
   const fieldErrors = React.useCallback(
     (key: keyof SchemaType) => {
       const message = (formErrors[key] as unknown as FieldError)?.message
-      return browser() ? message && [message] : errors && errors[key]
+      return browser() ? message && [message] : errors?.[key]
     },
-    [errors, formErrors],
+    [errors, formErrors]
   )
 
   const firstErroredField = () =>
@@ -320,7 +325,7 @@ function SchemaForm<Schema extends FormSchema>({
       name: key,
       required,
       dirty: key in formState.dirtyFields,
-      label: (labels && labels[key]) || inferLabel(String(key)),
+      label: labels?.[key] || inferLabel(String(key)),
       options: required ? fieldOptions : fieldOptionsPlusEmpty(),
       errors: fieldErrors(key),
       autoFocus: key === firstErroredField() || key === autoFocusProp,
@@ -329,7 +334,7 @@ function SchemaForm<Schema extends FormSchema>({
         hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
       multiline: multiline && Boolean(multiline.find((item) => item === key)),
       radio: radio && Boolean(radio.find((item) => item === key)),
-      placeholder: placeholders && placeholders[key],
+      placeholder: placeholders?.[key],
     } as Field<SchemaType>
   }
 
@@ -338,13 +343,14 @@ function SchemaForm<Schema extends FormSchema>({
       const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
         const hiddenFieldErrors = fieldErrors(hiddenField)
 
-        if (hiddenFieldErrors instanceof Array) {
+        if (Array.isArray(hiddenFieldErrors)) {
           const hiddenFieldLabel =
-            (labels && labels[hiddenField]) || inferLabel(String(hiddenField))
+            labels?.[hiddenField] || inferLabel(String(hiddenField))
           return hiddenFieldErrors.map(
-            (error) => `${hiddenFieldLabel}: ${error}`,
+            (error) => `${hiddenFieldLabel}: ${error}`
           )
-        } else return []
+        }
+        return []
       })
       const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
 
@@ -354,12 +360,12 @@ function SchemaForm<Schema extends FormSchema>({
 
       return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
     },
-    [fieldErrors, hiddenFields, labels],
+    [fieldErrors, hiddenFields, labels]
   )
 
   const globalErrors = React.useMemo(
     () => hiddenFieldsErrorsToGlobal(errors?._global),
-    [errors?._global, hiddenFieldsErrorsToGlobal],
+    [errors?._global, hiddenFieldsErrorsToGlobal]
   )
 
   const buttonLabel =
@@ -413,7 +419,8 @@ function SchemaForm<Schema extends FormSchema>({
           ...child.props,
           autoFocus,
         })
-      } else if (child.type === Errors) {
+      }
+      if (child.type === Errors) {
         if (!child.props.children && !globalErrorsToDisplay?.length) return null
 
         if (child.props.children || !globalErrorsToDisplay?.length) {
@@ -430,7 +437,8 @@ function SchemaForm<Schema extends FormSchema>({
           )),
           ...child.props,
         })
-      } else if (child.type === Button) {
+      }
+      if (child.type === Button) {
         const onClick = ['button', 'reset'].includes(child.props.type)
           ? undefined
           : onSubmit
@@ -441,10 +449,9 @@ function SchemaForm<Schema extends FormSchema>({
           onClick,
           ...child.props,
         })
-      } else {
-        return child
       }
-    },
+      return child
+    }
   )
 
   const defaultChildren = () => (
@@ -482,7 +489,7 @@ function SchemaForm<Schema extends FormSchema>({
           prev.push([name, value])
         }
         return prev
-      }),
+      })
     )
     reset({ ...defaultValues, ...newDefaults })
   }, [])
@@ -502,7 +509,7 @@ function SchemaForm<Schema extends FormSchema>({
   }, [errorsProp, actionData])
 
   React.useEffect(() => {
-    onNavigation && onNavigation(form)
+    onNavigation?.(form)
   }, [navigationState])
 
   return (

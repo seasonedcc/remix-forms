@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useNavigation } from 'react-router'
+import { P, match } from 'ts-pattern'
 import { cx } from '~/helpers'
-import { match, P } from 'ts-pattern'
 
 function GlobalLoading() {
   const navigation = useNavigation()
@@ -15,13 +15,12 @@ function GlobalLoading() {
     if (active) setAnimating(true)
 
     Promise.allSettled(
-      ref.current.getAnimations().map(({ finished }) => finished),
+      ref.current.getAnimations().map(({ finished }) => finished)
     ).then(() => !active && setAnimating(false))
   }, [active])
 
   return (
     <div
-      role="progressbar"
       aria-hidden={!active}
       aria-valuetext={active ? 'Loading' : undefined}
       className="fixed inset-x-0 top-0 left-0 z-50 h-1 animate-pulse"
@@ -34,7 +33,7 @@ function GlobalLoading() {
             .with(['idle', false], () => 'w-0 opacity-0 transition-none')
             .with(['submitting', P._], () => 'w-5/12')
             .with(['loading', P._], () => 'w-10/12')
-            .otherwise(() => 'w-full'),
+            .otherwise(() => 'w-full')
         )}
       />
     </div>

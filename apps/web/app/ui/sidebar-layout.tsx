@@ -1,7 +1,7 @@
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import * as Collapsible from '@radix-ui/react-collapsible'
-import { useEffect, useState, type ReactNode } from 'react'
-import { useLocation, type NavLinkProps } from 'react-router'
+import { type ReactNode, useEffect, useState } from 'react'
+import { type NavLinkProps, useLocation } from 'react-router'
 import { cx } from '~/helpers'
 import UINavLink from '~/ui/nav-link'
 import SecondaryButton from './secondary-button'
@@ -24,13 +24,13 @@ function Nav({
     <Collapsible.Root open={open} onOpenChange={setOpen} asChild>
       <nav className="relative">
         <Collapsible.Trigger asChild>
-          <div className="md:hidden px-4 flex w-full">
+          <div className="flex w-full px-4 md:hidden">
             {open ? (
-              <button className="absolute top-1 right-1 inline-flex items-center justify-center rounded-md p-2 text-pink-900 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+              <button className="absolute top-1 right-1 inline-flex items-center justify-center rounded-md p-2 text-pink-900 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset">
                 <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
               </button>
             ) : (
-              <SecondaryButton className="flex-1 mt-2">
+              <SecondaryButton className="mt-2 flex-1">
                 <span>{menuTitle}</span>
                 <ChevronDownIcon className="size-6" aria-hidden="true" />
               </SecondaryButton>
@@ -38,11 +38,11 @@ function Nav({
           </div>
         </Collapsible.Trigger>
         <Collapsible.Content asChild>
-          <div className="block md:hidden rounded bg-pink-600 p-2">
+          <div className="block rounded bg-pink-600 p-2 md:hidden">
             <div className="flex flex-col gap-2 pb-2">{children}</div>
           </div>
         </Collapsible.Content>
-        <div className="md:block hidden w-[14rem] bg-pink-600 p-2 min-h-full">
+        <div className="hidden min-h-full w-[14rem] bg-pink-600 p-2 md:block">
           <div className="flex flex-col gap-2 pb-2">{children}</div>
         </div>
       </nav>
@@ -62,7 +62,7 @@ function NavLink({ className, ...props }: NavLinkProps) {
           isActive ? 'bg-pink-900' : 'hover:bg-pink-700',
           typeof className === 'function'
             ? className({ isActive, isPending, isTransitioning })
-            : className,
+            : className
         )
       }
       {...props}
@@ -75,7 +75,7 @@ function Content({ children }: { children: ReactNode }) {
 }
 
 function SidebarRoot({ children }: { children: ReactNode }) {
-  return <div className="flex md:flex-row flex-col p-2 md:p-0">{children}</div>
+  return <div className="flex flex-col p-2 md:flex-row md:p-0">{children}</div>
 }
 
 const SidebarLayout = Object.assign(SidebarRoot, {

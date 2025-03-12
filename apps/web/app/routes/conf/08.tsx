@@ -1,11 +1,11 @@
+import { InputError, applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
+import { formAction } from 'remix-forms'
+import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
-import { z } from 'zod'
-import { InputError, applySchema } from 'composable-functions'
 import { SchemaForm } from '~/ui/schema-form'
-import { formAction } from 'remix-forms'
-import { Route } from './+types/08'
+import type { Route } from './+types/08'
 
 const title = 'Auto-generated'
 const description =

@@ -1,13 +1,13 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
-import { useRef } from 'react'
+import hljs from 'highlight.js/lib/common'
 import { uniq } from 'lodash-es'
+import { useRef } from 'react'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/array-of-strings'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/array-of-strings'
 
 const title = 'Array of strings'
 const description =
@@ -146,7 +146,7 @@ export default () => {
                               setValue(
                                 'tags',
                                 uniq([...tags, value.toLowerCase()]),
-                                { shouldValidate: true },
+                                { shouldValidate: true }
                               )
                             }
                             tagRef.current.value = ''
@@ -166,7 +166,7 @@ export default () => {
                                   setValue(
                                     'tags',
                                     tags.filter((value) => tag !== value),
-                                    { shouldValidate: true },
+                                    { shouldValidate: true }
                                   )
                                 }}
                               >
