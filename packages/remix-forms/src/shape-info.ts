@@ -20,7 +20,7 @@ function shapeInfo(
   optional = false,
   nullable = false,
   getDefaultValue?: ShapeInfo['getDefaultValue'],
-  enumValues?: ShapeInfo['enumValues'],
+  enumValues?: ShapeInfo['enumValues']
 ): ShapeInfo {
   if (!shape) {
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
@@ -34,7 +34,7 @@ function shapeInfo(
       optional,
       nullable,
       getDefaultValue,
-      enumValues,
+      enumValues
     )
   }
 
@@ -44,7 +44,7 @@ function shapeInfo(
       true,
       nullable,
       getDefaultValue,
-      enumValues,
+      enumValues
     )
   }
 
@@ -54,7 +54,7 @@ function shapeInfo(
       optional,
       true,
       getDefaultValue,
-      enumValues,
+      enumValues
     )
   }
 
@@ -64,7 +64,7 @@ function shapeInfo(
       optional,
       nullable,
       shape._def.defaultValue,
-      enumValues,
+      enumValues
     )
   }
 

@@ -1,12 +1,12 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
+import hljs from 'highlight.js/lib/common'
 import { useRef } from 'react'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/field-with-ref'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/field-with-ref'
 
 const title = 'Custom input with forward ref'
 const description =
@@ -68,13 +68,12 @@ export default function Component() {
                       }}
                     />
                     <ul className="list-disc">
-                      {tags &&
-                        tags.map((tag) => (
-                          <li key={tag}>
-                            {tag}
-                            <input type="hidden" name="tags[]" value={tag} />
-                          </li>
-                        ))}
+                      {tags?.map((tag) => (
+                        <li key={tag}>
+                          {tag}
+                          <input type="hidden" name="tags[]" value={tag} />
+                        </li>
+                      ))}
                     </ul>
                     <Errors />
                   </>

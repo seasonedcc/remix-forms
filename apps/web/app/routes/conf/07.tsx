@@ -1,18 +1,18 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import hljs from 'highlight.js/lib/common'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { redirect } from 'react-router'
+import { Form, useActionData, useNavigation, useSubmit } from 'react-router'
+import { z } from 'zod'
 import { metaTags } from '~/helpers'
+import Label from '~/ui/conf/label'
 import Example from '~/ui/example'
 import Input from '~/ui/input'
-import Label from '~/ui/conf/label'
-import Button from '~/ui/submit-button'
 import Select from '~/ui/select'
+import Button from '~/ui/submit-button'
 import TextArea from '~/ui/text-area'
-import { Form, useActionData, useSubmit, useNavigation } from 'react-router'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { Route } from './+types/07'
+import type { Route } from './+types/07'
 
 const title = 'Focus on error'
 const description =
@@ -318,6 +318,7 @@ function ServerError({ name }: { name: string }) {
   return <Error id={`error-for-${name}`}>{message}</Error>
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function FieldError({ name, errors }: { name: string; errors: any }) {
   const message = errors[name]?.message
 
@@ -374,6 +375,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
       <Form
         method="post"
         className="flex flex-col space-y-4"
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         onSubmit={(event: any) => {
           handleSubmit(() => submit(event.target))(event)
         }}

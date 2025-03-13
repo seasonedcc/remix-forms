@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/schemas/numbers'
 
@@ -41,12 +41,12 @@ test('With JS enabled', async ({ example }) => {
   await example.expectError(greaterThan, 'Expected number, received null')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Expected number, received null',
+    'Expected number, received null'
   )
   await example.expectError(lowerThan, 'Expected number, received null')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Expected number, received null',
+    'Expected number, received null'
   )
   await example.expectError(integer, 'Expected number, received null')
 
@@ -61,12 +61,12 @@ test('With JS enabled', async ({ example }) => {
   await example.expectError(greaterThan, 'Number must be greater than 5')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Number must be greater than or equal to 10',
+    'Number must be greater than or equal to 10'
   )
   await example.expectError(lowerThan, 'Number must be less than 5')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Number must be less than or equal to 10',
+    'Number must be less than or equal to 10'
   )
 
   // Make first field be valid, focus goes to the second field
@@ -142,12 +142,12 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectError(greaterThan, 'Expected number, received null')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Expected number, received null',
+    'Expected number, received null'
   )
   await example.expectError(lowerThan, 'Expected number, received null')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Expected number, received null',
+    'Expected number, received null'
   )
   await example.expectError(integer, 'Expected number, received null')
   await example.expectAutoFocus(mandatory)
@@ -163,12 +163,12 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectError(greaterThan, 'Number must be greater than 5')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Number must be greater than or equal to 10',
+    'Number must be greater than or equal to 10'
   )
   await example.expectError(lowerThan, 'Number must be less than 5')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Number must be less than or equal to 10',
+    'Number must be less than or equal to 10'
   )
 
   // Make first field be valid, focus goes to the second field

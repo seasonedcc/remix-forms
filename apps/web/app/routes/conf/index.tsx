@@ -1,15 +1,15 @@
-import type { MetaFunction } from 'react-router'
-import { metaTags } from '~/helpers'
-import Heading from '~/ui/heading'
-import SubHeading from '~/ui/sub-heading'
-import Feature from '~/ui/feature'
 import {
   ClipboardDocumentListIcon,
   GiftIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline'
-import ExternalLink from '~/ui/external-link'
+import type { MetaFunction } from 'react-router'
+import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
+import ExternalLink from '~/ui/external-link'
+import Feature from '~/ui/feature'
+import Heading from '~/ui/heading'
+import SubHeading from '~/ui/sub-heading'
 
 const title = 'Remix Conf 2022'
 const description = 'Welcome to the interactive counterpart to our talk 😄'
@@ -21,7 +21,7 @@ export default function Component() {
     <div className="flex flex-col space-y-8">
       <Heading>Remix Forms at Remix Conf</Heading>
       <SubHeading>{description}</SubHeading>
-      <div className="flex flex-col space-y-8 xl:flex-row xl:space-y-0 xl:space-x-8">
+      <div className="flex flex-col space-y-8 xl:flex-row xl:space-x-8 xl:space-y-0">
         <div className="flex-[3]">
           <iframe
             className="aspect-video w-full"

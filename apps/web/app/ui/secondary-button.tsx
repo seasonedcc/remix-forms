@@ -9,7 +9,7 @@ export default function SecondaryButton({
     <BaseButton
       className={cx(
         'border-2 border-gray-200 text-white hover:border-white focus:border-transparent focus:ring-pink-500 focus:ring-offset-white',
-        className,
+        className
       )}
       {...props}
     />

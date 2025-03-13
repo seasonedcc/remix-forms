@@ -1,12 +1,12 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
+import hljs from 'highlight.js/lib/common'
+import { formAction } from 'remix-forms'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
-import { formAction } from 'remix-forms'
-import { Route } from './+types/context'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/context'
 
 const title = 'Context'
 const description =

@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/forms/field-layout'
 
@@ -27,11 +27,11 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     street,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     number,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectValid(extendedAddress)
@@ -86,11 +86,11 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     street,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     number,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectValid(extendedAddress)

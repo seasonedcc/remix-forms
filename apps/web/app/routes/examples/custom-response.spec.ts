@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/actions/custom-response'
 
@@ -18,11 +18,11 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await expect(firstName.input).toBeFocused()
 
@@ -45,7 +45,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeDisabled()
 
   const actionData = JSON.parse(
-    await page.locator('#action-data > pre:visible').first().innerText(),
+    await page.locator('#action-data > pre:visible').first().innerText()
   )
 
   expect(actionData).toEqual({ customName: 'John' })
@@ -63,13 +63,13 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectErrors(
     email,
     'String must contain at least 1 character(s)',
-    'Invalid email',
+    'Invalid email'
   )
 
   await example.expectAutoFocus(firstName)
@@ -97,7 +97,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   const actionData = JSON.parse(
-    await page.locator('#action-data > pre:visible').first().innerText(),
+    await page.locator('#action-data > pre:visible').first().innerText()
   )
 
   expect(actionData).toEqual({ customName: 'John' })

@@ -1,8 +1,8 @@
 import { reactRouter } from '@react-router/dev/vite'
-import { UserConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
+import tailwindcss from 'tailwindcss'
+import type { UserConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default {
   css: {

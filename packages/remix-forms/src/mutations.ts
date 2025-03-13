@@ -1,10 +1,14 @@
 import type { ComposableWithSchema } from 'composable-functions'
-import { inputFromForm, InputError, isInputError } from 'composable-functions'
+import {
+  type InputError,
+  inputFromForm,
+  isInputError,
+} from 'composable-functions'
+import { data, redirect } from 'react-router'
 import type { z } from 'zod'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
-import { data, redirect } from 'react-router'
 
 type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
@@ -14,7 +18,7 @@ type NestedErrors<SchemaType> = {
 
 function errorMessagesForSchema<T extends z.ZodTypeAny>(
   errors: Error[],
-  _schema: T,
+  _schema: T
 ): NestedErrors<z.infer<T>> {
   type SchemaType = z.infer<T>
   type ErrorObject = { path: string[]; messages: string[] }
@@ -23,7 +27,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
 
   const nest = (
     { path, messages }: ErrorObject,
-    root: Record<string, unknown>,
+    root: Record<string, unknown>
   ) => {
     const [head, ...tail] = path
     root[head] =
@@ -31,7 +35,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
         ? messages
         : nest(
             { path: tail, messages },
-            (root[head] as Record<string, unknown>) ?? {},
+            (root[head] as Record<string, unknown>) ?? {}
           )
     return root
   }
@@ -71,42 +75,43 @@ type FormActionFailure<SchemaType> = {
   values: FormValues<SchemaType>
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type FormValues<SchemaType> = Partial<Record<keyof SchemaType, any>>
 
 type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
-type MutationResult<SchemaType, D extends unknown> =
+type MutationResult<SchemaType, D> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
 
-type PerformMutationProps<Schema extends FormSchema, D extends unknown> = {
+type PerformMutationProps<Schema extends FormSchema, D> = {
   request: Request
   schema: Schema
   mutation: ComposableWithSchema<D>
   context?: unknown
   transformValues?: (
-    values: FormValues<z.infer<Schema>>,
+    values: FormValues<z.infer<Schema>>
   ) => Record<string, unknown>
   transformResult?: (
-    result: MutationResult<Schema, D>,
+    result: MutationResult<Schema, D>
   ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
 }
 
-type FormActionProps<Schema extends FormSchema, D extends unknown> = {
+type FormActionProps<Schema extends FormSchema, D> = {
   successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
 
 async function getFormValues<Schema extends FormSchema>(
   request: Request,
-  schema: Schema,
+  schema: Schema
 ): Promise<FormValues<z.infer<Schema>>> {
   const shape = objectFromSchema(schema).shape
 
   const input = await inputFromForm(request)
 
-  let values: FormValues<z.infer<Schema>> = {}
+  const values: FormValues<z.infer<Schema>> = {}
   for (const key in shape) {
     const value = input[key]
     values[key as keyof z.infer<Schema>] = coerceValue(value, shape[key])
@@ -115,7 +120,7 @@ async function getFormValues<Schema extends FormSchema>(
   return values
 }
 
-async function performMutation<Schema extends FormSchema, D extends unknown>({
+async function performMutation<Schema extends FormSchema, D>({
   request,
   schema,
   mutation,
@@ -130,27 +135,23 @@ async function performMutation<Schema extends FormSchema, D extends unknown>({
 
   if (result.success) {
     return transformResult({ success: true, data: result.data })
-  } else {
-    const global = result.errors.filter((e) => !isInputError(e))
-
-    return transformResult({
-      success: false,
-      errors:
-        global.length > 0
-          ? ({
-              ...errorMessagesForSchema(result.errors, schema),
-              _global: global.map((error) => error.message),
-            } as FormErrors<Schema>)
-          : (errorMessagesForSchema(
-              result.errors,
-              schema,
-            ) as FormErrors<Schema>),
-      values,
-    })
   }
+  const global = result.errors.filter((e) => !isInputError(e))
+
+  return transformResult({
+    success: false,
+    errors:
+      global.length > 0
+        ? ({
+            ...errorMessagesForSchema(result.errors, schema),
+            _global: global.map((error) => error.message),
+          } as FormErrors<Schema>)
+        : (errorMessagesForSchema(result.errors, schema) as FormErrors<Schema>),
+    values,
+  })
 }
 
-async function formAction<Schema extends FormSchema, D extends unknown>({
+async function formAction<Schema extends FormSchema, D>({
   successPath,
   ...performMutationOptions
 }: FormActionProps<Schema, D>): Promise<
@@ -169,9 +170,8 @@ async function formAction<Schema extends FormSchema, D extends unknown>({
     }
 
     return data(result)
-  } else {
-    return data(result, { status: 422 })
   }
+  return data(result, { status: 422 })
 }
 
 export type {

@@ -1,11 +1,11 @@
+import { InputError, applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
+import { formAction } from 'remix-forms'
+import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
-import { z } from 'zod'
-import { InputError, applySchema } from 'composable-functions'
 import { SchemaForm } from '~/ui/schema-form'
-import { formAction } from 'remix-forms'
-import { Route } from './+types/09'
+import type { Route } from './+types/09'
 
 const title = 'Custom layout'
 const description = "Finally, let's make the form look exactly as before."

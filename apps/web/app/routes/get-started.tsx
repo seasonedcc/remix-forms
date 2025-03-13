@@ -6,7 +6,7 @@ import ExternalLink from '~/ui/external-link'
 import Heading from '~/ui/heading'
 import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
-import { Route } from './+types/get-started'
+import type { Route } from './+types/get-started'
 
 const title = 'Get Started'
 const description = 'The full-stack form library for React Router v7'

@@ -1,4 +1,4 @@
-import { test, expect } from 'tests/setup/tests'
+import { expect, test } from 'tests/setup/tests'
 
 const route = '/examples/forms/use-field'
 

@@ -1,11 +1,11 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { applySchema } from 'composable-functions'
-import Example from '~/ui/example'
+import hljs from 'highlight.js/lib/common'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/global-error'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/global-error'
 
 const title = 'Global error'
 const description =

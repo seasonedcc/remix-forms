@@ -11,7 +11,7 @@ export default function Code({
       {...props}
       className={cx(
         'max-h-[60vh] max-w-[calc(100vw-2rem)] xl:flex-1',
-        className,
+        className
       )}
       dangerouslySetInnerHTML={{ __html: children }}
     />

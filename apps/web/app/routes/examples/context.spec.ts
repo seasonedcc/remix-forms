@@ -1,5 +1,5 @@
 //import { test, expect } from '@playwright/test'
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/actions/context'
 
@@ -18,7 +18,7 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await expect(email.input).toBeFocused()
 
@@ -34,7 +34,7 @@ test('With JS enabled', async ({ example }) => {
   button.click()
   await expect(button).toBeDisabled()
   await expect(page.locator('form > div[role="alert"]:visible')).toHaveText(
-    'Missing custom header',
+    'Missing custom header'
   )
 
   // Submit with valid headers
@@ -58,7 +58,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectErrors(
     email,
     'String must contain at least 1 character(s)',
-    'Invalid email',
+    'Invalid email'
   )
   await example.expectAutoFocus(email)
 

@@ -1,12 +1,12 @@
-import hljs from 'highlight.js/lib/common'
-import { z } from 'zod'
-import { SchemaForm } from '~/ui/schema-form'
-import { metaTags } from '~/helpers'
 import { InputError, applySchema } from 'composable-functions'
-import Example from '~/ui/example'
+import hljs from 'highlight.js/lib/common'
 import { useFetcher } from 'react-router'
 import { formAction } from 'remix-forms'
-import { Route } from './+types/async-validation'
+import { z } from 'zod'
+import { metaTags } from '~/helpers'
+import Example from '~/ui/example'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/async-validation'
 
 const title = 'Async validation'
 const description =
@@ -132,7 +132,7 @@ export default function Component() {
                       clearErrors('username')
 
                       fetcher.load(
-                        `/examples/forms/async-validation?username=${event.target.value}`,
+                        `/examples/forms/async-validation?username=${event.target.value}`
                       )
                     }}
                   />

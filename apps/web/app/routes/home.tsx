@@ -8,15 +8,15 @@ import {
 } from '@heroicons/react/20/solid'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
+import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import Feature from '~/ui/feature'
-import { SchemaForm } from '~/ui/schema-form'
 import Heading from '~/ui/heading'
-import { formAction } from 'remix-forms'
-import { Route } from './+types/home'
+import { SchemaForm } from '~/ui/schema-form'
+import type { Route } from './+types/home'
 
 const title = 'The full-stack form library for React Router v7'
 
@@ -78,13 +78,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <br />
           for React Router v7
         </Heading>
-        <div className="flex flex-col space-y-6 space-x-0 xl:flex-row xl:space-x-6 xl:space-y-0">
+        <div className="flex flex-col space-x-0 space-y-6 xl:flex-row xl:space-x-6 xl:space-y-0">
           <Code>{code}</Code>
           <div className="xl:flex-1">
-            <h3 className="pb-6 text-center text-lg text-gray-400">
+            <h3 className="pb-6 text-center text-gray-400 text-lg">
               This tiny code creates the form below 👇🏽
             </h3>
-            <h2 className="pb-6 text-center text-xl text-white md:text-3xl">
+            <h2 className="pb-6 text-center text-white text-xl md:text-3xl">
               E2E{' '}
               <span className="underline decoration-green-500">type-safe</span>,
               with client + server{' '}

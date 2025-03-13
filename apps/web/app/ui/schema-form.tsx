@@ -1,17 +1,17 @@
 import {
   SchemaForm as BaseForm,
-  type SchemaFormProps,
   type FormSchema,
+  type SchemaFormProps,
 } from 'remix-forms'
+import Checkbox from './checkbox'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
 import Input from './input'
 import Label from './label'
+import Radio from './radio'
 import Select from './select'
 import SubmitButton from './submit-button'
-import Checkbox from './checkbox'
-import Radio from './radio'
 
 import InputWrapper from './input-wrapper'
 import RadioGroup from './radio-group'

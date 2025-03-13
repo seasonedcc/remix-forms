@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/forms/custom-input'
 
@@ -21,14 +21,14 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
-  const emailErrors = page.locator(`#errors-for-email:visible`)
+  const emailErrors = page.locator('#errors-for-email:visible')
   await expect(emailErrors).toHaveAttribute('role', 'alert')
 
   await expect(emailErrors).toHaveText(
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await expect(firstName.input).toBeFocused()
@@ -64,14 +64,14 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
-  const emailErrors = page.locator(`#errors-for-email:visible`)
+  const emailErrors = page.locator('#errors-for-email:visible')
   await expect(emailErrors).toHaveAttribute('role', 'alert')
 
   await expect(emailErrors.locator('div').first()).toHaveText(
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await expect(emailErrors.locator('div').last()).toHaveText('Invalid email')

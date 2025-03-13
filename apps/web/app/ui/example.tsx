@@ -18,7 +18,7 @@ export default function Example({
   countLines = false,
 }: Props) {
   const code = String(useLoaderData<{ code: string }>()?.code)
-  const actionData = useActionData<{ errors?: {} }>()
+  const actionData = useActionData<{ errors?: Record<string, unknown> }>()
   const data = actionData?.errors ? null : actionData
 
   const lineCount = countLines
@@ -34,21 +34,21 @@ export default function Example({
 
   return (
     <>
-      <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+      <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
         <div className="flex flex-1 flex-col space-y-4">
           <Heading>{title}</Heading>
           <SubHeading>{description}</SubHeading>
         </div>
         {countLines && (
           <div className="flex flex-col items-center justify-center space-y-2 rounded-md border-2 border-white p-4">
-            <div className="text-2xl font-bold text-white sm:text-5xl">
+            <div className="font-bold text-2xl text-white sm:text-5xl">
               {lineCount}
             </div>
             <div className="text-gray-300">lines of code</div>
           </div>
         )}
       </div>
-      <div className="flex flex-col space-y-6 space-x-0 xl:flex-row xl:space-x-6 xl:space-y-0">
+      <div className="flex flex-col space-x-0 space-y-6 xl:flex-row xl:space-x-6 xl:space-y-0">
         <Code>{code}</Code>
         <div className="xl:flex-1">{children}</div>
       </div>

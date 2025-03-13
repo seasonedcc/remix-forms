@@ -6,16 +6,11 @@
   "module": "./dist/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
-  "files": [
-    "README.md",
-    "./dist/*"
-  ],
+  "files": ["README.md", "./dist/*"],
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && tsup ./src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts --external react",
-    "lint": "eslint . --ext .tsx,.ts --max-warnings=0",
-    "prelint": "prettier --check .",
     "tsc": "tsc",
     "test": "vitest run"
   },

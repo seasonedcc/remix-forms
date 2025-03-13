@@ -53,7 +53,7 @@ class Example {
       required = true,
       invalid = false,
       multiline = false,
-    }: FieldOptions = {},
+    }: FieldOptions = {}
   ) {
     const label = rawLabel === undefined ? startCase(field.name) : rawLabel
     const type = multiline ? '' : rawType
@@ -72,12 +72,12 @@ class Example {
 
     multiline &&
       (await expect(
-        this.page.locator(`textarea[name=${field.name}]:visible`),
+        this.page.locator(`textarea[name=${field.name}]:visible`)
       ).toBeVisible())
 
     await expect(field.input).toHaveAttribute(
       'aria-labelledby',
-      `label-for-${field.name}`,
+      `label-for-${field.name}`
     )
 
     await expect(field.input).toHaveAttribute('aria-required', String(required))
@@ -85,14 +85,14 @@ class Example {
 
   async expectRadioToHaveOptions(
     radioName: string,
-    options: { name: string; value: string }[],
+    options: { name: string; value: string }[]
   ) {
     Promise.all(
       options.map(({ value }) =>
         expect(
-          this.page.locator(`[name="${radioName}"][value="${value}"]:visible`),
-        ).toBeVisible(),
-      ),
+          this.page.locator(`[name="${radioName}"][value="${value}"]:visible`)
+        ).toBeVisible()
+      )
     )
   }
 
@@ -106,14 +106,14 @@ class Example {
 
   async expectInvalid(field: Field) {
     await expect(
-      this.page.locator(`#errors-for-${field.name}:visible`),
+      this.page.locator(`#errors-for-${field.name}:visible`)
     ).toHaveAttribute('role', 'alert')
 
     await expect(field.input).toHaveAttribute('aria-invalid', 'true')
 
     await expect(field.input).toHaveAttribute(
       'aria-describedBy',
-      `errors-for-${field.name}`,
+      `errors-for-${field.name}`
     )
   }
 
@@ -125,28 +125,28 @@ class Example {
 
   async expectGlobalError(message: string) {
     await expect(
-      this.page.locator('form > div[role="alert"]:visible'),
+      this.page.locator('form > div[role="alert"]:visible')
     ).toHaveText(message)
   }
 
   async expectNoGlobalError() {
     expect(
-      await this.page.locator('form > div[role="alert"]:visible').count(),
+      await this.page.locator('form > div[role="alert"]:visible').count()
     ).toEqual(0)
   }
 
   async expectErrorMessage(fieldName: string, message: string) {
     await expect(
-      this.page.locator(`#errors-for-${fieldName}:visible`),
+      this.page.locator(`#errors-for-${fieldName}:visible`)
     ).toHaveText(message)
   }
 
   async expectErrors(field: Field, ...messages: string[]) {
     await this.expectInvalid(field)
 
-    for (var index = 0; index < messages.length; index++) {
+    for (let index = 0; index < messages.length; index++) {
       await expect(
-        this.page.locator(`#errors-for-${field.name} > div`).nth(index),
+        this.page.locator(`#errors-for-${field.name} > div`).nth(index)
       ).toHaveText(messages[index])
     }
   }
@@ -159,9 +159,10 @@ class Example {
     expect(await field.input.getAttribute('autofocus')).toBeNull()
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async expectData(data: any) {
     const actionData = JSON.parse(
-      await this.page.locator('#action-data > pre:visible').first().innerText(),
+      await this.page.locator('#action-data > pre:visible').first().innerText()
     )
 
     expect(actionData.data).toEqual(data)

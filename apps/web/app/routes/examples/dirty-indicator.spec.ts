@@ -1,4 +1,4 @@
-import { test, expect } from 'tests/setup/tests'
+import { expect, test } from 'tests/setup/tests'
 
 const route = '/examples/render-field/dirty-indicator'
 
@@ -48,7 +48,7 @@ test('With JS enabled', async ({ example }) => {
   expect(await email.input.getAttribute('class')).not.toContain(dirtyClass)
   expect(await firstName.input.getAttribute('class')).not.toContain(dirtyClass)
   expect(await preferredSport.input.getAttribute('class')).not.toContain(
-    dirtyClass,
+    dirtyClass
   )
   expect(await newsletter.input.getAttribute('class')).not.toContain(dirtyClass)
 })

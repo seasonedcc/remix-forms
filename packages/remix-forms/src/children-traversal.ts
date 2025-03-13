@@ -2,7 +2,7 @@ import * as React from 'react'
 
 function mapChildren(
   children: React.ReactNode,
-  fn: (child: React.ReactElement) => React.ReactElement | null,
+  fn: (child: React.ReactElement) => React.ReactElement | null
 ): React.ReactNode {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return child
@@ -17,7 +17,7 @@ function mapChildren(
 
 function findElement(
   root: React.ReactNode,
-  predicate: (element: React.ReactElement) => boolean,
+  predicate: (element: React.ReactElement) => boolean
 ): React.ReactElement | null {
   const initialState: React.ReactElement | null = null
 
@@ -31,19 +31,19 @@ function findElement(
         return current
       }
       return null
-    },
+    }
   )
 }
 
 function findParent(
   root: React.ReactNode,
-  child: React.ReactElement,
+  child: React.ReactElement
 ): React.ReactElement | null {
   return findElement(root, (parentCandidate) => {
     const me = parentCandidate.props?.children?.find?.(
       (ch: React.ReactNode) => {
         return ch === child
-      },
+      }
     )
 
     return !!me
@@ -53,7 +53,7 @@ function findParent(
 function reduceElements<T>(
   children: React.ReactNode,
   initialState: T,
-  reducer: (previousState: T, currentState: React.ReactElement) => T,
+  reducer: (previousState: T, currentState: React.ReactElement) => T
 ): T {
   let foldedValue = initialState
   React.Children.forEach(children, (child) => {

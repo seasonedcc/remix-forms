@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/test-examples/hidden-field-with-errors'
 
@@ -17,10 +17,10 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
   await example.expectGlobalError(
-    'Some prop errorCsrf Token: String must contain at least 1 character(s)',
+    'Some prop errorCsrf Token: String must contain at least 1 character(s)'
   )
 })
 
@@ -39,10 +39,10 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)',
+    'String must contain at least 1 character(s)'
   )
 
   await example.expectGlobalError(
-    'Some prop errorCsrf Token: String must contain at least 1 character(s)',
+    'Some prop errorCsrf Token: String must contain at least 1 character(s)'
   )
 })

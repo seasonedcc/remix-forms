@@ -1,4 +1,4 @@
-import { test, testWithoutJS, expect } from 'tests/setup/tests'
+import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
 const route = '/examples/schemas/zod-effects'
 
@@ -76,7 +76,7 @@ test('With JS enabled we see a refinement validation error', async ({
 
   await example.expectError(
     planType,
-    'For corporate cards you must issue at least 8',
+    'For corporate cards you must issue at least 8'
   )
 })
 
@@ -107,5 +107,5 @@ testWithoutJS(
       planType: 'personal',
       quantity: 1,
     })
-  },
+  }
 )

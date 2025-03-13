@@ -1,4 +1,4 @@
-import { test, expect } from 'tests/setup/tests'
+import { expect, test } from 'tests/setup/tests'
 
 const route = '/test-examples/field-with-ref'
 
@@ -14,7 +14,7 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectErrorMessage(
     'tags',
-    'Array must contain at least 1 element(s)',
+    'Array must contain at least 1 element(s)'
   )
 
   await expect(tags.input).toBeFocused()
