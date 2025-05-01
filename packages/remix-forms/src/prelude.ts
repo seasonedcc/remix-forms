@@ -22,7 +22,9 @@ type KeysOfStrings<T extends object> = {
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema
 ): ObjectFromSchema<Schema> {
-  return 'shape' in schema ? schema : objectFromSchema(schema._def.schema)
+  return 'shape' in schema
+    ? (schema as ObjectFromSchema<Schema>)
+    : objectFromSchema(schema._def.schema)
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
