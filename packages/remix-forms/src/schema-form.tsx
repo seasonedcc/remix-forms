@@ -116,7 +116,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   onNavigation?: OnNavigation<ObjectFromSchema<Schema>>
   children?: Children<ObjectFromSchema<Schema>>
   flushSync?: boolean
-} & Omit<ReactRouterFormProps, 'children'>
+} & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
 
 const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodString: 'string',
