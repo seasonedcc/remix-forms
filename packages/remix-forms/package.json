@@ -44,7 +44,7 @@
     "react": ">=16.8",
     "react-router": "7.5.2",
     "tsup": "^8.3.5",
-    "typescript": "5.7.2",
+    "typescript": "5.8.3",
     "vite": "6.0.7",
     "vitest": "2.1.8"
   },
