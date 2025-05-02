@@ -1,6 +1,6 @@
 {
   "name": "remix-forms",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The full-stack form library for React Router v7",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
