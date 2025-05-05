@@ -23,8 +23,11 @@ export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default () => {
-  const fetcher = useFetcher<{ name: string }>()
-  const name = String(fetcher.formData?.get('name')) || fetcher.data?.name
+  const fetcher = useFetcher<{ data: { name: string } }>()
+
+  const name = fetcher.formData
+    ? String(fetcher.formData?.get('name'))
+    : fetcher.data?.data.name
 
   return (
     <SchemaForm
@@ -82,8 +85,11 @@ export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default function Component() {
-  const fetcher = useFetcher<{ name: string }>()
-  const name = String(fetcher.formData?.get('name')) || fetcher.data?.name
+  const fetcher = useFetcher<{ data: { name: string } }>()
+
+  const name = fetcher.formData
+    ? String(fetcher.formData?.get('name'))
+    : fetcher.data?.data.name
 
   return (
     <Example title={title} description={description}>
