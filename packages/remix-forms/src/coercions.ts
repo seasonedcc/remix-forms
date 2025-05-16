@@ -30,6 +30,13 @@ const coerceBoolean = makeCoercion(Boolean, false)
 const coerceDate = makeCoercion((value) => {
   if (typeof value !== 'string') return null
 
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+    const [date, time] = value.split("T")
+    const [year, month, day] = date.split("-").map(Number)
+    const [hour, minute] = time.split(":").map(Number)
+    return new Date(year, month - 1, day, hour, minute)
+  }
+
   const [year, month, day] = value.split('-').map(Number)
   return new Date(year, month - 1, day)
 }, null)
