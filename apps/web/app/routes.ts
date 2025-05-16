@@ -23,6 +23,7 @@ export const exampleRouteGroups = {
     'Numbers',
     'Booleans',
     'Dates',
+    "Datetime",
     'Enums',
     'Zod Effects',
     'Array of strings',
