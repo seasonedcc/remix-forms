@@ -82,6 +82,20 @@ type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
+/**
+ * Result of a mutation executed by {@link performMutation} or
+ * {@link formAction}.
+ *
+ * @example
+ * ```ts
+ * if (result.success) console.log(result.data)
+ * ```
+ *
+ * @example
+ * ```ts
+ * if (!result.success) console.log(result.errors)
+ * ```
+ */
 type MutationResult<SchemaType, D> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
@@ -99,6 +113,27 @@ type PerformMutationProps<Schema extends FormSchema, D> = {
   ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
 }
 
+/**
+ * Options for {@link formAction}.
+ *
+ * @property request - The HTTP request containing form data
+ * @property schema - Zod schema used to validate the values
+ * @property mutation - Function executed with the parsed values
+ * @property [context] - Extra context passed to the mutation
+ * @property [transformValues] - Modify values before calling the mutation
+ * @property [transformResult] - Modify the result before returning
+ * @property [successPath] - Path or function resolving the redirect location on success
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation, successPath: '/done' })
+ * ```
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation })
+ * ```
+ */
 type FormActionProps<Schema extends FormSchema, D> = {
   successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
@@ -120,6 +155,27 @@ async function getFormValues<Schema extends FormSchema>(
   return values
 }
 
+/**
+ * Execute a mutation with values from a form request.
+ *
+ * @param options.request - The incoming request with form data
+ * @param options.schema - Schema describing the form structure
+ * @param options.mutation - Function executed with the parsed values
+ * @param options.context - Context object forwarded to the mutation
+ * @param options.transformValues - Modify values before calling the mutation
+ * @param options.transformResult - Modify the result before returning
+ * @returns The mutation result with success flag and data or errors
+ *
+ * @example
+ * ```ts
+ * const result = await performMutation({ request, schema, mutation })
+ * ```
+ *
+ * @example
+ * ```ts
+ * performMutation({ request, schema, mutation, context: { user } })
+ * ```
+ */
 async function performMutation<Schema extends FormSchema, D>({
   request,
   schema,
@@ -151,6 +207,28 @@ async function performMutation<Schema extends FormSchema, D>({
   })
 }
 
+/**
+ * React Router v7 action helper that runs a mutation and handles redirects.
+ *
+ * @param options.request - The request to read form data from
+ * @param options.schema - Schema describing the expected form fields
+ * @param options.mutation - Function that performs the actual mutation
+ * @param options.context - Context object forwarded to the mutation
+ * @param options.transformValues - Map the form values before running the mutation
+ * @param options.transformResult - Map the mutation result before returning
+ * @param options.successPath - Path or function resolving the redirect location on success
+ * @returns A response created with `data()` containing the mutation result
+ *
+ * @example
+ * ```ts
+ * export const action = () => formAction({ request, schema, mutation })
+ * ```
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation, successPath: '/thanks' })
+ * ```
+ */
 async function formAction<Schema extends FormSchema, D>({
   successPath,
   ...performMutationOptions
