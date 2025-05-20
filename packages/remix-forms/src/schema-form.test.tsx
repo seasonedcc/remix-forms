@@ -162,4 +162,68 @@ describe('SchemaForm', () => {
     expect(html).toContain('name="name"')
     expect(html).toMatch(/<button[^>]*>OK<\/button>/)
   })
+
+  it('renders textarea when field is marked as multiline', () => {
+    const schema = z.object({ message: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} multiline={['message']} />
+    )
+
+    expect(html).toContain('<textarea')
+    expect(html).toContain('name="message"')
+  })
+
+  it('renders radio inputs when field is marked as radio', () => {
+    const schema = z.object({ choice: z.enum(['a', 'b']) })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} radio={['choice']} />
+    )
+
+    expect(html).toContain('type="radio"')
+    expect(html).toContain('value="a"')
+    expect(html).toContain('value="b"')
+  })
+
+  it('applies custom input types', () => {
+    const schema = z.object({ email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} inputTypes={{ email: 'email' }} />
+    )
+
+    expect(html).toContain('type="email"')
+  })
+
+  it('focuses the specified field when autoFocus is provided', () => {
+    const schema = z.object({ first: z.string(), second: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} autoFocus="second" />
+    )
+
+    expect(html).toMatch(/<input[^>]*autofocus[^>]*name="second"/)
+  })
+
+  it('displays global errors using Errors and Error components', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} errors={{ _global: ['Oops'] }} />
+    )
+
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Oops')
+  })
+
+  it('hides fields listed in hiddenFields', () => {
+    const schema = z.object({ secret: z.string(), visible: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} hiddenFields={['secret']} />
+    )
+
+    expect(html).toMatch(/style="display:none"/)
+  })
 })
