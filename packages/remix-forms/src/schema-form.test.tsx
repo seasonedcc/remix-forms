@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import * as z from 'zod'
 import { SchemaForm } from './schema-form'
+import type { RenderField } from './schema-form'
 
 vi.mock('react-router', () => ({
   Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
@@ -225,5 +226,73 @@ describe('SchemaForm', () => {
     )
 
     expect(html).toMatch(/style="display:none"/)
+  })
+
+  it('overrides labels and placeholders', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        labels={{ name: 'Your Name' }}
+        placeholders={{ name: 'Enter here' }}
+      />
+    )
+
+    expect(html).toContain('Your Name')
+    expect(html).toContain('placeholder="Enter here"')
+  })
+
+  it('uses options prop to render select and radio inputs', () => {
+    const schema = z.object({ color: z.string() })
+    const options = {
+      color: [
+        { name: 'Red', value: 'red' },
+        { name: 'Blue', value: 'blue' },
+      ],
+    }
+
+    const selectHtml = renderToStaticMarkup(
+      <SchemaForm schema={schema} options={options} />
+    )
+
+    expect(selectHtml).toContain('<select')
+    expect(selectHtml).toContain('<option value="red">Red</option>')
+
+    const radioHtml = renderToStaticMarkup(
+      <SchemaForm schema={schema} options={options} radio={['color']} />
+    )
+
+    expect(radioHtml).toContain('type="radio"')
+    expect(radioHtml).toContain('value="red"')
+    expect(radioHtml).toContain('value="blue"')
+  })
+
+  it('renders the provided buttonLabel when idle', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} buttonLabel="Send" />
+    )
+
+    expect(html).toMatch(/<button[^>]*>Send<\/button>/)
+  })
+
+  it('uses custom renderField for each field', () => {
+    const schema = z.object({ first: z.string(), second: z.string() })
+    const renderField: RenderField<typeof schema> = vi.fn(
+      ({ Field, name, label }) => (
+        <div className="custom">
+          <Field name={name} label={label} />
+        </div>
+      )
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} renderField={renderField} />
+    )
+
+    expect(renderField).toHaveBeenCalledTimes(2)
+    expect(html).toContain('class="custom"')
   })
 })
