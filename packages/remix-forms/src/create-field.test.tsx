@@ -79,4 +79,28 @@ describe('createField', () => {
     )
     expect(html).toContain('value="2024-01-02"')
   })
+
+  it('renders select options when provided', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      />
+    )
+    expect(html).toContain('<select')
+    expect(html).toContain('<option value="a">A</option>')
+    expect(html).toContain('<option value="b">B</option>')
+  })
+
+  it('applies placeholder and hidden style', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" placeholder="Enter" hidden />
+    )
+    expect(html).toContain('placeholder="Enter"')
+    expect(html).toContain('style="display:none"')
+  })
 })
