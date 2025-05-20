@@ -79,4 +79,39 @@ describe('SchemaForm', () => {
 
     expect(html).toContain('Sending')
   })
+
+  it('uses default values defined in the schema', () => {
+    const schema = z.object({
+      name: z.string().default('John'),
+    })
+
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+
+    expect(html).toContain('value="John"')
+  })
+
+  it('adds an empty select option for optional enum fields', () => {
+    const schema = z.object({
+      choice: z.enum(['a', 'b']).optional(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} emptyOptionLabel="-" />
+    )
+
+    expect(html).toMatch(/<option value=""[^>]*>-<\/option>/)
+  })
+
+  it('focuses the first field with an error', () => {
+    const schema = z.object({
+      first: z.string(),
+      second: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} errors={{ second: ['Required'] }} />
+    )
+
+    expect(html).toMatch(/<input[^>]*autofocus[^>]*name="second"/)
+  })
 })
