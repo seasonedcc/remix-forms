@@ -67,4 +67,16 @@ describe('createField', () => {
     )
     expect(htmlNumber).toContain('type="text"')
   })
+
+  it('formats Date values for date fields', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        fieldType="date"
+        value={new Date('2024-01-02')}
+      />
+    )
+    expect(html).toContain('value="2024-01-02"')
+  })
 })

@@ -37,4 +37,46 @@ describe('SchemaForm', () => {
     expect(html).toContain('value="5"')
     expect(html).toContain('value="2024-05-06"')
   })
+
+  it('merges hidden field errors into global errors', () => {
+    const schema = z.object({
+      visible: z.string(),
+      secret: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['secret']}
+        labels={{ secret: 'Secret' }}
+        errors={{ secret: ['Missing'], _global: ['Oops'] }}
+      />
+    )
+
+    expect(html).toContain('Secret: Missing')
+    expect(html).toContain('Oops')
+  })
+
+  it('uses pendingButtonLabel when navigation is not idle', () => {
+    const schema = z.object({ name: z.string() })
+
+    const fetcher = {
+      submit: vi.fn(),
+      state: 'submitting',
+      Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+        <form {...props} />
+      ),
+    }
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        fetcher={fetcher as never}
+        pendingButtonLabel="Sending"
+        buttonLabel="Submit"
+      />
+    )
+
+    expect(html).toContain('Sending')
+  })
 })
