@@ -280,11 +280,13 @@ describe('SchemaForm', () => {
 
   it('uses custom renderField for each field', () => {
     const schema = z.object({ first: z.string(), second: z.string() })
-    const renderField: RenderField<typeof schema> = vi.fn(({ Field, name, label }) => (
+    const renderField: RenderField<typeof schema> = vi.fn(
+      ({ Field, name, label }) => (
         <div className="custom">
           <Field name={name} label={label} />
         </div>
-    ))
+      )
+    )
 
     const html = renderToStaticMarkup(
       <SchemaForm schema={schema} renderField={renderField} />

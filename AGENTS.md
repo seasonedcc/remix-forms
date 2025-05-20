@@ -51,6 +51,7 @@ adding commits.
 Run the following commands and make a best effort to ensure they succeed:
 
 ```bash
+npm run lint-fix
 npm run lint
 npm run tsc
 npm run test
