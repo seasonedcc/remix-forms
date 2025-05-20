@@ -45,12 +45,17 @@ test('With JS enabled', async ({ example }) => {
 
   // Submit form
   await button.click()
+  await expect(button).toHaveText('...')
+  await expect(button).toBeDisabled()
 
   await example.expectData({
     name: 'John',
     bio: 'My bio',
     roleId: 2,
   })
+
+  await expect(button).toHaveText('OK')
+  await expect(button).toBeEnabled()
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
