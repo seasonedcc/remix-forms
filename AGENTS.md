@@ -30,6 +30,18 @@ These scripts should be executed from the repository root.
 - Export types and values explicitly (e.g. `export { Foo }` and
   `export type { Bar }`).
 
+## Public API
+The public API for the `remix-forms` package is defined by
+`packages/remix-forms/src/index.ts`. Whenever you modify this file or the
+modules it re-exports:
+
+- Ensure every exported value or type has a TSDoc comment in its source file.
+- Follow the existing style seen in the codebase: multi-line `/** ... */`
+  blocks with a short description, `@param`/`@returns` tags and `@example`
+  sections when relevant.
+- Keep `src/index.ts` in sync with the actual exports so consumers see an
+  up‑to‑date public API.
+
 ## Commit Messages
 Commits typically use a short, imperative description starting with a
 capital letter (e.g. `Fix useFetcher example`). Follow this style when
