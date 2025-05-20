@@ -1,5 +1,23 @@
 import type { z } from 'zod'
 
+/**
+ * Zod schema accepted by remix-forms components and utilities.
+ *
+ * This type covers plain objects as well as Zod effects so you can pass
+ * schemas created with refinements or preprocessors.
+ *
+ * @example
+ * ```ts
+ * const schema = z.object({ name: z.string() })
+ * type MySchema = FormSchema<typeof schema>
+ * ```
+ *
+ * @example
+ * ```ts
+ * const schema = z.object({ age: z.number() }).transform((d) => ({ ...d, ok: true }))
+ * type MySchema = FormSchema<typeof schema>
+ * ```
+ */
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
   | z.ZodEffects<T>

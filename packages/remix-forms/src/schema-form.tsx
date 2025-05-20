@@ -58,10 +58,39 @@ type Field<SchemaType> = {
   placeholder?: string
 }
 
+/**
+ * Props passed to a custom field rendering component.
+ *
+ * The `Field` component is provided so callers can easily render individual
+ * fields using the same mappings as `SchemaForm`.
+ *
+ * @example
+ * ```tsx
+ * const MyField = ({ Field, name }) => <Field name={name} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
+ * ```
+ */
 type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
+/**
+ * Function signature used for rendering form fields.
+ *
+ * @example
+ * ```tsx
+ * const renderField = ({ Field, ...props }) => <Field {...props} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * const renderField = ({ name }) => <input name={String(name)} />
+ * ```
+ */
 type RenderField<Schema extends SomeZodObject> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
@@ -84,6 +113,22 @@ type OnNavigation<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void
 
+/**
+ * Props for the {@link SchemaForm} component.
+ *
+ * These options control how the form is rendered and how values and errors
+ * are populated.
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} renderField={({ Field, ...f }) => <Field {...f} />} />
+ * ```
+ */
 type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: typeof ReactRouterForm
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -147,6 +192,62 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
   return value ?? ''
 }
 
+/**
+ * Render a form based on a Zod schema.
+ *
+ * This component automatically wires up inputs with React Hook Form and
+ * handles client-side validation.
+ *
+ * @param props.component - Form component used for rendering
+ * @param props.fetcher - Fetcher object returned by `useFetcher()`
+ * @param props.mode - Validation trigger mode for React Hook Form
+ * @param props.reValidateMode - Validation mode after submission
+ * @param props.renderField - Custom field rendering function
+ * @param props.fieldComponent - Component used for each field container
+ * @param props.labelComponent - Component used for labels
+ * @param props.inputComponent - Component used for standard inputs
+ * @param props.multilineComponent - Component used for multiline inputs
+ * @param props.selectComponent - Component used for select inputs
+ * @param props.checkboxComponent - Component used for checkbox inputs
+ * @param props.radioComponent - Component used for radio inputs
+ * @param props.checkboxWrapperComponent - Wrapper around checkbox inputs
+ * @param props.radioGroupComponent - Wrapper around radio options
+ * @param props.radioWrapperComponent - Wrapper around individual radio inputs
+ * @param props.globalErrorsComponent - Component for rendering global errors
+ * @param props.fieldErrorsComponent - Component for rendering per-field errors
+ * @param props.errorComponent - Component for rendering error messages
+ * @param props.buttonComponent - Component used for the submit button
+ * @param props.buttonLabel - Text shown in the submit button
+ * @param props.pendingButtonLabel - Text shown while submitting
+ * @param props.method - HTTP method used to submit the form
+ * @param props.schema - Zod schema describing the form
+ * @param props.beforeChildren - Elements rendered before generated fields
+ * @param props.onNavigation - Callback when navigation state changes
+ * @param props.children - Custom content instead of the default layout
+ * @param props.labels - Custom labels for form fields
+ * @param props.placeholders - Placeholder text for fields
+ * @param props.options - Select and radio options for fields
+ * @param props.inputTypes - Custom input types per field
+ * @param props.hiddenFields - Fields rendered as hidden inputs
+ * @param props.multiline - Fields rendered with the multiline component
+ * @param props.radio - Fields rendered as radio groups
+ * @param props.autoFocus - Field that should receive focus initially
+ * @param props.errors - Error messages keyed by field name
+ * @param props.values - Initial values for fields
+ * @param props.emptyOptionLabel - Label for the empty select option
+ * @param props.flushSync - Whether to flush React updates synchronously
+ * @returns A form element ready to be used inside a React Router v7 route
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} fetcher={useFetcher()} />
+ * ```
+ */
 function SchemaForm<Schema extends FormSchema>({
   component = ReactRouterForm,
   fetcher,
