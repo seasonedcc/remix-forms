@@ -58,10 +58,39 @@ type Field<SchemaType> = {
   placeholder?: string
 }
 
+/**
+ * Props passed to a custom field rendering component.
+ *
+ * The `Field` component is provided so callers can easily render individual
+ * fields using the same mappings as `SchemaForm`.
+ *
+ * @example
+ * ```tsx
+ * const MyField = ({ Field, name }) => <Field name={name} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
+ * ```
+ */
 type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
+/**
+ * Function signature used for rendering form fields.
+ *
+ * @example
+ * ```tsx
+ * const renderField = ({ Field, ...props }) => <Field {...props} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * const renderField = ({ name }) => <input name={String(name)} />
+ * ```
+ */
 type RenderField<Schema extends SomeZodObject> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
@@ -84,6 +113,22 @@ type OnNavigation<Schema extends SomeZodObject> = (
   helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void
 
+/**
+ * Props for the {@link SchemaForm} component.
+ *
+ * These options control how the form is rendered and how values and errors
+ * are populated.
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} renderField={({ Field, ...f }) => <Field {...f} />} />
+ * ```
+ */
 type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   component?: typeof ReactRouterForm
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -147,6 +192,25 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
   return value ?? ''
 }
 
+/**
+ * Render a form based on a Zod schema.
+ *
+ * This component automatically wires up inputs with React Hook Form and
+ * handles client-side validation.
+ *
+ * @param props - Options describing the form structure and behavior
+ * @returns A form element ready to be used inside a Remix route
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} fetcher={useFetcher()} />
+ * ```
+ */
 function SchemaForm<Schema extends FormSchema>({
   component = ReactRouterForm,
   fetcher,

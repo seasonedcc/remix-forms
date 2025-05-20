@@ -82,6 +82,20 @@ type FormErrors<SchemaType> = Partial<
   Record<keyof SchemaType | '_global', string[]>
 >
 
+/**
+ * Result of a mutation executed by {@link performMutation} or
+ * {@link formAction}.
+ *
+ * @example
+ * ```ts
+ * if (result.success) console.log(result.data)
+ * ```
+ *
+ * @example
+ * ```ts
+ * if (!result.success) console.log(result.errors)
+ * ```
+ */
 type MutationResult<SchemaType, D> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
@@ -99,6 +113,22 @@ type PerformMutationProps<Schema extends FormSchema, D> = {
   ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
 }
 
+/**
+ * Options for {@link formAction}.
+ *
+ * In addition to {@link PerformMutationProps} this allows specifying a path
+ * to redirect to when the mutation succeeds.
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation, successPath: '/done' })
+ * ```
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation })
+ * ```
+ */
 type FormActionProps<Schema extends FormSchema, D> = {
   successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
@@ -120,6 +150,22 @@ async function getFormValues<Schema extends FormSchema>(
   return values
 }
 
+/**
+ * Execute a mutation with values from a form request.
+ *
+ * @param options - Configuration for how the mutation is run
+ * @returns The mutation result with success flag and data or errors
+ *
+ * @example
+ * ```ts
+ * const result = await performMutation({ request, schema, mutation })
+ * ```
+ *
+ * @example
+ * ```ts
+ * performMutation({ request, schema, mutation, context: { user } })
+ * ```
+ */
 async function performMutation<Schema extends FormSchema, D>({
   request,
   schema,
@@ -151,6 +197,22 @@ async function performMutation<Schema extends FormSchema, D>({
   })
 }
 
+/**
+ * Remix action helper that runs a mutation and handles redirects.
+ *
+ * @param options - Mutation options plus an optional success redirect path
+ * @returns A response created with `data()` containing the mutation result
+ *
+ * @example
+ * ```ts
+ * export const action = () => formAction({ request, schema, mutation })
+ * ```
+ *
+ * @example
+ * ```ts
+ * formAction({ request, schema, mutation, successPath: '/thanks' })
+ * ```
+ */
 async function formAction<Schema extends FormSchema, D>({
   successPath,
   ...performMutationOptions

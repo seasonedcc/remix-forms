@@ -148,6 +148,22 @@ const FieldContext = React.createContext<
   Partial<Omit<Field<never>, 'name'>> | undefined
 >(undefined)
 
+/**
+ * Access information about the currently rendered field inside custom
+ * components.
+ *
+ * @returns Data describing the field being rendered
+ *
+ * @example
+ * ```tsx
+ * const { label } = useField()
+ * ```
+ *
+ * @example
+ * ```tsx
+ * const { errors } = useField()
+ * ```
+ */
 export function useField() {
   const context = React.useContext(FieldContext)
 
