@@ -24,6 +24,7 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
   await example.expectValid(name)
   await expect(name.input).toBeFocused()
+  await expect(name.input).toHaveValue('')
   await expect(page.locator('label[for=todo]')).toHaveText('todo')
 })
 
