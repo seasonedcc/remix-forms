@@ -112,7 +112,7 @@ class Example {
     await expect(field.input).toHaveAttribute('aria-invalid', 'true')
 
     await expect(field.input).toHaveAttribute(
-      'aria-describedBy',
+      'aria-describedby',
       `errors-for-${field.name}`
     )
   }
