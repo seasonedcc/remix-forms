@@ -110,6 +110,28 @@ describe('performMutation', () => {
     expect(transformResult).toHaveBeenCalled()
     expect(result).toEqual({ success: true, data: 'ok!' })
   })
+
+  it('forwards transformed values and context to the mutation', async () => {
+    const schema = z.object({ name: z.string() })
+    const request = makeRequest(new URLSearchParams({ name: 'Jane' }))
+    const context = { userId: 1 }
+    const mutation = Object.assign(
+      vi.fn(async () => ({ success: true as const, data: 'done' })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<string>
+    const transformValues = vi.fn(() => ({ name: 'JANE' }))
+
+    await performMutation({
+      request,
+      schema,
+      mutation,
+      context,
+      transformValues,
+    })
+
+    expect(transformValues).toHaveBeenCalled()
+    expect(mutation).toHaveBeenCalledWith({ name: 'JANE' }, context)
+  })
 })
 
 describe('formAction', () => {
