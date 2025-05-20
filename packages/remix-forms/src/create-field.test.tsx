@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { UseFormRegister } from 'react-hook-form'
-import { describe, expect, it, vi } from 'vitest'
+import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 import { createField, useField } from './create-field'
 
 const register = vi.fn((name: string) => ({
@@ -21,6 +21,10 @@ const ChoiceField = createField<typeof choiceSchema>({
     HTMLInputElement,
     React.ComponentPropsWithoutRef<'input'>
   >((props, ref) => <input ref={ref} {...props} />),
+})
+
+afterEach(() => {
+  vi.clearAllMocks()
 })
 
 function LabelReader() {
@@ -75,6 +79,25 @@ describe('createField', () => {
       <Field name="foo" label="Foo" fieldType="number" />
     )
     expect(htmlNumber).toContain('type="text"')
+  })
+
+  it('registers the field using setValueAs for coercion', () => {
+    const schema = z.object({ amount: z.number() })
+    const NumField = createField<typeof schema>({ register })
+
+    renderToStaticMarkup(
+      <NumField
+        name="amount"
+        label="Amount"
+        fieldType="number"
+        shape={schema.shape.amount}
+      />
+    )
+
+    const [name, options] = (register as unknown as Mock).mock.calls[0]
+    expect(name).toBe('amount')
+    const { setValueAs } = options as { setValueAs: (v: unknown) => unknown }
+    expect(setValueAs('5')).toBe(5)
   })
 
   it('formats Date values for date fields', () => {
