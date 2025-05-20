@@ -10,9 +10,10 @@ test('With JS enabled', async ({ example }) => {
   await page.goto(route)
 
   await token.input.first().type('123')
-  expect(page.locator('#action-data > pre')).toBeHidden()
+  await expect(page.locator('#action-data > pre')).toBeHidden()
 
   await token.input.first().type('4')
+  await page.waitForLoadState('networkidle')
 
   await example.expectData({
     token: '1234',

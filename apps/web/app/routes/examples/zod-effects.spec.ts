@@ -73,6 +73,7 @@ test('With JS enabled we see a refinement validation error', async ({
   // Submit
   await expect(button).toBeEnabled()
   await button.click()
+  await page.waitForLoadState('networkidle')
 
   await example.expectError(
     planType,
