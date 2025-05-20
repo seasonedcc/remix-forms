@@ -55,4 +55,16 @@ describe('createField', () => {
     )
     expect(htmlRadio).toContain('type="radio"')
   })
+
+  it('supports boolean and number field types', () => {
+    const htmlBool = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldType="boolean" />
+    )
+    expect(htmlBool).toContain('type="checkbox"')
+
+    const htmlNumber = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldType="number" />
+    )
+    expect(htmlNumber).toContain('type="text"')
+  })
 })
