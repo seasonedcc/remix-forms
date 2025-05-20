@@ -114,4 +114,52 @@ describe('SchemaForm', () => {
 
     expect(html).toMatch(/<input[^>]*autofocus[^>]*name="second"/)
   })
+
+  it('does not add an empty option for required enum fields', () => {
+    const schema = z.object({
+      choice: z.enum(['a', 'b']),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} emptyOptionLabel="-" />
+    )
+
+    expect(html).not.toMatch(/<option value=""/)
+    expect(html).toContain('<option value="a">A</option>')
+    expect(html).toContain('<option value="b">B</option>')
+  })
+
+  it('renders beforeChildren content before the fields', () => {
+    const schema = z.object({
+      name: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} beforeChildren={<p id="first">Intro</p>} />
+    )
+
+    const beforeIndex = html.indexOf('id="first"')
+    const fieldIndex = html.indexOf('for="name"')
+    expect(beforeIndex).toBeGreaterThan(-1)
+    expect(fieldIndex).toBeGreaterThan(-1)
+    expect(beforeIndex).toBeLessThan(fieldIndex)
+  })
+
+  it('supports custom children using Field and Button components', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, Button }) => (
+          <>
+            <Field name="name" />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="name"')
+    expect(html).toMatch(/<button[^>]*>OK<\/button>/)
+  })
 })
