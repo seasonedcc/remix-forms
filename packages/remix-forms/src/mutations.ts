@@ -16,6 +16,19 @@ type NestedErrors<SchemaType> = {
   [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
 }
 
+/**
+ * Build a nested error object from a list of {@link InputError|InputErrors}.
+ *
+ * @param errors - Errors returned by the mutation
+ * @param schema - Schema describing the expected values
+ * @returns Nested map of error messages keyed by path
+ *
+ * @example
+ * ```ts
+ * const errors = [new InputError('Required', ['name'])]
+ * errorMessagesForSchema(errors, schema)
+ * ```
+ */
 function errorMessagesForSchema<T extends z.ZodTypeAny>(
   errors: Error[],
   _schema: T
@@ -144,6 +157,18 @@ type FormActionProps<Schema extends FormSchema, D> = {
   successPath?: ((data: D) => string | Promise<string>) | string
 } & PerformMutationProps<Schema, D>
 
+/**
+ * Read form data from a request and coerce values according to the schema.
+ *
+ * @param request - HTTP request containing form data
+ * @param schema - Zod schema describing the form fields
+ * @returns Parsed and coerced form values
+ *
+ * @example
+ * ```ts
+ * const values = await getFormValues(request, schema)
+ * ```
+ */
 async function getFormValues<Schema extends FormSchema>(
   request: Request,
   schema: Schema
@@ -273,4 +298,4 @@ export type {
   FormActionProps,
 }
 
-export { performMutation, formAction }
+export { performMutation, formAction, errorMessagesForSchema, getFormValues }
