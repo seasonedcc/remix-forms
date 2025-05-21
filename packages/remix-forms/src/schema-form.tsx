@@ -177,6 +177,13 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodEnum: 'string',
 }
 
+/**
+ * Coerce values into a representation suitable for HTML form inputs.
+ *
+ * @param value - Raw value coming from props or defaults
+ * @param shape - Metadata describing the field type
+ * @returns Value formatted for use as a form field default
+ */
 function coerceToForm(value: unknown, shape: ShapeInfo) {
   const { typeName } = shape
   if (typeName === 'ZodBoolean') {
@@ -645,4 +652,4 @@ export type {
   FormSchema,
 }
 
-export { SchemaForm }
+export { SchemaForm, coerceToForm }
