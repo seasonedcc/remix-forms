@@ -212,6 +212,21 @@ describe('SchemaForm', () => {
     expect(html).toMatch(/<input[^>]*autofocus[^>]*name="second"/)
   })
 
+  it('prefers error autofocus over autoFocus prop', () => {
+    const schema = z.object({ first: z.string(), second: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        errors={{ first: ['Required'] }}
+        autoFocus="second"
+      />
+    )
+
+    expect(html).toMatch(/<input[^>]*autofocus[^>]*name="first"/)
+    expect(html).not.toMatch(/<input[^>]*name="second"[^>]*autofocus/)
+  })
+
   it('displays global errors using Errors and Error components', () => {
     const schema = z.object({ name: z.string() })
 
