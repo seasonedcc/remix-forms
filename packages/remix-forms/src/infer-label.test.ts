@@ -24,4 +24,8 @@ describe('inferLabel', () => {
       'Some Mixed String With Spaces Underscores And Hyphens',
     ])
   })
+
+  it('keeps numbers as part of the name', () => {
+    expect(inferLabel('field1Name')).toBe('Field1 Name')
+  })
 })
