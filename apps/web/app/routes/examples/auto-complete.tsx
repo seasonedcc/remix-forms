@@ -27,20 +27,39 @@ export default () => (
       <>
         <Field name="firstName" autoComplete="given-name" />
         <Field name="lastName" autoComplete="family-name">
-          {({ SmartInput }) => <SmartInput />}
+          {({ Label, SmartInput, Errors }) => (
+            <>
+              <Label />
+              <SmartInput />
+              <Errors />
+            </>
+          )}
         </Field>
         <Field name="nickname" autoComplete="nickname">
-          {({ Input }) => <Input autoComplete="off" />}
+          {({ Label, Input, Errors }) => (
+            <>
+              <Label />
+              <Input autoComplete="off" />
+              <Errors />
+            </>
+          )}
         </Field>
         <Field name="bio" autoComplete="on">
-          {({ Multiline }) => <Multiline />}
+          {({ Label, Multiline, Errors }) => (
+            <>
+              <Label />
+              <Multiline />
+              <Errors />
+            </>
+          )}
         </Field>
         <Field name="role" autoComplete="organization">
-          {({ Select }) => (
-            <Select>
-              <option value="Designer">Designer</option>
-              <option value="Dev">Dev</option>
-            </Select>
+          {({ Label, Select, Errors }) => (
+            <>
+              <Label />
+              <Select />
+              <Errors />
+            </>
           )}
         </Field>
         <Errors />
@@ -75,20 +94,39 @@ export default function Component() {
           <>
             <Field name="firstName" autoComplete="given-name" />
             <Field name="lastName" autoComplete="family-name">
-              {({ SmartInput }) => <SmartInput />}
+              {({ Label, SmartInput, Errors }) => (
+                <>
+                  <Label />
+                  <SmartInput />
+                  <Errors />
+                </>
+              )}
             </Field>
             <Field name="nickname" autoComplete="nickname">
-              {({ Input }) => <Input />}
+              {({ Label, Input, Errors }) => (
+                <>
+                  <Label />
+                  <Input autoComplete="off" />
+                  <Errors />
+                </>
+              )}
             </Field>
             <Field name="bio" autoComplete="on">
-              {({ Multiline }) => <Multiline />}
+              {({ Label, Multiline, Errors }) => (
+                <>
+                  <Label />
+                  <Multiline />
+                  <Errors />
+                </>
+              )}
             </Field>
             <Field name="role" autoComplete="organization">
-              {({ Select }) => (
-                <Select>
-                  <option value="Designer">Designer</option>
-                  <option value="Dev">Dev</option>
-                </Select>
+              {({ Label, Select, Errors }) => (
+                <>
+                  <Label />
+                  <Select />
+                  <Errors />
+                </>
               )}
             </Field>
             <Errors />

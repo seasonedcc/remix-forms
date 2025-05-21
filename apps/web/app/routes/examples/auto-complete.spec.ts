@@ -41,7 +41,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectField(lastName)
   await example.expectField(nickname)
   await example.expectField(bio, { multiline: true })
-  await example.expectSelect(role)
+  await example.expectSelect(role, { value: 'Designer' })
 
   await expect(firstName.input).toHaveAttribute('autocomplete', 'given-name')
   await expect(lastName.input).toHaveAttribute('autocomplete', 'family-name')
