@@ -132,6 +132,39 @@ describe('performMutation', () => {
     expect(transformValues).toHaveBeenCalled()
     expect(mutation).toHaveBeenCalledWith({ name: 'JANE' }, context)
   })
+
+  it('returns nested errors structured by path', async () => {
+    const schema = z.object({
+      user: z.object({
+        name: z.string(),
+        age: z.number(),
+      }),
+    })
+    const request = makeRequest(
+      new URLSearchParams({ 'user[name]': '', 'user[age]': '42' })
+    )
+    const errors = [new InputError('Required', ['user', 'name'])]
+    const mutation = Object.assign(
+      vi.fn(async () => ({ success: false as const, errors })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<unknown>
+
+    const result = (await performMutation({
+      request,
+      schema,
+      mutation,
+    })) as MutationResult<typeof schema, unknown>
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const errors = result.errors as { user?: { name?: string[] } }
+      expect(errors.user?.name).toEqual(['Required'])
+      const values = result.values as {
+        user?: { name?: string; age?: string }
+      }
+      expect(values.user).toEqual({ name: '', age: '42' })
+    }
+  })
 })
 
 describe('formAction', () => {
