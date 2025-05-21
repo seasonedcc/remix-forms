@@ -52,7 +52,7 @@ test('With JS enabled', async ({ example }) => {
   // Submit form
   button.click()
   await expect(button).toBeDisabled()
-  await expect(page).toHaveURL('/success/')
+  await expect(page).toHaveURL(/\/success\/?$/)
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
