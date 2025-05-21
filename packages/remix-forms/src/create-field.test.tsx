@@ -32,6 +32,16 @@ function LabelReader() {
   return <span>{label}</span>
 }
 
+function ErrorsReader() {
+  const { errors } = useField()
+  return <span>{errors?.join(', ')}</span>
+}
+
+function ValueReader() {
+  const { value } = useField()
+  return <span>{String(value)}</span>
+}
+
 describe('useField', () => {
   it('provides field context when inside a Field', () => {
     const html = renderToStaticMarkup(
@@ -45,6 +55,31 @@ describe('useField', () => {
   it('throws when used outside a field provider', () => {
     const render = () => renderToStaticMarkup(<LabelReader />)
     expect(render).toThrow('useField used outside of field context')
+  })
+
+  it('exposes errors from the field context', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" errors={['A', 'B']}>
+        {() => <ErrorsReader />}
+      </Field>
+    )
+
+    expect(html).toContain('<span>A, B</span>')
+  })
+
+  it('exposes formatted values from the field context', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        fieldType="date"
+        value={new Date('2024-05-06')}
+      >
+        {() => <ValueReader />}
+      </Field>
+    )
+
+    expect(html).toContain('<span>2024-05-06</span>')
   })
 })
 
