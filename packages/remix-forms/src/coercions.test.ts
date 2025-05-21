@@ -103,4 +103,8 @@ describe('coerceValue', () => {
       coerceValue(new File([], 'some-empty-file.txt'), z.enum(['test']))
     ).toMatch(/[object (File|Blob)]/)
   })
+
+  it('returns enum value when provided', () => {
+    expect(coerceValue('one', z.enum(['one', 'two']))).toBe('one')
+  })
 })
