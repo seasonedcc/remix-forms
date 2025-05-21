@@ -61,8 +61,10 @@ type Field<SchemaType> = {
 /**
  * Props passed to a custom field rendering component.
  *
- * The `Field` component is provided so callers can easily render individual
- * fields using the same mappings as `SchemaForm`.
+ * When using the {@link SchemaForm.renderField | renderField} prop you
+ * receive these props for each field in the schema. They include the built
+ * in `Field` component plus the computed metadata for that particular form
+ * field.
  *
  * @example
  * ```tsx
@@ -80,6 +82,9 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
 
 /**
  * Function signature used for rendering form fields.
+ *
+ * The function is called once for every key in the provided schema and
+ * should return the JSX that renders that field.
  *
  * @example
  * ```tsx
@@ -114,10 +119,11 @@ type OnNavigation<Schema extends SomeZodObject> = (
 ) => void
 
 /**
- * Props for the {@link SchemaForm} component.
+ * Props accepted by {@link SchemaForm}.
  *
- * These options control how the form is rendered and how values and errors
- * are populated.
+ * These options control how the form is rendered and where values and errors
+ * come from. In the simplest case you only need to pass a {@link FormSchema}
+ * but every aspect of the UI can be customised via these props.
  *
  * @example
  * ```tsx
@@ -193,10 +199,13 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
 }
 
 /**
- * Render a form based on a Zod schema.
+ * Render a form based on a {@link FormSchema}.
  *
- * This component automatically wires up inputs with React Hook Form and
- * handles client-side validation.
+ * This component is the easiest way to create a form in Remix. It
+ * automatically wires up inputs with React Hook Form, handles client side
+ * validation and integrates with React Router navigation state.
+ * Provide a schema and the form will generate fields and labels
+ * automatically.
  *
  * @param props.component - Form component used for rendering
  * @param props.fetcher - Fetcher object returned by `useFetcher()`
@@ -240,12 +249,17 @@ function coerceToForm(value: unknown, shape: ShapeInfo) {
  *
  * @example
  * ```tsx
- * <SchemaForm schema={schema} />
+ * const schema = z.object({ name: z.string() })
+ *
+ * export default function Route() {
+ *   return <SchemaForm schema={schema} />
+ * }
  * ```
  *
  * @example
  * ```tsx
- * <SchemaForm schema={schema} fetcher={useFetcher()} />
+ * const fetcher = useFetcher()
+ * <SchemaForm schema={schema} fetcher={fetcher} />
  * ```
  */
 function SchemaForm<Schema extends FormSchema>({
