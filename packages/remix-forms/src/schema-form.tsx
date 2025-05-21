@@ -50,6 +50,7 @@ type Field<SchemaType> = {
   options?: Option[]
   errors?: string[]
   autoFocus?: boolean
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   value?: any
   hidden?: boolean

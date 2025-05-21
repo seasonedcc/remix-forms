@@ -178,6 +178,34 @@ describe('createField', () => {
     expect(html).toMatch(/autofocus/i)
   })
 
+  it('passes autoComplete to the input when no children are provided', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoComplete="on" />
+    )
+
+    expect(html).toContain('autoComplete="on"')
+  })
+
+  it('passes autoComplete to SmartInput children', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoComplete="username">
+        {({ SmartInput }) => <SmartInput />}
+      </Field>
+    )
+
+    expect(html).toContain('autoComplete="username"')
+  })
+
+  it('lets input autoComplete override the field prop', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoComplete="username">
+        {({ Input }) => <Input autoComplete="email" />}
+      </Field>
+    )
+
+    expect(html).toContain('autoComplete="email"')
+  })
+
   it('sets aria attributes and renders errors', () => {
     const html = renderToStaticMarkup(
       <Field name="foo" label="Foo" required errors={['Required']} />
