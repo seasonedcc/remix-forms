@@ -135,6 +135,7 @@ type SmartInputProps = {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   value?: any
   autoFocus?: boolean
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
   options?: Option[]
   multiline?: boolean
   radio?: boolean
@@ -201,6 +202,7 @@ function createSmartInput({
     type,
     value,
     autoFocus,
+    autoComplete,
     options,
     multiline,
     radio,
@@ -239,6 +241,8 @@ function createSmartInput({
       ...props,
     }
 
+    const withAutoComplete = { ...commonProps, autoComplete }
+
     return fieldType === 'boolean' ? (
       <Checkbox
         type="checkbox"
@@ -248,7 +252,7 @@ function createSmartInput({
         {...a11yProps}
       />
     ) : options && !radio ? (
-      <Select defaultValue={value} {...commonProps} {...a11yProps}>
+      <Select defaultValue={value} {...withAutoComplete} {...a11yProps}>
         {makeOptionComponents(makeSelectOption, options)}
       </Select>
     ) : options && radio ? (
@@ -257,7 +261,7 @@ function createSmartInput({
       <Multiline
         placeholder={placeholder}
         defaultValue={value}
-        {...commonProps}
+        {...withAutoComplete}
         {...a11yProps}
       />
     ) : (
@@ -265,7 +269,7 @@ function createSmartInput({
         type={type}
         placeholder={placeholder}
         defaultValue={value}
-        {...commonProps}
+        {...withAutoComplete}
         {...a11yProps}
       />
     )
@@ -309,6 +313,7 @@ function createField<Schema extends SomeZodObject>({
         radio = false,
         placeholder,
         hidden = false,
+        autoComplete,
         children: childrenFn,
         ...props
       },
@@ -325,6 +330,7 @@ function createField<Schema extends SomeZodObject>({
         multiline,
         options,
         placeholder,
+        autoComplete,
         radio,
         required,
         shape,
@@ -414,6 +420,7 @@ function createField<Schema extends SomeZodObject>({
               placeholder,
               registerProps: { ...registerProps, ref: mergedRef },
               autoFocus,
+              autoComplete,
               value,
               a11yProps,
             }
@@ -431,6 +438,7 @@ function createField<Schema extends SomeZodObject>({
               ...a11yProps,
               placeholder,
               autoFocus,
+              autoComplete,
               defaultValue: value,
               ...child.props,
               ref: mergedRef,
@@ -443,6 +451,7 @@ function createField<Schema extends SomeZodObject>({
               ...a11yProps,
               placeholder,
               autoFocus,
+              autoComplete,
               defaultValue: value,
               ...child.props,
               ref: mergedRef,
@@ -454,6 +463,7 @@ function createField<Schema extends SomeZodObject>({
               ...registerProps,
               ...a11yProps,
               autoFocus,
+              autoComplete,
               defaultValue: value,
               children: makeOptionComponents(makeSelectOption, options),
               ...child.props,
@@ -555,6 +565,7 @@ function createField<Schema extends SomeZodObject>({
           placeholder={placeholder}
           registerProps={{ ref: registerRef, ...registerProps }}
           autoFocus={autoFocus}
+          autoComplete={autoComplete}
           value={value}
           a11yProps={a11yProps}
         />

@@ -47,6 +47,7 @@ export const exampleRouteGroups = {
     'Imperative submit',
     'Dynamic form',
     'Empty option label',
+    'Auto complete',
   ],
   renderField: [
     'Required indicator',

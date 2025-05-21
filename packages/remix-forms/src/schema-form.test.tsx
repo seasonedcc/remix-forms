@@ -327,6 +327,54 @@ describe('SchemaForm', () => {
     expect(renderField).toHaveBeenCalledTimes(2)
     expect(html).toContain('class="custom"')
   })
+
+  it('passes autoComplete through the Field component', () => {
+    const schema = z.object({
+      first: z.string(),
+      middle: z.string(),
+      last: z.string(),
+      nick: z.string(),
+      bio: z.string(),
+      role: z.enum(['a', 'b']),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, register }) => (
+          <>
+            <Field name="first" autoComplete="given-name" />
+            <Field name="middle" autoComplete="family-name">
+              {() => <input {...register('middle')} autoComplete="shipping" />}
+            </Field>
+            <Field name="last" autoComplete="family-name">
+              {({ SmartInput }) => <SmartInput />}
+            </Field>
+            <Field name="nick" autoComplete="nickname">
+              {({ Input }) => <Input autoComplete="off" />}
+            </Field>
+            <Field name="bio" autoComplete="on">
+              {({ Multiline }) => <Multiline />}
+            </Field>
+            <Field name="role" autoComplete="organization">
+              {({ Select }) => (
+                <Select>
+                  <option value="a">A</option>
+                  <option value="b">B</option>
+                </Select>
+              )}
+            </Field>
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('autoComplete="given-name"')
+    expect(html).toContain('autoComplete="family-name"')
+    expect(html).toContain('autoComplete="off"')
+    expect(html).toContain('autoComplete="on"')
+    expect(html).toContain('autoComplete="organization"')
+    expect(html).toContain('autoComplete="shipping"')
+  })
 })
 it('uses provided component for form rendering', () => {
   const schema = z.object({ name: z.string() })
