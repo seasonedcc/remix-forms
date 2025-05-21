@@ -331,6 +331,7 @@ describe('SchemaForm', () => {
   it('passes autoComplete through the Field component', () => {
     const schema = z.object({
       first: z.string(),
+      middle: z.string(),
       last: z.string(),
       nick: z.string(),
       bio: z.string(),
@@ -339,9 +340,12 @@ describe('SchemaForm', () => {
 
     const html = renderToStaticMarkup(
       <SchemaForm schema={schema}>
-        {({ Field }) => (
+        {({ Field, register }) => (
           <>
             <Field name="first" autoComplete="given-name" />
+            <Field name="middle" autoComplete="family-name">
+              {() => <input {...register('middle')} autoComplete="shipping" />}
+            </Field>
             <Field name="last" autoComplete="family-name">
               {({ SmartInput }) => <SmartInput />}
             </Field>
@@ -369,6 +373,7 @@ describe('SchemaForm', () => {
     expect(html).toContain('autoComplete="off"')
     expect(html).toContain('autoComplete="on"')
     expect(html).toContain('autoComplete="organization"')
+    expect(html).toContain('autoComplete="shipping"')
   })
 })
 it('uses provided component for form rendering', () => {

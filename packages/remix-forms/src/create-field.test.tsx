@@ -206,6 +206,16 @@ describe('createField', () => {
     expect(html).toContain('autoComplete="email"')
   })
 
+  it('lets input autoComplete override the field prop for custom input', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoComplete="username">
+        {() => <input autoComplete="email" />}
+      </Field>
+    )
+
+    expect(html).toContain('autoComplete="email"')
+  })
+
   it('sets aria attributes and renders errors', () => {
     const html = renderToStaticMarkup(
       <Field name="foo" label="Foo" required errors={['Required']} />
