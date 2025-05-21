@@ -390,3 +390,20 @@ it('uses fieldErrorsComponent and errorComponent when provided', () => {
   expect(html).toContain('data-field-errors="true"')
   expect(html).toContain('<span data-error="true">Oops</span>')
 })
+
+it('uses fetcher.Form when fetcher is supplied', () => {
+  const schema = z.object({ name: z.string() })
+  const fetcher = {
+    submit: vi.fn(),
+    state: 'idle',
+    Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+      <form data-fetcher {...props} />
+    ),
+  }
+
+  const html = renderToStaticMarkup(
+    <SchemaForm schema={schema} fetcher={fetcher as never} />
+  )
+
+  expect(html).toContain('data-fetcher="true"')
+})
