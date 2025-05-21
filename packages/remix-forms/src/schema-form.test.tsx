@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import type { Form as ReactRouterForm } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import * as z from 'zod'
 import { SchemaForm } from './schema-form'
 import type { RenderField } from './schema-form'
-import type { Form as ReactRouterForm } from 'react-router'
 
 vi.mock('react-router', () => ({
   Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
@@ -302,7 +302,9 @@ it('uses provided component for form rendering', () => {
   const CustomForm = React.forwardRef<
     HTMLFormElement,
     React.ComponentProps<'form'>
-  >((props, ref) => <form data-custom ref={ref} {...props} />) as unknown as typeof ReactRouterForm
+  >((props, ref) => (
+    <form data-custom ref={ref} {...props} />
+  )) as unknown as typeof ReactRouterForm
 
   const html = renderToStaticMarkup(
     <SchemaForm schema={schema} component={CustomForm} />
