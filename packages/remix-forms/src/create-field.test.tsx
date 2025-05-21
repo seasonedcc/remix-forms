@@ -216,6 +216,26 @@ describe('createField', () => {
     expect(html).toContain('id="choice-b"')
     expect(html).toContain('for="choice-b"')
   })
+
+  it('creates radio inputs with fieldset and linked labels by default', () => {
+    const html = renderToStaticMarkup(
+      <ChoiceField
+        name="choice"
+        label="Choice"
+        radio
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      />
+    )
+
+    expect(html).toContain('<fieldset')
+    expect(html).toContain('id="choice-a"')
+    expect(html).toContain('for="choice-a"')
+    expect(html).toContain('id="choice-b"')
+    expect(html).toContain('for="choice-b"')
+  })
 })
 
 describe('component mappings', () => {
