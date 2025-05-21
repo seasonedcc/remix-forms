@@ -125,9 +125,7 @@ describe('findElement and findParent', () => {
 
 describe('additional traversal cases', () => {
   it('does not map function children', () => {
-    const FnChild = ({ children }: { children: () => JSX.Element }) => (
-      <section />
-    )
+    const FnChild = (_props: { children: () => JSX.Element }) => <section />
 
     const tree = <FnChild>{() => <span>A</span>}</FnChild>
 
