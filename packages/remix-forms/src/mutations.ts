@@ -86,6 +86,10 @@ type FormErrors<SchemaType> = Partial<
  * Result of a mutation executed by {@link performMutation} or
  * {@link formAction}.
  *
+ * The object indicates whether the mutation succeeded and either contains the
+ * returned data or a map of validation errors keyed by field name. This type is
+ * useful for typing loader and action responses.
+ *
  * @example
  * ```ts
  * if (result.success) console.log(result.data)
@@ -126,7 +130,9 @@ type PerformMutationProps<Schema extends FormSchema, D> = {
  *
  * @example
  * ```ts
- * formAction({ request, schema, mutation, successPath: '/done' })
+ * // inside a route action
+ * export const action = async ({ request }) =>
+ *   formAction({ request, schema, mutation, successPath: '/done' })
  * ```
  *
  * @example
@@ -175,6 +181,9 @@ async function getFormValues<Schema extends FormSchema>(
  * ```ts
  * performMutation({ request, schema, mutation, context: { user } })
  * ```
+ *
+ * This helper is usually used from {@link formAction} but can also be called
+ * directly when you need custom handling of the mutation result.
  */
 async function performMutation<Schema extends FormSchema, D>({
   request,
@@ -228,6 +237,10 @@ async function performMutation<Schema extends FormSchema, D>({
  * ```ts
  * formAction({ request, schema, mutation, successPath: '/thanks' })
  * ```
+ *
+ * Use this function as your route's action to parse the form values, execute
+ * the mutation and respond with either a redirect or an object containing the
+ * errors and submitted values.
  */
 async function formAction<Schema extends FormSchema, D>({
   successPath,

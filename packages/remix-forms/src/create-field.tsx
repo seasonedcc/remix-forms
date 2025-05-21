@@ -149,10 +149,14 @@ const FieldContext = React.createContext<
 >(undefined)
 
 /**
- * Access information about the currently rendered field inside custom
- * components.
+ * Access information about the field currently being rendered.
  *
- * @returns Data describing the field being rendered
+ * This hook is meant to be used from inside custom components passed to
+ * {@link SchemaForm} or {@link RenderField}. It exposes metadata such as the
+ * computed label, validation errors and the coerced value so that custom
+ * inputs can easily hook into the form.
+ *
+ * @returns Field data including `label`, `errors` and `value`.
  *
  * @example
  * ```tsx

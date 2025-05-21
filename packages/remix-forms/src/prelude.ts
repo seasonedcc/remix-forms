@@ -5,6 +5,8 @@ import type { z } from 'zod'
  *
  * This type covers plain objects as well as Zod effects so you can pass
  * schemas created with refinements or preprocessors.
+ * It is mainly used as a generic constraint for {@link SchemaForm} and the
+ * mutation helpers.
  *
  * @example
  * ```ts
