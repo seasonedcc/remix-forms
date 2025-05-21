@@ -98,4 +98,57 @@ describe('findElement and findParent', () => {
     const parent = findParent(tree, child)
     expect(parent?.type).toBe('section')
   })
+
+  it('returns null when element is not found', () => {
+    const tree = (
+      <div>
+        <span>A</span>
+      </div>
+    )
+
+    const found = findElement(tree, (el) => el.props.id === 'missing')
+    expect(found).toBe(null)
+  })
+
+  it('returns null when parent cannot be located', () => {
+    const child = <span>Child</span>
+    const tree = (
+      <div>
+        <span>A</span>
+      </div>
+    )
+
+    const parent = findParent(tree, child)
+    expect(parent).toBe(null)
+  })
+})
+
+describe('additional traversal cases', () => {
+  it('does not map function children', () => {
+    const FnChild = ({ children }: { children: () => JSX.Element }) => (
+      <section />
+    )
+
+    const tree = <FnChild>{() => <span>A</span>}</FnChild>
+
+    const mapped = mapChildren(tree, (child) =>
+      React.cloneElement(child, { id: 'mapped' })
+    ) as React.ReactElement[]
+
+    const root = mapped[0]
+    expect(root.props.id).toBe('mapped')
+    expect(typeof root.props.children).toBe('function')
+  })
+
+  it('ignores non-elements when reducing', () => {
+    const tree = (
+      <>
+        {'text'}
+        <div>B</div>
+      </>
+    )
+
+    const count = reduceElements(tree, 0, (acc) => acc + 1)
+    expect(count).toBe(2)
+  })
 })
