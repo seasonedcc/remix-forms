@@ -1,9 +1,10 @@
-import type * as React from 'react'
+import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import * as z from 'zod'
 import { SchemaForm } from './schema-form'
 import type { RenderField } from './schema-form'
+import type { Form as ReactRouterForm } from 'react-router'
 
 vi.mock('react-router', () => ({
   Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
@@ -295,4 +296,48 @@ describe('SchemaForm', () => {
     expect(renderField).toHaveBeenCalledTimes(2)
     expect(html).toContain('class="custom"')
   })
+})
+it('uses provided component for form rendering', () => {
+  const schema = z.object({ name: z.string() })
+  const CustomForm = React.forwardRef<
+    HTMLFormElement,
+    React.ComponentProps<'form'>
+  >((props, ref) => <form data-custom ref={ref} {...props} />) as unknown as typeof ReactRouterForm
+
+  const html = renderToStaticMarkup(
+    <SchemaForm schema={schema} component={CustomForm} />
+  )
+
+  expect(html).toContain('data-custom="true"')
+})
+
+it('uses globalErrorsComponent when provided', () => {
+  const schema = z.object({ name: z.string() })
+  const Errors = (props: React.HTMLAttributes<HTMLDivElement>) => (
+    <section data-errors {...props} />
+  )
+
+  const html = renderToStaticMarkup(
+    <SchemaForm
+      schema={schema}
+      errors={{ _global: ['Oops'] }}
+      globalErrorsComponent={Errors}
+    />
+  )
+
+  expect(html).toContain('<section data-errors="true"')
+  expect(html).toContain('Oops')
+})
+
+it('renders the button using buttonComponent', () => {
+  const schema = z.object({ name: z.string() })
+  const Button = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+    <button data-btn {...props} />
+  )
+
+  const html = renderToStaticMarkup(
+    <SchemaForm schema={schema} buttonComponent={Button} />
+  )
+
+  expect(html).toContain('data-btn="true"')
 })
