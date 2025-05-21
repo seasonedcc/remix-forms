@@ -182,3 +182,95 @@ describe('createField', () => {
     expect(html).toContain('for="choice-b"')
   })
 })
+
+describe('component mappings', () => {
+  it('uses custom components for field layout and errors', () => {
+    const CustomField = createField<typeof schema>({
+      register,
+      fieldComponent: (props: React.ComponentProps<'section'>) => (
+        <section data-field {...props} />
+      ),
+      labelComponent: (props: React.ComponentProps<'label'>) => (
+        // biome-ignore lint/a11y/noLabelWithoutControl: test component
+        <label data-label {...props} />
+      ),
+      inputComponent: React.forwardRef<
+        HTMLInputElement,
+        React.ComponentProps<'input'>
+      >((props, ref) => <input data-input ref={ref} {...props} />),
+      fieldErrorsComponent: (props: React.ComponentProps<'div'>) => (
+        <div data-errors {...props} />
+      ),
+      errorComponent: (props: React.ComponentProps<'span'>) => (
+        <span data-error {...props} />
+      ),
+    })
+
+    const html = renderToStaticMarkup(
+      <CustomField name="foo" label="Foo" errors={['Oops']} />
+    )
+
+    expect(html).toContain('data-field="true"')
+    expect(html).toContain('data-label="true"')
+    expect(html).toContain('data-input="true"')
+    expect(html).toContain('<div data-errors="true"')
+    expect(html).toContain('<span data-error="true">Oops</span>')
+  })
+
+  it('uses custom components for multiline, checkbox and radio inputs', () => {
+    const BoolField = createField<z.ZodObject<{ agree: z.ZodBoolean }>>({
+      register,
+      checkboxComponent: React.forwardRef<
+        HTMLInputElement,
+        React.ComponentProps<'input'>
+      >((props, ref) => <input data-checkbox ref={ref} {...props} />),
+      checkboxWrapperComponent: (props: React.ComponentProps<'div'>) => (
+        <div data-cbwrap {...props} />
+      ),
+    })
+
+    const boolHtml = renderToStaticMarkup(
+      <BoolField name="agree" label="Agree" fieldType="boolean" />
+    )
+    expect(boolHtml).toContain('data-cbwrap="true"')
+    expect(boolHtml).toContain('data-checkbox="true"')
+
+    const MultiField = createField<typeof schema>({
+      register,
+      multilineComponent: React.forwardRef<
+        HTMLTextAreaElement,
+        React.ComponentProps<'textarea'>
+      >((props, ref) => <textarea data-multi ref={ref} {...props} />),
+    })
+    const multiHtml = renderToStaticMarkup(
+      <MultiField name="foo" label="Foo" multiline />
+    )
+    expect(multiHtml).toContain('data-multi="true"')
+
+    const RadioField = createField<typeof choiceSchema>({
+      register,
+      radioGroupComponent: (props: React.ComponentProps<'fieldset'>) => (
+        <fieldset data-radio-group {...props} />
+      ),
+      radioWrapperComponent: (props: React.ComponentProps<'div'>) => (
+        <div data-radio-wrap {...props} />
+      ),
+      radioComponent: React.forwardRef<
+        HTMLInputElement,
+        React.ComponentProps<'input'>
+      >((props, ref) => <input data-radio ref={ref} {...props} />),
+    })
+
+    const radioHtml = renderToStaticMarkup(
+      <RadioField
+        name="choice"
+        label="Choice"
+        radio
+        options={[{ name: 'A', value: 'a' }]}
+      />
+    )
+    expect(radioHtml).toContain('data-radio-group="true"')
+    expect(radioHtml).toContain('data-radio-wrap="true"')
+    expect(radioHtml).toContain('data-radio="true"')
+  })
+})
