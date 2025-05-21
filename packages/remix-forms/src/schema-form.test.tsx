@@ -6,14 +6,18 @@ import * as z from 'zod'
 import { SchemaForm } from './schema-form'
 import type { RenderField } from './schema-form'
 
-vi.mock('react-router', () => ({
-  Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
-    <form {...props} />
-  ),
-  useActionData: () => undefined,
-  useNavigation: () => ({ state: 'idle' }),
-  useSubmit: () => () => {},
-}))
+vi.mock('react-router', () => {
+  return {
+    Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+      <form {...props} />
+    ),
+    useActionData: vi.fn(() => undefined),
+    useNavigation: vi.fn(() => ({ state: 'idle' })),
+    useSubmit: () => () => {},
+  }
+})
+
+import { useActionData } from 'react-router'
 
 describe('SchemaForm', () => {
   it('renders provided values as form defaults', () => {
@@ -342,4 +346,47 @@ it('renders the button using buttonComponent', () => {
   )
 
   expect(html).toContain('data-btn="true"')
+})
+
+it('prioritizes action data over provided values and errors', () => {
+  const schema = z.object({ name: z.string() })
+  const mockUseActionData = vi.mocked(useActionData)
+
+  mockUseActionData.mockReturnValueOnce({
+    errors: { name: ['Action'] },
+    values: { name: 'John' },
+  })
+
+  const html = renderToStaticMarkup(
+    <SchemaForm
+      schema={schema}
+      values={{ name: 'Jane' }}
+      errors={{ name: ['Prop'] }}
+    />
+  )
+
+  expect(html).toContain('value="John"')
+  expect(html).toContain('Action')
+})
+
+it('uses fieldErrorsComponent and errorComponent when provided', () => {
+  const schema = z.object({ name: z.string() })
+  const Errors = (props: React.ComponentProps<'div'>) => (
+    <div data-field-errors {...props} />
+  )
+  const Error = (props: React.ComponentProps<'span'>) => (
+    <span data-error {...props} />
+  )
+
+  const html = renderToStaticMarkup(
+    <SchemaForm
+      schema={schema}
+      errors={{ name: ['Oops'] }}
+      fieldErrorsComponent={Errors}
+      errorComponent={Error}
+    />
+  )
+
+  expect(html).toContain('data-field-errors="true"')
+  expect(html).toContain('<span data-error="true">Oops</span>')
 })
