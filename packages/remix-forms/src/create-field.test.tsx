@@ -171,6 +171,13 @@ describe('createField', () => {
     expect(html).toContain('style="display:none"')
   })
 
+  it('sets the autoFocus attribute when requested', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoFocus />
+    )
+    expect(html).toMatch(/autofocus/i)
+  })
+
   it('sets aria attributes and renders errors', () => {
     const html = renderToStaticMarkup(
       <Field name="foo" label="Foo" required errors={['Required']} />
