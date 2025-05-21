@@ -135,6 +135,18 @@ describe('SchemaForm', () => {
     expect(html).toContain('<option value="b">B</option>')
   })
 
+  it('infers option labels from enum values', () => {
+    const schema = z.object({
+      choice: z.enum(['foo', 'barBaz']),
+    })
+
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+
+    expect(html).toContain('<select')
+    expect(html).toContain('<option value="foo">Foo</option>')
+    expect(html).toContain('<option value="barBaz">Bar Baz</option>')
+  })
+
   it('renders beforeChildren content before the fields', () => {
     const schema = z.object({
       name: z.string(),
