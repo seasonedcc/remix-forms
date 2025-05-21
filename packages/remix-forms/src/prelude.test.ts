@@ -39,6 +39,10 @@ describe('parseDate', () => {
   it('passes through date strings unchanged', () => {
     expect(parseDate('2024-05-06T07:08:09Z')).toBe('2024-05-06')
   })
+
+  it('keeps YYYY-MM-DD strings as is', () => {
+    expect(parseDate('2024-05-06')).toBe('2024-05-06')
+  })
 })
 
 describe('browser', () => {
