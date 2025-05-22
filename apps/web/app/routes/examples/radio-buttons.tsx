@@ -16,15 +16,17 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 const code = `const schema = z.object({
   role: z.enum(['Designer', 'Dev']),
   department: z.enum(['HR', 'IT']).default('IT'),
+  assignee: z.enum(["Ângelo", "João"]).default("João"),
 })
 
 export default () => (
-  <SchemaForm schema={schema} radio={['role', 'department']} />
+  <SchemaForm schema={schema} radio={['role', 'department', 'assignee']} />
 )`
 
 const schema = z.object({
   role: z.enum(['Designer', 'Dev']),
   department: z.enum(['HR', 'IT']).default('IT'),
+  assignee: z.enum(["Ângelo", "João"]).default("João"),
 })
 
 export const loader = () => ({
@@ -39,7 +41,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <SchemaForm schema={schema} radio={['role', 'department']} />
+      <SchemaForm schema={schema} radio={['role', 'department', 'assignee']} />
     </Example>
   )
 }

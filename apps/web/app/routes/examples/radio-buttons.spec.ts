@@ -17,6 +17,10 @@ test('With JS enabled', async ({ example }) => {
     { name: 'HR', value: 'HR' },
     { name: 'IT', value: 'IT' },
   ])
+  await example.expectRadioToHaveOptions('department', [
+    { name: 'Ângelo', value: 'Ângelo' },
+    { name: 'João', value: 'João' },
+  ])
   await expect(button).toBeEnabled()
 
   // Client-side validation
