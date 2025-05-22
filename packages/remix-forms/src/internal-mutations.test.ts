@@ -53,4 +53,15 @@ describe('getFormValues', () => {
       day: new Date(2024, 4, 6),
     })
   })
+
+  it('defaults optional and nullable fields when missing', async () => {
+    const schema = z.object({
+      opt: z.string().optional(),
+      nul: z.date().nullable(),
+      both: z.boolean().optional().nullable(),
+    })
+    const request = makeRequest(new URLSearchParams())
+    const values = await getFormValues(request, schema)
+    expect(values).toEqual({ opt: undefined, nul: null, both: null })
+  })
 })
