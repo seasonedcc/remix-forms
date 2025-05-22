@@ -28,4 +28,9 @@ describe('inferLabel', () => {
   it('keeps numbers as part of the name', () => {
     expect(inferLabel('field1Name')).toBe('Field1 Name')
   })
+
+  it('keeps accents when inferring labels', () => {
+    expect(inferLabel('avião')).toBe('Avião')
+    expect(inferLabel('ônibus')).toBe('Ônibus')
+  })
 })

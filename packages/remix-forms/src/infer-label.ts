@@ -1,7 +1,8 @@
 function startCase(str: string): string {
   const matches = str.match(
-    /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+    /[\p{Lu}]{2,}(?=[\p{Lu}][\p{Ll}]+[\p{N}]*|\b)|[\p{Lu}]?[\p{Ll}]+[\p{N}]*|[\p{Lu}]|[\p{N}]+/gu
   ) ?? ['']
+
   return matches.map((x) => x.charAt(0).toUpperCase() + x.slice(1)).join(' ')
 }
 
