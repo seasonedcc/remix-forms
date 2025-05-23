@@ -29,6 +29,8 @@ These scripts should be executed from the repository root.
 - Source code is written in TypeScript using ES modules.
 - Export types and values explicitly (e.g. `export { Foo }` and
   `export type { Bar }`).
+- Prefer static imports. Use dynamic `import()` only when strictly necessary
+  and document why it's required.
 
 ## Public API
 The public API for the `remix-forms` package is defined by
