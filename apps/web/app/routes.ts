@@ -62,6 +62,7 @@ const testRoutes = [
   'field-with-radio-children',
   'field-with-ref',
   'hidden-field-with-errors',
+  'accented-options',
 ]
 
 export const exampleRoutesToPrerender = Object.entries(exampleRouteGroups)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inferLabel } from './infer-label'
+import { inferLabel, startCase } from './infer-label'
 
 describe('inferLabel', () => {
   it('capitalizes the field name', () => {
@@ -27,5 +27,36 @@ describe('inferLabel', () => {
 
   it('keeps numbers as part of the name', () => {
     expect(inferLabel('field1Name')).toBe('Field1 Name')
+  })
+
+  it('keeps accents when inferring labels', () => {
+    expect(inferLabel('avião')).toBe('Avião')
+    expect(inferLabel('ônibus')).toBe('Ônibus')
+  })
+})
+
+describe('startCase', () => {
+  it('handles camelCase with acronyms and numbers', () => {
+    expect(startCase('fooBarHTML42')).toBe('Foo Bar HTML 42')
+  })
+
+  it('handles words with apostrophes', () => {
+    expect(startCase("rock'n'roll")).toBe("Rock'n'Roll")
+  })
+
+  it('handles multiple apostrophes in camelCase', () => {
+    expect(startCase("can'tStopWon'tStop")).toBe("Can't Stop Won't Stop")
+  })
+
+  it('handles trailing numbers', () => {
+    expect(startCase('item42')).toBe('Item42')
+  })
+
+  it('splits camel cased acronyms', () => {
+    expect(startCase('XMLHttpRequest')).toBe('XML Http Request')
+  })
+
+  it('handles a leading apostrophe', () => {
+    expect(startCase("'tisTheSeason")).toBe("'Tis The Season")
   })
 })
