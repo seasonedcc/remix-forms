@@ -186,6 +186,30 @@ describe('performMutation', () => {
       expect(result.errors).toEqual({ _global: ['Global error'] })
     }
   })
+
+  it('calls transformResult when the mutation fails', async () => {
+    const schema = z.object({ name: z.string() })
+    const request = makeRequest(new URLSearchParams({ name: '' }))
+    const errors = [new InputError('Required', ['name'])]
+    const mutation = Object.assign(
+      vi.fn(async () => ({ success: false as const, errors })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<unknown>
+    const transformResult = vi.fn(
+      async (
+        r: MutationResult<typeof schema, unknown>
+      ): Promise<MutationResult<typeof schema, unknown>> => r
+    )
+
+    await performMutation({
+      request,
+      schema,
+      mutation,
+      transformResult,
+    })
+
+    expect(transformResult).toHaveBeenCalled()
+  })
 })
 
 describe('formAction', () => {
@@ -265,5 +289,26 @@ describe('formAction', () => {
     }
 
     expect(response?.headers.get('Location')).toBe('/hello-ok')
+  })
+
+  it('passes transformResult through formAction', async () => {
+    const schema = z.object({ name: z.string() })
+    const request = makeRequest(new URLSearchParams({ name: 'Jane' }))
+    const mutation = Object.assign(
+      vi.fn(async () => ({ success: true as const, data: 'ok' })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<string>
+    const transformResult = vi.fn(
+      (r: MutationResult<typeof schema, string>) => r
+    )
+
+    await formAction({
+      request,
+      schema,
+      mutation,
+      transformResult,
+    })
+
+    expect(transformResult).toHaveBeenCalled()
   })
 })
