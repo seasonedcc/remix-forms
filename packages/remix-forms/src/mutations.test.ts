@@ -165,6 +165,27 @@ describe('performMutation', () => {
       expect(values.user).toEqual({ name: '', age: '42' })
     }
   })
+
+  it('handles only global errors gracefully', async () => {
+    const schema = z.object({ name: z.string() })
+    const request = makeRequest(new URLSearchParams({ name: '' }))
+    const errors = [new Error('Global error')]
+    const mutation = Object.assign(
+      vi.fn(async () => ({ success: false as const, errors })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<unknown>
+
+    const result = (await performMutation({
+      request,
+      schema,
+      mutation,
+    })) as MutationResult<typeof schema, unknown>
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.errors).toEqual({ _global: ['Global error'] })
+    }
+  })
 })
 
 describe('formAction', () => {
