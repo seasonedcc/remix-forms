@@ -17,7 +17,7 @@ vi.mock('react-router', () => {
   }
 })
 
-import { useActionData } from 'react-router'
+import { useActionData, useNavigation } from 'react-router'
 
 describe('SchemaForm', () => {
   it('renders provided values as form defaults', () => {
@@ -84,6 +84,18 @@ describe('SchemaForm', () => {
     )
 
     expect(html).toContain('Sending')
+  })
+
+  it('uses pendingButtonLabel when useNavigation state changes', () => {
+    const schema = z.object({ name: z.string() })
+    const navigation = vi.mocked(useNavigation)
+    navigation.mockReturnValueOnce({ state: 'submitting' } as never)
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} pendingButtonLabel="Wait" />
+    )
+
+    expect(html).toContain('Wait')
   })
 
   it('uses default values defined in the schema', () => {
