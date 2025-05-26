@@ -65,4 +65,14 @@ describe('shapeInfo', () => {
       enumValues: ['a', 'b'],
     })
   })
+
+  it('handles enums with optional, nullable and default modifiers', () => {
+    const shape = z.enum(['x', 'y']).optional().nullable().default('x')
+    const info = shapeInfo(shape)
+    expect(info.typeName).toBe('ZodEnum')
+    expect(info.optional).toBe(true)
+    expect(info.nullable).toBe(true)
+    expect(info.enumValues).toEqual(['x', 'y'])
+    expect(info.getDefaultValue?.()).toBe('x')
+  })
 })
