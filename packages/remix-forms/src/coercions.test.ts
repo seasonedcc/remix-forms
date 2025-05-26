@@ -59,6 +59,7 @@ describe('coerceValue', () => {
     expect(coerceValue('not a boolean', z.boolean())).toEqual(true)
     expect(coerceValue('false', z.boolean())).toEqual(true)
     expect(coerceValue('true', z.boolean())).toEqual(true)
+    expect(coerceValue(new File([], 'f'), z.boolean())).toEqual(true)
   })
 
   it('coerces booleans to false when value is empty', () => {
