@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 import { act } from 'react-test-renderer'
 import TestRenderer from 'react-test-renderer'
 import { describe, expect, it, vi } from 'vitest'
@@ -7,7 +7,9 @@ import { SchemaForm } from './schema-form'
 
 vi.mock('react-hook-form', () => {
   return {
-    FormProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    FormProvider: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
     useForm: vi.fn(() => ({
       register: vi.fn(),
       handleSubmit: (fn: unknown) => fn,
@@ -23,13 +25,17 @@ const submitMock = vi.fn()
 const fetcher = {
   submit: submitMock,
   state: 'idle',
-  Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => <form {...props} />,
+  Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+    <form {...props} />
+  ),
 }
 
 const useNavigation = vi.fn(() => ({ state: 'idle' }))
 const useSubmit = vi.fn(() => submitMock)
 vi.mock('react-router', () => ({
-  Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => <form {...props} />,
+  Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+    <form {...props} />
+  ),
   useActionData: vi.fn(() => undefined),
   useNavigation,
   useSubmit,
@@ -79,7 +85,9 @@ describe('SchemaForm events', () => {
     useNavigation.mockReturnValueOnce({ state: 'loading' })
 
     act(() => {
-      renderer.update(<SchemaForm schema={schema} onNavigation={onNavigationSpy} />)
+      renderer.update(
+        <SchemaForm schema={schema} onNavigation={onNavigationSpy} />
+      )
     })
 
     expect(onNavigationSpy).toHaveBeenCalledTimes(2)
