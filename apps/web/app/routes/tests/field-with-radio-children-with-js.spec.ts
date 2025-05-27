@@ -1,11 +1,12 @@
-import { expect, test, testWithoutJS } from 'tests/setup/tests'
+import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/forms/form-with-children'
+const route = '/test-examples/field-with-radio-children'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example
   const howDidYouFindUs = example.field('howDidYouFindUs')
   const message = example.field('message')
+  const buttonSpan = page.locator('form span:has-text("OK"):visible')
 
   await page.goto(route)
 
@@ -36,7 +37,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(button).toBeEnabled()
 
   // Client-side validation
-  await button.click()
+  await buttonSpan.click()
 
   // Show field errors and focus on the first field
 
@@ -54,7 +55,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Make first field be valid, focus goes to the second field
   await firstName.input.fill('John')
-  await button.click()
+  await buttonSpan.click()
   await example.expectValid(firstName)
   await expect(email.input).toBeFocused()
 
@@ -69,72 +70,14 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(email)
 
   // Submit form
-  await button.click()
+  await buttonSpan.click()
   await expect(button).toBeDisabled()
 
   await example.expectData({
     csrfToken: 'abc123',
     firstName: 'John',
     email: 'john@doe.com',
-    howDidYouFindUs: 'google',
-    message: 'My message',
-  })
-})
-
-testWithoutJS('With JS disabled', async ({ example }) => {
-  const { firstName, email, button, page } = example
-  const howDidYouFindUs = example.field('howDidYouFindUs')
-  const message = example.field('message')
-
-  await page.goto(route)
-
-  // Server-side validation
-  await button.click()
-  await page.reload()
-
-  // Show field errors and focus on the first field
-  await example.expectError(
-    firstName,
-    'String must contain at least 1 character(s)'
-  )
-
-  await example.expectErrors(
-    email,
-    'String must contain at least 1 character(s)',
-    'Invalid email'
-  )
-
-  await example.expectAutoFocus(firstName)
-  await example.expectNoAutoFocus(email)
-
-  // Make first field be valid, focus goes to the second field
-  await firstName.input.fill('John')
-  await button.click()
-  await page.reload()
-  await example.expectValid(firstName)
-  await example.expectNoAutoFocus(firstName)
-  await example.expectAutoFocus(email)
-
-  // Try another invalid message
-  await email.input.fill('john')
-  await message.input.fill('My message')
-  await button.click()
-  await page.reload()
-  await example.expectError(email, 'Invalid email')
-
-  // Make form be valid and test selecting an option
-  await email.input.fill('john@doe.com')
-  await howDidYouFindUs.input.last().click()
-
-  // Submit form
-  await button.click()
-  await page.reload()
-
-  await example.expectData({
-    csrfToken: 'abc123',
-    firstName: 'John',
-    email: 'john@doe.com',
-    howDidYouFindUs: 'google',
+    howDidYouFindUs: 'aFriend',
     message: 'My message',
   })
 })
