@@ -47,7 +47,7 @@ test('With JS enabled', async ({ example }) => {
   await email.input.fill('john@doe.com')
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
   await example.expectData({ firstName: 'John', email: 'john@doe.com' })
 })

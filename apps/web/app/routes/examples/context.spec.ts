@@ -31,7 +31,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(email)
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
   await expect(page.locator('form > div[role="alert"]:visible')).toHaveText(
     'Missing custom header'
@@ -40,7 +40,7 @@ test('With JS enabled', async ({ example }) => {
   // Submit with valid headers
   await page.setExtraHTTPHeaders({ customHeader: 'foo' })
 
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
   await example.expectData({ email: 'john@doe.com' })
 })

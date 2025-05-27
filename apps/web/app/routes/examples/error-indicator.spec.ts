@@ -59,7 +59,7 @@ test('With JS enabled', async ({ example }) => {
   await expect(firstName.input).toHaveClass(validClass)
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
 
   await example.expectData({
