@@ -66,8 +66,11 @@ test('With JS enabled we see a refinement validation error', async ({
 
   await page.goto(route)
 
+  await example.expectSelect(planType, { value: '' })
+
   // fill
-  await planType.input.selectOption('corporate')
+  await planType.input.selectOption({ value: 'corporate' })
+  await expect(planType.input).toHaveValue('corporate')
   await quantity.input.fill('1')
 
   // Submit
