@@ -1,10 +1,4 @@
-import * as React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import type { Form as ReactRouterForm } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
-import * as z from 'zod'
-import { SchemaForm } from './schema-form'
-import type { RenderField } from './schema-form'
 
 vi.mock('react-router', () => {
   return {
@@ -16,6 +10,13 @@ vi.mock('react-router', () => {
     useSubmit: () => () => {},
   }
 })
+
+import * as React from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import type { Form as ReactRouterForm } from 'react-router'
+import * as z from 'zod'
+import { SchemaForm } from './schema-form'
+import type { RenderField } from './schema-form'
 
 import { useActionData, useNavigation } from 'react-router'
 

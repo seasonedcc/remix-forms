@@ -1,8 +1,4 @@
-import type * as React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
-import * as z from 'zod'
-import { SchemaForm } from './schema-form'
 
 vi.mock('react-router', () => {
   return {
@@ -14,6 +10,11 @@ vi.mock('react-router', () => {
     useSubmit: () => () => {},
   }
 })
+
+import type * as React from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import * as z from 'zod'
+import { SchemaForm } from './schema-form'
 
 describe('SchemaForm hidden field errors', () => {
   it('promotes hidden field errors to global errors', () => {
