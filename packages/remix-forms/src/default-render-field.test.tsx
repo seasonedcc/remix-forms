@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { describe, expect, it } from 'vitest'
-import type * as z from 'zod'
+import type * as z from 'zod/v4'
 import type { FieldComponent } from './create-field'
 import { defaultRenderField } from './default-render-field'
 

@@ -10,7 +10,7 @@ const register = vi.fn((name: string) => ({
   onBlur: () => Promise.resolve(),
   ref: () => {},
 })) as unknown as UseFormRegister<Record<string, unknown>>
-import * as z from 'zod'
+import * as z from 'zod/v4'
 
 const schema = z.object({ foo: z.string() })
 const Field = createField<typeof schema>({ register })

@@ -1,7 +1,7 @@
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { formAction } from 'remix-forms'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'

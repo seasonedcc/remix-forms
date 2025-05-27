@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { coerceToForm } from './schema-form'
 import { shapeInfo } from './shape-info'
 

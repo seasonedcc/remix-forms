@@ -1,6 +1,6 @@
 import { InputError } from 'composable-functions'
 import { describe, expect, it } from 'vitest'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { errorMessagesForSchema, getFormValues } from './mutations'
 
 function makeRequest(body: URLSearchParams) {

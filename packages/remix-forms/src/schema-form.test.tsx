@@ -14,7 +14,7 @@ vi.mock('react-router', () => {
 import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Form as ReactRouterForm } from 'react-router'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { SchemaForm } from './schema-form'
 import type { RenderField } from './schema-form'
 

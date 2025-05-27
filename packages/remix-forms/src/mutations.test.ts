@@ -1,6 +1,6 @@
 import { type ComposableWithSchema, InputError } from 'composable-functions'
 import { describe, expect, it, vi } from 'vitest'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import {
   type FormValues,
   type MutationResult,

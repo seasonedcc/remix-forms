@@ -16,7 +16,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
+import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod/v4'
 import { mapChildren, reduceElements } from './children-traversal'
 import type {
   ComponentMappings,

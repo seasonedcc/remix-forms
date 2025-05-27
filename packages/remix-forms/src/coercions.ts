@@ -1,5 +1,5 @@
 import type { QueryStringRecord } from 'composable-functions'
-import type { ZodTypeAny } from 'zod'
+import type { ZodTypeAny } from 'zod/v4'
 import { shapeInfo } from './shape-info'
 
 type QsValue = QueryStringRecord[keyof QueryStringRecord]

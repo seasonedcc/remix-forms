@@ -1,4 +1,4 @@
-import type { z } from 'zod'
+import type { z } from 'zod/v4'
 
 /**
  * Zod schema accepted by remix-forms components and utilities.

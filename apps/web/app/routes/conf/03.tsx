@@ -1,7 +1,7 @@
 import hljs from 'highlight.js/lib/common'
 import { redirect } from 'react-router'
 import { Form, useActionData } from 'react-router'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { metaTags } from '~/helpers'
 import Label from '~/ui/conf/label'
 import Example from '~/ui/example'
@@ -25,7 +25,7 @@ import Select from '~/ui/select'
 import TextArea from '~/ui/text-area'
 import Button from '~/ui/button'
 import { useActionData } from 'react-router'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 function parseDate(value: unknown) {
   const [year, month, day] = String(value).split('-').map(Number)

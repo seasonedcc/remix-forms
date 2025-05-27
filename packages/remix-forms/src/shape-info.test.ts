@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { shapeInfo } from './shape-info'
 
 describe('shapeInfo', () => {

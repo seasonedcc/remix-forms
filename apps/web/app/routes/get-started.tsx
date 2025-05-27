@@ -39,7 +39,7 @@ function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
 export { SchemaForm }
 `
 
-const schemaCode = `import { z } from 'zod'
+const schemaCode = `import { z } from 'zod/v4'
 
 const schema = z.object({
   firstName: z.string().min(1),

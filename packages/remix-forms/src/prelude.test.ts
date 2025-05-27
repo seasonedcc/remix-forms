@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { browser, mapObject, objectFromSchema, parseDate } from './prelude'
 
 describe('objectFromSchema', () => {

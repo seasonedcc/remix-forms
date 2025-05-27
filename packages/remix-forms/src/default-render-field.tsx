@@ -1,4 +1,4 @@
-import type { SomeZodObject } from 'zod'
+import type { SomeZodObject } from 'zod/v4'
 import type { RenderFieldProps } from './schema-form'
 
 function defaultRenderField<Schema extends SomeZodObject>({

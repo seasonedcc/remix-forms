@@ -13,7 +13,7 @@ vi.mock('react-router', () => {
 
 import type * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { SchemaForm } from './schema-form'
 
 describe('SchemaForm hidden field errors', () => {

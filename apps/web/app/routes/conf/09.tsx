@@ -1,7 +1,7 @@
 import { InputError, applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import { formAction } from 'remix-forms'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { SchemaForm } from '~/ui/schema-form'
@@ -12,7 +12,7 @@ const description = "Finally, let's make the form look exactly as before."
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const code = `import { z } from 'zod'
+const code = `import { z } from 'zod/v4'
 import { InputError, applySchema } from 'composable-functions'
 import { formAction } from 'remix-forms'
 import { SchemaForm } from '~/schema-form'

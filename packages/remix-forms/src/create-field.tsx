@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { SomeZodObject, z } from 'zod'
+import type { SomeZodObject, z } from 'zod/v4'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'
