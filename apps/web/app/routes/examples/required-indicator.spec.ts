@@ -48,7 +48,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(newsletter)
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
 
   await example.expectData({

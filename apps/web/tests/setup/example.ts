@@ -87,7 +87,7 @@ class Example {
     radioName: string,
     options: { name: string; value: string }[]
   ) {
-    Promise.all(
+    await Promise.all(
       options.map(({ value }) =>
         expect(
           this.page.locator(`[name="${radioName}"][value="${value}"]:visible`)

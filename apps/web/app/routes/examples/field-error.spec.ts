@@ -20,7 +20,7 @@ test('With JS enabled clear server error on the client', async ({
   await example.expectValid(password)
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
 
   // Show field error
@@ -72,7 +72,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(password)
 
   // Submit form
-  button.click()
+  await button.click()
   await expect(button).toBeDisabled()
 
   // Show field error
@@ -80,7 +80,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Submit valid form
   await email.input.fill('john@doe.com')
-  button.click()
+  await button.click()
   await example.expectData({ email: 'john@doe.com', password: '123456' })
 })
 
