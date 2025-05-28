@@ -27,7 +27,7 @@ export default () => (
       const { name, errors } = props
 
       return (
-        <Field key={name} {...props}>
+        <Field key={String(name)} {...props}>
           {({ Label, SmartInput, Errors }) => (
             <>
               <Label className={errors ? 'text-red-600' : undefined} />
@@ -72,7 +72,7 @@ export default function Component() {
           const { name, errors } = props
 
           return (
-            <Field key={name} {...props}>
+            <Field key={String(name)} {...props}>
               {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label className={errors ? 'text-red-600' : undefined} />
