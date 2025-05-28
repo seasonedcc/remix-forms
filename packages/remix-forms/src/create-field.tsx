@@ -1,6 +1,8 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { SomeZodObject, z } from 'zod'
+import type { SchemaAdapter } from './adapters/adapter'
+import { zod3Adapter } from './adapters/zod3'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'
@@ -290,10 +292,11 @@ function createField<Schema extends SomeZodObject>({
   radioWrapperComponent: RadioWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
+  adapter = zod3Adapter,
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
-} & ComponentMappings): FieldComponent<Schema> {
+} & ComponentMappings & { adapter?: SchemaAdapter }): FieldComponent<Schema> {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return React.forwardRef<any, FieldProps<Schema>>(
     (
@@ -345,7 +348,7 @@ function createField<Schema extends SomeZodObject>({
       const type = typeProp ?? getInputType(fieldType, radio)
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
-        setValueAs: (value) => coerceValue(value, shape),
+        setValueAs: (value) => coerceValue(value, shape, adapter),
       })
 
       const labelId = `label-for-${name.toString()}`

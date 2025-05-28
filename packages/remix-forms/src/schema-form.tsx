@@ -18,6 +18,7 @@ import {
 import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
 import type { SchemaAdapter } from './adapters/adapter'
 import { zod3Adapter } from './adapters/zod3'
+import type { ZodTypeName } from './adapters/zod3'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -37,7 +38,6 @@ import type {
   ObjectFromSchema,
 } from './prelude'
 import { browser, mapObject, objectFromSchema } from './prelude'
-import type { ZodTypeName } from './shape-info'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -305,7 +305,7 @@ function SchemaForm<Schema extends FormSchema>({
     [valuesProp, actionValues]
   )
 
-  const schemaShape = objectFromSchema(schema).shape
+  const schemaShape = objectFromSchema(schema, adapter).shape
   const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
     const info = adapter.getFieldInfo(fieldShape as z.ZodTypeAny)
     const defaultValue = coerceToForm(
@@ -366,6 +366,7 @@ function SchemaForm<Schema extends FormSchema>({
         radioWrapperComponent,
         fieldErrorsComponent,
         errorComponent: Error,
+        adapter,
       }),
     [
       fieldComponent,
@@ -381,6 +382,7 @@ function SchemaForm<Schema extends FormSchema>({
       fieldErrorsComponent,
       Error,
       form.register,
+      adapter,
     ]
   )
 
@@ -417,7 +419,7 @@ function SchemaForm<Schema extends FormSchema>({
 
     return {
       shape,
-      fieldType: typeName ? fieldTypes[typeName] : 'string',
+      fieldType: typeName ? fieldTypes[typeName as ZodTypeName] : 'string',
       type: inputTypes?.[key],
       name: key,
       required,
