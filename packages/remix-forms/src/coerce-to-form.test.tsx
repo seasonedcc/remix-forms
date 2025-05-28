@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import * as z from 'zod'
-import { coerceToForm } from './schema-form'
+import { coerceToForm } from './coerce-to-form'
 import { shapeInfo } from './shape-info'
 
 describe('coerceToForm', () => {

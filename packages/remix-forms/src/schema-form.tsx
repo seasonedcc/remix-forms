@@ -18,6 +18,7 @@ import {
 } from 'react-router'
 import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
+import { coerceToForm } from './coerce-to-form'
 import type {
   ComponentMappings,
   FieldComponent,
@@ -35,10 +36,8 @@ import type {
   ObjectFromSchema,
 } from './prelude'
 import { browser, mapObject, objectFromSchema } from './prelude'
-import { parseDate } from './prelude'
 import type { ZodTypeName } from './shape-info'
 import { shapeInfo } from './shape-info'
-import type { ShapeInfo } from './shape-info'
 
 type Field<SchemaType> = {
   shape: ZodTypeAny
@@ -177,37 +176,8 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
   ZodDate: 'date',
   ZodEnum: 'string',
 }
-
 /**
- * Coerce values into a representation suitable for HTML form inputs.
- *
- * @param value - Raw value coming from props or defaults
- * @param shape - Metadata describing the field type
- * @returns Value formatted for use as a form field default
- */
-function coerceToForm(value: unknown, shape: ShapeInfo) {
-  const { typeName } = shape
-  if (typeName === 'ZodBoolean') {
-    return Boolean(value) ?? false
-  }
 
-  if (typeName === 'ZodDate') {
-    return parseDate(value as Date | undefined)
-  }
-
-  if (
-    typeName === 'ZodEnum' ||
-    typeName === 'ZodString' ||
-    typeName === 'ZodNumber'
-  ) {
-    return String(value ?? '')
-  }
-
-  return value ?? ''
-}
-
-/**
- * Render a form based on a {@link FormSchema}.
  *
  * This component is the easiest way to create a form in Remix. It
  * automatically wires up inputs with React Hook Form, handles client side
