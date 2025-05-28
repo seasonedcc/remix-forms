@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { SomeZodObject, ZodTypeAny } from 'zod'
-import type { FieldInfo, SchemaAdapter } from './adapter'
+import type * as z from 'zod'
+import type { FieldInfo, FieldTypeName, SchemaAdapter } from './adapter'
+type SomeZodObject = z.SomeZodObject
+type ZodTypeAny = z.ZodTypeAny
 
 type ZodTypeName =
   | 'ZodString'
@@ -20,14 +22,22 @@ function shapeInfo(
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
 
-  const typeName = shape._def.typeName as
+  const zodTypeName = shape._def.typeName as
     | ZodTypeName
     | 'ZodEffects'
     | 'ZodOptional'
     | 'ZodNullable'
     | 'ZodDefault'
+  const typeNameMap: Record<ZodTypeName, FieldTypeName> = {
+    ZodString: 'string',
+    ZodNumber: 'number',
+    ZodBoolean: 'boolean',
+    ZodDate: 'date',
+    ZodEnum: 'enum',
+  }
+  const typeName = typeNameMap[zodTypeName as ZodTypeName] ?? null
 
-  if (typeName === 'ZodEffects') {
+  if (zodTypeName === 'ZodEffects') {
     return shapeInfo(
       shape._def.schema,
       optional,
@@ -37,7 +47,7 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodOptional') {
+  if (zodTypeName === 'ZodOptional') {
     return shapeInfo(
       shape._def.innerType,
       true,
@@ -47,7 +57,7 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodNullable') {
+  if (zodTypeName === 'ZodNullable') {
     return shapeInfo(
       shape._def.innerType,
       optional,
@@ -57,7 +67,7 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodDefault') {
+  if (zodTypeName === 'ZodDefault') {
     return shapeInfo(
       shape._def.innerType,
       optional,
@@ -67,7 +77,7 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodEnum') {
+  if (zodTypeName === 'ZodEnum') {
     return {
       typeName,
       optional,
@@ -105,4 +115,4 @@ const zod3Adapter: SchemaAdapter = {
 }
 
 export { zod3Adapter }
-export type { ZodTypeName }
+export type { ZodTypeName, SomeZodObject, ZodTypeAny, z }

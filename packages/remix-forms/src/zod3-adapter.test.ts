@@ -15,7 +15,7 @@ describe('zod3Adapter.getFieldInfo', () => {
 
   it('extracts info from primitive shapes', () => {
     expect(zod3Adapter.getFieldInfo(z.string())).toEqual({
-      typeName: 'ZodString',
+      typeName: 'string',
       optional: false,
       nullable: false,
       getDefaultValue: undefined,
@@ -26,7 +26,7 @@ describe('zod3Adapter.getFieldInfo', () => {
   it('marks optional and nullable shapes correctly', () => {
     const info = zod3Adapter.getFieldInfo(z.number().optional().nullable())
     expect(info).toEqual({
-      typeName: 'ZodNumber',
+      typeName: 'number',
       optional: true,
       nullable: true,
       getDefaultValue: undefined,
@@ -36,7 +36,7 @@ describe('zod3Adapter.getFieldInfo', () => {
 
   it('collects default value getter', () => {
     const info = zod3Adapter.getFieldInfo(z.string().default('foo'))
-    expect(info.typeName).toBe('ZodString')
+    expect(info.typeName).toBe('string')
     expect(typeof info.getDefaultValue).toBe('function')
     expect(info.getDefaultValue?.()).toBe('foo')
   })
@@ -49,7 +49,7 @@ describe('zod3Adapter.getFieldInfo', () => {
       .nullable()
       .transform((v) => v)
     const info = zod3Adapter.getFieldInfo(shape)
-    expect(info.typeName).toBe('ZodString')
+    expect(info.typeName).toBe('string')
     expect(info.optional).toBe(true)
     expect(info.nullable).toBe(true)
     expect(info.getDefaultValue?.()).toBe('bar')
@@ -58,7 +58,7 @@ describe('zod3Adapter.getFieldInfo', () => {
   it('returns enum values', () => {
     const info = zod3Adapter.getFieldInfo(z.enum(['a', 'b']))
     expect(info).toEqual({
-      typeName: 'ZodEnum',
+      typeName: 'enum',
       optional: false,
       nullable: false,
       getDefaultValue: undefined,
@@ -69,7 +69,7 @@ describe('zod3Adapter.getFieldInfo', () => {
   it('handles enums with optional, nullable and default modifiers', () => {
     const shape = z.enum(['x', 'y']).optional().nullable().default('x')
     const info = zod3Adapter.getFieldInfo(shape)
-    expect(info.typeName).toBe('ZodEnum')
+    expect(info.typeName).toBe('enum')
     expect(info.optional).toBe(true)
     expect(info.nullable).toBe(true)
     expect(info.enumValues).toEqual(['x', 'y'])

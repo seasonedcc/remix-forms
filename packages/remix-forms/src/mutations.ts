@@ -5,7 +5,7 @@ import {
   isInputError,
 } from 'composable-functions'
 import { data, redirect } from 'react-router'
-import type { z } from 'zod'
+import type { z } from './adapters/zod3'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'

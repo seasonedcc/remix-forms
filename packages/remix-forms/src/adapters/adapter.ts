@@ -9,8 +9,10 @@ import type { Resolver } from 'react-hook-form'
 /**
  * Definition describing a single field in a schema.
  */
+type FieldTypeName = 'string' | 'number' | 'boolean' | 'date' | 'enum'
+
 type FieldInfo = {
-  typeName: string | null
+  typeName: FieldTypeName | null
   optional: boolean
   nullable: boolean
   getDefaultValue?: () => unknown
@@ -41,4 +43,4 @@ interface SchemaAdapter {
   objectFromSchema(schema: unknown): { shape: Record<string, unknown> }
 }
 
-export type { SchemaAdapter, FieldInfo }
+export type { SchemaAdapter, FieldInfo, FieldTypeName }

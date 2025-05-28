@@ -10,19 +10,15 @@ import { parseDate } from './prelude'
 
 function coerceToForm(value: unknown, info: FieldInfo) {
   const { typeName } = info
-  if (typeName === 'ZodBoolean') {
+  if (typeName === 'boolean') {
     return Boolean(value) ?? false
   }
 
-  if (typeName === 'ZodDate') {
+  if (typeName === 'date') {
     return parseDate(value as Date | undefined)
   }
 
-  if (
-    typeName === 'ZodEnum' ||
-    typeName === 'ZodString' ||
-    typeName === 'ZodNumber'
-  ) {
+  if (typeName === 'enum' || typeName === 'string' || typeName === 'number') {
     return String(value ?? '')
   }
 
