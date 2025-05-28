@@ -1,4 +1,5 @@
 import type { ZodTypeAny } from 'zod/v4'
+import { getZodDef } from './get-zod-def'
 
 type ZodTypeName =
   | 'ZodString'
@@ -26,11 +27,12 @@ function shapeInfo(
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
 
-  const typeName = shape._def.typeName
+  const def = getZodDef(shape)
+  const typeName = def.typeName
 
   if (typeName === 'ZodEffects') {
     return shapeInfo(
-      shape._def.schema,
+      def.schema,
       optional,
       nullable,
       getDefaultValue,
@@ -39,31 +41,19 @@ function shapeInfo(
   }
 
   if (typeName === 'ZodOptional') {
-    return shapeInfo(
-      shape._def.innerType,
-      true,
-      nullable,
-      getDefaultValue,
-      enumValues
-    )
+    return shapeInfo(def.innerType, true, nullable, getDefaultValue, enumValues)
   }
 
   if (typeName === 'ZodNullable') {
-    return shapeInfo(
-      shape._def.innerType,
-      optional,
-      true,
-      getDefaultValue,
-      enumValues
-    )
+    return shapeInfo(def.innerType, optional, true, getDefaultValue, enumValues)
   }
 
   if (typeName === 'ZodDefault') {
     return shapeInfo(
-      shape._def.innerType,
+      def.innerType,
       optional,
       nullable,
-      shape._def.defaultValue,
+      def.defaultValue,
       enumValues
     )
   }
@@ -74,7 +64,7 @@ function shapeInfo(
       optional,
       nullable,
       getDefaultValue,
-      enumValues: shape._def.values,
+      enumValues: def.values,
     }
   }
 
