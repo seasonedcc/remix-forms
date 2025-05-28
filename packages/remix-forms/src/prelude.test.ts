@@ -13,6 +13,12 @@ describe('objectFromSchema', () => {
     const schema = z.preprocess((v) => v, inner)
     expect(objectFromSchema(schema)).toBe(inner)
   })
+
+  it('unwraps Zod pipelines to return the inner object', () => {
+    const inner = z.object({ done: z.boolean() })
+    const schema = z.object({}).pipe(inner)
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
 })
 
 describe('mapObject', () => {

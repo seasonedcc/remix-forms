@@ -40,6 +40,10 @@ function shapeInfo(
     )
   }
 
+  if (typeName === 'ZodPipeline') {
+    return shapeInfo(def.out, optional, nullable, getDefaultValue, enumValues)
+  }
+
   if (typeName === 'ZodOptional') {
     return shapeInfo(def.innerType, true, nullable, getDefaultValue, enumValues)
   }
