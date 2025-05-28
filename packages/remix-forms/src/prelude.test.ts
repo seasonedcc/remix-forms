@@ -13,6 +13,12 @@ describe('objectFromSchema', () => {
     const schema = z.preprocess((v) => v, inner)
     expect(objectFromSchema(schema)).toBe(inner)
   })
+
+  it('unwraps pipelines to return the final object', () => {
+    const inner = z.object({ foo: z.string() })
+    const pipeline = z.object({ bar: z.number() }).pipe(inner)
+    expect(objectFromSchema(pipeline)).toBe(inner)
+  })
 })
 
 describe('mapObject', () => {

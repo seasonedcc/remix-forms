@@ -55,6 +55,13 @@ describe('shapeInfo', () => {
     expect(info.getDefaultValue?.()).toBe('bar')
   })
 
+  it('unwraps pipelines to their output schema', () => {
+    const pipeline = z.string().pipe(z.string().default('baz'))
+    const info = shapeInfo(pipeline)
+    expect(info.typeName).toBe('ZodString')
+    expect(info.getDefaultValue?.()).toBe('baz')
+  })
+
   it('returns enum values', () => {
     const info = shapeInfo(z.enum(['a', 'b']))
     expect(info).toEqual({

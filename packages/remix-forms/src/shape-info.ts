@@ -28,9 +28,9 @@ function shapeInfo(
 
   const typeName = shape._def.typeName
 
-  if (typeName === 'ZodEffects') {
+  if (typeName === 'ZodEffects' || typeName === 'ZodPipeline') {
     return shapeInfo(
-      shape._def.schema,
+      typeName === 'ZodPipeline' ? shape._def.out : shape._def.schema,
       optional,
       nullable,
       getDefaultValue,

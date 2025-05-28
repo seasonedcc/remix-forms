@@ -20,16 +20,26 @@ import type { z } from 'zod/v4'
  * type MySchema = FormSchema<typeof schema>
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
+type FormSchema<
+  T extends z.ZodTypeAny =
+    | z.SomeZodObject
+    | z.ZodEffects<z.ZodTypeAny>
+    | z.ZodPipeline<z.ZodTypeAny, z.ZodTypeAny>,
+> =
   | z.ZodEffects<T>
+  | z.ZodPipeline<z.ZodTypeAny, z.ZodTypeAny>
   | z.SomeZodObject
 
-type ObjectFromSchema<T> = T extends z.SomeZodObject
-  ? T
-  : T extends z.ZodEffects<infer R>
-    ? ObjectFromSchema<R>
-    : never
+type Prev = [never, 0, 1, 2, 3, 4]
+type ObjectFromSchema<T, D extends number = 4> = D extends 0
+  ? never
+  : T extends z.SomeZodObject
+    ? T
+    : T extends z.ZodEffects<infer R>
+      ? ObjectFromSchema<R, Prev[D]>
+      : T extends z.ZodPipeline<infer _, infer R>
+        ? ObjectFromSchema<R, Prev[D]>
+        : never
 
 type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>
@@ -44,7 +54,10 @@ function objectFromSchema<Schema extends FormSchema>(
 ): ObjectFromSchema<Schema> {
   return 'shape' in schema
     ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(schema._def.schema)
+    : objectFromSchema(
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        (schema as any)._def.out ?? (schema as any)._def.schema
+      )
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
