@@ -1,3 +1,4 @@
+import type { FieldInfo } from './adapters/adapter'
 /**
  * Coerce values into a representation suitable for HTML form inputs.
  *
@@ -6,10 +7,9 @@
  * @returns Value formatted for use as a form field default
  */
 import { parseDate } from './prelude'
-import type { ShapeInfo } from './shape-info'
 
-function coerceToForm(value: unknown, shape: ShapeInfo) {
-  const { typeName } = shape
+function coerceToForm(value: unknown, info: FieldInfo) {
+  const { typeName } = info
   if (typeName === 'ZodBoolean') {
     return Boolean(value) ?? false
   }

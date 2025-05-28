@@ -5,12 +5,17 @@
  * can work with different schema types.
  */
 import type { Resolver } from 'react-hook-form'
-import type { ShapeInfo } from '../shape-info'
 
 /**
  * Definition describing a single field in a schema.
  */
-type FieldInfo = ShapeInfo
+type FieldInfo = {
+  typeName: string | null
+  optional: boolean
+  nullable: boolean
+  getDefaultValue?: () => unknown
+  enumValues?: string[]
+}
 
 /**
  * Adapter interface for integrating validation libraries.
@@ -30,6 +35,10 @@ interface SchemaAdapter {
    * @returns Extracted field information
    */
   getFieldInfo(shape?: unknown): FieldInfo
+  /**
+   * Extract the object schema describing field shapes.
+   */
+  objectFromSchema(schema: unknown): { shape: Record<string, unknown> }
 }
 
 export type { SchemaAdapter, FieldInfo }
