@@ -1,6 +1,6 @@
 import type { QueryStringRecord } from 'composable-functions'
-import type { ZodTypeAny } from 'zod'
-import { shapeInfo } from './shape-info'
+import type { SchemaAdapter } from './adapters/adapter'
+import { zod3Adapter } from './adapters/zod3'
 
 type QsValue = QueryStringRecord[keyof QueryStringRecord]
 type Value = FormDataEntryValue | QsValue | null
@@ -34,22 +34,26 @@ const coerceDate = makeCoercion((value) => {
   return new Date(year, month - 1, day)
 }, null)
 
-function coerceValue(value: Value, shape?: ZodTypeAny) {
-  const { typeName, optional, nullable } = shapeInfo(shape)
+function coerceValue(
+  value: Value,
+  shape?: unknown,
+  adapter: SchemaAdapter = zod3Adapter
+) {
+  const { typeName, optional, nullable } = adapter.getFieldInfo(shape)
 
-  if (typeName === 'ZodBoolean') {
+  if (typeName === 'boolean') {
     return coerceBoolean({ value, optional, nullable })
   }
 
-  if (typeName === 'ZodNumber') {
+  if (typeName === 'number') {
     return coerceNumber({ value, optional, nullable })
   }
 
-  if (typeName === 'ZodDate') {
+  if (typeName === 'date') {
     return coerceDate({ value, optional, nullable })
   }
 
-  if (typeName === 'ZodString' || typeName === 'ZodEnum') {
+  if (typeName === 'string' || typeName === 'enum') {
     return coerceString({ value, optional, nullable })
   }
 

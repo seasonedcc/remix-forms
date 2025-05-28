@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import * as z from 'zod'
-import { shapeInfo } from './shape-info'
+import { zod3Adapter } from './adapters/zod3'
 
-describe('shapeInfo', () => {
+describe('zod3Adapter.getFieldInfo', () => {
   it('returns null type when shape is undefined', () => {
-    expect(shapeInfo()).toEqual({
+    expect(zod3Adapter.getFieldInfo()).toEqual({
       typeName: null,
       optional: false,
       nullable: false,
@@ -14,8 +14,8 @@ describe('shapeInfo', () => {
   })
 
   it('extracts info from primitive shapes', () => {
-    expect(shapeInfo(z.string())).toEqual({
-      typeName: 'ZodString',
+    expect(zod3Adapter.getFieldInfo(z.string())).toEqual({
+      typeName: 'string',
       optional: false,
       nullable: false,
       getDefaultValue: undefined,
@@ -24,9 +24,9 @@ describe('shapeInfo', () => {
   })
 
   it('marks optional and nullable shapes correctly', () => {
-    const info = shapeInfo(z.number().optional().nullable())
+    const info = zod3Adapter.getFieldInfo(z.number().optional().nullable())
     expect(info).toEqual({
-      typeName: 'ZodNumber',
+      typeName: 'number',
       optional: true,
       nullable: true,
       getDefaultValue: undefined,
@@ -35,8 +35,8 @@ describe('shapeInfo', () => {
   })
 
   it('collects default value getter', () => {
-    const info = shapeInfo(z.string().default('foo'))
-    expect(info.typeName).toBe('ZodString')
+    const info = zod3Adapter.getFieldInfo(z.string().default('foo'))
+    expect(info.typeName).toBe('string')
     expect(typeof info.getDefaultValue).toBe('function')
     expect(info.getDefaultValue?.()).toBe('foo')
   })
@@ -48,17 +48,17 @@ describe('shapeInfo', () => {
       .optional()
       .nullable()
       .transform((v) => v)
-    const info = shapeInfo(shape)
-    expect(info.typeName).toBe('ZodString')
+    const info = zod3Adapter.getFieldInfo(shape)
+    expect(info.typeName).toBe('string')
     expect(info.optional).toBe(true)
     expect(info.nullable).toBe(true)
     expect(info.getDefaultValue?.()).toBe('bar')
   })
 
   it('returns enum values', () => {
-    const info = shapeInfo(z.enum(['a', 'b']))
+    const info = zod3Adapter.getFieldInfo(z.enum(['a', 'b']))
     expect(info).toEqual({
-      typeName: 'ZodEnum',
+      typeName: 'enum',
       optional: false,
       nullable: false,
       getDefaultValue: undefined,
@@ -68,8 +68,8 @@ describe('shapeInfo', () => {
 
   it('handles enums with optional, nullable and default modifiers', () => {
     const shape = z.enum(['x', 'y']).optional().nullable().default('x')
-    const info = shapeInfo(shape)
-    expect(info.typeName).toBe('ZodEnum')
+    const info = zod3Adapter.getFieldInfo(shape)
+    expect(info.typeName).toBe('enum')
     expect(info.optional).toBe(true)
     expect(info.nullable).toBe(true)
     expect(info.enumValues).toEqual(['x', 'y'])
