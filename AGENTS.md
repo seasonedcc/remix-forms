@@ -32,6 +32,12 @@ These scripts should be executed from the repository root.
 - Prefer static imports. Use dynamic `import()` only when strictly necessary
   and document why it's required.
 
+## Testing
+- Run `npm run test` to execute the test suite.
+- Always run the tests before committing changes.
+- Focus tests on application behavior and accessibility. Avoid checking Tailwind classes, CSS, or which specific HTML tag is rendered. Prefer queries based on roles or other a11y attributes.
+- Do your best to test the exposed API, its inputs and outputs rather than implementation details.
+
 ## Public API
 The public API for the `remix-forms` package is defined by
 `packages/remix-forms/src/index.ts`. Whenever you modify this file or the
@@ -68,3 +74,7 @@ When addressing a bug, follow a test-driven development approach:
 2. **Green** – Implement the minimal fix so the new test passes.
 3. **Refactor** – Clean up the solution while keeping all tests green.
 
+## Definition of Done
+
+- A task is not done unless `npm run lint`, `npm run tsc`, and `npm run test` are all passing.
+- A task is not done if it has new behavior without tests to ensure the new behavior.
