@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type * as z from 'zod'
 import type { FieldInfo, FieldTypeName, SchemaAdapter } from './adapter'
+
 type SomeZodObject = z.SomeZodObject
 type ZodTypeAny = z.ZodTypeAny
 
@@ -115,4 +116,3 @@ const zod3Adapter: SchemaAdapter = {
 }
 
 export { zod3Adapter }
-export type { ZodTypeName, SomeZodObject, ZodTypeAny, z }

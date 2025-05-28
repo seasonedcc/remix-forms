@@ -7,6 +7,37 @@
 import type { Resolver } from 'react-hook-form'
 
 /**
+ * Generic representation of an object schema.
+ *
+ * Validation adapters should map this to the concrete type used by
+ * their underlying library.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: library agnostic typing
+type SchemaObject = Record<string, any>
+
+/**
+ * Generic representation of any schema value.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: library agnostic typing
+type SchemaType = any
+
+/**
+ * Namespace used for type inference.
+ *
+ * Adapters may augment this namespace via declaration merging to provide
+ * stronger typing based on their validation library.
+ */
+declare namespace schema {
+  // biome-ignore lint/suspicious/noExplicitAny: generic inference placeholder
+  // biome-ignore lint/correctness/noUnusedVariables: generic parameter for inference
+  export type infer<T> = any
+  // biome-ignore lint/correctness/noUnusedVariables: generic placeholder type
+  export interface Effects<T> extends Record<string, never> {
+    // adapter specific data may use T via declaration merging
+  }
+}
+
+/**
  * Definition describing a single field in a schema.
  */
 type FieldTypeName = 'string' | 'number' | 'boolean' | 'date' | 'enum'
@@ -43,4 +74,11 @@ interface SchemaAdapter {
   objectFromSchema(schema: unknown): { shape: Record<string, unknown> }
 }
 
-export type { SchemaAdapter, FieldInfo, FieldTypeName }
+export type {
+  SchemaAdapter,
+  FieldInfo,
+  FieldTypeName,
+  SchemaObject,
+  SchemaType,
+}
+export { schema }

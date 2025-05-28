@@ -1,5 +1,9 @@
-import type { SchemaAdapter } from './adapters/adapter'
-import type { z } from './adapters/zod3'
+import type {
+  SchemaAdapter,
+  SchemaObject,
+  SchemaType,
+  schema,
+} from './adapters/adapter'
 import { zod3Adapter } from './adapters/zod3'
 
 /**
@@ -23,13 +27,13 @@ import { zod3Adapter } from './adapters/zod3'
  * ```
  */
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
-  | z.ZodEffects<T>
-  | z.SomeZodObject
+type FormSchema<T extends SchemaType = SchemaObject | schema.Effects<any>> =
+  | schema.Effects<T>
+  | SchemaObject
 
-type ObjectFromSchema<T> = T extends z.SomeZodObject
+type ObjectFromSchema<T> = T extends SchemaObject
   ? T
-  : T extends z.ZodEffects<infer R>
+  : T extends schema.Effects<infer R>
     ? ObjectFromSchema<R>
     : never
 

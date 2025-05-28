@@ -1,7 +1,6 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { SchemaAdapter } from './adapters/adapter'
-import type { SomeZodObject, z } from './adapters/zod3'
+import type { SchemaAdapter, SchemaObject, schema } from './adapters/adapter'
 import { zod3Adapter } from './adapters/zod3'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
@@ -13,7 +12,7 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<Schema extends SomeZodObject> = (
+type Children<Schema extends SchemaObject> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
@@ -75,19 +74,19 @@ function getInputType(
   return types[type]
 }
 
-type FieldBaseProps<Schema extends SomeZodObject> = Omit<
-  Partial<Field<z.infer<Schema>>>,
+type FieldBaseProps<Schema extends SchemaObject> = Omit<
+  Partial<Field<schema.infer<Schema>>>,
   'name'
 > & {
-  name: keyof z.infer<Schema>
+  name: keyof schema.infer<Schema>
   type?: JSX.IntrinsicElements['input']['type']
   children?: Children<Schema>
 }
 
-type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+type FieldProps<Schema extends SchemaObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-type FieldComponent<Schema extends SomeZodObject> =
+type FieldComponent<Schema extends SchemaObject> =
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
@@ -278,7 +277,7 @@ function createSmartInput({
   }
 }
 
-function createField<Schema extends SomeZodObject>({
+function createField<Schema extends SchemaObject>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',

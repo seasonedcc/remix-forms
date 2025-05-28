@@ -29,7 +29,7 @@ export default () => (
         const { name, dirty } = props
 
         return (
-          <Field key={name} {...props}>
+          <Field key={String(name)} {...props}>
             {({ Label, SmartInput, Errors }) => (
               <>
                 <Label className={dirty ? 'text-yellow-600' : undefined} />
@@ -77,7 +77,7 @@ export default () => (
         const { name, dirty } = props
 
         return (
-          <Field key={name} {...props}>
+          <Field key={String(name)} {...props}>
             {({ Label, SmartInput, Errors }) => (
               <>
                 <Label className={dirty ? 'text-yellow-600' : undefined} />

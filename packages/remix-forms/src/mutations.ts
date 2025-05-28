@@ -5,7 +5,7 @@ import {
   isInputError,
 } from 'composable-functions'
 import { data, redirect } from 'react-router'
-import type { z } from './adapters/zod3'
+import type { SchemaType, schema } from './adapters/adapter'
 import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
@@ -29,11 +29,11 @@ type NestedErrors<SchemaType> = {
  * errorMessagesForSchema(errors, schema)
  * ```
  */
-function errorMessagesForSchema<T extends z.ZodTypeAny>(
+function errorMessagesForSchema<T extends SchemaType>(
   errors: Error[],
   _schema: T
-): NestedErrors<z.infer<T>> {
-  type SchemaType = z.infer<T>
+): NestedErrors<schema.infer<T>> {
+  type SchemaInfer = schema.infer<T>
   type ErrorObject = { path: string[]; messages: string[] }
 
   const inputErrors = errors.filter(isInputError) as InputError[]
@@ -78,7 +78,7 @@ function errorMessagesForSchema<T extends z.ZodTypeAny>(
     const errorBranch = nest(schemaError, memo)
 
     return { ...memo, ...errorBranch }
-  }, {}) as NestedErrors<SchemaType>
+  }, {}) as NestedErrors<SchemaInfer>
 
   return errorTree
 }
@@ -123,7 +123,7 @@ type PerformMutationProps<Schema extends FormSchema, D> = {
   mutation: ComposableWithSchema<D>
   context?: unknown
   transformValues?: (
-    values: FormValues<z.infer<Schema>>
+    values: FormValues<schema.infer<Schema>>
   ) => Record<string, unknown>
   transformResult?: (
     result: MutationResult<Schema, D>
@@ -172,15 +172,15 @@ type FormActionProps<Schema extends FormSchema, D> = {
 async function getFormValues<Schema extends FormSchema>(
   request: Request,
   schema: Schema
-): Promise<FormValues<z.infer<Schema>>> {
+): Promise<FormValues<schema.infer<Schema>>> {
   const shape = objectFromSchema(schema).shape
 
   const input = await inputFromForm(request)
 
-  const values: FormValues<z.infer<Schema>> = {}
+  const values: FormValues<schema.infer<Schema>> = {}
   for (const key in shape) {
     const value = input[key]
-    values[key as keyof z.infer<Schema>] = coerceValue(value, shape[key])
+    values[key as keyof schema.infer<Schema>] = coerceValue(value, shape[key])
   }
 
   return values
@@ -218,7 +218,7 @@ async function performMutation<Schema extends FormSchema, D>({
   transformResult = (result) => result,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<
-  MutationResult<z.infer<Schema>, D>
+  MutationResult<schema.infer<Schema>, D>
 > {
   const values = await getFormValues(request, schema)
   const result = await mutation(transformValues(values), context)
@@ -235,8 +235,11 @@ async function performMutation<Schema extends FormSchema, D>({
         ? ({
             ...errorMessagesForSchema(result.errors, schema),
             _global: global.map((error) => error.message),
-          } as FormErrors<Schema>)
-        : (errorMessagesForSchema(result.errors, schema) as FormErrors<Schema>),
+          } as unknown as FormErrors<Schema>)
+        : (errorMessagesForSchema(
+            result.errors,
+            schema
+          ) as unknown as FormErrors<Schema>),
     values,
   })
 }
@@ -271,7 +274,7 @@ async function formAction<Schema extends FormSchema, D>({
   successPath,
   ...performMutationOptions
 }: FormActionProps<Schema, D>): Promise<
-  DataWithResponseInit<MutationResult<z.infer<Schema>, D>>
+  DataWithResponseInit<MutationResult<schema.infer<Schema>, D>>
 > {
   const result = await performMutation(performMutationOptions)
 

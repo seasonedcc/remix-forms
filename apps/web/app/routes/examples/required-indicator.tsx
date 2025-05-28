@@ -27,7 +27,7 @@ export default () => (
       const { name, label, required } = props
 
       return (
-        <Field key={name} {...props}>
+        <Field key={String(name)} {...props}>
           {({ Label, SmartInput, Errors }) => (
             <>
               <Label>
@@ -69,7 +69,7 @@ export default function Component() {
           const { name, label, required } = props
 
           return (
-            <Field key={name} {...props}>
+            <Field key={String(name)} {...props}>
               {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label>

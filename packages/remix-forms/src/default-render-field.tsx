@@ -1,7 +1,7 @@
-import type { SomeZodObject } from './adapters/zod3'
+import type { SchemaObject } from './adapters/adapter'
 import type { RenderFieldProps } from './schema-form'
 
-function defaultRenderField<Schema extends SomeZodObject>({
+function defaultRenderField<Schema extends SchemaObject>({
   Field,
   name,
   ...props
