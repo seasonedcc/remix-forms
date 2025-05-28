@@ -1,5 +1,5 @@
-import type { z } from 'zod'
 import type { SchemaAdapter } from './adapters/adapter'
+import type { z } from './adapters/zod3'
 import { zod3Adapter } from './adapters/zod3'
 
 /**

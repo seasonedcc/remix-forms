@@ -15,10 +15,9 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
-import type { SchemaAdapter } from './adapters/adapter'
+import type { FieldTypeName, SchemaAdapter } from './adapters/adapter'
+import type { SomeZodObject, ZodTypeAny, z } from './adapters/zod3'
 import { zod3Adapter } from './adapters/zod3'
-import type { ZodTypeName } from './adapters/zod3'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -170,12 +169,12 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   adapter?: SchemaAdapter
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
 
-const fieldTypes: Record<ZodTypeName, FieldType> = {
-  ZodString: 'string',
-  ZodNumber: 'number',
-  ZodBoolean: 'boolean',
-  ZodDate: 'date',
-  ZodEnum: 'string',
+const fieldTypes: Record<FieldTypeName, FieldType> = {
+  string: 'string',
+  number: 'number',
+  boolean: 'boolean',
+  date: 'date',
+  enum: 'string',
 }
 /**
 
@@ -307,7 +306,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const schemaShape = objectFromSchema(schema, adapter).shape
   const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
-    const info = adapter.getFieldInfo(fieldShape as z.ZodTypeAny)
+    const info = adapter.getFieldInfo(fieldShape)
     const defaultValue = coerceToForm(
       values[key] ?? info?.getDefaultValue?.(),
       info
@@ -419,7 +418,7 @@ function SchemaForm<Schema extends FormSchema>({
 
     return {
       shape,
-      fieldType: typeName ? fieldTypes[typeName as ZodTypeName] : 'string',
+      fieldType: typeName ? fieldTypes[typeName] : 'string',
       type: inputTypes?.[key],
       name: key,
       required,
@@ -595,7 +594,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   React.useEffect(() => {
     Object.keys(errors).forEach((key) => {
-      form.setError(key as Path<TypeOf<Schema>>, {
+      form.setError(key as Path<z.TypeOf<Schema>>, {
         type: 'custom',
         message: (errors[key] ?? []).join(', '),
       })
