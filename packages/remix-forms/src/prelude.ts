@@ -4,8 +4,8 @@ import { getZodDef } from './get-zod-def'
 /**
  * Zod schema accepted by remix-forms components and utilities.
  *
- * This type covers plain objects as well as Zod effects so you can pass
- * schemas created with refinements or preprocessors.
+ * This type covers plain objects as well as Zod effects or pipelines so you can
+ * pass schemas created with refinements, preprocessors or the `pipe` API.
  * It is mainly used as a generic constraint for {@link SchemaForm} and the
  * mutation helpers.
  *
@@ -21,16 +21,23 @@ import { getZodDef } from './get-zod-def'
  * type MySchema = FormSchema<typeof schema>
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
+type EffectsLike<T extends z.ZodTypeAny> =
   | z.ZodEffects<T>
+  | z.ZodPipeline<z.ZodTypeAny, T>
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | EffectsLike<any>> =
+  | EffectsLike<T>
   | z.SomeZodObject
 
 type ObjectFromSchema<T> = T extends z.SomeZodObject
   ? T
   : T extends z.ZodEffects<infer R>
     ? ObjectFromSchema<R>
-    : never
+    : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      T extends z.ZodPipeline<any, infer R>
+      ? ObjectFromSchema<R>
+      : never
 
 type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>
@@ -43,9 +50,28 @@ type KeysOfStrings<T extends object> = {
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema
 ): ObjectFromSchema<Schema> {
-  return 'shape' in schema
-    ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(getZodDef(schema).schema)
+  if ('shape' in schema) {
+    return schema as ObjectFromSchema<Schema>
+  }
+
+  const def = getZodDef(schema)
+
+  // biome-ignore lint/suspicious/noExplicitAny: checking Zod internals
+  if ('schema' in (def as any)) {
+    // ZodEffects
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    return objectFromSchema((def as any).schema)
+  }
+
+  // biome-ignore lint/suspicious/noExplicitAny: checking Zod internals
+  if ('out' in (def as any)) {
+    // ZodPipeline
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    return objectFromSchema((def as any).out)
+  }
+
+  // biome-ignore lint/suspicious/noExplicitAny: fallback for unexpected defs
+  return def as any
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
