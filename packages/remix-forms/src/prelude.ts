@@ -1,4 +1,5 @@
 import type { z } from 'zod/v4'
+import { getZodDef } from './get-zod-def'
 
 /**
  * Zod schema accepted by remix-forms components and utilities.
@@ -44,7 +45,7 @@ function objectFromSchema<Schema extends FormSchema>(
 ): ObjectFromSchema<Schema> {
   return 'shape' in schema
     ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(schema._def.schema)
+    : objectFromSchema(getZodDef(schema).schema)
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
