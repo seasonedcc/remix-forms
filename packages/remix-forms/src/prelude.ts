@@ -1,4 +1,5 @@
 import type { z } from 'zod/v4'
+import { unwrapSchema } from './unwrap-schema'
 
 /**
  * Zod schema accepted by remix-forms components and utilities.
@@ -42,9 +43,7 @@ type KeysOfStrings<T extends object> = {
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema
 ): ObjectFromSchema<Schema> {
-  return 'shape' in schema
-    ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(schema._def.schema)
+  return unwrapSchema(schema) as ObjectFromSchema<Schema>
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(

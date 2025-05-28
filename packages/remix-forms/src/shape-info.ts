@@ -1,4 +1,5 @@
 import type { ZodTypeAny } from 'zod/v4'
+import { unwrapSchema } from './unwrap-schema'
 
 type ZodTypeName =
   | 'ZodString'
@@ -31,6 +32,17 @@ function shapeInfo(
   if (typeName === 'ZodEffects') {
     return shapeInfo(
       shape._def.schema,
+      optional,
+      nullable,
+      getDefaultValue,
+      enumValues
+    )
+  }
+
+  if (typeName === 'ZodPipe') {
+    const input = unwrapSchema(shape._def.in)
+    return shapeInfo(
+      input._def.typeName === 'ZodTransform' ? shape._def.out : shape._def.in,
       optional,
       nullable,
       getDefaultValue,
