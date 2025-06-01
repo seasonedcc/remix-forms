@@ -37,6 +37,12 @@ These scripts should be executed from the repository root.
 - Always run the tests before committing changes.
 - Focus tests on application behavior and accessibility. Avoid checking Tailwind classes, CSS, or which specific HTML tag is rendered. Prefer queries based on roles or other a11y attributes.
 - Do your best to test the exposed API, its inputs and outputs rather than implementation details.
+- Group tests with a single `describe` block per subject (e.g. per public function or component). Use the name of the subject as the param for `describe`. Avoid catch‑all labels like “additional tests”.
+- Prefer expressive matchers such as `toContain`, `toContainEqual`, or `containSubset` instead of manual array scans with `.some`.
+- When validating failure cases, assert on the specific error (name or class) rather than only checking `result.success === false`.
+- Don’t export internal helpers purely for test coverage.
+- Use descriptive names for both `describe` and `it` blocks to make code folding and navigation easier.
+- Do not test Zod schemas.
 
 ## Public API
 The public API for the `remix-forms` package is defined by
