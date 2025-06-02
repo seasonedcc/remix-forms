@@ -1,4 +1,10 @@
-import type { z } from 'zod'
+import type {
+  SchemaAdapter,
+  SchemaObject,
+  SchemaType,
+  schema,
+} from './adapters/adapter'
+import { zod3Adapter } from './adapters/zod3'
 
 /**
  * Zod schema accepted by remix-forms components and utilities.
@@ -21,13 +27,13 @@ import type { z } from 'zod'
  * ```
  */
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
-  | z.ZodEffects<T>
-  | z.SomeZodObject
+type FormSchema<T extends SchemaType = SchemaObject | schema.Effects<any>> =
+  | schema.Effects<T>
+  | SchemaObject
 
-type ObjectFromSchema<T> = T extends z.SomeZodObject
+type ObjectFromSchema<T> = T extends SchemaObject
   ? T
-  : T extends z.ZodEffects<infer R>
+  : T extends schema.Effects<infer R>
     ? ObjectFromSchema<R>
     : never
 
@@ -40,11 +46,10 @@ type KeysOfStrings<T extends object> = {
 }[keyof T]
 
 function objectFromSchema<Schema extends FormSchema>(
-  schema: Schema
+  schema: Schema,
+  adapter: SchemaAdapter = zod3Adapter
 ): ObjectFromSchema<Schema> {
-  return 'shape' in schema
-    ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(schema._def.schema)
+  return adapter.objectFromSchema(schema) as ObjectFromSchema<Schema>
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(

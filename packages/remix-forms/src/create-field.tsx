@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { SomeZodObject, z } from 'zod'
+import type { SchemaAdapter, SchemaObject, schema } from './adapters/adapter'
+import { zod3Adapter } from './adapters/zod3'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'
@@ -11,7 +12,7 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<Schema extends SomeZodObject> = (
+type Children<Schema extends SchemaObject> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
@@ -73,19 +74,19 @@ function getInputType(
   return types[type]
 }
 
-type FieldBaseProps<Schema extends SomeZodObject> = Omit<
-  Partial<Field<z.infer<Schema>>>,
+type FieldBaseProps<Schema extends SchemaObject> = Omit<
+  Partial<Field<schema.infer<Schema>>>,
   'name'
 > & {
-  name: keyof z.infer<Schema>
+  name: keyof schema.infer<Schema>
   type?: JSX.IntrinsicElements['input']['type']
   children?: Children<Schema>
 }
 
-type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+type FieldProps<Schema extends SchemaObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-type FieldComponent<Schema extends SomeZodObject> =
+type FieldComponent<Schema extends SchemaObject> =
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
@@ -276,7 +277,7 @@ function createSmartInput({
   }
 }
 
-function createField<Schema extends SomeZodObject>({
+function createField<Schema extends SchemaObject>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',
@@ -290,10 +291,11 @@ function createField<Schema extends SomeZodObject>({
   radioWrapperComponent: RadioWrapper = 'div',
   fieldErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
+  adapter = zod3Adapter,
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
-} & ComponentMappings): FieldComponent<Schema> {
+} & ComponentMappings & { adapter?: SchemaAdapter }): FieldComponent<Schema> {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return React.forwardRef<any, FieldProps<Schema>>(
     (
@@ -345,7 +347,7 @@ function createField<Schema extends SomeZodObject>({
       const type = typeProp ?? getInputType(fieldType, radio)
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
-        setValueAs: (value) => coerceValue(value, shape),
+        setValueAs: (value) => coerceValue(value, shape, adapter),
       })
 
       const labelId = `label-for-${name.toString()}`
