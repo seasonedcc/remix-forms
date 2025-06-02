@@ -2,6 +2,7 @@ import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { UseFormRegister } from 'react-hook-form'
 import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
+import type { SchemaType } from './adapters/adapter'
 import { createField, useField } from './create-field'
 
 const register = vi.fn((name: string) => ({
@@ -125,7 +126,7 @@ describe('createField', () => {
         name="amount"
         label="Amount"
         fieldType="number"
-        shape={schema.shape.amount}
+        shape={schema.shape.amount as unknown as SchemaType}
       />
     )
 
