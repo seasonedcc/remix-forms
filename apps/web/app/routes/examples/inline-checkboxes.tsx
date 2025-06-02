@@ -27,7 +27,7 @@ export default () => (
       const { fieldType, name, label, required } = props
 
       return (
-        <Field key={String(name)} {...props}>
+        <Field key={name} {...props}>
           {({ Label, CheckboxWrapper, SmartInput, Errors }) => {
             const labelElement = (
               <Label>
@@ -87,7 +87,7 @@ export default function Component() {
           const { fieldType, name, label, required } = props
 
           return (
-            <Field key={String(name)} {...props}>
+            <Field key={name} {...props}>
               {({ Label, CheckboxWrapper, SmartInput, Errors }) => {
                 const labelElement = (
                   <Label>

@@ -75,7 +75,7 @@ export default () => {
                               onClick={() => {
                                 setValue(
                                   'tags',
-                                  tags.filter((value: string) => tag !== value),
+                                  tags.filter((value) => tag !== value),
                                   { shouldValidate: true },
                                 )
                               }}
@@ -156,7 +156,7 @@ export default () => {
                     />
                     {tags && (
                       <section className="-ml-1 flex flex-wrap pt-1">
-                        {tags.map((tag: string) => (
+                        {tags.map((tag) => (
                           <span key={tag}>
                             <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
                               <span className="flex-1">{tag}</span>
@@ -165,9 +165,7 @@ export default () => {
                                 onClick={() => {
                                   setValue(
                                     'tags',
-                                    tags.filter(
-                                      (value: string) => tag !== value
-                                    ),
+                                    tags.filter((value) => tag !== value),
                                     { shouldValidate: true }
                                   )
                                 }}

@@ -68,7 +68,7 @@ export default function Component() {
                       }}
                     />
                     <ul className="list-disc">
-                      {tags?.map((tag: string) => (
+                      {tags?.map((tag) => (
                         <li key={tag}>
                           {tag}
                           <input type="hidden" name="tags[]" value={tag} />

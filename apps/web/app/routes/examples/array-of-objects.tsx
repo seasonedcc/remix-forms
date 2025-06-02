@@ -82,7 +82,7 @@ export default () => {
                   </fieldset>
                   {contacts && (
                     <section className="-ml-1 flex flex-wrap pt-1">
-                      {contacts.map((contact: { name: string; email: string }, index: number) => (
+                      {contacts.map((contact, index) => (
                         <span key={contact.email}>
                           <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
                             <span className="flex-1">
@@ -94,7 +94,7 @@ export default () => {
                                 setValue(
                                   'contacts',
                                   contacts.filter(
-                                    ({ email }: { email: string }) => email !== contact.email,
+                                    ({ email }) => email !== contact.email,
                                   ),
                                   { shouldValidate: true },
                                 )
@@ -200,45 +200,39 @@ export default () => {
                     </fieldset>
                     {contacts && (
                       <section className="-ml-1 flex flex-wrap pt-1">
-                        {contacts.map(
-                          (
-                            contact: { name: string; email: string },
-                            index: number
-                          ) => (
-                            <span key={contact.email}>
-                              <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
-                                <span className="flex-1">
-                                  {contact.name} ({contact.email})
-                                </span>
-                                <button
-                                  className="ml-2 text-pink-700"
-                                  onClick={() => {
-                                    setValue(
-                                      'contacts',
-                                      contacts.filter(
-                                        ({ email }: { email: string }) =>
-                                          email !== contact.email
-                                      ),
-                                      { shouldValidate: true }
-                                    )
-                                  }}
-                                >
-                                  X
-                                </button>
+                        {contacts.map((contact, index) => (
+                          <span key={contact.email}>
+                            <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
+                              <span className="flex-1">
+                                {contact.name} ({contact.email})
                               </span>
-                              <input
-                                type="hidden"
-                                name={`contacts[${index}][name]`}
-                                value={contact.name}
-                              />
-                              <input
-                                type="hidden"
-                                name={`contacts[${index}][email]`}
-                                value={contact.email}
-                              />
+                              <button
+                                className="ml-2 text-pink-700"
+                                onClick={() => {
+                                  setValue(
+                                    'contacts',
+                                    contacts.filter(
+                                      ({ email }) => email !== contact.email
+                                    ),
+                                    { shouldValidate: true }
+                                  )
+                                }}
+                              >
+                                X
+                              </button>
                             </span>
-                          )
-                        )}
+                            <input
+                              type="hidden"
+                              name={`contacts[${index}][name]`}
+                              value={contact.name}
+                            />
+                            <input
+                              type="hidden"
+                              name={`contacts[${index}][email]`}
+                              value={contact.email}
+                            />
+                          </span>
+                        ))}
                       </section>
                     )}
                     <Errors />
