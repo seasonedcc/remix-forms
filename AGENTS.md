@@ -9,6 +9,7 @@ This repository contains a monorepo managed with npm workspaces and Turborepo. T
    tasks in parallel. Development works best on Node 16 (see README).
 3. Playwright is required for tests. Install the browser binaries with
    `npx playwright install` or `npm run playwright:ci:install`.
+4. Configure Git hooks: `git config core.hooksPath .githooks`
 
 ## Common Scripts
 The root `package.json` defines the main scripts:

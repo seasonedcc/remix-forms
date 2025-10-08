@@ -33,3 +33,9 @@ yarn-error.log*
 dist/
 tsc/
 *.tgz
+
+# Auto-generated from AGENTS.md
+.github/copilot-instructions.md
+.cursor/
+GEMINI.md
+CLAUDE.md
