@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [".react-router", "types.d.ts", "tsc", "build", "dist"]
+    "ignore": [
+      ".react-router",
+      "types.d.ts",
+      "tsc",
+      "build",
+      "dist",
+      "apps/web/test-results/"
+    ]
   },
   "formatter": {
     "enabled": true,
