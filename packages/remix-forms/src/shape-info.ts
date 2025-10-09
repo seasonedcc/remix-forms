@@ -26,9 +26,9 @@ function shapeInfo(
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
 
-  // Zod 4: Access internals via _zod.def instead of _def
   // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
   const def = (shape as any)._zod?.def
+
   if (!def) {
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
@@ -65,7 +65,6 @@ function shapeInfo(
   }
 
   if (type === 'enum') {
-    // In Zod 4, enum values are available on _zod.values (Set)
     // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
     const values = Array.from((shape as any)._zod?.values || []) as string[]
     return {
@@ -77,7 +76,6 @@ function shapeInfo(
     }
   }
 
-  // Map Zod 4 type strings to our ZodTypeName format
   const typeNameMap: Record<string, ZodTypeName> = {
     string: 'ZodString',
     number: 'ZodNumber',

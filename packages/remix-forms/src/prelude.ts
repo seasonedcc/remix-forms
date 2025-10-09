@@ -49,9 +49,9 @@ function objectFromSchema<Schema extends FormSchema>(
     return schema as ObjectFromSchema<Schema>
   }
 
-  // Zod 4: Access via _zod.def instead of _def
   // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
   const def = (schema as any)._zod?.def
+
   if (!def) {
     throw new Error('Invalid schema: missing _zod.def')
   }
@@ -65,16 +65,19 @@ function objectFromSchema<Schema extends FormSchema>(
     if ('shape' in def.in) {
       return def.in as ObjectFromSchema<Schema>
     }
+
     // Check if def.out has shape (simple preprocess case)
     if ('shape' in def.out) {
       return def.out as ObjectFromSchema<Schema>
     }
+
     // For chained transforms, recurse into def.in (the previous pipe)
     // For nested preprocess, recurse into def.out
     // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
     if ((def.in as any)?._zod?.def?.type === 'pipe') {
       return objectFromSchema(def.in)
     }
+
     // Otherwise recurse into def.out (nested preprocess case)
     return objectFromSchema(def.out)
   }
