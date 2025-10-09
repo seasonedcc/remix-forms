@@ -1,8 +1,15 @@
 import type { Field, FieldError } from 'react-hook-form'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { toNestErrors } from './toNestErrors'
+import { validateFieldsNatively } from './validateFieldsNatively'
+
+vi.mock('./validateFieldsNatively')
 
 describe('toNestErrors', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('returns empty object when errors is empty', () => {
     const errors = {}
     const options = {
@@ -291,25 +298,7 @@ describe('toNestErrors', () => {
     expect(result.items).toHaveProperty('root')
   })
 
-  it('works with shouldUseNativeValidation set to false', () => {
-    const errors = {
-      email: { type: 'required', message: 'Email is required' },
-    }
-    const options = {
-      fields: {},
-      shouldUseNativeValidation: false,
-    }
-
-    const result = toNestErrors(errors, options)
-
-    expect(result.email).toEqual({
-      type: 'required',
-      message: 'Email is required',
-      ref: undefined,
-    })
-  })
-
-  it('works with shouldUseNativeValidation set to true', () => {
+  it('calls validateFieldsNatively when shouldUseNativeValidation is true', () => {
     const errors = {
       email: { type: 'required', message: 'Email is required' },
     }
@@ -318,13 +307,24 @@ describe('toNestErrors', () => {
       shouldUseNativeValidation: true,
     }
 
-    const result = toNestErrors(errors, options)
+    toNestErrors(errors, options)
 
-    expect(result.email).toEqual({
-      type: 'required',
-      message: 'Email is required',
-      ref: undefined,
-    })
+    expect(validateFieldsNatively).toHaveBeenCalledWith(errors, options)
+    expect(validateFieldsNatively).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call validateFieldsNatively when shouldUseNativeValidation is false', () => {
+    const errors = {
+      email: { type: 'required', message: 'Email is required' },
+    }
+    const options = {
+      fields: {},
+      shouldUseNativeValidation: false,
+    }
+
+    toNestErrors(errors, options)
+
+    expect(validateFieldsNatively).not.toHaveBeenCalled()
   })
 
   it('handles mixed field arrays and regular fields', () => {
