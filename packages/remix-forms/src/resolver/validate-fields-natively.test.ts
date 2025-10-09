@@ -1,6 +1,6 @@
 import type { Field, ResolverOptions } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
-import { validateFieldsNatively } from './validateFieldsNatively'
+import { validateFieldsNatively } from './validate-fields-natively'
 
 const createMockRef = () =>
   ({

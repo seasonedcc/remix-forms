@@ -1,16 +1,16 @@
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 
-vi.mock('./toNestErrors', () => ({
+vi.mock('./to-nest-errors', () => ({
   toNestErrors: vi.fn((errors) => errors),
 }))
 
-vi.mock('./validateFieldsNatively', () => ({
+vi.mock('./validate-fields-natively', () => ({
   validateFieldsNatively: vi.fn(),
 }))
 
-import { toNestErrors } from './toNestErrors'
-import { validateFieldsNatively } from './validateFieldsNatively'
+import { toNestErrors } from './to-nest-errors'
+import { validateFieldsNatively } from './validate-fields-natively'
 import { zodResolver } from './zod-resolver'
 
 describe('zodResolver', () => {

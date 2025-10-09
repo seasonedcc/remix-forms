@@ -1,8 +1,8 @@
 import { type FieldError, appendErrors } from 'react-hook-form'
 import type { z } from 'zod'
-import { toNestErrors } from './toNestErrors'
+import { toNestErrors } from './to-nest-errors'
 import type { Resolver } from './types'
-import { validateFieldsNatively } from './validateFieldsNatively'
+import { validateFieldsNatively } from './validate-fields-natively'
 
 const isZodError = (error: unknown): error is z.ZodError =>
   error !== null &&

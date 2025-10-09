@@ -1,9 +1,9 @@
 import type { Field, FieldError } from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { toNestErrors } from './toNestErrors'
-import { validateFieldsNatively } from './validateFieldsNatively'
+import { toNestErrors } from './to-nest-errors'
+import { validateFieldsNatively } from './validate-fields-natively'
 
-vi.mock('./validateFieldsNatively')
+vi.mock('./validate-fields-natively')
 
 describe('toNestErrors', () => {
   beforeEach(() => {
