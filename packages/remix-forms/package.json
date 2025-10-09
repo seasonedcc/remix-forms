@@ -47,8 +47,5 @@
     "typescript": "5.8.3",
     "vite": "6.0.7",
     "vitest": "2.1.8"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.2.1"
   }
 }

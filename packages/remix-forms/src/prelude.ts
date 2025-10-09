@@ -20,6 +20,7 @@ import type { z } from 'zod'
  * type MySchema = FormSchema<typeof schema>
  * ```
  */
+
 // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
 type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | z.ZodObject<any>
 

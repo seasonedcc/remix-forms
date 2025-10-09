@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import type {
   DeepPartial,
@@ -36,6 +35,7 @@ import type {
   ObjectFromSchema,
 } from './prelude'
 import { browser, mapObject, objectFromSchema } from './prelude'
+import { zodResolver } from './resolver'
 import type { ZodTypeName } from './shape-info'
 import { shapeInfo } from './shape-info'
 

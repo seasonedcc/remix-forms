@@ -16,14 +16,8 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(
-    email,
-    'Invalid input'
-  )
-  await example.expectError(
-    password,
-    'Invalid input'
-  )
+  await example.expectError(email, 'Invalid input')
+  await example.expectError(password, 'Invalid input')
 
   // Make first field be valid, focus goes to the second field
   await email.input.fill('john@doe.com')

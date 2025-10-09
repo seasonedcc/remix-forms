@@ -12,10 +12,7 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectErrorMessage(
-    'tags',
-    'Invalid input'
-  )
+  await example.expectErrorMessage('tags', 'Invalid input')
 
   await expect(tags.input).toBeFocused()
 

@@ -34,21 +34,33 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(mandatory, 'Invalid input: expected number, received null')
+  await example.expectError(
+    mandatory,
+    'Invalid input: expected number, received null'
+  )
   await example.expectValid(optional)
   await example.expectValid(nullable)
 
-  await example.expectError(greaterThan, 'Invalid input: expected number, received null')
+  await example.expectError(
+    greaterThan,
+    'Invalid input: expected number, received null'
+  )
   await example.expectError(
     greaterThanOrEqualTo,
     'Invalid input: expected number, received null'
   )
-  await example.expectError(lowerThan, 'Invalid input: expected number, received null')
+  await example.expectError(
+    lowerThan,
+    'Invalid input: expected number, received null'
+  )
   await example.expectError(
     lowerThanOrEqualTo,
     'Invalid input: expected number, received null'
   )
-  await example.expectError(integer, 'Invalid input: expected number, received null')
+  await example.expectError(
+    integer,
+    'Invalid input: expected number, received null'
+  )
 
   await expect(mandatory.input).toBeFocused()
 

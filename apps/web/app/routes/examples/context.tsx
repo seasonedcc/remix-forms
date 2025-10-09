@@ -46,9 +46,7 @@ const schema = z.object({ email: z.string().min(1).email() })
 const contextSchema = z.object({
   customHeader: z.string({
     error: (issue) =>
-      issue.input == null
-        ? 'Missing custom header'
-        : 'Invalid custom header',
+      issue.input == null ? 'Missing custom header' : 'Invalid custom header',
   }),
 })
 

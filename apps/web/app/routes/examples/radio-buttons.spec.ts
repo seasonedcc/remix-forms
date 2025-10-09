@@ -24,10 +24,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
 
-  await example.expectErrorMessage(
-    'role',
-    'Invalid input'
-  )
+  await example.expectErrorMessage('role', 'Invalid input')
 
   await expect(role.input.first()).toBeFocused()
 

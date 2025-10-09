@@ -17,14 +17,8 @@ test('With JS enabled', async ({ example }) => {
   await email.input.click()
   await button.focus()
 
-  await example.expectError(
-    firstName,
-    'Invalid input'
-  )
-  await example.expectError(
-    email,
-    'Invalid input'
-  )
+  await example.expectError(firstName, 'Invalid input')
+  await example.expectError(email, 'Invalid input')
 
   await button.click()
   await expect(firstName.input).toBeFocused()

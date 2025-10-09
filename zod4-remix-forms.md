@@ -4,6 +4,8 @@ The official Zod 4 migration guide can be found at ./zod4-migration-guide.md for
 
 Because Remix Forms uses Zod's internal data structure for schema introspection, we had to read both versions' code to figure out what's not on the official migration guide.
 
-Let's continue the migration by fixing our failing E2E tests. Our last run's report is at ./e2e.txt. If the failure is due to copy change on Zod's side but the logic is still the same, let's update the tests with the new copy. If the logic has changed, let's fix our code. Make as few breaking changes as possible.
+We also continued the migration by writing our own zodResolver and removing the @hookform/resolvers from our project. For that, we copied the existing implementation that works for Zod 3 (it's checked out at ../resolvers with the correct version) and then started to adapt it to work with Zod 4.
+
+However, tsc is failing and we need to make sure it passes while preserving our E2E inference/type safety. Please DO NOT REMOVE GENERICS and DO NOT ADD any unless strictly necessary.
 
 Ultrathink.

@@ -16,17 +16,11 @@ test('With JS enabled', async ({ example }) => {
   await firstName.input.type('a')
   await firstName.input.fill('')
 
-  await example.expectError(
-    firstName,
-    'Invalid input'
-  )
+  await example.expectError(firstName, 'Invalid input')
 
   await email.input.type('a')
   await email.input.fill('')
-  await example.expectError(
-    email,
-    'Invalid input'
-  )
+  await example.expectError(email, 'Invalid input')
   await email.input.fill('john')
   await example.expectError(email, 'Invalid input')
 

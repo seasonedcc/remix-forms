@@ -19,21 +19,33 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
 
-  await example.expectError(mandatory, 'Invalid input: expected number, received null')
+  await example.expectError(
+    mandatory,
+    'Invalid input: expected number, received null'
+  )
   await example.expectValid(optional)
   await example.expectValid(nullable)
 
-  await example.expectError(greaterThan, 'Invalid input: expected number, received null')
+  await example.expectError(
+    greaterThan,
+    'Invalid input: expected number, received null'
+  )
   await example.expectError(
     greaterThanOrEqualTo,
     'Invalid input: expected number, received null'
   )
-  await example.expectError(lowerThan, 'Invalid input: expected number, received null')
+  await example.expectError(
+    lowerThan,
+    'Invalid input: expected number, received null'
+  )
   await example.expectError(
     lowerThanOrEqualTo,
     'Invalid input: expected number, received null'
   )
-  await example.expectError(integer, 'Invalid input: expected number, received null')
+  await example.expectError(
+    integer,
+    'Invalid input: expected number, received null'
+  )
   await example.expectAutoFocus(mandatory)
 
   // Test other errors
