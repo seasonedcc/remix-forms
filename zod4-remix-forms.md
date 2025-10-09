@@ -6,6 +6,8 @@ Because Remix Forms uses Zod's internal data structure for schema introspection,
 
 We also continued the migration by writing our own zodResolver and removing the @hookform/resolvers from our project. For that, we copied the existing implementation that works for Zod 3 (it's checked out at ../resolvers with the correct version) and then started to adapt it to work with Zod 4.
 
-However, tsc is failing and we need to make sure it passes while preserving our E2E inference/type safety. Please DO NOT REMOVE GENERICS and DO NOT ADD any unless strictly necessary.
+However, tsc is still failing for a couple of application files that need to be adapted to the new format.
+
+Make sure tsc passes while preserving our E2E inference/type safety. Please DO NOT REMOVE GENERICS and DO NOT ADD any unless strictly necessary.
 
 Ultrathink.
