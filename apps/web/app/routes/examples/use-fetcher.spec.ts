@@ -16,7 +16,7 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(name, 'String must contain at least 1 character(s)')
+  await example.expectError(name, 'Invalid input')
   await expect(name.input).toBeFocused()
 
   // Make form be valid

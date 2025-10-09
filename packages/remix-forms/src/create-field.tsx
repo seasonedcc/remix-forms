@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { SomeZodObject, z } from 'zod'
+import type { ZodObject, z } from 'zod'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { ComponentOrTagName } from './prelude'
@@ -11,7 +11,8 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<Schema extends SomeZodObject> = (
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type Children<Schema extends ZodObject<any>> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
@@ -73,7 +74,8 @@ function getInputType(
   return types[type]
 }
 
-type FieldBaseProps<Schema extends SomeZodObject> = Omit<
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type FieldBaseProps<Schema extends ZodObject<any>> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
 > & {
@@ -82,10 +84,12 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   children?: Children<Schema>
 }
 
-type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type FieldProps<Schema extends ZodObject<any>> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-type FieldComponent<Schema extends SomeZodObject> =
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type FieldComponent<Schema extends ZodObject<any>> =
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
@@ -276,7 +280,8 @@ function createSmartInput({
   }
 }
 
-function createField<Schema extends SomeZodObject>({
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+function createField<Schema extends ZodObject<any>>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',

@@ -16,7 +16,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
+import type { TypeOf, ZodObject, ZodTypeAny, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -76,7 +76,10 @@ type Field<SchemaType> = {
  * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
  * ```
  */
-type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type RenderFieldProps<Schema extends ZodObject<any>> = Field<
+  z.infer<Schema>
+> & {
   Field: FieldComponent<Schema>
 }
 
@@ -96,13 +99,15 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
  * const renderField = ({ name }) => <input name={String(name)} />
  * ```
  */
-type RenderField<Schema extends SomeZodObject> = (
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type RenderField<Schema extends ZodObject<any>> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-type Children<Schema extends SomeZodObject> = (
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type Children<Schema extends ZodObject<any>> = (
   helpers: {
     Field: FieldComponent<Schema>
     Errors: ComponentOrTagName<'div'>
@@ -113,7 +118,8 @@ type Children<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>
 ) => React.ReactNode
 
-type OnNavigation<Schema extends SomeZodObject> = (
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type OnNavigation<Schema extends ZodObject<any>> = (
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void

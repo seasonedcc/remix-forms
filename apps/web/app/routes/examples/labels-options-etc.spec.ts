@@ -25,8 +25,8 @@ test('With JS enabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
 
-  await example.expectError(name, 'String must contain at least 1 character(s)')
-  await example.expectError(bio, 'String must contain at least 1 character(s)')
+  await example.expectError(name, 'Invalid input')
+  await example.expectError(bio, 'Invalid input')
 
   await expect(name.input).toBeFocused()
 
@@ -67,8 +67,8 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   // Show field errors and focus on the first field
-  await example.expectError(name, 'String must contain at least 1 character(s)')
-  await example.expectError(bio, 'String must contain at least 1 character(s)')
+  await example.expectError(name, 'Too small: expected string to have >=1 characters')
+  await example.expectError(bio, 'Too small: expected string to have >=1 characters')
   await example.expectAutoFocus(name)
   await example.expectNoAutoFocus(bio)
 

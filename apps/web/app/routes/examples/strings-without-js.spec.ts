@@ -20,18 +20,18 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     nonEmpty,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
   await example.expectError(
     minLength,
-    'String must contain at least 5 character(s)'
+    'Too small: expected string to have >=5 characters'
   )
   await example.expectError(
     maxLength,
-    'String must contain at most 10 character(s)'
+    'Too big: expected string to have <=10 characters'
   )
-  await example.expectError(email, 'Invalid email')
-  await example.expectError(url, 'Invalid url')
+  await example.expectError(email, 'Invalid email address')
+  await example.expectError(url, 'Invalid URL')
   await example.expectError(phoneNumber, 'Invalid phone number')
   await example.expectAutoFocus(nonEmpty)
 

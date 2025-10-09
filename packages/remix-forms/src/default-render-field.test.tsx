@@ -8,7 +8,8 @@ describe('defaultRenderField', () => {
   it('renders the provided Field component with props and key', () => {
     const Field = React.forwardRef<HTMLDivElement, Record<string, unknown>>(
       (props, ref) => <div ref={ref} {...props} />
-    ) as unknown as FieldComponent<z.AnyZodObject>
+      // biome-ignore lint/suspicious/noExplicitAny: test helper casting
+    ) as unknown as FieldComponent<z.ZodObject<any>>
     // biome-ignore lint/suspicious/noExplicitAny: test helper casting
     const element = (defaultRenderField as any)({
       Field,

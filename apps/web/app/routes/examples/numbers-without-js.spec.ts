@@ -19,21 +19,21 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
 
-  await example.expectError(mandatory, 'Expected number, received null')
+  await example.expectError(mandatory, 'Invalid input: expected number, received null')
   await example.expectValid(optional)
   await example.expectValid(nullable)
 
-  await example.expectError(greaterThan, 'Expected number, received null')
+  await example.expectError(greaterThan, 'Invalid input: expected number, received null')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Expected number, received null'
+    'Invalid input: expected number, received null'
   )
-  await example.expectError(lowerThan, 'Expected number, received null')
+  await example.expectError(lowerThan, 'Invalid input: expected number, received null')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Expected number, received null'
+    'Invalid input: expected number, received null'
   )
-  await example.expectError(integer, 'Expected number, received null')
+  await example.expectError(integer, 'Invalid input: expected number, received null')
   await example.expectAutoFocus(mandatory)
 
   // Test other errors
@@ -44,15 +44,15 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
 
-  await example.expectError(greaterThan, 'Number must be greater than 5')
+  await example.expectError(greaterThan, 'Too small: expected number to be >5')
   await example.expectError(
     greaterThanOrEqualTo,
-    'Number must be greater than or equal to 10'
+    'Too small: expected number to be >=10'
   )
-  await example.expectError(lowerThan, 'Number must be less than 5')
+  await example.expectError(lowerThan, 'Too big: expected number to be <5')
   await example.expectError(
     lowerThanOrEqualTo,
-    'Number must be less than or equal to 10'
+    'Too big: expected number to be <=10'
   )
 
   // Make first field be valid, focus goes to the second field

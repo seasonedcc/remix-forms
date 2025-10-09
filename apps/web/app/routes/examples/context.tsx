@@ -17,7 +17,12 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 const code = `const schema = z.object({ email: z.string().min(1).email() })
 
 const contextSchema = z.object({
-  customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
+  customHeader: z.string({
+    error: (issue) =>
+      issue.input == null
+        ? 'Missing custom header'
+        : 'Invalid custom header',
+  }),
 })
 
 const mutation = applySchema(
@@ -39,7 +44,12 @@ export default () => <SchemaForm schema={schema} />`
 const schema = z.object({ email: z.string().min(1).email() })
 
 const contextSchema = z.object({
-  customHeader: z.string({ invalid_type_error: 'Missing custom header' }),
+  customHeader: z.string({
+    error: (issue) =>
+      issue.input == null
+        ? 'Missing custom header'
+        : 'Invalid custom header',
+  }),
 })
 
 export const loader = () => ({

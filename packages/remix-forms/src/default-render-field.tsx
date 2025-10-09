@@ -1,7 +1,8 @@
-import type { SomeZodObject } from 'zod'
+import type { ZodObject } from 'zod'
 import type { RenderFieldProps } from './schema-form'
 
-function defaultRenderField<Schema extends SomeZodObject>({
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+function defaultRenderField<Schema extends ZodObject<any>>({
   Field,
   name,
   ...props

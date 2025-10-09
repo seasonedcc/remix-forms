@@ -64,17 +64,19 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   const emailErrors = page.locator('#errors-for-email:visible')
   await expect(emailErrors).toHaveAttribute('role', 'alert')
 
   await expect(emailErrors.locator('div').first()).toHaveText(
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
-  await expect(emailErrors.locator('div').last()).toHaveText('Invalid email')
+  await expect(emailErrors.locator('div').last()).toHaveText(
+    'Invalid email address'
+  )
 
   await example.expectAutoFocus(firstName)
   await example.expectNoAutoFocus(email)

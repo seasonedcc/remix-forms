@@ -42,12 +42,12 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)'
+    'Invalid input'
   )
 
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)'
+    'Invalid input'
   )
 
   await expect(firstName.input).toBeFocused()
@@ -60,7 +60,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Try another invalid message
   await email.input.fill('john')
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid input')
 
   // Make form be valid
   await email.input.fill('john@doe.com')

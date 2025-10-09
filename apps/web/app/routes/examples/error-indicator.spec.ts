@@ -82,7 +82,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   // Show field errors and focus on the first field
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid email address')
   await example.expectAutoFocus(email)
 
   // Make form be valid

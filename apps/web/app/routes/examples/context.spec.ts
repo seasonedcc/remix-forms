@@ -57,8 +57,8 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectErrors(
     email,
-    'String must contain at least 1 character(s)',
-    'Invalid email'
+    'Too small: expected string to have >=1 characters',
+    'Invalid email address'
   )
   await example.expectAutoFocus(email)
 
@@ -66,7 +66,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await email.input.fill('john')
   await button.click()
   await page.reload()
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid email address')
 
   // Make form be valid and test selecting an option
   await email.input.fill('john@doe.com')

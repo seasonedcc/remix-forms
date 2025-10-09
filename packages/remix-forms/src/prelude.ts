@@ -20,16 +20,18 @@ import type { z } from 'zod'
  * type MySchema = FormSchema<typeof schema>
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormSchema<T extends z.ZodTypeAny = z.SomeZodObject | z.ZodEffects<any>> =
-  | z.ZodEffects<T>
-  | z.SomeZodObject
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | z.ZodObject<any>
 
-type ObjectFromSchema<T> = T extends z.SomeZodObject
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type ObjectFromSchema<T> = T extends z.ZodObject<any>
   ? T
-  : T extends z.ZodEffects<infer R>
-    ? ObjectFromSchema<R>
-    : never
+  : // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+    T extends z.ZodPipe<infer A, any>
+    ? ObjectFromSchema<A>
+    : T extends z.ZodTransform<infer A>
+      ? ObjectFromSchema<A>
+      : never
 
 type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>
@@ -42,9 +44,40 @@ type KeysOfStrings<T extends object> = {
 function objectFromSchema<Schema extends FormSchema>(
   schema: Schema
 ): ObjectFromSchema<Schema> {
-  return 'shape' in schema
-    ? (schema as ObjectFromSchema<Schema>)
-    : objectFromSchema(schema._def.schema)
+  if ('shape' in schema) {
+    return schema as ObjectFromSchema<Schema>
+  }
+
+  // Zod 4: Access via _zod.def instead of _def
+  // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
+  const def = (schema as any)._zod?.def
+  if (!def) {
+    throw new Error('Invalid schema: missing _zod.def')
+  }
+
+  // Handle pipes (extract input schema) and transforms
+  if (def.type === 'pipe') {
+    // For z.preprocess(fn, schema), the target object is in def.out
+    // For schema.transform(fn), the source object is in def.in
+    // Check if def.out is an object first (preprocess case)
+    if ('shape' in def.out) {
+      return def.out as ObjectFromSchema<Schema>
+    }
+    // Otherwise recurse into def.in (transform case)
+    return objectFromSchema(def.in)
+  }
+
+  if (def.type === 'transform') {
+    // Transforms don't have an inner schema in Zod 4, this shouldn't happen
+    throw new Error('Cannot extract object schema from standalone transform')
+  }
+
+  // For other wrapper types, recurse
+  if (def.innerType) {
+    return objectFromSchema(def.innerType)
+  }
+
+  throw new Error(`Cannot extract object schema from type: ${def.type}`)
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(
