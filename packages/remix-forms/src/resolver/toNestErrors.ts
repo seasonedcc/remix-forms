@@ -15,7 +15,8 @@ export const toNestErrors = <TFieldValues extends FieldValues>(
 ): FieldErrors<TFieldValues> => {
   options.shouldUseNativeValidation && validateFieldsNatively(errors, options)
 
-  const fieldErrors = {} as FieldErrors<TFieldValues>
+  const fieldErrors: FieldErrors<TFieldValues> = {}
+
   for (const path in errors) {
     const field = get(options.fields, path) as Field['_f'] | undefined
     const error = Object.assign(errors[path] || {}, {
