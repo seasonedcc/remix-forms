@@ -25,11 +25,20 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(street, 'Invalid input')
-  await example.expectError(number, 'Invalid input')
+  await example.expectError(
+    street,
+    'Too small: expected string to have >=1 characters'
+  )
+  await example.expectError(
+    number,
+    'Too small: expected string to have >=1 characters'
+  )
 
   await example.expectValid(extendedAddress)
-  await example.expectError(city, 'Invalid input')
+  await example.expectError(
+    city,
+    'Too small: expected string to have >=1 characters'
+  )
   await expect(street.input).toBeFocused()
 
   // Make first field be valid, focus goes to the second field

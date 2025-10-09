@@ -34,7 +34,7 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(email, 'Invalid input')
+  await example.expectError(email, 'Invalid email address')
   await expect(email.input).toBeFocused()
 
   // Make form be valid

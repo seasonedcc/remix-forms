@@ -47,7 +47,7 @@ test('With JS enabled', async ({ example }) => {
     'Too big: expected string to have <=10 characters'
   )
   await example.expectError(email, 'Invalid email address')
-  await example.expectError(url, 'Invalid url')
+  await example.expectError(url, 'Invalid URL')
   await example.expectError(phoneNumber, 'Invalid phone number')
 
   await expect(nonEmpty.input).toBeFocused()

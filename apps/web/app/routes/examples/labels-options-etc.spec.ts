@@ -25,8 +25,14 @@ test('With JS enabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
 
-  await example.expectError(name, 'Invalid input')
-  await example.expectError(bio, 'Invalid input')
+  await example.expectError(
+    name,
+    'Too small: expected string to have >=1 characters'
+  )
+  await example.expectError(
+    bio,
+    'Too small: expected string to have >=1 characters'
+  )
 
   await expect(name.input).toBeFocused()
 

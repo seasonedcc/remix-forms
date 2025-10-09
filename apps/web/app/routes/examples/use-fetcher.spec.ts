@@ -16,7 +16,10 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(name, 'Invalid input')
+  await example.expectError(
+    name,
+    'Too small: expected string to have >=1 characters'
+  )
   await expect(name.input).toBeFocused()
 
   // Make form be valid

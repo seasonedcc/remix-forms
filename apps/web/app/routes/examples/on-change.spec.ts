@@ -16,13 +16,19 @@ test('With JS enabled', async ({ example }) => {
   await firstName.input.type('a')
   await firstName.input.fill('')
 
-  await example.expectError(firstName, 'Invalid input')
+  await example.expectError(
+    firstName,
+    'Too small: expected string to have >=1 characters'
+  )
 
   await email.input.type('a')
   await email.input.fill('')
-  await example.expectError(email, 'Invalid input')
+  await example.expectError(
+    email,
+    'Too small: expected string to have >=1 characters'
+  )
   await email.input.fill('john')
-  await example.expectError(email, 'Invalid input')
+  await example.expectError(email, 'Invalid email address')
 
   // Make form be valid
   await firstName.input.fill('John')
