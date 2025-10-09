@@ -58,14 +58,25 @@ function objectFromSchema<Schema extends FormSchema>(
 
   // Handle pipes (extract input schema) and transforms
   if (def.type === 'pipe') {
-    // For z.preprocess(fn, schema), the target object is in def.out
     // For schema.transform(fn), the source object is in def.in
-    // Check if def.out is an object first (preprocess case)
+    // For schema.pipe(other), we want the input schema in def.in
+    // For z.preprocess(fn, schema), the target object is in def.out
+    // Check if def.in has shape first (transform or explicit pipe case)
+    if ('shape' in def.in) {
+      return def.in as ObjectFromSchema<Schema>
+    }
+    // Check if def.out has shape (simple preprocess case)
     if ('shape' in def.out) {
       return def.out as ObjectFromSchema<Schema>
     }
-    // Otherwise recurse into def.in (transform case)
-    return objectFromSchema(def.in)
+    // For chained transforms, recurse into def.in (the previous pipe)
+    // For nested preprocess, recurse into def.out
+    // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
+    if ((def.in as any)?._zod?.def?.type === 'pipe') {
+      return objectFromSchema(def.in)
+    }
+    // Otherwise recurse into def.out (nested preprocess case)
+    return objectFromSchema(def.out)
   }
 
   if (def.type === 'transform') {
