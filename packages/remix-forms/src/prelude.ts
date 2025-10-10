@@ -146,11 +146,7 @@ function objectFromSchema<Schema extends FormSchema>(
   }
 
   throw new Error(
-    `Cannot extract object schema from Zod type: ${def.type}\n` +
-      'remix-forms requires an object schema (z.object({ ... })) to generate form fields.\n' +
-      'Transforms and pipes work only if they wrap an underlying object schema.\n' +
-      `Received schema type "${def.type}" which cannot be used for form generation.\n` +
-      'Consider wrapping your schema in z.object() or using .pipe() to transform an object schema.'
+    `Cannot extract object schema from Zod type: ${def.type}\nremix-forms requires an object schema (z.object({ ... })) to generate form fields.\nTransforms and pipes work only if they wrap an underlying object schema.\nReceived schema type "${def.type}" which cannot be used for form generation.\nConsider wrapping your schema in z.object() or using .pipe() to transform an object schema.`
   )
 }
 
