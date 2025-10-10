@@ -1,4 +1,5 @@
 import type { ZodTypeAny } from 'zod'
+import { getZodDef, getZodValues } from './prelude.js'
 
 type ZodTypeName =
   | 'ZodString'
@@ -26,8 +27,7 @@ function shapeInfo(
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
-  const def = (shape as any)._zod?.def
+  const def = getZodDef(shape)
 
   if (!def) {
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
@@ -43,20 +43,38 @@ function shapeInfo(
 
   if (type === 'pipe') {
     // For pipes, extract the input schema
-    return shapeInfo(def.in, optional, nullable, getDefaultValue, enumValues)
+    return shapeInfo(
+      def.in as ZodTypeAny,
+      optional,
+      nullable,
+      getDefaultValue,
+      enumValues
+    )
   }
 
   if (type === 'optional') {
-    return shapeInfo(def.innerType, true, nullable, getDefaultValue, enumValues)
+    return shapeInfo(
+      def.innerType as ZodTypeAny,
+      true,
+      nullable,
+      getDefaultValue,
+      enumValues
+    )
   }
 
   if (type === 'nullable') {
-    return shapeInfo(def.innerType, optional, true, getDefaultValue, enumValues)
+    return shapeInfo(
+      def.innerType as ZodTypeAny,
+      optional,
+      true,
+      getDefaultValue,
+      enumValues
+    )
   }
 
   if (type === 'default') {
     return shapeInfo(
-      def.innerType,
+      def.innerType as ZodTypeAny,
       optional,
       nullable,
       () => def.defaultValue,
@@ -65,8 +83,7 @@ function shapeInfo(
   }
 
   if (type === 'enum') {
-    // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
-    const values = Array.from((shape as any)._zod?.values || []) as string[]
+    const values = Array.from(getZodValues(shape) || []) as string[]
     return {
       typeName: 'ZodEnum',
       optional,

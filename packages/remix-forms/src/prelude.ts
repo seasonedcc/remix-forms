@@ -24,6 +24,44 @@ import type { z } from 'zod'
 // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
 type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | z.ZodObject<any>
 
+/**
+ * Type definition for Zod internal structure.
+ * This matches Zod's internal `_zod.def` structure.
+ */
+type ZodInternalDef = {
+  type: string
+  innerType?: unknown
+  in?: unknown
+  out?: unknown
+  defaultValue?: unknown
+  values?: Iterable<unknown>
+  [key: string]: unknown
+}
+
+/**
+ * Safely access Zod's internal definition structure.
+ * Centralizes the unsafe cast to avoid scattering `any` throughout the codebase.
+ *
+ * @param schema - A Zod schema or unknown value
+ * @returns The internal definition object, or null if not available
+ */
+function getZodDef(schema: unknown): ZodInternalDef | null {
+  // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
+  return (schema as any)?._zod?.def ?? null
+}
+
+/**
+ * Safely access Zod enum values from internal structure.
+ * Centralizes the unsafe cast for enum value access.
+ *
+ * @param schema - A Zod schema or unknown value
+ * @returns The enum values iterable, or null if not available
+ */
+function getZodValues(schema: unknown): Iterable<unknown> | null {
+  // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
+  return (schema as any)?._zod?.values ?? null
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
 type ObjectFromSchema<T> = T extends z.ZodObject<any>
   ? T
@@ -49,8 +87,7 @@ function objectFromSchema<Schema extends FormSchema>(
     return schema as ObjectFromSchema<Schema>
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
-  const def = (schema as any)._zod?.def
+  const def = getZodDef(schema)
 
   if (!def) {
     throw new Error('Invalid schema: missing _zod.def')
@@ -62,24 +99,24 @@ function objectFromSchema<Schema extends FormSchema>(
     // For schema.pipe(other), we want the input schema in def.in
     // For z.preprocess(fn, schema), the target object is in def.out
     // Check if def.in has shape first (transform or explicit pipe case)
-    if ('shape' in def.in) {
+    if (def.in && typeof def.in === 'object' && 'shape' in def.in) {
       return def.in as ObjectFromSchema<Schema>
     }
 
     // Check if def.out has shape (simple preprocess case)
-    if ('shape' in def.out) {
+    if (def.out && typeof def.out === 'object' && 'shape' in def.out) {
       return def.out as ObjectFromSchema<Schema>
     }
 
     // For chained transforms, recurse into def.in (the previous pipe)
     // For nested preprocess, recurse into def.out
-    // biome-ignore lint/suspicious/noExplicitAny: Zod internal structure is not typed
-    if ((def.in as any)?._zod?.def?.type === 'pipe') {
-      return objectFromSchema(def.in)
+    const innerDef = getZodDef(def.in)
+    if (innerDef?.type === 'pipe') {
+      return objectFromSchema(def.in as Schema)
     }
 
     // Otherwise recurse into def.out (nested preprocess case)
-    return objectFromSchema(def.out)
+    return objectFromSchema(def.out as Schema)
   }
 
   if (def.type === 'transform') {
@@ -89,7 +126,7 @@ function objectFromSchema<Schema extends FormSchema>(
 
   // For other wrapper types, recurse
   if (def.innerType) {
-    return objectFromSchema(def.innerType)
+    return objectFromSchema(def.innerType as Schema)
   }
 
   throw new Error(`Cannot extract object schema from type: ${def.type}`)
@@ -116,5 +153,19 @@ function browser(): boolean {
   return typeof document === 'object'
 }
 
-export { objectFromSchema, mapObject, parseDate, browser }
-export type { FormSchema, ObjectFromSchema, ComponentOrTagName, KeysOfStrings }
+export {
+  objectFromSchema,
+  mapObject,
+  parseDate,
+  browser,
+  getZodDef,
+  getZodValues,
+}
+
+export type {
+  FormSchema,
+  ObjectFromSchema,
+  ComponentOrTagName,
+  KeysOfStrings,
+  ZodInternalDef,
+}
