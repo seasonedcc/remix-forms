@@ -1,4 +1,4 @@
-import type { ZodTypeAny } from 'zod'
+import type { ZodType } from 'zod'
 import { getZodDef, getZodValues } from './prelude.js'
 
 type ZodTypeName =
@@ -17,7 +17,7 @@ type ShapeInfo = {
 }
 
 function shapeInfo(
-  shape?: ZodTypeAny,
+  shape?: ZodType,
   optional = false,
   nullable = false,
   getDefaultValue?: ShapeInfo['getDefaultValue'],
@@ -44,7 +44,7 @@ function shapeInfo(
   if (type === 'pipe') {
     // For pipes, extract the input schema
     return shapeInfo(
-      def.in as ZodTypeAny,
+      def.in as ZodType,
       optional,
       nullable,
       getDefaultValue,
@@ -54,7 +54,7 @@ function shapeInfo(
 
   if (type === 'optional') {
     return shapeInfo(
-      def.innerType as ZodTypeAny,
+      def.innerType as ZodType,
       true,
       nullable,
       getDefaultValue,
@@ -64,7 +64,7 @@ function shapeInfo(
 
   if (type === 'nullable') {
     return shapeInfo(
-      def.innerType as ZodTypeAny,
+      def.innerType as ZodType,
       optional,
       true,
       getDefaultValue,
@@ -74,7 +74,7 @@ function shapeInfo(
 
   if (type === 'default') {
     return shapeInfo(
-      def.innerType as ZodTypeAny,
+      def.innerType as ZodType,
       optional,
       nullable,
       () => def.defaultValue,

@@ -15,7 +15,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { TypeOf, ZodObject, ZodTypeAny, z } from 'zod'
+import type { TypeOf, ZodObject, ZodType, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -40,7 +40,7 @@ import type { ZodTypeName } from './shape-info'
 import { shapeInfo } from './shape-info'
 
 type Field<SchemaType> = {
-  shape: ZodTypeAny
+  shape: ZodType
   fieldType: FieldType
   name: keyof SchemaType
   required: boolean
@@ -310,7 +310,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const schemaShape = objectFromSchema(schema).shape
   const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
-    const shape = shapeInfo(fieldShape as z.ZodTypeAny)
+    const shape = shapeInfo(fieldShape as z.ZodType)
     const defaultValue = coerceToForm(
       values[key] ?? shape?.getDefaultValue?.(),
       shape

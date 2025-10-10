@@ -1,5 +1,5 @@
 import type { QueryStringRecord } from 'composable-functions'
-import type { ZodTypeAny } from 'zod'
+import type { ZodType } from 'zod'
 import { shapeInfo } from './shape-info'
 
 type QsValue = QueryStringRecord[keyof QueryStringRecord]
@@ -34,7 +34,7 @@ const coerceDate = makeCoercion((value) => {
   return new Date(year, month - 1, day)
 }, null)
 
-function coerceValue(value: Value, shape?: ZodTypeAny) {
+function coerceValue(value: Value, shape?: ZodType) {
   const { typeName, optional, nullable } = shapeInfo(shape)
 
   if (typeName === 'ZodBoolean') {

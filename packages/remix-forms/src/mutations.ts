@@ -29,7 +29,7 @@ type NestedErrors<SchemaType> = {
  * errorMessagesForSchema(errors, schema)
  * ```
  */
-function errorMessagesForSchema<T extends z.ZodTypeAny>(
+function errorMessagesForSchema<T extends z.ZodType>(
   errors: Error[],
   _schema: T
 ): NestedErrors<z.infer<T>> {
