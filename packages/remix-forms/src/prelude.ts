@@ -96,7 +96,12 @@ function objectFromSchema<Schema extends FormSchema>(
   const def = getZodDef(schema)
 
   if (!def) {
-    throw new Error('Invalid schema: missing _zod.def')
+    throw new Error(
+      'Invalid schema provided to remix-forms.\n' +
+        'remix-forms requires a valid Zod schema to introspect field types and generate forms.\n' +
+        'The value provided does not have the internal Zod structure (_zod.def).\n' +
+        'Make sure you are passing a Zod schema created with z.object({ ... }) or a transform/pipe wrapping one.'
+    )
   }
 
   // Handle pipes (extract input schema) and transforms
@@ -127,7 +132,12 @@ function objectFromSchema<Schema extends FormSchema>(
 
   if (def.type === 'transform') {
     // Transforms don't have an inner schema in Zod 4, this shouldn't happen
-    throw new Error('Cannot extract object schema from standalone transform')
+    throw new Error(
+      'Unexpected standalone transform encountered.\n' +
+        'In Zod 4+, transforms are represented as pipes internally.\n' +
+        'This error indicates an unexpected internal state that should not normally occur.\n' +
+        'Please report this as a bug at https://github.com/SeasonedSoftware/remix-forms/issues with your schema definition.'
+    )
   }
 
   // For other wrapper types, recurse
@@ -135,7 +145,13 @@ function objectFromSchema<Schema extends FormSchema>(
     return objectFromSchema(def.innerType as Schema)
   }
 
-  throw new Error(`Cannot extract object schema from type: ${def.type}`)
+  throw new Error(
+    `Cannot extract object schema from Zod type: ${def.type}\n` +
+      'remix-forms requires an object schema (z.object({ ... })) to generate form fields.\n' +
+      'Transforms and pipes work only if they wrap an underlying object schema.\n' +
+      `Received schema type "${def.type}" which cannot be used for form generation.\n` +
+      'Consider wrapping your schema in z.object() or using .pipe() to transform an object schema.'
+  )
 }
 
 function mapObject<T extends Record<string, V>, V, NewValue>(

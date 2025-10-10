@@ -172,7 +172,16 @@ const FieldContext = React.createContext<
 export function useField() {
   const context = React.useContext(FieldContext)
 
-  if (!context) throw new Error('useField used outside of field context')
+  if (!context) {
+    throw new Error(
+      'useField() hook must be used within a Field component.\n' +
+        'This hook provides access to field metadata and can only be called from components rendered inside:\n' +
+        '  1. A custom Field component passed to SchemaForm\n' +
+        '  2. A custom renderField function\n' +
+        '  3. Children of a Field component\n' +
+        'Make sure your component is wrapped by a Field provider.'
+    )
+  }
 
   return context
 }

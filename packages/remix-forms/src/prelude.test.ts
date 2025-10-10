@@ -51,7 +51,7 @@ describe('objectFromSchema', () => {
     const invalidSchema = { notAZodSchema: true }
     // biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid schema
     expect(() => objectFromSchema(invalidSchema as any)).toThrow(
-      'Invalid schema: missing _zod.def'
+      'Invalid schema provided to remix-forms'
     )
   })
 
@@ -65,7 +65,7 @@ describe('objectFromSchema', () => {
     }
     // biome-ignore lint/suspicious/noExplicitAny: Testing error handling with unknown schema type
     expect(() => objectFromSchema(unknownSchema as any)).toThrow(
-      'Cannot extract object schema from type: unknownType'
+      'Cannot extract object schema from Zod type: unknownType'
     )
   })
 
