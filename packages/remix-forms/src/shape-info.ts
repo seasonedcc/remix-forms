@@ -101,7 +101,16 @@ function shapeInfo(
     enum: 'ZodEnum',
   }
 
-  const typeName = typeNameMap[type] || null
+  if (
+    typeNameMap[type] === undefined &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    console.warn(
+      `remix-forms: Unknown Zod type "${type}". Falling back to null.`
+    )
+  }
+
+  const typeName = typeNameMap[type] ?? null
 
   return { typeName, optional, nullable, getDefaultValue, enumValues }
 }
