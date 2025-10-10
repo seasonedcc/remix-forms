@@ -1,15 +1,14 @@
 import * as React from 'react'
 import { describe, expect, it } from 'vitest'
-import type * as z from 'zod'
 import type { FieldComponent } from './create-field'
 import { defaultRenderField } from './default-render-field'
+import type { AnyZodObject } from './prelude'
 
 describe('defaultRenderField', () => {
   it('renders the provided Field component with props and key', () => {
     const Field = React.forwardRef<HTMLDivElement, Record<string, unknown>>(
       (props, ref) => <div ref={ref} {...props} />
-      // biome-ignore lint/suspicious/noExplicitAny: test helper casting
-    ) as unknown as FieldComponent<z.ZodObject<any>>
+    ) as unknown as FieldComponent<AnyZodObject>
     // biome-ignore lint/suspicious/noExplicitAny: test helper casting
     const element = (defaultRenderField as any)({
       Field,

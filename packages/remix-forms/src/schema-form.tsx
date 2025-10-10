@@ -15,7 +15,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { TypeOf, ZodObject, ZodType, z } from 'zod'
+import type { TypeOf, ZodType, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -29,6 +29,7 @@ import { defaultRenderField } from './default-render-field'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
 import type {
+  AnyZodObject,
   ComponentOrTagName,
   FormSchema,
   KeysOfStrings,
@@ -76,10 +77,7 @@ type Field<SchemaType> = {
  * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type RenderFieldProps<Schema extends ZodObject<any>> = Field<
-  z.infer<Schema>
-> & {
+type RenderFieldProps<Schema extends AnyZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
@@ -99,15 +97,13 @@ type RenderFieldProps<Schema extends ZodObject<any>> = Field<
  * const renderField = ({ name }) => <input name={String(name)} />
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type RenderField<Schema extends ZodObject<any>> = (
+type RenderField<Schema extends AnyZodObject> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type Children<Schema extends ZodObject<any>> = (
+type Children<Schema extends AnyZodObject> = (
   helpers: {
     Field: FieldComponent<Schema>
     Errors: ComponentOrTagName<'div'>
@@ -118,8 +114,7 @@ type Children<Schema extends ZodObject<any>> = (
   } & UseFormReturn<z.infer<Schema>, any>
 ) => React.ReactNode
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type OnNavigation<Schema extends ZodObject<any>> = (
+type OnNavigation<Schema extends AnyZodObject> = (
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void

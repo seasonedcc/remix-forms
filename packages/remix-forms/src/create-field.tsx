@@ -1,9 +1,9 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { ZodObject, z } from 'zod'
+import type { z } from 'zod'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
-import type { ComponentOrTagName } from './prelude'
+import type { AnyZodObject, ComponentOrTagName } from './prelude'
 import { mapObject, parseDate } from './prelude'
 import type { Field } from './schema-form'
 
@@ -11,8 +11,7 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type Children<Schema extends ZodObject<any>> = (
+type Children<Schema extends AnyZodObject> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
@@ -74,8 +73,7 @@ function getInputType(
   return types[type]
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type FieldBaseProps<Schema extends ZodObject<any>> = Omit<
+type FieldBaseProps<Schema extends AnyZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
 > & {
@@ -84,12 +82,10 @@ type FieldBaseProps<Schema extends ZodObject<any>> = Omit<
   children?: Children<Schema>
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type FieldProps<Schema extends ZodObject<any>> = FieldBaseProps<Schema> &
+type FieldProps<Schema extends AnyZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type FieldComponent<Schema extends ZodObject<any>> =
+type FieldComponent<Schema extends AnyZodObject> =
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
@@ -280,8 +276,7 @@ function createSmartInput({
   }
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-function createField<Schema extends ZodObject<any>>({
+function createField<Schema extends AnyZodObject>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',

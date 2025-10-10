@@ -1,4 +1,12 @@
-import type { z } from 'zod'
+import type { ZodObject, z } from 'zod'
+
+/**
+ * Type alias for ZodObject with any shape.
+ * Used throughout the codebase as a generic constraint when we need to accept
+ * any Zod object schema regardless of its specific shape.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
+type AnyZodObject = ZodObject<any>
 
 /**
  * Zod schema accepted by remix-forms components and utilities.
@@ -20,9 +28,8 @@ import type { z } from 'zod'
  * type MySchema = FormSchema<typeof schema>
  * ```
  */
-
 // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | z.ZodObject<any>
+type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | AnyZodObject
 
 /**
  * Type definition for Zod internal structure.
@@ -62,8 +69,7 @@ function getZodValues(schema: unknown): Iterable<unknown> | null {
   return (schema as any)?._zod?.values ?? null
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type ObjectFromSchema<T> = T extends z.ZodObject<any>
+type ObjectFromSchema<T> = T extends AnyZodObject
   ? T
   : // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
     T extends z.ZodPipe<infer A, any>
@@ -163,6 +169,7 @@ export {
 }
 
 export type {
+  AnyZodObject,
   FormSchema,
   ObjectFromSchema,
   ComponentOrTagName,
