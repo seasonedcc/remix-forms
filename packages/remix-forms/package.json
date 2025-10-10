@@ -42,7 +42,7 @@
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
     "react": ">=16.8",
-    "react-router": "7.5.2",
+    "react-router": "7.9.4",
     "tsup": "^8.3.5",
     "typescript": "5.8.3",
     "vite": "6.0.7",
