@@ -13,7 +13,7 @@ const isZodError = (error: unknown): error is z.ZodError =>
 const parseErrorSchema = (
   zodErrors: z.core.$ZodIssue[],
   validateAllFieldCriteria: boolean
-) => {
+): Record<string, FieldError> => {
   const processErrors = (
     queue: z.core.$ZodIssue[],
     errors: Record<string, FieldError>
