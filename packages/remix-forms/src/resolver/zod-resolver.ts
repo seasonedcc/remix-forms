@@ -14,52 +14,69 @@ const parseErrorSchema = (
   zodErrors: z.core.$ZodIssue[],
   validateAllFieldCriteria: boolean
 ) => {
-  const errors: Record<string, FieldError> = {}
-  while (zodErrors.length) {
-    const error = zodErrors[0]
+  const processErrors = (
+    queue: z.core.$ZodIssue[],
+    errors: Record<string, FieldError>
+  ): Record<string, FieldError> => {
+    if (queue.length === 0) {
+      return errors
+    }
+
+    const [error, ...rest] = queue
     const { code, message, path } = error
     const _path = path.join('.')
 
-    if (!errors[_path]) {
+    let updatedErrors = errors
+    let updatedQueue = rest
+
+    if (!updatedErrors[_path]) {
       if (error.code === 'invalid_union' && 'errors' in error) {
         const unionError = error.errors[0]?.[0]
 
         if (unionError) {
-          errors[_path] = {
-            message: unionError.message,
-            type: unionError.code,
+          updatedErrors = {
+            ...updatedErrors,
+            [_path]: {
+              message: unionError.message,
+              type: unionError.code,
+            },
           }
         }
       } else {
-        errors[_path] = { message, type: code }
+        updatedErrors = {
+          ...updatedErrors,
+          [_path]: { message, type: code },
+        }
       }
     }
 
     if (error.code === 'invalid_union' && 'errors' in error) {
-      error.errors.forEach((errorGroup) =>
-        errorGroup.forEach((e) => zodErrors.push(e))
-      )
+      const flattenedErrors = error.errors.flat()
+      updatedQueue = [...updatedQueue, ...flattenedErrors]
     }
 
     if (validateAllFieldCriteria) {
-      const types = errors[_path].types
+      const types = updatedErrors[_path].types
       const messages = types?.[error.code]
 
-      errors[_path] = appendErrors(
-        _path,
-        validateAllFieldCriteria,
-        errors,
-        code,
-        messages
-          ? ([] as string[]).concat(messages as string[], error.message)
-          : error.message
-      ) as FieldError
+      updatedErrors = {
+        ...updatedErrors,
+        [_path]: appendErrors(
+          _path,
+          validateAllFieldCriteria,
+          updatedErrors,
+          code,
+          messages
+            ? ([] as string[]).concat(messages as string[], error.message)
+            : error.message
+        ) as FieldError,
+      }
     }
 
-    zodErrors.shift()
+    return processErrors(updatedQueue, updatedErrors)
   }
 
-  return errors
+  return processErrors(zodErrors, {})
 }
 
 export const zodResolver: Resolver =
