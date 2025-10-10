@@ -1,9 +1,9 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import hljs from 'highlight.js/lib/common'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { redirect } from 'react-router'
 import { Form, useActionData, useNavigation, useSubmit } from 'react-router'
+import { zodResolver } from 'remix-forms'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Label from '~/ui/conf/label'
@@ -30,7 +30,7 @@ import Button from '~/ui/button'
 import { useActionData } from 'react-router'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from 'remix-forms'
 
 function parseDate(value: unknown) {
   const [year, month, day] = String(value).split('-').map(Number)
@@ -361,7 +361,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
     'children',
     'bedrooms',
     'specialRequests',
-  ]
+  ] as const
 
   useEffect(() => {
     if (!serverErrors) return

@@ -28,10 +28,16 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(mandatory, 'Expected date, received null')
+  await example.expectError(
+    mandatory,
+    'Invalid input: expected date, received null'
+  )
   await example.expectValid(optional)
   await example.expectValid(nullable)
-  await example.expectError(defaultField, 'Expected date, received null')
+  await example.expectError(
+    defaultField,
+    'Invalid input: expected date, received null'
+  )
   await expect(mandatory.input).toBeFocused()
 
   // Make field be valid, focus goes to the next field

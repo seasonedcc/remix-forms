@@ -13,6 +13,89 @@ describe('objectFromSchema', () => {
     const schema = z.preprocess((v) => v, inner)
     expect(objectFromSchema(schema)).toBe(inner)
   })
+
+  it('extracts object from schema with transform', () => {
+    const inner = z.object({ count: z.number() })
+    const schema = inner.transform((v) => ({ ...v, doubled: v.count * 2 }))
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('extracts object from schema with chained transforms', () => {
+    const inner = z.object({ value: z.string() })
+    const schema = inner
+      .transform((v) => ({ ...v, upper: v.value.toUpperCase() }))
+      .transform((v) => ({ ...v, length: v.upper.length }))
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('handles nested preprocess (preprocess wrapping preprocess)', () => {
+    const inner = z.object({ nested: z.boolean() })
+    const preprocessed = z.preprocess((v) => v, inner)
+    const schema = z.preprocess((v) => v, preprocessed)
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('extracts object from deeply nested preprocessing', () => {
+    const inner = z.object({ deep: z.string() })
+    const schema = z.preprocess(
+      (v) => v,
+      z.preprocess(
+        (v) => v,
+        z.preprocess((v) => v, inner)
+      )
+    )
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('throws error for invalid schema without _zod.def', () => {
+    const invalidSchema = { notAZodSchema: true }
+    // biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid schema
+    expect(() => objectFromSchema(invalidSchema as any)).toThrow(
+      'Invalid schema provided to remix-forms'
+    )
+  })
+
+  it('throws error for unknown schema type', () => {
+    const unknownSchema = {
+      _zod: {
+        def: {
+          type: 'unknownType',
+        },
+      },
+    }
+    // biome-ignore lint/suspicious/noExplicitAny: Testing error handling with unknown schema type
+    expect(() => objectFromSchema(unknownSchema as any)).toThrow(
+      'Cannot extract object schema from Zod type: unknownType'
+    )
+  })
+
+  it('handles complex nested object schemas', () => {
+    const inner = z.object({
+      user: z.object({
+        name: z.string(),
+        profile: z.object({
+          age: z.number(),
+        }),
+      }),
+    })
+    const schema = z.preprocess((v) => v, inner)
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('extracts object from explicit pipe usage', () => {
+    const inner = z.object({ value: z.number() })
+    const schema = inner.pipe(
+      z.object({ value: z.number(), extra: z.string() })
+    )
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
+
+  it('handles mixed transform and preprocess', () => {
+    const inner = z.object({ data: z.string() })
+    const transformed = inner.transform((v) => ({ ...v, transformed: true }))
+    const schema = z.preprocess((v) => v, transformed)
+    expect(objectFromSchema(schema)).toBe(inner)
+  })
 })
 
 describe('mapObject', () => {

@@ -17,10 +17,10 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
   await example.expectGlobalError(
-    'Some prop errorCsrf Token: String must contain at least 1 character(s)'
+    'Some prop errorCsrf Token: Too small: expected string to have >=1 characters'
   )
 })
 
@@ -39,10 +39,10 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   await example.expectGlobalError(
-    'Some prop errorCsrf Token: String must contain at least 1 character(s)'
+    'Some prop errorCsrf Token: Too small: expected string to have >=1 characters'
   )
 })

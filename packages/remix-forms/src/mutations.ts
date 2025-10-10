@@ -29,7 +29,7 @@ type NestedErrors<SchemaType> = {
  * errorMessagesForSchema(errors, schema)
  * ```
  */
-function errorMessagesForSchema<T extends z.ZodTypeAny>(
+function errorMessagesForSchema<T extends z.ZodType>(
   errors: Error[],
   _schema: T
 ): NestedErrors<z.infer<T>> {
@@ -126,8 +126,10 @@ type PerformMutationProps<Schema extends FormSchema, D> = {
     values: FormValues<z.infer<Schema>>
   ) => Record<string, unknown>
   transformResult?: (
-    result: MutationResult<Schema, D>
-  ) => MutationResult<Schema, D> | Promise<MutationResult<Schema, D>>
+    result: MutationResult<z.infer<Schema>, D>
+  ) =>
+    | MutationResult<z.infer<Schema>, D>
+    | Promise<MutationResult<z.infer<Schema>, D>>
 }
 
 /**
@@ -235,8 +237,10 @@ async function performMutation<Schema extends FormSchema, D>({
         ? ({
             ...errorMessagesForSchema(result.errors, schema),
             _global: global.map((error) => error.message),
-          } as FormErrors<Schema>)
-        : (errorMessagesForSchema(result.errors, schema) as FormErrors<Schema>),
+          } as FormErrors<z.infer<Schema>>)
+        : (errorMessagesForSchema(result.errors, schema) as FormErrors<
+            z.infer<Schema>
+          >),
     values,
   })
 }

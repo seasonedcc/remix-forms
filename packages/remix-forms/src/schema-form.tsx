@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import type {
   DeepPartial,
@@ -16,7 +15,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { SomeZodObject, TypeOf, ZodTypeAny, z } from 'zod'
+import type { TypeOf, ZodType, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import { coerceToForm } from './coerce-to-form'
 import type {
@@ -30,17 +29,19 @@ import { defaultRenderField } from './default-render-field'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
 import type {
+  AnyZodObject,
   ComponentOrTagName,
   FormSchema,
   KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
 import { browser, mapObject, objectFromSchema } from './prelude'
+import { zodResolver } from './resolver'
 import type { ZodTypeName } from './shape-info'
 import { shapeInfo } from './shape-info'
 
 type Field<SchemaType> = {
-  shape: ZodTypeAny
+  shape: ZodType
   fieldType: FieldType
   name: keyof SchemaType
   required: boolean
@@ -76,7 +77,7 @@ type Field<SchemaType> = {
  * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
  * ```
  */
-type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
+type RenderFieldProps<Schema extends AnyZodObject> = Field<z.infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
@@ -96,13 +97,13 @@ type RenderFieldProps<Schema extends SomeZodObject> = Field<z.infer<Schema>> & {
  * const renderField = ({ name }) => <input name={String(name)} />
  * ```
  */
-type RenderField<Schema extends SomeZodObject> = (
+type RenderField<Schema extends AnyZodObject> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-type Children<Schema extends SomeZodObject> = (
+type Children<Schema extends AnyZodObject> = (
   helpers: {
     Field: FieldComponent<Schema>
     Errors: ComponentOrTagName<'div'>
@@ -113,7 +114,7 @@ type Children<Schema extends SomeZodObject> = (
   } & UseFormReturn<z.infer<Schema>, any>
 ) => React.ReactNode
 
-type OnNavigation<Schema extends SomeZodObject> = (
+type OnNavigation<Schema extends AnyZodObject> = (
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   helpers: UseFormReturn<z.infer<Schema>, any>
 ) => void
@@ -304,7 +305,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const schemaShape = objectFromSchema(schema).shape
   const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
-    const shape = shapeInfo(fieldShape as z.ZodTypeAny)
+    const shape = shapeInfo(fieldShape as z.ZodType)
     const defaultValue = coerceToForm(
       values[key] ?? shape?.getDefaultValue?.(),
       shape

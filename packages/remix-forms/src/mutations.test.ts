@@ -30,7 +30,7 @@ describe('performMutation', () => {
       (values: FormValues<z.infer<typeof schema>>) => values
     )
     const transformResult = vi.fn(
-      (r: MutationResult<typeof schema, string>) => r
+      (r: MutationResult<z.infer<typeof schema>, string>) => r
     )
 
     const result = (await performMutation({
@@ -39,7 +39,7 @@ describe('performMutation', () => {
       mutation,
       transformValues,
       transformResult,
-    })) as MutationResult<typeof schema, string>
+    })) as MutationResult<z.infer<typeof schema>, string>
 
     expect(mutation).toHaveBeenCalledWith(
       { name: 'John', agree: true },
@@ -72,7 +72,7 @@ describe('performMutation', () => {
       request,
       schema,
       mutation,
-    })) as MutationResult<typeof schema, unknown>
+    })) as MutationResult<z.infer<typeof schema>, unknown>
 
     expect(result.success).toBe(false)
     if (!result.success) {
@@ -93,8 +93,8 @@ describe('performMutation', () => {
     ) as unknown as ComposableWithSchema<string>
     const transformResult = vi.fn(
       async (
-        r: MutationResult<typeof schema, string>
-      ): Promise<MutationResult<typeof schema, string>> => ({
+        r: MutationResult<z.infer<typeof schema>, string>
+      ): Promise<MutationResult<z.infer<typeof schema>, string>> => ({
         success: true,
         data: `${(r as { success: true; data: string }).data}!`,
       })
@@ -153,7 +153,7 @@ describe('performMutation', () => {
       request,
       schema,
       mutation,
-    })) as MutationResult<typeof schema, unknown>
+    })) as MutationResult<z.infer<typeof schema>, unknown>
 
     expect(result.success).toBe(false)
     if (!result.success) {
@@ -179,7 +179,7 @@ describe('performMutation', () => {
       request,
       schema,
       mutation,
-    })) as MutationResult<typeof schema, unknown>
+    })) as MutationResult<z.infer<typeof schema>, unknown>
 
     expect(result.success).toBe(false)
     if (!result.success) {
@@ -197,8 +197,8 @@ describe('performMutation', () => {
     ) as unknown as ComposableWithSchema<unknown>
     const transformResult = vi.fn(
       async (
-        r: MutationResult<typeof schema, unknown>
-      ): Promise<MutationResult<typeof schema, unknown>> => r
+        r: MutationResult<z.infer<typeof schema>, unknown>
+      ): Promise<MutationResult<z.infer<typeof schema>, unknown>> => r
     )
 
     await performMutation({
@@ -299,7 +299,7 @@ describe('formAction', () => {
       { kind: 'composable' }
     ) as unknown as ComposableWithSchema<string>
     const transformResult = vi.fn(
-      (r: MutationResult<typeof schema, string>) => r
+      (r: MutationResult<z.infer<typeof schema>, string>) => r
     )
 
     await formAction({

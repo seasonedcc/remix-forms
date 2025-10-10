@@ -29,14 +29,14 @@ const code = `const schema = z
     const isCorporate = arg.planType === 'corporate'
 
     if (isCorporate && arg.quantity < 8) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.too_small,
+      ctx.issues.push({
+        code: 'too_small',
         minimum: 8,
         message: 'For corporate cards you must issue at least 8',
-        type: 'number',
+        origin: 'number',
         inclusive: true,
-        fatal: true,
         path: ['planType'],
+        input: arg.quantity,
       })
     }
   })
@@ -64,14 +64,14 @@ const schema = z
     const isCorporate = arg.planType === 'corporate'
 
     if (isCorporate && arg.quantity < 8) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.too_small,
+      ctx.issues.push({
+        code: 'too_small',
         minimum: 8,
         message: 'For corporate cards you must issue at least 8',
-        type: 'number',
+        origin: 'number',
         inclusive: true,
-        fatal: true,
         path: ['planType'],
+        input: arg.quantity,
       })
     }
   })

@@ -54,7 +54,9 @@ describe('useField', () => {
 
   it('throws when used outside a field provider', () => {
     const render = () => renderToStaticMarkup(<LabelReader />)
-    expect(render).toThrow('useField used outside of field context')
+    expect(render).toThrow(
+      'useField() hook must be used within a Field component'
+    )
   })
 
   it('exposes errors from the field context', () => {

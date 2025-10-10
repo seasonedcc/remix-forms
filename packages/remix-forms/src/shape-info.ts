@@ -1,4 +1,5 @@
-import type { ZodTypeAny } from 'zod'
+import type { ZodType } from 'zod'
+import { getZodDef, getZodValues } from './prelude.js'
 
 type ZodTypeName =
   | 'ZodString'
@@ -16,7 +17,7 @@ type ShapeInfo = {
 }
 
 function shapeInfo(
-  shape?: ZodTypeAny,
+  shape?: ZodType,
   optional = false,
   nullable = false,
   getDefaultValue?: ShapeInfo['getDefaultValue'],
@@ -26,11 +27,24 @@ function shapeInfo(
     return { typeName: null, optional, nullable, getDefaultValue, enumValues }
   }
 
-  const typeName = shape._def.typeName
+  const def = getZodDef(shape)
 
-  if (typeName === 'ZodEffects') {
+  if (!def) {
+    return { typeName: null, optional, nullable, getDefaultValue, enumValues }
+  }
+
+  const type = def.type
+
+  // Handle transforms and pipes (replaces ZodEffects from Zod 3)
+  if (type === 'transform') {
+    // ZodTransform doesn't have an inner schema, skip it
+    return { typeName: null, optional, nullable, getDefaultValue, enumValues }
+  }
+
+  if (type === 'pipe') {
+    // For pipes, extract the input schema
     return shapeInfo(
-      shape._def.schema,
+      def.in as ZodType,
       optional,
       nullable,
       getDefaultValue,
@@ -38,9 +52,9 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodOptional') {
+  if (type === 'optional') {
     return shapeInfo(
-      shape._def.innerType,
+      def.innerType as ZodType,
       true,
       nullable,
       getDefaultValue,
@@ -48,9 +62,9 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodNullable') {
+  if (type === 'nullable') {
     return shapeInfo(
-      shape._def.innerType,
+      def.innerType as ZodType,
       optional,
       true,
       getDefaultValue,
@@ -58,25 +72,45 @@ function shapeInfo(
     )
   }
 
-  if (typeName === 'ZodDefault') {
+  if (type === 'default') {
     return shapeInfo(
-      shape._def.innerType,
+      def.innerType as ZodType,
       optional,
       nullable,
-      shape._def.defaultValue,
+      () => def.defaultValue,
       enumValues
     )
   }
 
-  if (typeName === 'ZodEnum') {
+  if (type === 'enum') {
+    const values = Array.from(getZodValues(shape) || []) as string[]
     return {
-      typeName,
+      typeName: 'ZodEnum',
       optional,
       nullable,
       getDefaultValue,
-      enumValues: shape._def.values,
+      enumValues: values,
     }
   }
+
+  const typeNameMap: Record<string, ZodTypeName> = {
+    string: 'ZodString',
+    number: 'ZodNumber',
+    boolean: 'ZodBoolean',
+    date: 'ZodDate',
+    enum: 'ZodEnum',
+  }
+
+  if (
+    typeNameMap[type] === undefined &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    console.warn(
+      `remix-forms: Unknown Zod type "${type}". Falling back to null.`
+    )
+  }
+
+  const typeName = typeNameMap[type] ?? null
 
   return { typeName, optional, nullable, getDefaultValue, enumValues }
 }

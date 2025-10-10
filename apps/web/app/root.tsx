@@ -2,6 +2,8 @@ import 'highlight.js/styles/a11y-dark.css'
 import type { LinksFunction, UIMatch } from 'react-router'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import colors from 'tailwindcss/colors'
+import { config } from 'zod'
+import en from 'zod/v4/locales/en.js'
 import type { Route } from './+types/root'
 import favicon from './favicon.png'
 import seasonedIconDark from './seasoned-icon-dark.png'
@@ -9,6 +11,8 @@ import './tailwind.css'
 import ExternalLink from './ui/external-link'
 import { GlobalLoading } from './ui/global-loading'
 import TopBar from './ui/top-bar'
+
+config(en())
 
 export const links: LinksFunction = () => {
   return [{ rel: 'icon', href: favicon, type: 'image/png' }]

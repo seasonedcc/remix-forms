@@ -26,7 +26,7 @@ test('With JS enabled', async ({ example }) => {
 
   await example.expectErrorMessage(
     'role',
-    "Invalid enum value. Expected 'Designer' | 'Dev', received ''"
+    'Invalid option: expected one of "Designer"|"Dev"'
   )
 
   await expect(role.input.first()).toBeFocused()
@@ -59,7 +59,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
 
   // Show field errors and focus on the first field
   await expect(example.page.locator('#errors-for-role').first()).toHaveText(
-    "Invalid enum value. Expected 'Designer' | 'Dev', received ''"
+    'Invalid option: expected one of "Designer"|"Dev"'
   )
 
   const designerRadio = example.page
