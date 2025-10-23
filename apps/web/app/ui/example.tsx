@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useActionData, useLoaderData } from 'react-router'
 import Code from '~/ui/code'
+import CopyPageButton from '~/ui/copy-page-button'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
 
@@ -36,7 +37,10 @@ export default function Example({
     <>
       <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
         <div className="flex flex-1 flex-col space-y-4">
-          <Heading>{title}</Heading>
+          <div className="flex items-center justify-between gap-4">
+            <Heading>{title}</Heading>
+            <CopyPageButton />
+          </div>
           <SubHeading>{description}</SubHeading>
         </div>
         {countLines && (
