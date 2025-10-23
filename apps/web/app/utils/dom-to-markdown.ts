@@ -16,24 +16,30 @@ function convertInlineElements(element: Element): string {
       switch (tag) {
         case 'a':
           const href = (el as HTMLAnchorElement).href
-          text += `[${el.textContent}](${href})`
+          // Recursively process children to handle nested formatting
+          const linkText = convertInlineElements(el)
+          text += `[${linkText}](${href})`
           break
         case 'em':
         case 'i':
-          text += `*${el.textContent}*`
+          // Recursively process children to handle nested formatting
+          text += `*${convertInlineElements(el)}*`
           break
         case 'strong':
         case 'b':
-          text += `**${el.textContent}**`
+          // Recursively process children to handle nested formatting
+          text += `**${convertInlineElements(el)}**`
           break
         case 'code':
+          // Code is typically a leaf element, use textContent
           text += `\`${el.textContent}\``
           break
         case 'br':
           text += '\n\n'
           break
         default:
-          text += el.textContent || ''
+          // For unknown elements, recursively process children
+          text += convertInlineElements(el)
       }
     }
   }
@@ -44,11 +50,46 @@ function convertInlineElements(element: Element): string {
 function convertPreElement(preElement: HTMLPreElement): string {
   const text = preElement.textContent?.trim() || ''
 
-  // Check if it has syntax highlighting (hljs classes)
-  const isCode = preElement.innerHTML.includes('hljs-')
-  const language = isCode ? 'typescript' : 'bash'
+  // Try to detect language from classes
+  // Only check the pre element and its direct code child, not all descendants
+  // (descendant spans may have hljs-keyword, hljs-string, etc. which are token types, not languages)
 
-  return '```' + language + '\n' + text + '\n```'
+  let language = ''
+  const elementsToCheck = [preElement]
+
+  // Check for direct code child
+  const codeChild = Array.from(preElement.children).find(
+    child => child.tagName.toLowerCase() === 'code'
+  )
+  if (codeChild) {
+    elementsToCheck.push(codeChild)
+  }
+
+  for (const element of elementsToCheck) {
+    const classes = Array.from(element.classList)
+
+    // Look for language-* pattern (common in many syntax highlighters)
+    const langClass = classes.find(c => c.startsWith('language-'))
+    if (langClass) {
+      language = langClass.replace(/^language-/, '')
+      break
+    }
+
+    // Check for data-language attribute
+    const dataLang = element.getAttribute('data-language')
+    if (dataLang) {
+      language = dataLang
+      break
+    }
+  }
+
+  // If we found a language, use it
+  if (language) {
+    return `\`\`\`${language}\n${text}\n\`\`\``
+  }
+
+  // Otherwise, return plain code block without language
+  return `\`\`\`\n${text}\n\`\`\``
 }
 
 function shouldSkipElement(element: Element): boolean {

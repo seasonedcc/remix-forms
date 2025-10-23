@@ -8,26 +8,18 @@ interface CopyPageButtonProps {
 export default function CopyPageButton({
   containerSelector = 'main',
 }: CopyPageButtonProps) {
-  const [isOpen, setIsOpen] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [showError, setShowError] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Close dropdown on outside click
+  // Cleanup timeout on unmount
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
       }
     }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
+  }, [])
 
   const handleCopy = async () => {
     try {
@@ -38,20 +30,34 @@ export default function CopyPageButton({
       const markdownContent = domToMarkdown(container)
       await navigator.clipboard.writeText(markdownContent)
       setShowSuccess(true)
-      setIsOpen(false)
-      setTimeout(() => setShowSuccess(false), 2000)
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      timeoutRef.current = setTimeout(() => setShowSuccess(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
+      setShowError(true)
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      timeoutRef.current = setTimeout(() => setShowError(false), 2000)
     }
   }
 
   return (
-    <div className="relative copy-page-button" ref={dropdownRef}>
+    <div className="relative copy-page-button">
       {/* Main Button */}
       <button
         onClick={handleCopy}
         className="flex items-center gap-2 rounded-full border-2 border-gray-200 bg-transparent px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-gray-900"
         title="Copy page as Markdown for LLMs"
+        aria-label="Copy page as Markdown for LLMs"
       >
         <svg
           className="h-5 w-5"
@@ -87,6 +93,28 @@ export default function CopyPageButton({
               />
             </svg>
             Copied to clipboard!
+          </div>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {showError && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-red-600 px-6 py-3 text-white shadow-lg">
+          <div className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            Failed to copy!
           </div>
         </div>
       )}
