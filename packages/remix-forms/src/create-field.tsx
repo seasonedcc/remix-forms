@@ -1,9 +1,9 @@
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import type { SomeZodObject, z } from 'zod'
+import type { z } from 'zod'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
-import type { ComponentOrTagName } from './prelude'
+import type { AnyZodObject, ComponentOrTagName } from './prelude'
 import { mapObject, parseDate } from './prelude'
 import type { Field } from './schema-form'
 
@@ -11,7 +11,7 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<Schema extends SomeZodObject> = (
+type Children<Schema extends AnyZodObject> = (
   helpers: FieldBaseProps<Schema> & {
     Label: ComponentOrTagName<'label'>
     SmartInput: React.ComponentType<SmartInputProps>
@@ -73,7 +73,7 @@ function getInputType(
   return types[type]
 }
 
-type FieldBaseProps<Schema extends SomeZodObject> = Omit<
+type FieldBaseProps<Schema extends AnyZodObject> = Omit<
   Partial<Field<z.infer<Schema>>>,
   'name'
 > & {
@@ -82,10 +82,10 @@ type FieldBaseProps<Schema extends SomeZodObject> = Omit<
   children?: Children<Schema>
 }
 
-type FieldProps<Schema extends SomeZodObject> = FieldBaseProps<Schema> &
+type FieldProps<Schema extends AnyZodObject> = FieldBaseProps<Schema> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-type FieldComponent<Schema extends SomeZodObject> =
+type FieldComponent<Schema extends AnyZodObject> =
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
 
@@ -172,7 +172,16 @@ const FieldContext = React.createContext<
 export function useField() {
   const context = React.useContext(FieldContext)
 
-  if (!context) throw new Error('useField used outside of field context')
+  if (!context) {
+    throw new Error(
+      'useField() hook must be used within a Field component.\n' +
+        'This hook provides access to field metadata and can only be called from components rendered inside:\n' +
+        '  1. A custom Field component passed to SchemaForm\n' +
+        '  2. A custom renderField function\n' +
+        '  3. Children of a Field component\n' +
+        'Make sure your component is wrapped by a Field provider.'
+    )
+  }
 
   return context
 }
@@ -276,7 +285,7 @@ function createSmartInput({
   }
 }
 
-function createField<Schema extends SomeZodObject>({
+function createField<Schema extends AnyZodObject>({
   register,
   fieldComponent: Field = 'div',
   labelComponent: Label = 'label',

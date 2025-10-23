@@ -18,11 +18,11 @@ test('With JS enabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     email,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   // Make first field be valid, focus goes to the second field
@@ -33,7 +33,7 @@ test('With JS enabled', async ({ example }) => {
 
   // Try another invalid message
   await email.input.fill('john')
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid email address')
 
   // Make form be valid
   await email.input.fill('john@doe.com')

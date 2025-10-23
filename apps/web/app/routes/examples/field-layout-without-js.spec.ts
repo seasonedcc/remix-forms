@@ -20,15 +20,18 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     street,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
   await example.expectError(
     number,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   await example.expectValid(extendedAddress)
-  await example.expectError(city, 'String must contain at least 1 character(s)')
+  await example.expectError(
+    city,
+    'Too small: expected string to have >=1 characters'
+  )
   await example.expectAutoFocus(street)
 
   // Make first field be valid, focus goes to the second field

@@ -24,11 +24,11 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show field errors and focus on the first field
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid email address')
 
   await example.expectError(
     firstName,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   const errorClass =
@@ -82,7 +82,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   // Show field errors and focus on the first field
-  await example.expectError(email, 'Invalid email')
+  await example.expectError(email, 'Invalid email address')
   await example.expectAutoFocus(email)
 
   // Make form be valid

@@ -15,12 +15,12 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   // Show field errors and focus on the first field
   await example.expectError(
     username,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   await example.expectError(
     password,
-    'String must contain at least 1 character(s)'
+    'Too small: expected string to have >=1 characters'
   )
 
   await example.expectAutoFocus(username)

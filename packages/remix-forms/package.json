@@ -36,7 +36,7 @@
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
     "react-router": ">=7",
-    "zod": ">=3.12"
+    "zod": ">=4.0.0"
   },
   "devDependencies": {
     "@types/react": ">=16.8",
@@ -47,8 +47,5 @@
     "typescript": "5.8.3",
     "vite": "6.0.7",
     "vitest": "2.1.8"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^2.8.8"
   }
 }

@@ -17,10 +17,16 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
 
   // Show field errors and focus on the first field
-  await example.expectError(mandatory, 'Expected date, received null')
+  await example.expectError(
+    mandatory,
+    'Invalid input: expected date, received null'
+  )
   await example.expectValid(optional)
   await example.expectValid(nullable)
-  await example.expectError(defaultField, 'Expected date, received null')
+  await example.expectError(
+    defaultField,
+    'Invalid input: expected date, received null'
+  )
   await example.expectAutoFocus(mandatory)
 
   // Make first field be valid, focus goes to the second field
@@ -30,7 +36,10 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
   await example.expectValid(mandatory)
-  await example.expectError(defaultField, 'Expected date, received null')
+  await example.expectError(
+    defaultField,
+    'Invalid input: expected date, received null'
+  )
   await example.expectAutoFocus(defaultField)
 
   // Make form be valid
