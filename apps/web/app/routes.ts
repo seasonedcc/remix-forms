@@ -78,7 +78,6 @@ export const confRoutes = times(9, (i) => `/conf/${String(i).padStart(2, '0')}`)
 export default [
   index('./routes/home.tsx'),
   route('get-started', './routes/get-started.tsx'),
-  route('get-started/markdown', './routes/get-started.markdown.tsx'),
   route('success', './routes/success.tsx'),
   layout('./routes/examples/layout.tsx', [
     route('/examples', './routes/examples/index.ts'),

@@ -7,7 +7,6 @@ import Heading from '~/ui/heading'
 import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
 import CopyPageButton from '~/ui/copy-page-button'
-import { getStartedPageToMarkdown } from '~/utils/page-to-markdown'
 import type { Route } from './+types/get-started'
 
 const title = 'Get Started'
@@ -119,30 +118,16 @@ const customInputCode = `<SchemaForm schema={schema}>
   )}
 </SchemaForm>`
 
-export const loader = () => {
-  const markdownContent = getStartedPageToMarkdown({
-    stylesCode,
-    schemaCode,
-    mutationCode,
-    actionCode,
-    basicCode,
-    customFormCode,
-    customFieldCode,
-    customInputCode,
-  })
-
-  return {
-    stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
-    schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
-    mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
-    actionCode: hljs.highlight(actionCode, { language: 'ts' }).value,
-    basicCode: hljs.highlight(basicCode, { language: 'ts' }).value,
-    customFormCode: hljs.highlight(customFormCode, { language: 'ts' }).value,
-    customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' }).value,
-    customInputCode: hljs.highlight(customInputCode, { language: 'ts' }).value,
-    markdownContent,
-  }
-}
+export const loader = () => ({
+  stylesCode: hljs.highlight(stylesCode, { language: 'ts' }).value,
+  schemaCode: hljs.highlight(schemaCode, { language: 'ts' }).value,
+  mutationCode: hljs.highlight(mutationCode, { language: 'ts' }).value,
+  actionCode: hljs.highlight(actionCode, { language: 'ts' }).value,
+  basicCode: hljs.highlight(basicCode, { language: 'ts' }).value,
+  customFormCode: hljs.highlight(customFormCode, { language: 'ts' }).value,
+  customFieldCode: hljs.highlight(customFieldCode, { language: 'ts' }).value,
+  customInputCode: hljs.highlight(customInputCode, { language: 'ts' }).value,
+})
 
 export default function Component({ loaderData }: Route.ComponentProps) {
   const {
@@ -154,7 +139,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
     customFormCode,
     customFieldCode,
     customInputCode,
-    markdownContent,
   } = loaderData
 
   return (
@@ -162,7 +146,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       {/* Heading with Copy Page Button */}
       <div className="flex items-center justify-between gap-4">
         <Heading>Get Started</Heading>
-        <CopyPageButton markdownContent={markdownContent} />
+        <CopyPageButton />
       </div>
       <SubHeading>Installation</SubHeading>
       <p>
