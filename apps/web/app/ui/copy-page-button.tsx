@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { domToMarkdown } from '~/utils/dom-to-markdown'
+import SecondaryButton from './secondary-button'
 
 interface CopyPageButtonProps {
   containerSelector?: string
@@ -51,11 +52,11 @@ export default function CopyPageButton({
   }
 
   return (
-    <div className="relative copy-page-button">
+    <div className="copy-page-button relative">
       {/* Main Button */}
-      <button
+      <SecondaryButton
         onClick={handleCopy}
-        className="flex items-center gap-2 rounded-full border-2 border-gray-200 bg-transparent px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+        className=""
         title="Copy page as Markdown for LLMs"
         aria-label="Copy page as Markdown for LLMs"
       >
@@ -73,11 +74,11 @@ export default function CopyPageButton({
           />
         </svg>
         Copy page
-      </button>
+      </SecondaryButton>
 
       {/* Success Toast */}
       {showSuccess && (
-        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
+        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -99,7 +100,7 @@ export default function CopyPageButton({
 
       {/* Error Toast */}
       {showError && (
-        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-red-600 px-6 py-3 text-white shadow-lg">
+        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-red-600 px-6 py-3 text-white shadow-lg">
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
