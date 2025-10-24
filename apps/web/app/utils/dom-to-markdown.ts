@@ -14,12 +14,13 @@ function convertInlineElements(element: Element): string {
       const tag = el.tagName.toLowerCase()
 
       switch (tag) {
-        case 'a':
+        case 'a': {
           const href = (el as HTMLAnchorElement).href
           // Recursively process children to handle nested formatting
           const linkText = convertInlineElements(el)
           text += `[${linkText}](${href})`
           break
+        }
         case 'em':
         case 'i':
           // Recursively process children to handle nested formatting
@@ -55,11 +56,11 @@ function convertPreElement(preElement: HTMLPreElement): string {
   // (descendant spans may have hljs-keyword, hljs-string, etc. which are token types, not languages)
 
   let language = ''
-  const elementsToCheck = [preElement]
+  const elementsToCheck: Element[] = [preElement]
 
   // Check for direct code child
   const codeChild = Array.from(preElement.children).find(
-    child => child.tagName.toLowerCase() === 'code'
+    (child) => child.tagName.toLowerCase() === 'code'
   )
   if (codeChild) {
     elementsToCheck.push(codeChild)
@@ -69,7 +70,7 @@ function convertPreElement(preElement: HTMLPreElement): string {
     const classes = Array.from(element.classList)
 
     // Look for language-* pattern (common in many syntax highlighters)
-    const langClass = classes.find(c => c.startsWith('language-'))
+    const langClass = classes.find((c) => c.startsWith('language-'))
     if (langClass) {
       language = langClass.replace(/^language-/, '')
       break
@@ -101,8 +102,8 @@ function shouldSkipElement(element: Element): boolean {
     'footer',
   ]
 
-  return skipSelectors.some(selector =>
-    element.matches(selector) || element.closest(selector)
+  return skipSelectors.some(
+    (selector) => element.matches(selector) || element.closest(selector)
   )
 }
 
@@ -126,54 +127,62 @@ function convertElement(element: Element): string {
     case 'h4':
       return `#### ${element.textContent}\n\n`
 
-    case 'p':
+    case 'p': {
       const paragraphText = convertInlineElements(element)
       return paragraphText ? `${paragraphText}\n\n` : ''
+    }
 
     case 'pre':
-      return convertPreElement(element as HTMLPreElement) + '\n\n'
+      return `${convertPreElement(element as HTMLPreElement)}\n\n`
 
     case 'ul':
-    case 'ol':
+    case 'ol': {
       let listMarkdown = ''
       const listItems = element.querySelectorAll(':scope > li')
       listItems.forEach((li, index) => {
         const marker = tag === 'ul' ? '-' : `${index + 1}.`
         listMarkdown += `${marker} ${convertInlineElements(li)}\n`
       })
-      return listMarkdown + '\n'
+      return `${listMarkdown}\n`
+    }
 
-    case 'blockquote':
+    case 'blockquote': {
       const lines = element.textContent?.split('\n') || []
-      return lines.map(line => `> ${line}`).join('\n') + '\n\n'
+      return `${lines.map((line) => `> ${line}`).join('\n')}\n\n`
+    }
 
     case 'div':
     case 'section':
     case 'article':
-    case 'main':
+    case 'main': {
       // Process each child individually to maintain spacing
       let containerMarkdown = ''
       for (const child of Array.from(element.children)) {
         containerMarkdown += convertElement(child)
       }
       return containerMarkdown
+    }
 
-    default:
+    default: {
       // For other elements, just process children
       let defaultMarkdown = ''
       for (const child of Array.from(element.children)) {
         defaultMarkdown += convertElement(child)
       }
       return defaultMarkdown
+    }
   }
 }
 
-export function domToMarkdown(container: Element | Document = document): string {
+export function domToMarkdown(
+  container: Element | Document = document
+): string {
   let markdown = ''
 
-  const elements = container === document
-    ? document.querySelectorAll('main > *')
-    : container.children
+  const elements =
+    container === document
+      ? document.querySelectorAll('main > *')
+      : container.children
 
   for (const element of Array.from(elements)) {
     markdown += convertElement(element)
