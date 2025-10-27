@@ -2,6 +2,7 @@ import hljs from 'highlight.js/lib/common'
 import { metaTags } from '~/helpers'
 import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
+import CopyPageButton from '~/ui/copy-page-button'
 import ExternalLink from '~/ui/external-link'
 import Heading from '~/ui/heading'
 import Pre from '~/ui/pre'
@@ -141,8 +142,12 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   } = loaderData
 
   return (
-    <div className="m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
-      <Heading>Get Started</Heading>
+    <div className="relative m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
+      {/* Heading with Copy Page Button */}
+      <div className="flex items-center justify-between gap-4">
+        <Heading>Get Started</Heading>
+        <CopyPageButton />
+      </div>
       <SubHeading>Installation</SubHeading>
       <p>
         Assuming you already have <em>React</em> and <em>React Router v7</em>{' '}
