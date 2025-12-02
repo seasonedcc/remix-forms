@@ -57,14 +57,34 @@ describe('coerceValue', () => {
 
   it('coerces booleans to true when value is not empty', () => {
     expect(coerceValue('not a boolean', z.boolean())).toEqual(true)
-    expect(coerceValue('false', z.boolean())).toEqual(true)
     expect(coerceValue('true', z.boolean())).toEqual(true)
+    expect(coerceValue('on', z.boolean())).toEqual(true)
     expect(coerceValue(new File([], 'f'), z.boolean())).toEqual(true)
+  })
+
+  it("coerces booleans to false when value is 'false'", () => {
+    expect(coerceValue('false', z.boolean())).toEqual(false)
   })
 
   it('coerces booleans to false when value is empty', () => {
     expect(coerceValue('', z.boolean())).toEqual(false)
     expect(coerceValue(null, z.boolean())).toEqual(false)
+  })
+
+  it('coerces nullable booleans to true when value is not empty', () => {
+    expect(coerceValue('not a boolean', z.boolean().nullable())).toEqual(true)
+    expect(coerceValue('true', z.boolean().nullable())).toEqual(true)
+    expect(coerceValue('on', z.boolean().nullable())).toEqual(true)
+    expect(coerceValue(new File([], 'f'), z.boolean().nullable())).toEqual(true)
+  })
+
+  it("coerces nullable booleans to false when value is 'false'", () => {
+    expect(coerceValue('false', z.boolean().nullable())).toEqual(false)
+  })
+
+  it('coerces nullable booleans to null when value is empty', () => {
+    expect(coerceValue('', z.boolean().nullable())).toEqual(null)
+    expect(coerceValue(null, z.boolean().nullable())).toEqual(null)
   })
 
   it('coerces dates to null when value is empty or is a file', () => {
