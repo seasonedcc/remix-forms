@@ -25,7 +25,12 @@ function makeCoercion<T>(coercion: (value: Value) => T, emptyValue: unknown) {
 
 const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
-const coerceBoolean = makeCoercion(Boolean, false)
+
+const coerceBoolean = makeCoercion(
+  (value) =>
+    value === 'false' ? false : value === 'null' ? null : Boolean(value),
+  false
+)
 
 const coerceDate = makeCoercion((value) => {
   if (typeof value !== 'string') return null
