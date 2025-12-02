@@ -27,7 +27,8 @@ const coerceString = makeCoercion(String, '')
 const coerceNumber = makeCoercion(Number, null)
 
 const coerceBoolean = makeCoercion(
-  (value) => (value === 'false' ? false : Boolean(value)),
+  (value) =>
+    value === 'false' ? false : value === 'null' ? null : Boolean(value),
   false
 )
 

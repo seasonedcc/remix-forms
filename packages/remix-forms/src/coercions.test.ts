@@ -66,6 +66,10 @@ describe('coerceValue', () => {
     expect(coerceValue('false', z.boolean())).toEqual(false)
   })
 
+  it("coerces booleans to null when value is 'null'", () => {
+    expect(coerceValue('null', z.boolean())).toEqual(null)
+  })
+
   it('coerces booleans to false when value is empty', () => {
     expect(coerceValue('', z.boolean())).toEqual(false)
     expect(coerceValue(null, z.boolean())).toEqual(false)
@@ -80,6 +84,10 @@ describe('coerceValue', () => {
 
   it("coerces nullable booleans to false when value is 'false'", () => {
     expect(coerceValue('false', z.boolean().nullable())).toEqual(false)
+  })
+
+  it("coerces nullable booleans to null when value is 'null'", () => {
+    expect(coerceValue('null', z.boolean().nullable())).toEqual(null)
   })
 
   it('coerces nullable booleans to null when value is empty', () => {
