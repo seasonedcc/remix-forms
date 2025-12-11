@@ -21,6 +21,7 @@ function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <BaseForm<Schema>
       className={/* your form classes */}
+      fieldsComponent={/* your custom fields wrapper */}
       fieldComponent={/* your custom Field */}
       labelComponent={/* your custom Label */}
       inputComponent={/* your custom Input */}
