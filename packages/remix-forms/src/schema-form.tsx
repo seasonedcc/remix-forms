@@ -146,6 +146,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
     'onBlur' | 'onChange' | 'onSubmit'
   >
   renderField?: RenderField<ObjectFromSchema<Schema>>
+  fieldsComponent?: ComponentOrTagName<'div'>
   globalErrorsComponent?: ComponentOrTagName<'div'>
   buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
@@ -191,6 +192,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
  * @param props.renderField - Custom field rendering function
+ * @param props.fieldsComponent - Component used to wrap all auto-generated fields
  * @param props.fieldComponent - Component used for each field container
  * @param props.labelComponent - Component used for labels
  * @param props.inputComponent - Component used for standard inputs
@@ -247,6 +249,7 @@ function SchemaForm<Schema extends FormSchema>({
   mode = 'onSubmit',
   reValidateMode = 'onChange',
   renderField = defaultRenderField,
+  fieldsComponent: FieldsComponent = 'div',
   fieldComponent,
   globalErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
@@ -550,9 +553,11 @@ function SchemaForm<Schema extends FormSchema>({
 
   const defaultChildren = () => (
     <>
-      {Object.keys(schemaShape)
-        .map(makeField)
-        .map((field) => renderField({ Field, ...field }))}
+      <FieldsComponent>
+        {Object.keys(schemaShape)
+          .map(makeField)
+          .map((field) => renderField({ Field, ...field }))}
+      </FieldsComponent>
       {globalErrorsToDisplay?.length && (
         <Errors role="alert">
           {globalErrorsToDisplay.map((error) => (

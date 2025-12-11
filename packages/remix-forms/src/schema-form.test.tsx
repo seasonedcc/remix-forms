@@ -495,3 +495,16 @@ it('uses fetcher.Form when fetcher is supplied', () => {
 
   expect(html).toContain('data-fetcher="true"')
 })
+
+it('uses fieldsComponent to wrap auto-generated fields', () => {
+  const schema = z.object({ name: z.string(), email: z.string() })
+  const FieldsWrapper = (props: React.HTMLAttributes<HTMLDivElement>) => (
+    <div data-fields {...props} />
+  )
+
+  const html = renderToStaticMarkup(
+    <SchemaForm schema={schema} fieldsComponent={FieldsWrapper} />
+  )
+
+  expect(html).toContain('data-fields="true"')
+})

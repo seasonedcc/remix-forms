@@ -16,12 +16,14 @@ import SubmitButton from './submit-button'
 import InputWrapper from './input-wrapper'
 import RadioGroup from './radio-group'
 
+import Fields from './fields'
 import TextArea from './text-area'
 
 function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <BaseForm
       className="flex flex-col space-y-6"
+      fieldsComponent={Fields}
       fieldComponent={Field}
       labelComponent={Label}
       inputComponent={Input}
