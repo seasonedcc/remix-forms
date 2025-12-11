@@ -137,7 +137,6 @@ type OnNavigation<Schema extends AnyZodObject> = (
  * ```
  */
 type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
-  fieldsComponent?: ComponentOrTagName<'div'>
   component?: typeof ReactRouterForm
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   fetcher?: FetcherWithComponents<any>
@@ -147,6 +146,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
     'onBlur' | 'onChange' | 'onSubmit'
   >
   renderField?: RenderField<ObjectFromSchema<Schema>>
+  fieldsComponent?: ComponentOrTagName<'div'>
   globalErrorsComponent?: ComponentOrTagName<'div'>
   buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
@@ -187,12 +187,12 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
  * Provide a schema and the form will generate fields and labels
  * automatically.
  *
- * @param props.fieldsComponent - Component used to wrap all auto-generated fields
  * @param props.component - Form component used for rendering
  * @param props.fetcher - Fetcher object returned by `useFetcher()`
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
  * @param props.renderField - Custom field rendering function
+ * @param props.fieldsComponent - Component used to wrap all auto-generated fields
  * @param props.fieldComponent - Component used for each field container
  * @param props.labelComponent - Component used for labels
  * @param props.inputComponent - Component used for standard inputs
@@ -244,12 +244,12 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
  * ```
  */
 function SchemaForm<Schema extends FormSchema>({
-  fieldsComponent: FieldsComponent = 'div',
   component = ReactRouterForm,
   fetcher,
   mode = 'onSubmit',
   reValidateMode = 'onChange',
   renderField = defaultRenderField,
+  fieldsComponent: FieldsComponent = 'div',
   fieldComponent,
   globalErrorsComponent: Errors = 'div',
   errorComponent: Error = 'div',
