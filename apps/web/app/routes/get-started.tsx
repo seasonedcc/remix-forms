@@ -155,7 +155,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         installed, you'll need the following packages:
       </p>
       <Pre>
-        npm install remix-forms composable-functions zod react-hook-form
+        npm install remix-forms coerce-form-data composable-functions zod
+        react-hook-form
       </Pre>
       <SubHeading>Write your schema</SubHeading>
       <p>

@@ -31,10 +31,8 @@
     "react-hook-form"
   ],
   "author": "Daniel Weinmann",
-  "dependencies": {
-    "coerce-form-data": "*"
-  },
   "peerDependencies": {
+    "coerce-form-data": ">=1",
     "composable-functions": ">=4",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
@@ -42,6 +40,7 @@
     "zod": ">=4.0.0"
   },
   "devDependencies": {
+    "coerce-form-data": "*",
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
     "react": ">=16.8",
