@@ -1,0 +1,39 @@
+{
+  "name": "coerce-form-data",
+  "version": "1.0.0-alpha.1",
+  "description": "Zero-dependency form data coercion using web standard APIs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "files": ["README.md", "./dist/*"],
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsup ./src/index.ts --format esm,cjs --dts",
+    "dev": "tsup ./src/index.ts --format esm,cjs --watch --dts",
+    "tsc": "tsc",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seasonedcc/remix-forms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seasonedcc/remix-forms/issues"
+  },
+  "keywords": [
+    "form",
+    "formdata",
+    "coerce",
+    "coercion",
+    "web-standard",
+    "typescript"
+  ],
+  "author": "Daniel Weinmann",
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "5.8.3",
+    "vite": "6.0.7",
+    "vitest": "2.1.8"
+  }
+}

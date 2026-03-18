@@ -1,3 +1,4 @@
+import type { FieldDescriptor, FieldType } from 'coerce-form-data'
 import type { ZodType } from 'zod'
 import { getZodDef, getZodValues } from './prelude.js'
 
@@ -14,6 +15,22 @@ type ShapeInfo = {
   nullable: boolean
   getDefaultValue?: () => unknown
   enumValues?: string[]
+}
+
+const fieldTypeMap: Record<ZodTypeName, FieldType> = {
+  ZodString: 'string',
+  ZodNumber: 'number',
+  ZodBoolean: 'boolean',
+  ZodDate: 'date',
+  ZodEnum: 'enum',
+}
+
+function toFieldDescriptor(info: ShapeInfo): FieldDescriptor {
+  return {
+    type: info.typeName ? fieldTypeMap[info.typeName] : null,
+    optional: info.optional,
+    nullable: info.nullable,
+  }
 }
 
 function shapeInfo(
@@ -115,5 +132,5 @@ function shapeInfo(
   return { typeName, optional, nullable, getDefaultValue, enumValues }
 }
 
-export { shapeInfo }
+export { shapeInfo, toFieldDescriptor }
 export type { ZodTypeName, ShapeInfo }

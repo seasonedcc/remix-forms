@@ -159,26 +159,13 @@ function mapObject<T extends Record<string, V>, V, NewValue>(
   )
 }
 
-function parseDate(value?: Date | string) {
-  if (!value) return value
-
-  const dateTime = typeof value === 'string' ? value : value.toISOString()
-  const [date] = dateTime.split('T')
-  return date
-}
+export { parseDate } from 'coerce-form-data'
 
 function browser(): boolean {
   return typeof document === 'object'
 }
 
-export {
-  objectFromSchema,
-  mapObject,
-  parseDate,
-  browser,
-  getZodDef,
-  getZodValues,
-}
+export { objectFromSchema, mapObject, browser, getZodDef, getZodValues }
 
 export type {
   AnyZodObject,
