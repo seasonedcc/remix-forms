@@ -6,7 +6,6 @@ import { findElement, findParent, mapChildren } from './children-traversal'
 import type { AnyZodObject, ComponentOrTagName } from './prelude'
 import { mapObject } from './prelude'
 import type { Field } from './schema-form'
-import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -357,7 +356,10 @@ function createField<Schema extends AnyZodObject>({
       const { ref: registerRef, ...registerProps } = register(String(name), {
         setValueAs: (value) => {
           try {
-            return coerceValue(value, toFieldDescriptor(shapeInfo(shape)))
+            return coerceValue(
+              value,
+              shape ?? { type: null, optional: false, nullable: false }
+            )
           } catch (error) {
             if (error instanceof FormDataCoercionError) return null
             throw error

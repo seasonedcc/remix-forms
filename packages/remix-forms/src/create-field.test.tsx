@@ -10,6 +10,7 @@ const register = vi.fn((name: string) => ({
   onBlur: () => Promise.resolve(),
   ref: () => {},
 })) as unknown as UseFormRegister<Record<string, unknown>>
+import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
 
 const schema = z.object({ foo: z.string() })
@@ -127,7 +128,7 @@ describe('createField', () => {
         name="amount"
         label="Amount"
         fieldType="number"
-        shape={schema.shape.amount}
+        shape={schemaInfo(schema.shape.amount)}
       />
     )
 
@@ -146,7 +147,7 @@ describe('createField', () => {
         name="amount"
         label="Amount"
         fieldType="number"
-        shape={schema.shape.amount}
+        shape={schemaInfo(schema.shape.amount)}
       />
     )
 
