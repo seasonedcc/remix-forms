@@ -14,8 +14,8 @@ For documentation about Remix Forms, please visit [remix-forms.seasoned.cc](http
 
 ```sh
 $ cd remix-forms
-$ npm i
-$ npm run dev
+$ pnpm install
+$ pnpm run dev
 ```
 
 Note: we had issues running the turborepo `dev` command on Node 18. We recommend using Node 16 for development.
@@ -24,25 +24,25 @@ This will run the website at http://localhost:5173.
 
 ### Repository structure
 
-This is a monorepo managed with **npm workspaces** and **Turborepo**. The two
+This is a monorepo managed with **pnpm workspaces** and **Turborepo**. The two
 main workspaces are:
 
 - `apps/web` – the website and example app.
 - `packages/remix-forms` – the Remix Forms library.
 
-Workspace scripts are executed from the repo root using `npm run <script>`. The
+Workspace scripts are executed from the repo root using `pnpm run <script>`. The
 most common ones are `build`, `dev`, `lint`, `tsc` and `test`.
 
-Run `npm run lint` to check code style with **Biome** (use `npm run lint-fix`
-to automatically fix issues) and `npm run tsc` to run the TypeScript compiler.
+Run `pnpm run lint` to check code style with **Biome** (use `pnpm run lint-fix`
+to automatically fix issues) and `pnpm run tsc` to run the TypeScript compiler.
 
 ## Testing
 
 You need to have the Playwright executables in order to run the tests. Install
-them with `npx playwright install` (or `npm run playwright:ci:install`).
+them with `pnpm exec playwright install` (or `pnpm run playwright:ci:install`).
 
 Then you can run
 
 ```sh
-npm run test
+pnpm run test
 ```

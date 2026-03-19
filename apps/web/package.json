@@ -10,7 +10,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "tsc": "react-router typegen && tsc",
     "test": "playwright test",
-    "pretest:ci": "npm run build",
+    "pretest:ci": "pnpm run build",
     "test:ci": "playwright test"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
     "react-dom": "18.3.1",
     "react-hook-form": "^7.64.0",
     "react-router": "7.13.1",
-    "remix-forms": "*",
+    "remix-forms": "workspace:*",
     "string-ts": "^2.2.0",
     "tailwindcss": "3.4.17",
     "ts-pattern": "~5.6.0",

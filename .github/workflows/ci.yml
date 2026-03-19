@@ -15,27 +15,25 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/checkout@v3
-      - name: 📥 Restore cache
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-v2
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 20
+          cache: pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
       - name: Typecheck
-        run: npm run tsc
+        run: pnpm run tsc
       - name: Install Playwright
-        run: npm run playwright:ci:install
+        run: pnpm run playwright:ci:install
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Run Playwright tests
-        run: npm run test
+        run: pnpm run test
       - uses: actions/upload-artifact@v4
         if: always()
         with:

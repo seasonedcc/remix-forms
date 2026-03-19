@@ -39,10 +39,10 @@ Bump the patch version unless the user specifies otherwise.
 
 Edit `packages/remix-forms/package.json` to set the new version number.
 
-### 3. Run npm install
+### 3. Run pnpm install
 
 ```bash
-npm install
+pnpm install
 ```
 
 This updates the lockfile with the new version.
@@ -50,24 +50,24 @@ This updates the lockfile with the new version.
 ### 4. Run checks
 
 ```bash
-npm run lint-fix && npm run lint && npm run tsc && npm run test && npm run build
+pnpm run lint-fix && pnpm run lint && pnpm run tsc && pnpm run test && pnpm run build
 ```
 
 All must pass before proceeding.
 
 ### 5. Commit and push
 
-Commit `packages/remix-forms/package.json` and `package-lock.json` with message `v<new-version>`. Push to `main`.
+Commit `packages/remix-forms/package.json` and `pnpm-lock.yaml` with message `v<new-version>`. Push to `main`.
 
 ### 6. Ask the user to publish
 
 Tell the user to run:
 
 ```bash
-cd packages/remix-forms && npm publish
+cd packages/remix-forms && pnpm publish
 ```
 
-**Do not run `npm publish` yourself** — it requires an OTP. Wait for the user to confirm they've published before continuing.
+**Do not run `pnpm publish` yourself** — it requires an OTP. Wait for the user to confirm they've published before continuing.
 
 ### 7. Create the GitHub release
 
