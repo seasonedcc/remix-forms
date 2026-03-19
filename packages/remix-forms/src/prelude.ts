@@ -159,8 +159,6 @@ function mapObject<T extends Record<string, V>, V, NewValue>(
   )
 }
 
-export { parseDate } from 'coerce-form-data'
-
 function browser(): boolean {
   return typeof document === 'object'
 }

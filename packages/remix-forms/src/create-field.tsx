@@ -1,10 +1,11 @@
+import { parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { z } from 'zod'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import { coerceValue } from './coercions'
 import type { AnyZodObject, ComponentOrTagName } from './prelude'
-import { mapObject, parseDate } from './prelude'
+import { mapObject } from './prelude'
 import type { Field } from './schema-form'
 
 type Option = { name: string } & Required<
