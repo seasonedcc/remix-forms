@@ -1,3 +1,5 @@
+import type { FormValue } from 'coerce-form-data'
+import { coerceValue } from 'coerce-form-data'
 import type { ComposableWithSchema } from 'composable-functions'
 import {
   type InputError,
@@ -6,9 +8,9 @@ import {
 } from 'composable-functions'
 import { data, redirect } from 'react-router'
 import type { z } from 'zod'
-import { coerceValue } from './coercions'
 import type { FormSchema } from './prelude'
 import { objectFromSchema } from './prelude'
+import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
@@ -182,7 +184,10 @@ async function getFormValues<Schema extends FormSchema>(
   const values: FormValues<z.infer<Schema>> = {}
   for (const key in shape) {
     const value = input[key]
-    values[key as keyof z.infer<Schema>] = coerceValue(value, shape[key])
+    values[key as keyof z.infer<Schema>] = coerceValue(
+      value as FormValue,
+      toFieldDescriptor(shapeInfo(shape[key]))
+    )
   }
 
   return values
