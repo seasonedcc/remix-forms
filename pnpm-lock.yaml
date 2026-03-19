@@ -148,6 +148,9 @@ importers:
       react-router:
         specifier: 7.13.1
         version: 7.13.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      schema-info:
+        specifier: 0.1.0
+        version: 0.1.0
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(jiti@1.21.7)(postcss@8.5.8)(typescript@5.8.3)(yaml@2.8.2)
@@ -2046,6 +2049,9 @@ packages:
 
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
+
+  schema-info@0.1.0:
+    resolution: {integrity: sha512-a23vxOR0QS3bJiuYP3eWdtOtatx6TmWOHBNdpAdTRbJHimrWtR13nO8s0Fmqm901uFmX1gkPeR/FE7ZtDF+k8Q==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -4046,6 +4052,8 @@ snapshots:
   scheduler@0.23.2:
     dependencies:
       loose-envify: 1.4.0
+
+  schema-info@0.1.0: {}
 
   semver@6.3.1: {}
 

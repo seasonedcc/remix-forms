@@ -33,6 +33,7 @@
   "author": "Daniel Weinmann",
   "peerDependencies": {
     "coerce-form-data": ">=2",
+    "schema-info": ">=0.1.0",
     "composable-functions": ">=4",
     "react": ">=16.8",
     "react-hook-form": ">=7.27",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "coerce-form-data": "2.0.0",
+    "schema-info": "0.1.0",
     "@types/react": ">=16.8",
     "@types/react-dom": ">=16.8",
     "react": ">=16.8",

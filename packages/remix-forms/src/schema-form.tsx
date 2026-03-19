@@ -16,7 +16,9 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router'
-import type { TypeOf, ZodType, z } from 'zod'
+import { schemaFields } from 'schema-info'
+import type { SchemaInfo } from 'schema-info'
+import type { TypeOf, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import type {
   ComponentMappings,
@@ -35,13 +37,11 @@ import type {
   KeysOfStrings,
   ObjectFromSchema,
 } from './prelude'
-import { browser, mapObject, objectFromSchema } from './prelude'
+import { browser, mapObject } from './prelude'
 import { zodResolver } from './resolver'
-import type { ZodTypeName } from './shape-info'
-import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type Field<SchemaType> = {
-  shape: ZodType
+  shape: SchemaInfo
   fieldType: FieldType
   name: keyof SchemaType
   required: boolean
@@ -171,12 +171,9 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
 
-const fieldTypes: Record<ZodTypeName, FieldType> = {
-  ZodString: 'string',
-  ZodNumber: 'number',
-  ZodBoolean: 'boolean',
-  ZodDate: 'date',
-  ZodEnum: 'string',
+function uiFieldType(info: SchemaInfo): FieldType {
+  if (info.type === 'enum') return 'string'
+  return (info.type ?? 'string') as FieldType
 }
 /**
 
@@ -306,12 +303,12 @@ function SchemaForm<Schema extends FormSchema>({
     [valuesProp, actionValues]
   )
 
-  const schemaShape = objectFromSchema(schema).shape
-  const defaultValues = mapObject(schemaShape, (key, fieldShape) => {
-    const shape = shapeInfo(fieldShape as z.ZodType)
+  const fields = schemaFields(schema)
+  const defaultValues = mapObject(fields, (key, fieldInfo) => {
+    const info = fieldInfo as SchemaInfo
     const defaultValue = coerceToForm(
-      values[key] ?? shape?.getDefaultValue?.(),
-      toFieldDescriptor(shape)
+      values[key] ?? info.getDefaultValue?.(),
+      info
     )
 
     return [key, defaultValue] as never
@@ -394,11 +391,11 @@ function SchemaForm<Schema extends FormSchema>({
   )
 
   const firstErroredField = () =>
-    Object.keys(schemaShape).find((key) => fieldErrors(key)?.length)
+    Object.keys(fields).find((key) => fieldErrors(key)?.length)
 
   const makeField = (key: string) => {
-    const shape = schemaShape[key]
-    const { typeName, optional, nullable, enumValues } = shapeInfo(shape)
+    const info = fields[key] ?? { type: null, optional: false, nullable: false }
+    const { optional, nullable, enumValues } = info
 
     const required = !(optional || nullable)
 
@@ -416,8 +413,8 @@ function SchemaForm<Schema extends FormSchema>({
       ]
 
     return {
-      shape,
-      fieldType: typeName ? fieldTypes[typeName] : 'string',
+      shape: info,
+      fieldType: uiFieldType(info),
       type: inputTypes?.[key],
       name: key,
       required,
@@ -554,7 +551,7 @@ function SchemaForm<Schema extends FormSchema>({
   const defaultChildren = () => (
     <>
       <FieldsComponent>
-        {Object.keys(schemaShape)
+        {Object.keys(fields)
           .map(makeField)
           .map((field) => renderField({ Field, ...field }))}
       </FieldsComponent>

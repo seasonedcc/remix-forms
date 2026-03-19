@@ -7,10 +7,9 @@ import {
   isInputError,
 } from 'composable-functions'
 import { data, redirect } from 'react-router'
+import { schemaFields } from 'schema-info'
 import type { z } from 'zod'
 import type { FormSchema } from './prelude'
-import { objectFromSchema } from './prelude'
-import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
@@ -177,17 +176,17 @@ async function getFormValues<Schema extends FormSchema>(
   request: Request,
   schema: Schema
 ): Promise<FormValues<z.infer<Schema>>> {
-  const shape = objectFromSchema(schema).shape
+  const fields = schemaFields(schema)
 
   const input = await inputFromForm(request)
 
   const values: FormValues<z.infer<Schema>> = {}
-  for (const key in shape) {
+  for (const key in fields) {
     const value = input[key]
     try {
       values[key as keyof z.infer<Schema>] = coerceValue(
         value as FormValue,
-        toFieldDescriptor(shapeInfo(shape[key]))
+        fields[key]
       )
     } catch (error) {
       if (error instanceof FormDataCoercionError) {
