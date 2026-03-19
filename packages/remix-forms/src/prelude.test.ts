@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import * as z from 'zod'
-import { browser, mapObject, objectFromSchema, parseDate } from './prelude'
+import { browser, mapObject, objectFromSchema } from './prelude'
 
 describe('objectFromSchema', () => {
   it('returns the object when given a Zod object', () => {
@@ -106,25 +106,6 @@ describe('mapObject', () => {
       (key, value) => [key + key, value * 2]
     )
     expect(result).toEqual({ aa: 2, bb: 4 })
-  })
-})
-
-describe('parseDate', () => {
-  it('returns undefined when value is falsy', () => {
-    expect(parseDate()).toBeUndefined()
-  })
-
-  it('formats Date instances as YYYY-MM-DD strings', () => {
-    const date = new Date('2024-01-02T10:20:30Z')
-    expect(parseDate(date)).toBe('2024-01-02')
-  })
-
-  it('passes through date strings unchanged', () => {
-    expect(parseDate('2024-05-06T07:08:09Z')).toBe('2024-05-06')
-  })
-
-  it('keeps YYYY-MM-DD strings as is', () => {
-    expect(parseDate('2024-05-06')).toBe('2024-05-06')
   })
 })
 

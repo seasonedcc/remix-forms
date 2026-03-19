@@ -1,11 +1,12 @@
+import { coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { z } from 'zod'
 import { findElement, findParent, mapChildren } from './children-traversal'
-import { coerceValue } from './coercions'
 import type { AnyZodObject, ComponentOrTagName } from './prelude'
-import { mapObject, parseDate } from './prelude'
+import { mapObject } from './prelude'
 import type { Field } from './schema-form'
+import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
@@ -354,7 +355,8 @@ function createField<Schema extends AnyZodObject>({
       const type = typeProp ?? getInputType(fieldType, radio)
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
-        setValueAs: (value) => coerceValue(value, shape),
+        setValueAs: (value) =>
+          coerceValue(value, toFieldDescriptor(shapeInfo(shape))),
       })
 
       const labelId = `label-for-${name.toString()}`

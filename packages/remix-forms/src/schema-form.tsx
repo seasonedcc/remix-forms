@@ -1,3 +1,4 @@
+import { coerceToForm } from 'coerce-form-data'
 import * as React from 'react'
 import type {
   DeepPartial,
@@ -17,7 +18,6 @@ import {
 } from 'react-router'
 import type { TypeOf, ZodType, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
-import { coerceToForm } from './coerce-to-form'
 import type {
   ComponentMappings,
   FieldComponent,
@@ -38,7 +38,7 @@ import type {
 import { browser, mapObject, objectFromSchema } from './prelude'
 import { zodResolver } from './resolver'
 import type { ZodTypeName } from './shape-info'
-import { shapeInfo } from './shape-info'
+import { shapeInfo, toFieldDescriptor } from './shape-info'
 
 type Field<SchemaType> = {
   shape: ZodType
@@ -311,7 +311,7 @@ function SchemaForm<Schema extends FormSchema>({
     const shape = shapeInfo(fieldShape as z.ZodType)
     const defaultValue = coerceToForm(
       values[key] ?? shape?.getDefaultValue?.(),
-      shape
+      toFieldDescriptor(shape)
     )
 
     return [key, defaultValue] as never
@@ -629,4 +629,4 @@ export type {
   FormSchema,
 }
 
-export { SchemaForm, coerceToForm }
+export { SchemaForm }
