@@ -4,10 +4,10 @@ import { browser, mapObject } from './prelude'
 describe('mapObject', () => {
   it('maps each key/value pair using the provided function', () => {
     const obj: Record<string, number> = { a: 1, b: 2 }
-    const result = mapObject<Record<string, number>, number, number>(
-      obj,
-      (key, value) => [key + key, value * 2]
-    )
+    const result = mapObject<number, number>(obj, (key, value) => [
+      key + key,
+      value * 2,
+    ])
     expect(result).toEqual({ aa: 2, bb: 4 })
   })
 })

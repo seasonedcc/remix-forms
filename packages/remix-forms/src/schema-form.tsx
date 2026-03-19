@@ -304,8 +304,7 @@ function SchemaForm<Schema extends FormSchema>({
   )
 
   const fields = schemaFields(schema)
-  const defaultValues = mapObject(fields, (key, fieldInfo) => {
-    const info = fieldInfo as SchemaInfo
+  const defaultValues = mapObject(fields, (key, info) => {
     const defaultValue = coerceToForm(
       values[key] ?? info.getDefaultValue?.(),
       info

@@ -48,8 +48,8 @@ type KeysOfStrings<T extends object> = {
   [K in keyof T]: T[K] extends string ? K : never
 }[keyof T]
 
-function mapObject<T extends Record<string, V>, V, NewValue>(
-  obj: T,
+function mapObject<V, NewValue>(
+  obj: Record<string, V>,
   mapFunction: (key: string, value: V) => [string, NewValue]
 ) {
   return Object.fromEntries(
