@@ -1,7 +1,7 @@
-import type { AnyZodObject } from './prelude'
+import type { FormSchema } from './prelude'
 import type { RenderFieldProps } from './schema-form'
 
-function defaultRenderField<Schema extends AnyZodObject>({
+function defaultRenderField<Schema extends FormSchema>({
   Field,
   name,
   ...props

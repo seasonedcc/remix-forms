@@ -339,7 +339,8 @@ describe('component mappings', () => {
   })
 
   it('uses custom components for multiline, checkbox and radio inputs', () => {
-    const BoolField = createField<z.ZodObject<{ agree: z.ZodBoolean }>>({
+    const agreeSchema = z.object({ agree: z.boolean() })
+    const BoolField = createField<typeof agreeSchema>({
       register,
       checkboxComponent: React.forwardRef<
         HTMLInputElement,

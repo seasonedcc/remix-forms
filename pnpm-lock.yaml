@@ -120,15 +120,15 @@ importers:
 
   packages/remix-forms:
     dependencies:
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.1.0
       composable-functions:
-        specifier: '>=4'
-        version: 4.5.0
+        specifier: '>=5'
+        version: 5.0.0
       react-hook-form:
         specifier: '>=7.27'
         version: 7.71.2(react@18.3.1)
-      zod:
-        specifier: '>=4.0.0'
-        version: 4.3.6
     devDependencies:
       '@types/react':
         specifier: '>=16.8'
@@ -163,6 +163,9 @@ importers:
       vitest:
         specifier: 2.1.8
         version: 2.1.8(@types/node@22.19.15)
+      zod:
+        specifier: ^4.0.0
+        version: 4.3.6
 
 packages:
 
@@ -1139,6 +1142,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
   '@tailwindcss/forms@0.5.10':
     resolution: {integrity: sha512-utI1ONF6uf/pPNO68kmN1b8rEwNXv3czukalo8VtJH8ksIkZXr3Q3VYudZLkCsDd4Wku120uF02hYK25XGPorw==}
     peerDependencies:
@@ -1353,6 +1359,9 @@ packages:
 
   composable-functions@4.5.0:
     resolution: {integrity: sha512-3ui3xmTtipzyV+efPh4vvep62JKL6H36UN1CMoHb7/4+M7Y3Nqhu5wWHFPwiBggJkFas9vMusLfugP8cErr3iw==}
+
+  composable-functions@5.0.0:
+    resolution: {integrity: sha512-CV5r9eXpnombeKTHFP895n++aYIJkmpHrlDXqloF0OUYdrXr7CU008R8tcBjaDBcZHrSwB03W1Lv8T8Ly8C37A==}
 
   compressible@2.0.18:
     resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
@@ -3139,6 +3148,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.59.0':
     optional: true
 
+  '@standard-schema/spec@1.1.0': {}
+
   '@tailwindcss/forms@0.5.10(tailwindcss@3.4.17)':
     dependencies:
       mini-svg-data-uri: 1.4.4
@@ -3368,6 +3379,8 @@ snapshots:
   commander@4.1.1: {}
 
   composable-functions@4.5.0: {}
+
+  composable-functions@5.0.0: {}
 
   compressible@2.0.18:
     dependencies:
