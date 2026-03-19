@@ -35,6 +35,9 @@ importers:
       '@tailwindcss/forms':
         specifier: 0.5.10
         version: 0.5.10(tailwindcss@3.4.17)
+      coerce-form-data:
+        specifier: ^2.0.0
+        version: 2.0.0
       composable-functions:
         specifier: ^4.5.0
         version: 4.5.0
@@ -134,8 +137,8 @@ importers:
         specifier: '>=16.8'
         version: 18.3.6(@types/react@18.3.20)
       coerce-form-data:
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 2.0.0
+        version: 2.0.0
       react:
         specifier: '>=16.8'
         version: 18.3.1
@@ -1338,8 +1341,8 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
-  coerce-form-data@1.1.0:
-    resolution: {integrity: sha512-f6MQutBbr3f9ZwPD1fzOYXpeZ3ZDng/SCZDQuUIk5amx4d39RK6vUf06cGu0MuKWPHIv8u8mIaK+TZcok9kJDw==}
+  coerce-form-data@2.0.0:
+    resolution: {integrity: sha512-tO0Hqt5S76S2SgMKKTIQmvULbZD2Ygx8opJFWuhsuTl/qQigYXVpmoyWtbL6AjpoLesqlP3EN0Xf/qcG8FzHVg==}
 
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
@@ -3354,7 +3357,7 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
-  coerce-form-data@1.1.0: {}
+  coerce-form-data@2.0.0: {}
 
   commander@4.1.1: {}
 
