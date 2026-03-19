@@ -34,7 +34,7 @@ describe('SchemaForm', () => {
         values={{
           agree: true,
           amount: 5,
-          day: new Date('2024-05-06'),
+          day: new Date(2024, 4, 6),
         }}
       />
     )

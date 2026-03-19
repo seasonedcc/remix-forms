@@ -1,5 +1,5 @@
 import type { FormValue } from 'coerce-form-data'
-import { coerceValue } from 'coerce-form-data'
+import { FormDataCoercionError, coerceValue } from 'coerce-form-data'
 import type { ComposableWithSchema } from 'composable-functions'
 import {
   type InputError,
@@ -184,10 +184,18 @@ async function getFormValues<Schema extends FormSchema>(
   const values: FormValues<z.infer<Schema>> = {}
   for (const key in shape) {
     const value = input[key]
-    values[key as keyof z.infer<Schema>] = coerceValue(
-      value as FormValue,
-      toFieldDescriptor(shapeInfo(shape[key]))
-    )
+    try {
+      values[key as keyof z.infer<Schema>] = coerceValue(
+        value as FormValue,
+        toFieldDescriptor(shapeInfo(shape[key]))
+      )
+    } catch (error) {
+      if (error instanceof FormDataCoercionError) {
+        values[key as keyof z.infer<Schema>] = null
+      } else {
+        throw error
+      }
+    }
   }
 
   return values

@@ -75,7 +75,7 @@ describe('useField', () => {
         name="foo"
         label="Foo"
         fieldType="date"
-        value={new Date('2024-05-06')}
+        value={new Date(2024, 4, 6)}
       >
         {() => <ValueReader />}
       </Field>
@@ -137,13 +137,31 @@ describe('createField', () => {
     expect(setValueAs('5')).toBe(5)
   })
 
+  it('returns null from setValueAs when coercion fails', () => {
+    const schema = z.object({ amount: z.number() })
+    const NumField = createField<typeof schema>({ register })
+
+    renderToStaticMarkup(
+      <NumField
+        name="amount"
+        label="Amount"
+        fieldType="number"
+        shape={schema.shape.amount}
+      />
+    )
+
+    const [, options] = (register as unknown as Mock).mock.calls[0]
+    const { setValueAs } = options as { setValueAs: (v: unknown) => unknown }
+    expect(setValueAs('')).toBeNull()
+  })
+
   it('formats Date values for date fields', () => {
     const html = renderToStaticMarkup(
       <Field
         name="foo"
         label="Foo"
         fieldType="date"
-        value={new Date('2024-01-02')}
+        value={new Date(2024, 0, 2)}
       />
     )
     expect(html).toContain('value="2024-01-02"')

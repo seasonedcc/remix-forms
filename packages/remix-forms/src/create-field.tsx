@@ -1,4 +1,4 @@
-import { coerceValue, parseDate } from 'coerce-form-data'
+import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import type { z } from 'zod'
@@ -355,8 +355,14 @@ function createField<Schema extends AnyZodObject>({
       const type = typeProp ?? getInputType(fieldType, radio)
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
-        setValueAs: (value) =>
-          coerceValue(value, toFieldDescriptor(shapeInfo(shape))),
+        setValueAs: (value) => {
+          try {
+            return coerceValue(value, toFieldDescriptor(shapeInfo(shape)))
+          } catch (error) {
+            if (error instanceof FormDataCoercionError) return null
+            throw error
+          }
+        },
       })
 
       const labelId = `label-for-${name.toString()}`
