@@ -7,6 +7,6 @@ export default defineConfig({
   test: {
     globals: true,
     isolate: false,
-    exclude: ['./dist', './tsc'],
+    exclude: ['./dist', './tsc', '**/node_modules/**'],
   },
 })

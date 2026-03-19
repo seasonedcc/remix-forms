@@ -1,23 +1,23 @@
 # Contributor Guidelines
 
-This repository contains a monorepo managed with npm workspaces and Turborepo. The two main workspaces are
+This repository contains a monorepo managed with pnpm workspaces and Turborepo. The two main workspaces are
 `apps/` and `packages/`.
 
 ## Development Setup
-1. Install dependencies with `npm i`.
-2. Start the dev server with `npm run dev`. The dev command runs Turborepo
+1. Install dependencies with `pnpm install`.
+2. Start the dev server with `pnpm run dev`. The dev command runs Turborepo
    tasks in parallel. Development works best on Node 16 (see README).
 3. Playwright is required for tests. Install the browser binaries with
-   `npx playwright install` or `npm run playwright:ci:install`.
+   `pnpm exec playwright install` or `pnpm run playwright:ci:install`.
 4. Configure Git hooks: `git config core.hooksPath .githooks`
 
 ## Common Scripts
 The root `package.json` defines the main scripts:
-- **`npm run build`** – Runs `turbo run build` across workspaces.
-- **`npm run dev`** – Runs `turbo run dev --parallel`.
-- **`npm run lint`** – Runs Biome to lint/format the codebase.
-- **`npm run tsc`** – Runs the TypeScript compiler in all packages.
-- **`npm run test`** – Runs Vitest/Playwright tests via Turborepo.
+- **`pnpm run build`** – Runs `turbo run build` across workspaces.
+- **`pnpm run dev`** – Runs `turbo run dev --parallel`.
+- **`pnpm run lint`** – Runs Biome to lint/format the codebase.
+- **`pnpm run tsc`** – Runs the TypeScript compiler in all packages.
+- **`pnpm run test`** – Runs Vitest/Playwright tests via Turborepo.
 
 These scripts should be executed from the repository root.
 
@@ -34,14 +34,14 @@ These scripts should be executed from the repository root.
   and document why it's required.
 
 ## Testing
-- Run `npm run test` to execute the test suite.
+- Run `pnpm run test` to execute the test suite.
 - Always run the tests before committing changes.
 - Focus tests on application behavior and accessibility. Avoid checking Tailwind classes, CSS, or which specific HTML tag is rendered. Prefer queries based on roles or other a11y attributes.
 - Do your best to test the exposed API, its inputs and outputs rather than implementation details.
-- Group tests with a single `describe` block per subject (e.g. per public function or component). Use the name of the subject as the param for `describe`. Avoid catch‑all labels like “additional tests”.
+- Group tests with a single `describe` block per subject (e.g. per public function or component). Use the name of the subject as the param for `describe`. Avoid catch‑all labels like "additional tests".
 - Prefer expressive matchers such as `toContain`, `toContainEqual`, or `containSubset` instead of manual array scans with `.some`.
 - When validating failure cases, assert on the specific error (name or class) rather than only checking `result.success === false`.
-- Don’t export internal helpers purely for test coverage.
+- Don't export internal helpers purely for test coverage.
 - Use descriptive names for both `describe` and `it` blocks to make code folding and navigation easier.
 - Do not test Zod schemas.
 
@@ -66,14 +66,14 @@ adding commits.
 Run the following commands and make a best effort to ensure they succeed:
 
 ```bash
-npm run lint-fix
-npm run lint
-npm run tsc
-npm run test
+pnpm run lint-fix
+pnpm run lint
+pnpm run tsc
+pnpm run test
 ```
 
 Tests may take a while because Playwright launches browsers. If they fail
-due to missing executables, run `npm run playwright:ci:install` first.
+due to missing executables, run `pnpm run playwright:ci:install` first.
 
 ## Fixing Bugs
 When addressing a bug, follow a test-driven development approach:
@@ -83,5 +83,5 @@ When addressing a bug, follow a test-driven development approach:
 
 ## Definition of Done
 
-- A task is not done unless `npm run lint`, `npm run tsc`, and `npm run test` are all passing.
+- A task is not done unless `pnpm run lint`, `pnpm run tsc`, and `pnpm run test` are all passing.
 - A task is not done if it has new behavior without tests to ensure the new behavior.
