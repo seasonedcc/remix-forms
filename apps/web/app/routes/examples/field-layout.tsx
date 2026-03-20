@@ -24,12 +24,12 @@ export default () => (
   <SchemaForm schema={schema} autoFocus="street">
     {({ Field, Errors, Button }) => (
       <>
-        <div className="flex space-x-4">
+        <div className="flex gap-4">
           <Field name="street" className="flex-[3]" />
           <Field name="number" className="flex-[1]" />
         </div>
         <Field name="extendedAddress" />
-        <div className="flex space-x-4">
+        <div className="flex gap-4">
           <Field name="city" className="flex-1" />
           <Field name="state" />
         </div>
@@ -63,12 +63,12 @@ export default function Component() {
       <SchemaForm schema={schema} autoFocus="street">
         {({ Field, Errors, Button }) => (
           <>
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <Field name="street" className="flex-[3]" />
               <Field name="number" className="flex-[1]" />
             </div>
             <Field name="extendedAddress" />
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <Field name="city" className="flex-1" />
               <Field name="state" />
             </div>

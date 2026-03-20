@@ -73,13 +73,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-16">
-      <div className="flex flex-col space-y-8 sm:space-y-16">
+      <div className="flex flex-col gap-8 sm:gap-16">
         <Heading className="text-center">
           The full-stack form library
           <br />
           for React Router v7
         </Heading>
-        <div className="flex flex-col space-x-0 space-y-6 xl:flex-row xl:space-x-6 xl:space-y-0">
+        <div className="flex flex-col gap-6 xl:flex-row">
           <Code>{code}</Code>
           <div className="xl:flex-1">
             <h3 className="pb-6 text-center text-base-content/60 text-lg">
@@ -106,7 +106,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   <Field name="email" />
                   <Field name="howDidYouFindUs" />
                   <Errors />
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-4">
                     <h4 className="flex-1 text-center text-base-content/60">
                       (Go ahead, try it with JS disabled as well 😉)
                     </h4>
@@ -117,7 +117,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             </SchemaForm>
           </div>
         </div>
-        <div className="flex flex-col items-center space-y-3">
+        <div className="flex flex-col items-center gap-3">
           <p className="text-center text-base-content text-xl sm:text-2xl">
             Works with Zod, Yup, Valibot, ArkType, Effect Schema, and Joi
           </p>
@@ -128,7 +128,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             </ExternalLink>
           </p>
         </div>
-        <dl className="auto-rows-min space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 md:space-y-0 xl:grid-cols-3">
+        <dl className="grid auto-rows-min gap-8 md:grid-cols-2 xl:grid-cols-3">
           <Feature icon={FlaskConical} title="100% customizable UI">
             Customize everything without losing our accessible defaults.
           </Feature>

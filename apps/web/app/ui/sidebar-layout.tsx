@@ -26,7 +26,7 @@ function Nav({
           <div className="flex w-full px-4 md:hidden">
             {open ? (
               <button className="btn btn-ghost absolute top-1 right-1">
-                <X className="block h-6 w-6" aria-hidden="true" />
+                <X className="block size-6" aria-hidden="true" />
               </button>
             ) : (
               <button className="btn btn-outline mt-2 flex-1">
@@ -41,7 +41,7 @@ function Nav({
             <ul className="menu text-primary-content">{children}</ul>
           </div>
         </Collapsible.Content>
-        <div className="hidden min-h-full w-[14rem] bg-primary p-2 md:block">
+        <div className="hidden min-h-full w-56 bg-primary p-2 md:block">
           <ul className="menu text-primary-content">{children}</ul>
         </div>
       </nav>

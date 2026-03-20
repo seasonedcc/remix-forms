@@ -22,7 +22,7 @@ import TextArea from './text-area'
 function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <BaseForm
-      className="flex flex-col space-y-6"
+      className="flex flex-col gap-6"
       fieldsComponent={Fields}
       fieldComponent={Field}
       labelComponent={Label}

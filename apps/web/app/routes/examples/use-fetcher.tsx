@@ -45,15 +45,15 @@ export default () => {
       {({ Field, Errors, Button }) => (
         <>
           {name ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <input type="checkbox" id={name} />
               <label htmlFor={name}>{name}</label>
             </div>
           ) : null}
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end gap-2">
             <Field
               name="name"
-              className="flex-1 flex-col space-y-2"
+              className="flex-1 flex-col gap-2"
               placeholder="Add to-do"
               autoFocus
             >
@@ -108,15 +108,15 @@ export default function Component() {
         {({ Field, Errors, Button }) => (
           <>
             {name ? (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox id={name} />
                 <label htmlFor={name}>{name}</label>
               </div>
             ) : null}
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end gap-2">
               <Field
                 name="name"
-                className="flex-1 flex-col space-y-2"
+                className="flex-1 flex-col gap-2"
                 placeholder="Add to-do"
                 autoFocus
               >

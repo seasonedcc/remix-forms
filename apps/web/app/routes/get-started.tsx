@@ -143,7 +143,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   } = loaderData
 
   return (
-    <div className="relative m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 sm:px-8 sm:py-16">
+    <div className="relative m-auto flex max-w-2xl flex-col gap-8 px-4 py-8 sm:px-8 sm:py-16">
       <div className="flex items-center justify-between gap-4">
         <Heading>Get Started</Heading>
         <CopyPageButton />
@@ -229,7 +229,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <em>SchemaForm</em> component:
       </p>
       <Code>{stylesCode}</Code>
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col gap-2">
         <p>
           Check out{' '}
           <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/schema-form.tsx">
@@ -244,7 +244,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         </p>
       </div>
       <SubHeading>That&apos;s it!</SubHeading>
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col gap-2">
         <p>Now go play 😊</p>
         <p>
           Please{' '}

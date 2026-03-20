@@ -20,12 +20,12 @@ export default function TopBar() {
     <Collapsible.Root open={open} onOpenChange={setOpen} asChild>
       <nav className="navbar sticky top-0 z-30 bg-base-100 p-4">
         <div className="navbar-start">
-          <Link to={'/'} className="block h-10 w-10">
+          <Link to={'/'} className="block size-10">
             <img
               src={logo}
               alt="Remix Forms"
               title="Remix Forms"
-              className="h-10 w-10"
+              className="size-10"
             />
           </Link>
         </div>
@@ -49,9 +49,9 @@ export default function TopBar() {
             <Collapsible.Trigger asChild>
               <button className="btn btn-ghost btn-square">
                 {open ? (
-                  <X className="block h-6 w-6" aria-hidden="true" />
+                  <X className="block size-6" aria-hidden="true" />
                 ) : (
-                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                  <Menu className="block size-6" aria-hidden="true" />
                 )}
               </button>
             </Collapsible.Trigger>

@@ -5,7 +5,7 @@ export default function GitHub({ className }: { className?: string }) {
     <svg
       fill="currentColor"
       role="img"
-      className={cx('h-8 w-8 sm:h-10 sm:w-10', className)}
+      className={cx('size-8 sm:size-10', className)}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >

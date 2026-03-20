@@ -8,10 +8,10 @@ type Props = {
 
 export default function Feature({ icon: Icon, title, children }: Props) {
   return (
-    <div className="relative h-full w-full rounded bg-base-100 p-4">
+    <div className="relative size-full rounded bg-base-100 p-4">
       <dt>
-        <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-content">
-          <Icon className="h-6 w-6" aria-hidden="true" />
+        <div className="absolute flex size-12 items-center justify-center rounded-md bg-primary text-primary-content">
+          <Icon className="size-6" aria-hidden="true" />
         </div>
         <h4 className="ml-16 font-medium text-base-content text-lg leading-6">
           {title}

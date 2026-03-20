@@ -56,7 +56,7 @@ export default function CopyPageButton({
         aria-label="Copy page as Markdown for LLMs"
       >
         <svg
-          className="h-5 w-5"
+          className="size-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -76,7 +76,7 @@ export default function CopyPageButton({
         <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-success px-6 py-3 text-success-content shadow-lg">
           <div className="flex items-center gap-2">
             <svg
-              className="h-5 w-5"
+              className="size-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -98,7 +98,7 @@ export default function CopyPageButton({
         <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-error px-6 py-3 text-error-content shadow-lg">
           <div className="flex items-center gap-2">
             <svg
-              className="h-5 w-5"
+              className="size-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

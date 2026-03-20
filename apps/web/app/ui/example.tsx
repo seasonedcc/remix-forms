@@ -35,8 +35,8 @@ export default function Example({
 
   return (
     <>
-      <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-        <div className="flex flex-1 flex-col space-y-4">
+      <div className="flex flex-col gap-4 md:flex-row">
+        <div className="flex flex-1 flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <Heading>{title}</Heading>
             <CopyPageButton />
@@ -44,7 +44,7 @@ export default function Example({
           <SubHeading>{description}</SubHeading>
         </div>
         {countLines && (
-          <div className="flex flex-col items-center justify-center space-y-2 rounded-md border-2 border-base-content p-4">
+          <div className="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-base-content p-4">
             <div className="font-bold text-2xl text-base-content sm:text-5xl">
               {lineCount}
             </div>
@@ -52,7 +52,7 @@ export default function Example({
           </div>
         )}
       </div>
-      <div className="flex flex-col space-x-0 space-y-6 xl:flex-row xl:space-x-6 xl:space-y-0">
+      <div className="flex flex-col gap-6 xl:flex-row">
         <Code>{code}</Code>
         <div className="xl:flex-1">{children}</div>
       </div>
@@ -60,7 +60,7 @@ export default function Example({
         <div
           id="action-data"
           data-theme="dark"
-          className="flex flex-col space-y-4 rounded bg-base-100 p-2"
+          className="flex flex-col gap-4 rounded bg-base-100 p-2"
         >
           <h4>
             This data was returned by our <em>action</em>. We got it through the{' '}
