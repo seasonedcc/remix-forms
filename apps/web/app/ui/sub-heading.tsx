@@ -8,7 +8,7 @@ export default function SubHeading({
     <h2
       {...props}
       className={cx(
-        'font-medium text-lg text-white leading-6 sm:text-2xl',
+        'font-medium text-lg text-white leading-6 sm:text-2xl sm:leading-snug',
         className
       )}
     />

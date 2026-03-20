@@ -1,14 +1,13 @@
 import { reactRouter } from '@react-router/dev/vite'
-import autoprefixer from 'autoprefixer'
-import tailwindcss from 'tailwindcss'
+import tailwindcss from '@tailwindcss/vite'
 import type { UserConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default {
-  css: {
-    postcss: {
-      plugins: [tailwindcss, autoprefixer],
+  server: {
+    warmup: {
+      clientFiles: ['app/**/*.tsx', '!app/**/*.server.tsx'],
     },
   },
-  plugins: [reactRouter(), tsconfigPaths()],
+  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 } satisfies UserConfig
