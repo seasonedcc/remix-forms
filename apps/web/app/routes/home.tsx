@@ -118,10 +118,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
         <div className="flex flex-col items-center space-y-3">
-          <p className="text-center text-base-content/60 text-xl sm:text-2xl">
+          <p className="text-center text-base-content text-xl sm:text-2xl">
             Works with Zod, Yup, Valibot, ArkType, Effect Schema, and Joi
           </p>
-          <p className="text-base-content/40 text-sm">
+          <p className="text-base-content/60 text-sm">
             Powered by{' '}
             <ExternalLink href="https://standardschema.dev">
               Standard Schema

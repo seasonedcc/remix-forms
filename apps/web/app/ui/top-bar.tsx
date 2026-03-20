@@ -18,7 +18,7 @@ export default function TopBar() {
 
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen} asChild>
-      <nav className="navbar sticky top-0 z-30 bg-base-300 p-4">
+      <nav className="navbar sticky top-0 z-30 bg-base-100 p-4">
         <div className="navbar-start">
           <Link to={'/'} className="block h-10 w-10">
             <img

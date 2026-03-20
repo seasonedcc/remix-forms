@@ -60,7 +60,7 @@ export default function Example({
         <div
           id="action-data"
           data-theme="dark"
-          className="flex flex-col space-y-4"
+          className="flex flex-col space-y-4 rounded bg-base-100 p-2"
         >
           <h4>
             This data was returned by our <em>action</em>. We got it through the{' '}
