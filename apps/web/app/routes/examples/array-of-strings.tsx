@@ -42,7 +42,7 @@ export default () => {
                   <Label />
                   <input
                     type="text"
-                    className="block w-full rounded-md border-gray-300 text-gray-800 shadow-sm
+                    className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs
                     focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                     placeholder="Add a tag and press Enter..."
                     ref={tagRef}
@@ -133,7 +133,7 @@ export default () => {
                     <Label />
                     <input
                       type="text"
-                      className="block w-full rounded-md border-gray-300 text-gray-800 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                       placeholder="Add a tag and press Enter..."
                       ref={tagRef}
                       onKeyDown={(event) => {

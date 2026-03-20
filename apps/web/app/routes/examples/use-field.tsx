@@ -63,7 +63,7 @@ const Input = React.forwardRef<
       ref={ref}
       type={type}
       className={cx(
-        'block w-full rounded-md text-gray-800 shadow-sm sm:text-sm',
+        'block w-full rounded-md text-gray-800 shadow-xs sm:text-sm',
         errors
           ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
           : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500'

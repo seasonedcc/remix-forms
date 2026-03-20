@@ -47,14 +47,14 @@ export default () => {
                     <input
                       type="text"
                       className="block w-full rounded-md border-gray-300 text-gray-800
-                      shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                       placeholder="Name"
                       ref={nameRef}
                     />
                     <input
                       type="text"
                       className="block w-full rounded-md border-gray-300 text-gray-800
-                      shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                       placeholder="E-mail"
                       ref={emailRef}
                     />
@@ -166,13 +166,13 @@ export default () => {
                     <fieldset className="flex gap-2">
                       <input
                         type="text"
-                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                         placeholder="Name"
                         ref={nameRef}
                       />
                       <input
                         type="text"
-                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
                         placeholder="E-mail"
                         ref={emailRef}
                       />

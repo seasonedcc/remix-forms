@@ -13,7 +13,8 @@
       "tsc",
       "build",
       "dist",
-      "apps/web/test-results/"
+      "apps/web/test-results/",
+      "apps/web/app/tailwind.css"
     ]
   },
   "formatter": {

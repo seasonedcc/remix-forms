@@ -1,7 +1,6 @@
 import 'highlight.js/styles/a11y-dark.css'
 import type { LinksFunction, UIMatch } from 'react-router'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
-import colors from 'tailwindcss/colors'
 import { config } from 'zod'
 import en from 'zod/v4/locales/en.js'
 import type { Route } from './+types/root'
@@ -30,7 +29,7 @@ export default function App({ matches }: Route.ComponentProps) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <meta name="theme-color" content={colors.gray[900]} />
+        <meta name="theme-color" content="#111827" />
         <Meta />
         <Links />
       </head>
