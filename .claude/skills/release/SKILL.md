@@ -32,6 +32,7 @@ Determine the next version following semver:
 - **patch** for bug fixes and dependency updates
 - **minor** for new features that are backwards-compatible
 - **major** for breaking changes
+- **prerelease** (e.g. `5.0.0-alpha.4`) when the user asks for an alpha/beta/rc release — increment the prerelease suffix
 
 Bump the patch version unless the user specifies otherwise.
 
@@ -61,22 +62,41 @@ Commit `packages/remix-forms/package.json` and `pnpm-lock.yaml` with message `v<
 
 ### 6. Ask the user to publish
 
-Tell the user to run:
+For **stable** releases, tell the user to run:
 
 ```bash
 cd packages/remix-forms && pnpm publish
 ```
 
+For **prerelease** versions (alpha/beta/rc), tell the user to run:
+
+```bash
+cd packages/remix-forms && pnpm publish --tag alpha
+```
+
+The `--tag alpha` flag prevents npm from marking the prerelease as `latest`.
+
 **Do not run `pnpm publish` yourself** — it requires an OTP. Wait for the user to confirm they've published before continuing.
 
 ### 7. Create the GitHub release
 
-Once the user confirms the publish, create a GitHub release.
+Once the user confirms the publish, write release notes by thoroughly analyzing the changes.
 
-Write release notes by analyzing the diff between the previous tag and `HEAD`. Follow the pattern from previous releases:
+#### Analyze changes in depth
 
-- For **major releases**: Include narrative sections describing breaking changes and new features, followed by a `## What's Changed` section with PR links and a `**Full Changelog**` compare link.
-- For **minor/patch releases**: A `## What's Changed` section with bullet points linking to merged PRs, and a `**Full Changelog**` compare link.
+Do not just list PRs. Study the actual code changes to understand what they mean for users:
+
+1. **Check the public API diff** — look at changes to `packages/remix-forms/src/index.ts` for added/removed exports.
+2. **Check dependency changes** — diff `packages/remix-forms/package.json` for new/removed/changed peer dependencies and dependencies.
+3. **Filter to package-relevant changes** — use `git log <last-tag>..HEAD --oneline -- packages/remix-forms/` to identify commits that actually affect the published package (vs website-only changes).
+4. **Read the changed source code** — don't assume what a change does from the PR title alone. Read the actual diffs to understand user-facing impact. For example, an internal dependency upgrade may introduce stricter behavior, but if the package catches and handles it internally, it's not a user-facing breaking change.
+
+#### Write release notes
+
+Structure depends on the nature of the changes:
+
+- **Releases with breaking changes**: Start with a `## Breaking Changes` section containing narrative subsections that explain each breaking change, what it replaces, and what users need to do. Follow with a `## What's Changed` section listing PRs.
+- **Minor/patch releases**: A `## What's Changed` section with bullet points linking to merged PRs.
 
 List merged PRs between the two tags:
 
@@ -96,10 +116,18 @@ End with:
 **Full Changelog**: https://github.com/seasonedcc/remix-forms/compare/v<previous>...v<new>
 ```
 
-Create the release:
+#### Create the release
+
+For **stable** releases:
 
 ```bash
 gh release create v<new-version> --title "v<new-version>" --notes "<release-notes>"
+```
+
+For **prerelease** versions:
+
+```bash
+gh release create v<new-version> --title "v<new-version>" --prerelease --notes "<release-notes>"
 ```
 
 Use a HEREDOC for the notes to preserve formatting.
