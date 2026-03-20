@@ -2,26 +2,41 @@
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  --color-primary: #ec4899;
-  --color-primary-content: #ffffff;
-  --depth: 0;
-}
-
-@plugin "daisyui/theme" {
   name: "dark";
-  prefersdark: true;
-  --color-primary: #ec4899;
-  --color-primary-content: #ffffff;
-  --color-base-100: #0e151d;
-  --color-base-200: #1a2230;
-  --color-base-300: #2a3240;
-  --color-base-content: #e4e7ea;
+  default: true;
+  color-scheme: dark;
+  --color-base-100: #0c0c1d;
+  --color-base-200: #141428;
+  --color-base-300: #1e1e3a;
+  --color-base-content: #e8e8f0;
+  --color-primary: #e04444;
+  --color-primary-content: #e8e8f0;
+  --color-secondary: #e04848;
+  --color-secondary-content: #0c0c1d;
+  --color-accent: #e74c3c;
+  --color-accent-content: #0c0c1d;
+  --color-neutral: #2a2a4a;
+  --color-neutral-content: #e8e8f0;
+  --color-info: #38bdf8;
+  --color-info-content: #0c0c1d;
+  --color-success: #34d399;
+  --color-success-content: #0c0c1d;
+  --color-warning: #fbbf24;
+  --color-warning-content: #0c0c1d;
+  --color-error: #f87171;
+  --color-error-content: #0c0c1d;
+  --radius-selector: 1.5rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
   --depth: 0;
+  --noise: 0;
 }
 
 @theme {
   --font-sans: "Inter", "ui-sans-serif", "system-ui", "sans-serif",
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: "Space Grotesk", "sans-serif";
 }

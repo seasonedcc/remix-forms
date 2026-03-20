@@ -54,13 +54,14 @@ export default function Example({
       </div>
       <div className="flex flex-col gap-6 xl:flex-row">
         <Code>{code}</Code>
-        <div className="xl:flex-1">{children}</div>
+        <div className="self-start rounded-2xl border border-white/10 bg-white/5 p-6 xl:flex-1">
+          {children}
+        </div>
       </div>
       {data ? (
         <div
           id="action-data"
-          data-theme="dark"
-          className="flex flex-col gap-4 rounded bg-base-100 p-2"
+          className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"
         >
           <h4>
             This data was returned by our <em>action</em>. We got it through the{' '}

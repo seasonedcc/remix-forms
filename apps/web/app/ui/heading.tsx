@@ -8,7 +8,7 @@ export default function Heading({
     <h1
       {...props}
       className={cx(
-        'font-bold text-2xl text-primary leading-7 sm:text-5xl sm:leading-none',
+        'font-bold text-2xl text-primary leading-7 tracking-tight sm:text-5xl sm:leading-none',
         className
       )}
     />
