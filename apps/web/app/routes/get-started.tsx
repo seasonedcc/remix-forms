@@ -157,11 +157,16 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         npm install remix-forms schema-info coerce-form-data
         composable-functions zod react-hook-form
       </Pre>
+      <p className="text-base-content/60 text-sm">
+        You can replace <em>zod</em> with <em>valibot</em>, <em>yup</em>,{' '}
+        <em>arktype</em>, <em>@effect/schema</em>, or <em>joi</em>.
+      </p>
       <SubHeading>Write your schema</SubHeading>
       <p>
-        Compose a zod schema that will be used in your action, mutation
-        function, form generation, server-side validation, and client-side
-        validation.
+        Compose a schema that will be used in your action, mutation function,
+        form generation, server-side validation, and client-side validation.
+        We're using Zod in this example, but Yup, Valibot, ArkType, Effect
+        Schema, and Joi work too.
       </p>
       <Code>{schemaCode}</Code>
       <SubHeading>Create your mutation</SubHeading>
@@ -263,6 +268,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         , <ExternalLink href="https://remix.run/">Remix</ExternalLink>,{' '}
         <ExternalLink href="https://reactrouter.com/">
           React Router
+        </ExternalLink>
+        ,{' '}
+        <ExternalLink href="https://standardschema.dev">
+          Standard Schema
         </ExternalLink>
         ,{' '}
         <ExternalLink href="https://github.com/colinhacks/zod">

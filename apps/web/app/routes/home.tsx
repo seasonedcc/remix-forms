@@ -13,6 +13,7 @@ import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Code from '~/ui/code'
+import ExternalLink from '~/ui/external-link'
 import Feature from '~/ui/feature'
 import Heading from '~/ui/heading'
 import { SchemaForm } from '~/ui/schema-form'
@@ -115,6 +116,17 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               )}
             </SchemaForm>
           </div>
+        </div>
+        <div className="flex flex-col items-center space-y-3">
+          <p className="text-center text-base-content/60 text-xl sm:text-2xl">
+            Works with Zod, Yup, Valibot, ArkType, Effect Schema, and Joi
+          </p>
+          <p className="text-base-content/40 text-sm">
+            Powered by{' '}
+            <ExternalLink href="https://standardschema.dev">
+              Standard Schema
+            </ExternalLink>
+          </p>
         </div>
         <dl className="auto-rows-min space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 md:space-y-0 xl:grid-cols-3">
           <Feature icon={BeakerIcon} title="100% customizable UI">
