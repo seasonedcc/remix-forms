@@ -1,11 +1,11 @@
-import { cx } from '~/helpers'
+import { twMerge } from 'tailwind-merge'
 
 export default function GitHub({ className }: { className?: string }) {
   return (
     <svg
       fill="currentColor"
       role="img"
-      className={cx('size-8 sm:size-10', className)}
+      className={twMerge('size-8 sm:size-10', className)}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
