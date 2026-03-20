@@ -381,7 +381,7 @@ function SchemaForm<Schema extends FormSchema>({
   )
 
   const fieldErrors = React.useCallback(
-    (key: keyof SchemaType) => {
+    (key: keyof SchemaType & string) => {
       const message = (formErrors[key] as unknown as FieldError)?.message
       return browser() ? message && [message] : errors?.[key]
     },
@@ -433,7 +433,9 @@ function SchemaForm<Schema extends FormSchema>({
   const hiddenFieldsErrorsToGlobal = React.useCallback(
     (globalErrors: string[] = []) => {
       const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
-        const hiddenFieldErrors = fieldErrors(hiddenField)
+        const hiddenFieldErrors = fieldErrors(
+          hiddenField as keyof SchemaType & string
+        )
 
         if (Array.isArray(hiddenFieldErrors)) {
           const hiddenFieldLabel =
@@ -455,9 +457,20 @@ function SchemaForm<Schema extends FormSchema>({
     [fieldErrors, hiddenFields, labels]
   )
 
+  const orphanedErrors = React.useMemo(() => {
+    const fieldKeys = new Set(Object.keys(fields))
+    return Object.entries(errors)
+      .filter(([key]) => key !== '_global' && !fieldKeys.has(key))
+      .flatMap(([, msgs]) => msgs ?? [])
+  }, [errors, fields])
+
   const globalErrors = React.useMemo(
-    () => hiddenFieldsErrorsToGlobal(errors?._global),
-    [errors?._global, hiddenFieldsErrorsToGlobal]
+    () =>
+      hiddenFieldsErrorsToGlobal([
+        ...(errors?._global ?? []),
+        ...orphanedErrors,
+      ]),
+    [errors?._global, orphanedErrors, hiddenFieldsErrorsToGlobal]
   )
 
   const buttonLabel =
@@ -590,6 +603,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   React.useEffect(() => {
     Object.keys(errors).forEach((key) => {
+      if (key === '_global') return
       form.setError(key as Path<Infer<Schema>>, {
         type: 'custom',
         message: (errors[key] ?? []).join(', '),

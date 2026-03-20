@@ -133,7 +133,7 @@ describe('performMutation', () => {
     expect(mutation).toHaveBeenCalledWith({ name: 'JANE' }, context)
   })
 
-  it('returns nested errors structured by path', async () => {
+  it('returns dot-path errors for nested schemas', async () => {
     const schema = z.object({
       user: z.object({
         name: z.string(),
@@ -157,8 +157,8 @@ describe('performMutation', () => {
 
     expect(result.success).toBe(false)
     if (!result.success) {
-      const errors = result.errors as { user?: { name?: string[] } }
-      expect(errors.user?.name).toEqual(['Required'])
+      const errors = result.errors as Record<string, string[]>
+      expect(errors['user.name']).toEqual(['Required'])
       const values = result.values as {
         user?: { name?: string; age?: string }
       }
