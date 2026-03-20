@@ -32,11 +32,11 @@ export default () => (
           <Field key={name} {...props}>
             {({ Label, SmartInput, Errors }) => (
               <>
-                <Label className={dirty ? 'text-yellow-600' : undefined} />
+                <Label className={dirty ? 'text-warning' : undefined} />
                 <SmartInput
                   className={
                     dirty
-                      ? 'border-yellow-600 focus:border-yellow-600 focus:ring-yellow-600'
+                      ? 'input-warning'
                       : undefined
                   }
                 />
@@ -80,14 +80,8 @@ export default () => (
           <Field key={name} {...props}>
             {({ Label, SmartInput, Errors }) => (
               <>
-                <Label className={dirty ? 'text-yellow-600' : undefined} />
-                <SmartInput
-                  className={
-                    dirty
-                      ? 'border-yellow-600 focus:border-yellow-600 focus:ring-yellow-600'
-                      : undefined
-                  }
-                />
+                <Label className={dirty ? 'text-warning' : undefined} />
+                <SmartInput className={dirty ? 'input-warning' : undefined} />
                 <Errors />
               </>
             )}

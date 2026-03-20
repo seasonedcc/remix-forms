@@ -31,11 +31,10 @@ test('With JS enabled', async ({ example }) => {
     'Too small: expected string to have >=1 characters'
   )
 
-  const errorClass =
-    'block w-full rounded-md text-gray-800 shadow-xs sm:text-sm border-red-600 focus:border-red-600 focus:ring-red-600'
+  const errorClass = 'input-error'
 
-  await expect(email.input).toHaveClass(errorClass)
-  await expect(firstName.input).toHaveClass(errorClass)
+  expect(await email.input.getAttribute('class')).toContain(errorClass)
+  expect(await firstName.input.getAttribute('class')).toContain(errorClass)
   await expect(email.input).toBeFocused()
 
   // Make first field valid and focus on the next one
@@ -52,11 +51,8 @@ test('With JS enabled', async ({ example }) => {
   await example.expectValid(preferredSport)
   await example.expectValid(newsletter)
 
-  const validClass =
-    'block w-full rounded-md text-gray-800 shadow-xs sm:text-sm border-gray-300 focus:border-pink-500 focus:ring-pink-500'
-
-  await expect(email.input).toHaveClass(validClass)
-  await expect(firstName.input).toHaveClass(validClass)
+  expect(await email.input.getAttribute('class')).not.toContain(errorClass)
+  expect(await firstName.input.getAttribute('class')).not.toContain(errorClass)
 
   // Submit form
   await button.click()

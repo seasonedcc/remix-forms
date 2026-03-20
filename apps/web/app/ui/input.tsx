@@ -8,11 +8,7 @@ const Input = React.forwardRef<
   <input
     ref={ref}
     type={type}
-    className={cx(
-      'block w-full rounded-md text-gray-800 shadow-xs sm:text-sm',
-      className,
-      !className && 'border-gray-300 focus:border-pink-500 focus:ring-pink-500'
-    )}
+    className={cx('input input-bordered w-full', className)}
     {...props}
   />
 ))

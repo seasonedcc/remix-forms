@@ -1,4 +1,4 @@
-import ButtonLink from '~/ui/button-link'
+import { Link } from 'react-router'
 import Heading from '~/ui/heading'
 import SubHeading from '~/ui/sub-heading'
 
@@ -9,9 +9,9 @@ export default function Component() {
       <SubHeading>
         You&apos;ve been magically redirected here from our successful form!
       </SubHeading>
-      <ButtonLink to={'/examples'}>
+      <Link to="/examples" className="btn btn-primary self-center">
         Now check out our other examples 😄
-      </ButtonLink>
+      </Link>
     </div>
   )
 }

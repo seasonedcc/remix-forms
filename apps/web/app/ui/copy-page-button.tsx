@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { domToMarkdown } from '~/utils/dom-to-markdown'
-import SecondaryButton from './secondary-button'
 
 interface CopyPageButtonProps {
   containerSelector?: string
@@ -13,7 +12,6 @@ export default function CopyPageButton({
   const [showError, setShowError] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -32,7 +30,6 @@ export default function CopyPageButton({
       await navigator.clipboard.writeText(markdownContent)
       setShowSuccess(true)
 
-      // Clear any existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
@@ -42,7 +39,6 @@ export default function CopyPageButton({
       console.error('Failed to copy:', err)
       setShowError(true)
 
-      // Clear any existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
@@ -53,10 +49,9 @@ export default function CopyPageButton({
 
   return (
     <div className="copy-page-button relative">
-      {/* Main Button */}
-      <SecondaryButton
+      <button
         onClick={handleCopy}
-        className=""
+        className="btn btn-outline"
         title="Copy page as Markdown for LLMs"
         aria-label="Copy page as Markdown for LLMs"
       >
@@ -75,11 +70,10 @@ export default function CopyPageButton({
           />
         </svg>
         Copy page
-      </SecondaryButton>
+      </button>
 
-      {/* Success Toast */}
       {showSuccess && (
-        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
+        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-success px-6 py-3 text-success-content shadow-lg">
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -100,9 +94,8 @@ export default function CopyPageButton({
         </div>
       )}
 
-      {/* Error Toast */}
       {showError && (
-        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-red-600 px-6 py-3 text-white shadow-lg">
+        <div className="-translate-x-1/2 fixed bottom-8 left-1/2 z-50 transform rounded-lg bg-error px-6 py-3 text-error-content shadow-lg">
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5"

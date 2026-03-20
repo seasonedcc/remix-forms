@@ -1,9 +1,12 @@
-import Button from './button'
+import { cx } from '~/helpers'
 
-export default function SubmitButton(props: JSX.IntrinsicElements['button']) {
+export default function SubmitButton({
+  className,
+  ...props
+}: JSX.IntrinsicElements['button']) {
   return (
     <div className="flex justify-end">
-      <Button {...props} />
+      <button className={cx('btn btn-primary', className)} {...props} />
     </div>
   )
 }

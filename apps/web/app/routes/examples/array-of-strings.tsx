@@ -42,8 +42,7 @@ export default () => {
                   <Label />
                   <input
                     type="text"
-                    className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs
-                    focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                    className="input input-bordered w-full"
                     placeholder="Add a tag and press Enter..."
                     ref={tagRef}
                     onKeyDown={(event) => {
@@ -68,10 +67,10 @@ export default () => {
                     <section className="-ml-1 flex flex-wrap pt-1">
                       {tags.map((tag) => (
                         <span key={tag}>
-                          <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
+                          <span className="badge badge-primary m-1 gap-1 py-3">
                             <span className="flex-1">{tag}</span>
                             <button
-                              className="ml-2 text-pink-700"
+                              className="ml-1"
                               onClick={() => {
                                 setValue(
                                   'tags',
@@ -133,7 +132,7 @@ export default () => {
                     <Label />
                     <input
                       type="text"
-                      className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      className="input input-bordered w-full"
                       placeholder="Add a tag and press Enter..."
                       ref={tagRef}
                       onKeyDown={(event) => {
@@ -158,10 +157,10 @@ export default () => {
                       <section className="-ml-1 flex flex-wrap pt-1">
                         {tags.map((tag) => (
                           <span key={tag}>
-                            <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
+                            <span className="badge badge-primary m-1 gap-1 py-3">
                               <span className="flex-1">{tag}</span>
                               <button
-                                className="ml-2 text-pink-700"
+                                className="ml-1"
                                 onClick={() => {
                                   setValue(
                                     'tags',

@@ -7,11 +7,7 @@ const Select = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <select
     ref={ref}
-    className={cx(
-      'block w-full rounded-md py-2 pr-10 pl-3 text-base text-gray-800 focus:outline-hidden sm:text-sm',
-      className,
-      !className && 'border-gray-300 focus:border-pink-500 focus:ring-pink-500'
-    )}
+    className={cx('select select-bordered w-full', className)}
     {...props}
   />
 ))

@@ -25,22 +25,21 @@ export default function App({ matches }: Route.ComponentProps) {
   const secondTopBar = match?.handle.topBar || null
 
   return (
-    <html lang="en" className="h-full overflow-x-hidden bg-gray-900">
+    <html lang="en" className="h-full overflow-x-hidden bg-base-100">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <meta name="theme-color" content="#111827" />
         <Meta />
         <Links />
       </head>
-      <body className="scrollbar-thin scrollbar-track-gray-500 scrollbar-thumb-gray-700 flex min-h-screen w-screen max-w-[100vw] flex-col overflow-y-auto overflow-x-hidden bg-gradient-to-r from-gray-900 to-gray-600 antialiased">
+      <body className="flex min-h-screen w-screen max-w-[100vw] flex-col overflow-y-auto overflow-x-hidden bg-base-100 text-base-content antialiased">
         <GlobalLoading />
         <TopBar />
         {secondTopBar}
         <main className="flex flex-1 flex-col">
           <Outlet />
         </main>
-        <footer className="flex justify-center bg-gradient-to-r from-black to-gray-800 p-4 text-white">
+        <footer className="flex justify-center bg-base-200 p-4">
           <ExternalLink
             href="https://seasoned.cc"
             className="flex items-center gap-4 no-underline"

@@ -1,38 +1,10 @@
 @import "tailwindcss";
 
-@plugin "@tailwindcss/forms";
-@plugin "tailwind-scrollbar";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
 
 @theme {
   --font-sans: "Inter", "ui-sans-serif", "system-ui", "sans-serif",
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-@layer base {
-  label[for] {
-    @apply cursor-pointer;
-  }
-
-  sub,
-  sup {
-    @apply font-[60%] leading-[0] relative align-baseline;
-  }
-
-  sup {
-    @apply top-0 align-super;
-  }
-
-  sub {
-    @apply bottom-0 align-sub;
-  }
-  body {
-    @apply text-base text-white;
-  }
-  body * {
-    @apply font-[inherit] text-current;
-  }
-  h1,
-  .h1 {
-    @apply text-2xl font-bold leading-7 sm:text-5xl sm:leading-none text-pink-500;
-  }
 }
