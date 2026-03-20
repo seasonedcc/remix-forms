@@ -9,7 +9,7 @@ import Pre from '~/ui/pre'
 import SubHeading from '~/ui/sub-heading'
 import type { Route } from './+types/get-started'
 
-const title = 'Get Started'
+const title = 'Get started'
 const description = 'The full-stack form library for React Router v7'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
@@ -145,7 +145,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   return (
     <div className="relative m-auto flex max-w-2xl flex-col gap-8 px-4 py-8 sm:px-8 sm:py-16">
       <div className="flex items-center justify-between gap-4">
-        <Heading>Get Started</Heading>
+        <Heading>Get started</Heading>
         <CopyPageButton />
       </div>
       <SubHeading>Installation</SubHeading>
