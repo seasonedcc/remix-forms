@@ -1,6 +1,6 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { Schema as S } from 'effect'
 import { describe, expect, it } from 'vitest'
-import { schemaResolver } from './standard-schema-resolver'
 
 const defaultOptions = {
   fields: {},
@@ -19,8 +19,13 @@ const mainSchema = S.standardSchemaV1(
 
 describe('schemaResolver with Effect Schema', () => {
   it('returns values and empty errors for valid data', async () => {
-    const resolver = schemaResolver(mainSchema)
-    const values = { name: 'Alice', age: 30, role: 'admin', bio: 'Hello' }
+    const resolver = standardSchemaResolver(mainSchema)
+    const values = {
+      name: 'Alice',
+      age: 30,
+      role: 'admin' as const,
+      bio: 'Hello',
+    }
 
     const result = await resolver(values, undefined, defaultOptions)
 
@@ -29,11 +34,11 @@ describe('schemaResolver with Effect Schema', () => {
   })
 
   it('returns errors for invalid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: 42, age: 'not a number', role: 'admin' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { name: 42, age: 'not a number', role: 'admin' },
       undefined,
       defaultOptions
     )
@@ -42,23 +47,21 @@ describe('schemaResolver with Effect Schema', () => {
     expect(result.errors.name).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        type: 'validation',
       })
     )
     expect(result.errors.age).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        type: 'validation',
       })
     )
   })
 
   it('returns multiple validation errors', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: 123, age: 'bad', role: 'admin' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { name: 123, age: 'bad', role: 'admin' },
       undefined,
       defaultOptions
     )
@@ -76,9 +79,10 @@ describe('schemaResolver with Effect Schema', () => {
         }),
       })
     )
-    const resolver = schemaResolver(nestedSchema)
+    const resolver = standardSchemaResolver(nestedSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { user: { email: 42 } },
       undefined,
       defaultOptions
@@ -89,8 +93,8 @@ describe('schemaResolver with Effect Schema', () => {
   })
 
   it('allows missing optional fields', async () => {
-    const resolver = schemaResolver(mainSchema)
-    const values = { name: 'Alice', age: 30, role: 'admin' }
+    const resolver = standardSchemaResolver(mainSchema)
+    const values = { name: 'Alice', age: 30, role: 'admin' as const }
 
     const result = await resolver(values, undefined, defaultOptions)
 
@@ -99,25 +103,26 @@ describe('schemaResolver with Effect Schema', () => {
   })
 
   it('returns an error when a required field is missing', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { age: 25, role: 'user' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { age: 25, role: 'user' },
       undefined,
       defaultOptions
     )
 
     expect(result.values).toEqual({})
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
   })
 
   it('rejects invalid literal values', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 'Alice', age: 30, role: 'superadmin' },
       undefined,
       defaultOptions
@@ -126,7 +131,6 @@ describe('schemaResolver with Effect Schema', () => {
     expect(result.values).toEqual({})
     expect(result.errors.role).toBeDefined()
     expect(result.errors.role).toHaveProperty('message')
-    expect(result.errors.role).toHaveProperty('type', 'validation')
   })
 
   it('handles deeply nested errors', async () => {
@@ -139,9 +143,10 @@ describe('schemaResolver with Effect Schema', () => {
         }),
       })
     )
-    const resolver = schemaResolver(deepSchema)
+    const resolver = standardSchemaResolver(deepSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { level1: { level2: { value: 'not a number' } } },
       undefined,
       defaultOptions
@@ -152,14 +157,14 @@ describe('schemaResolver with Effect Schema', () => {
   })
 
   it('handles empty object with required fields', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
-    // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-    const result = await resolver({} as any, undefined, defaultOptions)
+    // @ts-expect-error intentionally passing invalid data
+    const result = await resolver({}, undefined, defaultOptions)
 
     expect(result.values).toEqual({})
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
   })
 })

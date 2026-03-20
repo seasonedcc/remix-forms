@@ -1,3 +1,4 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { coerceToForm } from 'coerce-form-data'
 import * as React from 'react'
 import type {
@@ -37,7 +38,6 @@ import type {
   KeysOfStrings,
 } from './prelude'
 import { browser, mapObject } from './prelude'
-import { schemaResolver } from './resolver'
 
 type Field<SchemaType> = {
   shape: SchemaInfo
@@ -313,7 +313,7 @@ function SchemaForm<Schema extends FormSchema>({
   }) as DeepPartial<SchemaType>
 
   const form = useForm<SchemaType>({
-    resolver: schemaResolver(schema),
+    resolver: standardSchemaResolver(schema),
     mode,
     reValidateMode,
     defaultValues: defaultValues as DefaultValues<SchemaType>,

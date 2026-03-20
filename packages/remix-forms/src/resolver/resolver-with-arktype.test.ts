@@ -1,6 +1,6 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { type } from 'arktype'
 import { describe, expect, it } from 'vitest'
-import { schemaResolver } from './standard-schema-resolver'
 
 const defaultOptions = {
   fields: {},
@@ -17,7 +17,7 @@ const mainSchema = type({
 
 describe('schemaResolver with ArkType', () => {
   it('returns values and empty errors for valid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = { name: 'Alice', age: 30, active: true, bio: 'Hello' }
 
     const result = await resolver(values, undefined, defaultOptions)
@@ -27,9 +27,10 @@ describe('schemaResolver with ArkType', () => {
   })
 
   it('returns errors for invalid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 42, age: 'not a number', active: true },
       undefined,
       defaultOptions
@@ -41,9 +42,10 @@ describe('schemaResolver with ArkType', () => {
   })
 
   it('returns multiple validation errors', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 123, age: 'bad', active: 'not boolean' },
       undefined,
       defaultOptions
@@ -61,9 +63,10 @@ describe('schemaResolver with ArkType', () => {
         email: 'string',
       },
     })
-    const resolver = schemaResolver(nestedSchema)
+    const resolver = standardSchemaResolver(nestedSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { user: { email: 42 } },
       undefined,
       defaultOptions
@@ -74,7 +77,7 @@ describe('schemaResolver with ArkType', () => {
   })
 
   it('allows missing optional fields', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = { name: 'Bob', age: 25, active: false }
 
     const result = await resolver(values, undefined, defaultOptions)
@@ -84,9 +87,10 @@ describe('schemaResolver with ArkType', () => {
   })
 
   it('returns an error when a required field is missing', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: undefined, age: 25, active: true },
       undefined,
       defaultOptions

@@ -1,6 +1,6 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import * as v from 'valibot'
 import { describe, expect, it } from 'vitest'
-import { schemaResolver } from './standard-schema-resolver'
 
 const defaultOptions = {
   fields: {},
@@ -18,11 +18,11 @@ const mainSchema = v.object({
 
 describe('schemaResolver with Valibot', () => {
   it('returns values and empty errors for valid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = {
       name: 'Alice',
       age: 30,
-      role: 'admin',
+      role: 'admin' as const,
       bio: 'Hello',
       note: null,
     }
@@ -34,9 +34,10 @@ describe('schemaResolver with Valibot', () => {
   })
 
   it('returns errors for invalid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 42, age: 'not a number', role: 'admin', note: null },
       undefined,
       defaultOptions
@@ -48,9 +49,10 @@ describe('schemaResolver with Valibot', () => {
   })
 
   it('returns multiple validation errors', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 42, age: 'bad', role: 'unknown', note: 123 },
       undefined,
       defaultOptions
@@ -72,9 +74,10 @@ describe('schemaResolver with Valibot', () => {
         }),
       }),
     })
-    const resolver = schemaResolver(nestedSchema)
+    const resolver = standardSchemaResolver(nestedSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { user: { email: 'not-an-email', profile: { displayName: 42 } } },
       undefined,
       defaultOptions
@@ -85,8 +88,13 @@ describe('schemaResolver with Valibot', () => {
   })
 
   it('allows missing optional fields', async () => {
-    const resolver = schemaResolver(mainSchema)
-    const values = { name: 'Alice', age: 30, role: 'user', note: null }
+    const resolver = standardSchemaResolver(mainSchema)
+    const values = {
+      name: 'Alice',
+      age: 30,
+      role: 'user' as const,
+      note: null,
+    }
 
     const result = await resolver(values, undefined, defaultOptions)
 
@@ -95,8 +103,13 @@ describe('schemaResolver with Valibot', () => {
   })
 
   it('allows null for nullable fields', async () => {
-    const resolver = schemaResolver(mainSchema)
-    const values = { name: 'Alice', age: 30, role: 'admin', note: null }
+    const resolver = standardSchemaResolver(mainSchema)
+    const values = {
+      name: 'Alice',
+      age: 30,
+      role: 'admin' as const,
+      note: null,
+    }
 
     const result = await resolver(values, undefined, defaultOptions)
 
@@ -105,9 +118,10 @@ describe('schemaResolver with Valibot', () => {
   })
 
   it('rejects invalid picklist values', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: 'Alice', age: 30, role: 'superadmin', note: null },
       undefined,
       defaultOptions
@@ -116,13 +130,13 @@ describe('schemaResolver with Valibot', () => {
     expect(result.values).toEqual({})
     expect(result.errors.role).toBeDefined()
     expect(result.errors.role).toHaveProperty('message')
-    expect(result.errors.role).toHaveProperty('type', 'validation')
   })
 
   it('returns an error when a required field is missing', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { name: undefined, age: 25, role: 'user', note: null },
       undefined,
       defaultOptions
@@ -142,9 +156,10 @@ describe('schemaResolver with Valibot', () => {
         }),
       }),
     })
-    const resolver = schemaResolver(deepSchema)
+    const resolver = standardSchemaResolver(deepSchema)
 
     const result = await resolver(
+      // @ts-expect-error intentionally passing invalid data
       { level1: { level2: { level3: { value: 'not a number' } } } },
       undefined,
       defaultOptions
@@ -158,7 +173,7 @@ describe('schemaResolver with Valibot', () => {
     const nullishSchema = v.object({
       tag: v.nullish(v.string()),
     })
-    const resolver = schemaResolver(nullishSchema)
+    const resolver = standardSchemaResolver(nullishSchema)
 
     const withUndefined = await resolver({}, undefined, defaultOptions)
     expect(withUndefined.errors).toEqual({})

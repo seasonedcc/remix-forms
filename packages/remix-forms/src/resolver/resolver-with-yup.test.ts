@@ -1,6 +1,6 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { describe, expect, it } from 'vitest'
 import * as yup from 'yup'
-import { schemaResolver } from './standard-schema-resolver'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -17,11 +17,11 @@ const options = {
 
 describe('schemaResolver with Yup', () => {
   it('returns values and empty errors for valid data', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
     const values = {
       name: 'Alice',
       age: 30,
-      role: 'admin',
+      role: 'admin' as const,
       bio: 'Hello',
       note: 'A note',
     }
@@ -33,11 +33,11 @@ describe('schemaResolver with Yup', () => {
   })
 
   it('returns errors for invalid data', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: '', age: 'bad', role: 'admin', note: 'hi' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { name: '', age: 'bad', role: 'admin', note: 'hi' },
       undefined,
       options
     )
@@ -47,20 +47,20 @@ describe('schemaResolver with Yup', () => {
   })
 
   it('returns multiple validation errors', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { role: 'admin', note: 'hi' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { role: 'admin', note: 'hi' },
       undefined,
       options
     )
 
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
     expect(result.errors.age).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
     expect(result.values).toEqual({})
   })
@@ -73,7 +73,7 @@ describe('schemaResolver with Yup', () => {
         })
         .required(),
     })
-    const resolver = schemaResolver(nestedSchema)
+    const resolver = standardSchemaResolver(nestedSchema)
 
     const result = await resolver(
       { user: { email: 'bad' } },
@@ -85,15 +85,19 @@ describe('schemaResolver with Yup', () => {
       expect.objectContaining({
         email: expect.objectContaining({
           message: expect.any(String),
-          type: 'validation',
         }),
       })
     )
   })
 
   it('accepts missing optional fields', async () => {
-    const resolver = schemaResolver(schema)
-    const values = { name: 'Alice', age: 30, role: 'admin', note: 'hi' }
+    const resolver = standardSchemaResolver(schema)
+    const values = {
+      name: 'Alice',
+      age: 30,
+      role: 'admin' as const,
+      note: 'hi',
+    }
 
     const result = await resolver(values, undefined, options)
 
@@ -102,8 +106,13 @@ describe('schemaResolver with Yup', () => {
   })
 
   it('accepts null for nullable fields', async () => {
-    const resolver = schemaResolver(schema)
-    const values = { name: 'Alice', age: 30, role: 'admin', note: null }
+    const resolver = standardSchemaResolver(schema)
+    const values = {
+      name: 'Alice',
+      age: 30,
+      role: 'admin' as const,
+      note: null,
+    }
 
     const result = await resolver(values, undefined, options)
 
@@ -112,11 +121,11 @@ describe('schemaResolver with Yup', () => {
   })
 
   it('rejects invalid enum values', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: 'Alice', age: 30, role: 'superadmin', note: 'hi' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { name: 'Alice', age: 30, role: 'superadmin', note: 'hi' },
       undefined,
       options
     )
@@ -124,23 +133,22 @@ describe('schemaResolver with Yup', () => {
     expect(result.errors.role).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        type: 'validation',
       })
     )
   })
 
   it('reports required field missing', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { age: 30, role: 'admin', note: 'hi' } as any,
+      // @ts-expect-error intentionally passing invalid data
+      { age: 30, role: 'admin', note: 'hi' },
       undefined,
       options
     )
 
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
   })
 
@@ -148,14 +156,13 @@ describe('schemaResolver with Yup', () => {
     const customSchema = yup.object({
       email: yup.string().email('Custom yup error').required(),
     })
-    const resolver = schemaResolver(customSchema)
+    const resolver = standardSchemaResolver(customSchema)
 
     const result = await resolver({ email: 'bad' }, undefined, options)
 
     expect(result.errors.email).toEqual(
       expect.objectContaining({
         message: 'Custom yup error',
-        type: 'validation',
       })
     )
   })
@@ -176,7 +183,7 @@ describe('schemaResolver with Yup', () => {
         })
         .required(),
     })
-    const resolver = schemaResolver(deepSchema)
+    const resolver = standardSchemaResolver(deepSchema)
 
     const result = await resolver(
       { user: { profile: { contact: { email: 'bad' } } } },
@@ -190,7 +197,6 @@ describe('schemaResolver with Yup', () => {
           contact: expect.objectContaining({
             email: expect.objectContaining({
               message: expect.any(String),
-              type: 'validation',
             }),
           }),
         }),
@@ -209,28 +215,26 @@ describe('schemaResolver with Yup', () => {
         )
         .required(),
     })
-    const resolver = schemaResolver(mixedSchema)
+    const resolver = standardSchemaResolver(mixedSchema)
 
-    // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-    const result = await resolver({ value: true } as any, undefined, options)
+    const result = await resolver({ value: true }, undefined, options)
 
     expect(result.errors.value).toEqual(
       expect.objectContaining({
         message: 'Must be string or number',
-        type: 'validation',
       })
     )
   })
 
   it('handles empty object with required fields', async () => {
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
-    // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-    const result = await resolver({} as any, undefined, options)
+    // @ts-expect-error intentionally passing invalid data
+    const result = await resolver({}, undefined, options)
 
     expect(result.values).toEqual({})
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
   })
 })

@@ -1,7 +1,6 @@
 export { SchemaForm } from './schema-form'
 export { useField } from './create-field'
 export { formAction, performMutation } from './mutations'
-export { schemaResolver } from './resolver'
 
 export type {
   SchemaFormProps,
@@ -11,4 +10,3 @@ export type {
 } from './schema-form'
 
 export type { FormActionProps, MutationResult } from './mutations'
-export type { Resolver } from './resolver'

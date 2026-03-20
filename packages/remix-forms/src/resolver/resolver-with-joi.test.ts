@@ -1,6 +1,6 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import Joi from 'joi'
 import { describe, expect, it } from 'vitest'
-import { schemaResolver } from './standard-schema-resolver'
 
 const defaultOptions = {
   fields: {},
@@ -18,7 +18,7 @@ const mainSchema = Joi.object({
 
 describe('schemaResolver with Joi', () => {
   it('returns values and empty errors for valid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = {
       name: 'Alice',
       age: 30,
@@ -34,11 +34,10 @@ describe('schemaResolver with Joi', () => {
   })
 
   it('returns errors for invalid data', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: 123, age: 'not a number', role: 'admin', note: null } as any,
+      { name: 123, age: 'not a number', role: 'admin', note: null },
       undefined,
       defaultOptions
     )
@@ -47,7 +46,6 @@ describe('schemaResolver with Joi', () => {
     expect(result.errors.name).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        type: 'validation',
       })
     )
   })
@@ -57,14 +55,9 @@ describe('schemaResolver with Joi', () => {
       name: Joi.string().required(),
       age: Joi.number().required(),
     })
-    const resolver = schemaResolver(schema)
+    const resolver = standardSchemaResolver(schema)
 
-    const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { name: 42 } as any,
-      undefined,
-      defaultOptions
-    )
+    const result = await resolver({ name: 42 }, undefined, defaultOptions)
 
     expect(result.values).toEqual({})
     expect(Object.keys(result.errors).length).toBeGreaterThanOrEqual(1)
@@ -76,7 +69,7 @@ describe('schemaResolver with Joi', () => {
         email: Joi.string().email().required(),
       }).required(),
     })
-    const resolver = schemaResolver(nestedSchema)
+    const resolver = standardSchemaResolver(nestedSchema)
 
     const result = await resolver(
       { user: { email: 'not-an-email' } },
@@ -89,7 +82,7 @@ describe('schemaResolver with Joi', () => {
   })
 
   it('allows missing optional fields', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = { name: 'Alice', age: 30, role: 'user', note: null }
 
     const result = await resolver(values, undefined, defaultOptions)
@@ -99,7 +92,7 @@ describe('schemaResolver with Joi', () => {
   })
 
   it('allows null for nullable fields', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
     const values = { name: 'Alice', age: 30, role: 'admin', note: null }
 
     const result = await resolver(values, undefined, defaultOptions)
@@ -109,7 +102,7 @@ describe('schemaResolver with Joi', () => {
   })
 
   it('rejects invalid enum values', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
       { name: 'Alice', age: 30, role: 'superadmin', note: null },
@@ -121,24 +114,22 @@ describe('schemaResolver with Joi', () => {
     expect(result.errors.role).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        type: 'validation',
       })
     )
   })
 
   it('returns an error when a required field is missing', async () => {
-    const resolver = schemaResolver(mainSchema)
+    const resolver = standardSchemaResolver(mainSchema)
 
     const result = await resolver(
-      // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-      { age: 30, role: 'admin', note: null } as any,
+      { age: 30, role: 'admin', note: null },
       undefined,
       defaultOptions
     )
 
     expect(result.values).toEqual({})
     expect(result.errors.name).toEqual(
-      expect.objectContaining({ type: 'validation' })
+      expect.objectContaining({ message: expect.any(String) })
     )
   })
 
@@ -148,16 +139,14 @@ describe('schemaResolver with Joi', () => {
         'any.required': 'Name is required!',
       }),
     })
-    const resolver = schemaResolver(customSchema)
+    const resolver = standardSchemaResolver(customSchema)
 
-    // biome-ignore lint/suspicious/noExplicitAny: intentionally passing invalid data to test validation
-    const result = await resolver({} as any, undefined, defaultOptions)
+    const result = await resolver({}, undefined, defaultOptions)
 
     expect(result.values).toEqual({})
     expect(result.errors.name).toEqual(
       expect.objectContaining({
         message: 'Name is required!',
-        type: 'validation',
       })
     )
   })
