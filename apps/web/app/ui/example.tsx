@@ -57,7 +57,11 @@ export default function Example({
         <div className="xl:flex-1">{children}</div>
       </div>
       {data ? (
-        <div id="action-data" className="flex flex-col space-y-4">
+        <div
+          id="action-data"
+          data-theme="dark"
+          className="flex flex-col space-y-4"
+        >
           <h4>
             This data was returned by our <em>action</em>. We got it through the{' '}
             <em>actionData</em> prop passed to our route component.
