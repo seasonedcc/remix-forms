@@ -37,12 +37,12 @@ function Nav({
           </div>
         </Collapsible.Trigger>
         <Collapsible.Content asChild>
-          <div className="block rounded bg-primary p-2 md:hidden">
-            <ul className="menu text-primary-content">{children}</ul>
+          <div className="block rounded bg-base-300 p-2 md:hidden">
+            <ul className="flex flex-col gap-2">{children}</ul>
           </div>
         </Collapsible.Content>
-        <div className="hidden min-h-full w-56 bg-primary p-2 md:block">
-          <ul className="menu text-primary-content">{children}</ul>
+        <div className="hidden min-h-full w-56 bg-base-300 p-2 md:block">
+          <ul className="flex flex-col gap-2">{children}</ul>
         </div>
       </nav>
     </Collapsible.Root>

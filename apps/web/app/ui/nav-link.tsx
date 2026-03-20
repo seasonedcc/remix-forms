@@ -7,10 +7,8 @@ export default function NavLink({ className, ...props }: NavLinkProps) {
     <RRNavLink
       className={({ isActive }) =>
         cx(
-          isActive
-            ? 'text-base-content'
-            : 'text-base-content/60 hover:text-base-content',
-          'block rounded-md px-3 py-2 font-medium text-base',
+          'btn btn-sm w-full justify-start',
+          isActive ? 'btn-primary' : 'btn-ghost',
           typeof className === 'function'
             ? className({ isActive, isPending: false, isTransitioning: false })
             : className
