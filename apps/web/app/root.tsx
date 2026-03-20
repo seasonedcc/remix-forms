@@ -5,9 +5,10 @@ import { config } from 'zod'
 import en from 'zod/v4/locales/en.js'
 import type { Route } from './+types/root'
 import favicon from './favicon.png'
-import seasonedIconDark from './seasoned-icon-dark.png'
+import seasonedIconDark from './seasoned-icon-dark.webp'
+import seasonedIconLight from './seasoned-icon-light.webp'
 import './tailwind.css'
-import ExternalLink from './ui/external-link'
+import { ColorSchemeImg } from './ui/color-scheme-img'
 import { GlobalLoading } from './ui/global-loading'
 import TopBar from './ui/top-bar'
 
@@ -40,13 +41,15 @@ export default function App({ matches }: Route.ComponentProps) {
           <Outlet />
         </main>
         <footer className="flex justify-center bg-base-200 p-4">
-          <ExternalLink
+          <a
             href="https://seasoned.cc"
-            className="flex items-center gap-4 no-underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4"
           >
-            <img
-              loading="lazy"
-              src={seasonedIconDark}
+            <ColorSchemeImg
+              lightSrc={seasonedIconLight}
+              darkSrc={seasonedIconDark}
               alt="Seasoned"
               title="Seasoned"
               className="h-5"
@@ -54,7 +57,7 @@ export default function App({ matches }: Route.ComponentProps) {
               width={14}
             />
             <div>Made by Seasoned</div>
-          </ExternalLink>
+          </a>
         </footer>
         <ScrollRestoration />
         <Scripts />
