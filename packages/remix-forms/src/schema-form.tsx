@@ -1,7 +1,9 @@
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { coerceToForm } from 'coerce-form-data'
 import * as React from 'react'
 import type {
   DeepPartial,
+  DefaultValues,
   FieldError,
   Path,
   UseFormReturn,
@@ -18,7 +20,6 @@ import {
 } from 'react-router'
 import { schemaFields } from 'schema-info'
 import type { SchemaInfo } from 'schema-info'
-import type { TypeOf, z } from 'zod'
 import { mapChildren, reduceElements } from './children-traversal'
 import type {
   ComponentMappings,
@@ -31,14 +32,12 @@ import { defaultRenderField } from './default-render-field'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
 import type {
-  AnyZodObject,
   ComponentOrTagName,
   FormSchema,
+  Infer,
   KeysOfStrings,
-  ObjectFromSchema,
 } from './prelude'
 import { browser, mapObject } from './prelude'
-import { zodResolver } from './resolver'
 
 type Field<SchemaType> = {
   shape: SchemaInfo
@@ -77,7 +76,7 @@ type Field<SchemaType> = {
  * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
  * ```
  */
-type RenderFieldProps<Schema extends AnyZodObject> = Field<z.infer<Schema>> & {
+type RenderFieldProps<Schema extends FormSchema> = Field<Infer<Schema>> & {
   Field: FieldComponent<Schema>
 }
 
@@ -97,13 +96,13 @@ type RenderFieldProps<Schema extends AnyZodObject> = Field<z.infer<Schema>> & {
  * const renderField = ({ name }) => <input name={String(name)} />
  * ```
  */
-type RenderField<Schema extends AnyZodObject> = (
+type RenderField<Schema extends FormSchema> = (
   props: RenderFieldProps<Schema>
 ) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-type Children<Schema extends AnyZodObject> = (
+type Children<Schema extends FormSchema> = (
   helpers: {
     Field: FieldComponent<Schema>
     Errors: ComponentOrTagName<'div'>
@@ -111,12 +110,12 @@ type Children<Schema extends AnyZodObject> = (
     Button: ComponentOrTagName<'button'>
     submit: () => void
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  } & UseFormReturn<z.infer<Schema>, any>
+  } & UseFormReturn<Infer<Schema>, any>
 ) => React.ReactNode
 
-type OnNavigation<Schema extends AnyZodObject> = (
+type OnNavigation<Schema extends FormSchema> = (
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  helpers: UseFormReturn<z.infer<Schema>, any>
+  helpers: UseFormReturn<Infer<Schema>, any>
 ) => void
 
 /**
@@ -145,29 +144,29 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
     ValidationMode,
     'onBlur' | 'onChange' | 'onSubmit'
   >
-  renderField?: RenderField<ObjectFromSchema<Schema>>
+  renderField?: RenderField<Schema>
   fieldsComponent?: ComponentOrTagName<'div'>
   globalErrorsComponent?: ComponentOrTagName<'div'>
   buttonComponent?: ComponentOrTagName<'button'>
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
-  errors?: FormErrors<z.infer<Schema>>
-  values?: FormValues<z.infer<Schema>>
-  labels?: Partial<Record<keyof z.infer<Schema>, string>>
-  placeholders?: Partial<Record<keyof z.infer<Schema>, string>>
-  options?: Options<z.infer<Schema>>
+  errors?: FormErrors<Infer<Schema>>
+  values?: FormValues<Infer<Schema>>
+  labels?: Partial<Record<keyof Infer<Schema>, string>>
+  placeholders?: Partial<Record<keyof Infer<Schema>, string>>
+  options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
-  hiddenFields?: Array<keyof z.infer<Schema>>
+  hiddenFields?: Array<keyof Infer<Schema>>
   inputTypes?: Partial<
-    Record<keyof z.infer<Schema>, React.HTMLInputTypeAttribute>
+    Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
   >
-  multiline?: Array<keyof z.infer<Schema>>
-  radio?: Array<KeysOfStrings<z.infer<ObjectFromSchema<Schema>>>>
-  autoFocus?: keyof z.infer<Schema>
+  multiline?: Array<keyof Infer<Schema>>
+  radio?: Array<KeysOfStrings<Infer<Schema>>>
+  autoFocus?: keyof Infer<Schema>
   beforeChildren?: React.ReactNode
-  onNavigation?: OnNavigation<ObjectFromSchema<Schema>>
-  children?: Children<ObjectFromSchema<Schema>>
+  onNavigation?: OnNavigation<Schema>
+  children?: Children<Schema>
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
 
@@ -207,7 +206,7 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param props.buttonLabel - Text shown in the submit button
  * @param props.pendingButtonLabel - Text shown while submitting
  * @param props.method - HTTP method used to submit the form
- * @param props.schema - Zod schema describing the form
+ * @param props.schema - Schema describing the form
  * @param props.beforeChildren - Elements rendered before generated fields
  * @param props.onNavigation - Callback when navigation state changes
  * @param props.children - Custom content instead of the default layout
@@ -282,7 +281,7 @@ function SchemaForm<Schema extends FormSchema>({
   flushSync,
   ...props
 }: SchemaFormProps<Schema>) {
-  type SchemaType = z.infer<Schema>
+  type SchemaType = Infer<Schema>
   const Component = fetcher?.Form ?? component
   const navigationSubmit = useSubmit()
   const submit = fetcher?.submit ?? navigationSubmit
@@ -314,10 +313,10 @@ function SchemaForm<Schema extends FormSchema>({
   }) as DeepPartial<SchemaType>
 
   const form = useForm<SchemaType>({
-    resolver: zodResolver(schema),
+    resolver: standardSchemaResolver(schema),
     mode,
     reValidateMode,
-    defaultValues,
+    defaultValues: defaultValues as DefaultValues<SchemaType>,
   })
 
   const { formState, reset } = form
@@ -349,7 +348,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   const Field = React.useMemo(
     () =>
-      createField<ObjectFromSchema<Schema>>({
+      createField<Schema>({
         register: form.register,
         fieldComponent,
         labelComponent,
@@ -591,7 +590,7 @@ function SchemaForm<Schema extends FormSchema>({
 
   React.useEffect(() => {
     Object.keys(errors).forEach((key) => {
-      form.setError(key as Path<TypeOf<Schema>>, {
+      form.setError(key as Path<Infer<Schema>>, {
         type: 'custom',
         message: (errors[key] ?? []).join(', '),
       })

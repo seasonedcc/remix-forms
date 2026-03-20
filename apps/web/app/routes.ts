@@ -5,7 +5,6 @@ import {
   route,
 } from '@react-router/dev/routes'
 import { kebabCase } from 'lodash-es'
-import { times } from './helpers'
 
 export const exampleRouteGroups = {
   Actions: [
@@ -73,8 +72,6 @@ export const exampleRoutesToPrerender = Object.entries(exampleRouteGroups)
   // on the search params. Thus, it can't be pre-rendered
   .filter((path) => !path.endsWith('async-validation'))
 
-export const confRoutes = times(9, (i) => `/conf/${String(i).padStart(2, '0')}`)
-
 export default [
   index('./routes/home.tsx'),
   route('get-started', './routes/get-started.tsx'),
@@ -93,9 +90,4 @@ export default [
       route(`/test-examples/${path}`, `./routes/tests/${path}.tsx`)
     ),
   ]),
-  layout('./routes/conf/layout.tsx', [
-    route('conf', './routes/conf/index.tsx'),
-    ...confRoutes.map((path) => route(path, `./routes${path}.tsx`)),
-  ]),
-  route('conf/success/:referrer', './routes/conf/success.tsx'),
 ] satisfies RouteConfig

@@ -1,14 +1,7 @@
 import type { Config } from '@react-router/dev/config'
-import { confRoutes, exampleRoutesToPrerender } from './app/routes'
+import { exampleRoutesToPrerender } from './app/routes'
 
 export default {
   ssr: true,
-  prerender: [
-    '/',
-    '/get-started',
-    '/success',
-    ...exampleRoutesToPrerender,
-    '/conf',
-    ...confRoutes,
-  ],
+  prerender: ['/', '/get-started', '/success', ...exampleRoutesToPrerender],
 } satisfies Config

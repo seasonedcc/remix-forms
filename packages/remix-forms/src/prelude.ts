@@ -1,44 +1,9 @@
-import type { ZodObject, z } from 'zod'
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 
-/**
- * Type alias for ZodObject with any shape.
- * Used throughout the codebase as a generic constraint when we need to accept
- * any Zod object schema regardless of its specific shape.
- */
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type AnyZodObject = ZodObject<any>
+// biome-ignore lint/suspicious/noExplicitAny: react-hook-form's FieldValues requires Record<string, any>
+type FormSchema = StandardSchemaV1<Record<string, any>>
 
-/**
- * Zod schema accepted by remix-forms components and utilities.
- *
- * This type covers plain objects as well as Zod effects so you can pass
- * schemas created with refinements or preprocessors.
- * It is mainly used as a generic constraint for {@link SchemaForm} and the
- * mutation helpers.
- *
- * @example
- * ```ts
- * const schema = z.object({ name: z.string() })
- * type MySchema = FormSchema<typeof schema>
- * ```
- *
- * @example
- * ```ts
- * const schema = z.object({ age: z.number() }).transform((d) => ({ ...d, ok: true }))
- * type MySchema = FormSchema<typeof schema>
- * ```
- */
-// biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-type FormSchema = z.ZodPipe<any> | z.ZodTransform<any> | AnyZodObject
-
-type ObjectFromSchema<T> = T extends AnyZodObject
-  ? T
-  : // biome-ignore lint/suspicious/noExplicitAny: Generic constraint requires any for Zod type flexibility
-    T extends z.ZodPipe<infer A, any>
-    ? ObjectFromSchema<A>
-    : T extends z.ZodTransform<infer A>
-      ? ObjectFromSchema<A>
-      : never
+type Infer<T extends StandardSchemaV1> = StandardSchemaV1.InferOutput<T>
 
 type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
   | React.ComponentType<JSX.IntrinsicElements[ElementType]>
@@ -63,10 +28,4 @@ function browser(): boolean {
 
 export { mapObject, browser }
 
-export type {
-  AnyZodObject,
-  FormSchema,
-  ObjectFromSchema,
-  ComponentOrTagName,
-  KeysOfStrings,
-}
+export type { FormSchema, Infer, ComponentOrTagName, KeysOfStrings }
