@@ -13,75 +13,42 @@ import type { FormSchema, Infer } from './prelude'
 
 type DataWithResponseInit<T> = ReturnType<typeof data<T>>
 
-type NestedErrors<SchemaType> = {
-  [Property in keyof SchemaType]: string[] | NestedErrors<SchemaType[Property]>
-}
-
 /**
- * Build a nested error object from a list of {@link InputError|InputErrors}.
+ * Build a flat error map from a list of {@link InputError|InputErrors}.
+ *
+ * Nested paths are joined with `'.'` so the returned keys align with
+ * React Hook Form's {@link https://react-hook-form.com/docs/useform/seterror | Path} notation.
  *
  * @param errors - Errors returned by the mutation
  * @param schema - Schema describing the expected values
- * @returns Nested map of error messages keyed by path
+ * @returns Flat map of dot-path keys to error message arrays
  *
  * @example
  * ```ts
- * const errors = [new InputError('Required', ['name'])]
+ * const errors = [new InputError('Required', ['user', 'name'])]
  * errorMessagesForSchema(errors, schema)
+ * // => { 'user.name': ['Required'] }
  * ```
  */
 function errorMessagesForSchema<T extends StandardSchemaV1>(
   errors: Error[],
   _schema: T
-): NestedErrors<Infer<T>> {
-  type SchemaType = Infer<T>
-  type ErrorObject = { path: string[]; messages: string[] }
-
+): FormErrors<Infer<T>> {
   const inputErrors = errors.filter(isInputError) as InputError[]
 
-  const nest = (
-    { path, messages }: ErrorObject,
-    root: Record<string, unknown>
-  ) => {
-    const [head, ...tail] = path
-    root[head] =
-      tail.length === 0
-        ? messages
-        : nest(
-            { path: tail, messages },
-            (root[head] as Record<string, unknown>) ?? {}
-          )
-    return root
+  const result: Record<string, string[]> = {}
+
+  for (const error of inputErrors) {
+    if (error.path.length === 0) continue
+    const key = error.path.join('.')
+    if (result[key]) {
+      result[key].push(error.message)
+    } else {
+      result[key] = [error.message]
+    }
   }
 
-  const compareStringArrays = (a: string[]) => (b: string[]) =>
-    JSON.stringify(a) === JSON.stringify(b)
-
-  const toErrorObject = (errors: InputError[]): ErrorObject[] =>
-    errors.map(({ path, message }) => ({
-      path,
-      messages: [message],
-    }))
-
-  const unifyPaths = (errors: InputError[]) =>
-    toErrorObject(errors).reduce((memo, error) => {
-      const comparePath = compareStringArrays(error.path)
-      const mergeErrorMessages = ({ path, messages }: ErrorObject) =>
-        comparePath(path)
-          ? { path, messages: [...messages, ...error.messages] }
-          : { path, messages }
-      const existingPath = memo.find(({ path }) => comparePath(path))
-
-      return existingPath ? memo.map(mergeErrorMessages) : [...memo, error]
-    }, [] as ErrorObject[])
-
-  const errorTree = unifyPaths(inputErrors).reduce((memo, schemaError) => {
-    const errorBranch = nest(schemaError, memo)
-
-    return { ...memo, ...errorBranch }
-  }, {}) as NestedErrors<SchemaType>
-
-  return errorTree
+  return result as FormErrors<Infer<T>>
 }
 
 type FormActionFailure<SchemaType> = {
@@ -92,8 +59,8 @@ type FormActionFailure<SchemaType> = {
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type FormValues<SchemaType> = Partial<Record<keyof SchemaType, any>>
 
-type FormErrors<SchemaType> = Partial<
-  Record<keyof SchemaType | '_global', string[]>
+type FormErrors<SchemaType = Record<string, unknown>> = Partial<
+  Record<(keyof SchemaType & string) | '_global' | (string & {}), string[]>
 >
 
 /**

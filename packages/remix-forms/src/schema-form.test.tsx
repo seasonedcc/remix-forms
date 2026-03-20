@@ -508,3 +508,41 @@ it('uses fieldsComponent to wrap auto-generated fields', () => {
 
   expect(html).toContain('data-fields="true"')
 })
+
+it('promotes dot-path errors to global errors', () => {
+  const schema = z.object({
+    user: z.object({ name: z.string() }),
+  })
+
+  const html = renderToStaticMarkup(
+    <SchemaForm
+      schema={schema}
+      errors={
+        { 'user.name': ['Required'] } as Parameters<
+          typeof SchemaForm<typeof schema>
+        >[0]['errors']
+      }
+    />
+  )
+
+  expect(html).toContain('role="alert"')
+  expect(html).toContain('Required')
+})
+
+it('promotes dot-path errors from action data to global errors', () => {
+  const schema = z.object({
+    user: z.object({ name: z.string(), age: z.number() }),
+  })
+  const mockUseActionData = vi.mocked(useActionData)
+
+  mockUseActionData.mockReturnValueOnce({
+    errors: { 'user.name': ['Required'], 'user.age': ['Invalid'] },
+    values: {},
+  })
+
+  const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+
+  expect(html).toContain('role="alert"')
+  expect(html).toContain('Required')
+  expect(html).toContain('Invalid')
+})

@@ -8,7 +8,22 @@ function makeRequest(body: URLSearchParams) {
 }
 
 describe('errorMessagesForSchema', () => {
-  it('aggregates messages by path', () => {
+  it('returns flat keys for single-segment paths', () => {
+    const schema = z.object({ name: z.string(), age: z.number() })
+    const errors = [
+      new InputError('Required', ['name']),
+      new InputError('Invalid', ['age']),
+    ]
+
+    const result = errorMessagesForSchema(errors, schema)
+
+    expect(result).toEqual({
+      name: ['Required'],
+      age: ['Invalid'],
+    })
+  })
+
+  it('aggregates messages by dot-path', () => {
     const schema = z.object({
       user: z.object({ name: z.string(), age: z.number() }),
     })
@@ -22,8 +37,38 @@ describe('errorMessagesForSchema', () => {
     const result = errorMessagesForSchema(errors, schema)
 
     expect(result).toEqual({
-      user: { name: ['Required', 'Too short'], age: ['Invalid'] },
+      'user.name': ['Required', 'Too short'],
+      'user.age': ['Invalid'],
     })
+  })
+
+  it('joins array index paths with dots', () => {
+    const schema = z.object({
+      files: z.array(z.object({ key: z.string() })),
+    })
+    const errors = [
+      new InputError('Required', ['files', '0', 'key']),
+      new InputError('Required', ['files', '1', 'key']),
+    ]
+
+    const result = errorMessagesForSchema(errors, schema)
+
+    expect(result).toEqual({
+      'files.0.key': ['Required'],
+      'files.1.key': ['Required'],
+    })
+  })
+
+  it('skips input errors with empty paths', () => {
+    const schema = z.object({ name: z.string() })
+    const errors = [
+      new InputError('Empty path', []),
+      new InputError('Required', ['name']),
+    ]
+
+    const result = errorMessagesForSchema(errors, schema)
+
+    expect(result).toEqual({ name: ['Required'] })
   })
 })
 
