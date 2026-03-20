@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
+import { Link } from 'react-router'
 import { metaTags } from '~/helpers'
-import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import CopyPageButton from '~/ui/copy-page-button'
 import ExternalLink from '~/ui/external-link'
@@ -143,8 +143,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   } = loaderData
 
   return (
-    <div className="relative m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 text-gray-200 sm:px-8 sm:py-16">
-      {/* Heading with Copy Page Button */}
+    <div className="relative m-auto flex max-w-2xl flex-col space-y-8 px-4 py-8 sm:px-8 sm:py-16">
       <div className="flex items-center justify-between gap-4">
         <Heading>Get Started</Heading>
         <CopyPageButton />
@@ -276,7 +275,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         , and a multitude of other open-source projects. Thank you!
       </p>
       <div className="pt-4 text-center">
-        <ButtonLink to={'/examples'}>Check out more examples</ButtonLink>
+        <Link to="/examples" className="btn btn-primary">
+          Check out more examples
+        </Link>
       </div>
     </div>
   )

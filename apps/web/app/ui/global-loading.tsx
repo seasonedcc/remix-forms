@@ -28,7 +28,7 @@ function GlobalLoading() {
       <div
         ref={ref}
         className={cx(
-          'h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-500 ease-in-out',
+          'h-full bg-primary transition-all duration-500 ease-in-out',
           match([navigation.state, animating])
             .with(['idle', false], () => 'w-0 opacity-0 transition-none')
             .with(['submitting', P._], () => 'w-5/12')

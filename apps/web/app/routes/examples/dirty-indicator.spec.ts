@@ -27,8 +27,7 @@ test('With JS enabled', async ({ example }) => {
   await newsletter.input.check()
 
   // Show fields that are dirty using a class
-  const dirtyClass =
-    'border-yellow-600 focus:border-yellow-600 focus:ring-yellow-600'
+  const dirtyClass = 'input-warning'
 
   expect(await email.input.getAttribute('class')).toContain(dirtyClass)
   expect(await firstName.input.getAttribute('class')).toContain(dirtyClass)

@@ -1,3 +1,3 @@
 export default function Error(props: JSX.IntrinsicElements['div']) {
-  return <div className="text-red-600 text-sm" {...props} />
+  return <div className="text-error text-sm" {...props} />
 }

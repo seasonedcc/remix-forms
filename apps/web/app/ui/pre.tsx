@@ -6,9 +6,10 @@ export default function Pre({
 }: JSX.IntrinsicElements['pre']) {
   return (
     <pre
+      data-theme="dark"
       {...props}
       className={cx(
-        'scrollbar-thin scrollbar-track-gray-600 scrollbar-thumb-gray-800 max-w-[calc(100vw-2rem)] overflow-auto rounded bg-black p-2 font-mono text-white text-xs sm:text-sm',
+        'max-w-[calc(100vw-2rem)] overflow-auto rounded bg-base-300 p-2 font-mono text-xs sm:text-sm',
         className
       )}
     />

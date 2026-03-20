@@ -46,20 +46,18 @@ export default () => {
                   <fieldset className="flex gap-2">
                     <input
                       type="text"
-                      className="block w-full rounded-md border-gray-300 text-gray-800
-                      shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      className="input input-bordered w-full"
                       placeholder="Name"
                       ref={nameRef}
                     />
                     <input
                       type="text"
-                      className="block w-full rounded-md border-gray-300 text-gray-800
-                      shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      className="input input-bordered w-full"
                       placeholder="E-mail"
                       ref={emailRef}
                     />
                     <button
-                      className="rounded-md bg-pink-500 px-4"
+                      className="btn btn-primary"
                       onClick={(event) => {
                         event.preventDefault()
 
@@ -84,12 +82,12 @@ export default () => {
                     <section className="-ml-1 flex flex-wrap pt-1">
                       {contacts.map((contact, index) => (
                         <span key={contact.email}>
-                          <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
-                            <span className="flex-1">
+                          <span className="badge badge-primary m-1 gap-1 py-3">
+                            <span>
                               {contact.name} ({contact.email})
                             </span>
                             <button
-                              className="ml-2 text-pink-700"
+                              className="ml-1"
                               onClick={() => {
                                 setValue(
                                   'contacts',
@@ -166,18 +164,18 @@ export default () => {
                     <fieldset className="flex gap-2">
                       <input
                         type="text"
-                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                        className="input input-bordered w-full"
                         placeholder="Name"
                         ref={nameRef}
                       />
                       <input
                         type="text"
-                        className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                        className="input input-bordered w-full"
                         placeholder="E-mail"
                         ref={emailRef}
                       />
                       <button
-                        className="rounded-md bg-pink-500 px-4"
+                        className="btn btn-primary"
                         onClick={(event) => {
                           event.preventDefault()
 
@@ -202,12 +200,12 @@ export default () => {
                       <section className="-ml-1 flex flex-wrap pt-1">
                         {contacts.map((contact, index) => (
                           <span key={contact.email}>
-                            <span className="m-1 flex items-center rounded-md bg-pink-500 px-2 py-1 text-white">
-                              <span className="flex-1">
+                            <span className="badge badge-primary m-1 gap-1 py-3">
+                              <span>
                                 {contact.name} ({contact.email})
                               </span>
                               <button
-                                className="ml-2 text-pink-700"
+                                className="ml-1"
                                 onClick={() => {
                                   setValue(
                                     'contacts',

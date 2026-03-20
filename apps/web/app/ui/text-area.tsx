@@ -1,12 +1,13 @@
 import * as React from 'react'
+import { cx } from '~/helpers'
 
 const TextArea = React.forwardRef<
   HTMLTextAreaElement,
   JSX.IntrinsicElements['textarea']
->((props, ref) => (
+>(({ className, ...props }, ref) => (
   <textarea
     ref={ref}
-    className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+    className={cx('textarea textarea-bordered w-full', className)}
     rows={5}
     {...props}
   />

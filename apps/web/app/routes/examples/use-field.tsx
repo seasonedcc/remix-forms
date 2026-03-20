@@ -27,10 +27,7 @@ const Input = React.forwardRef<
     <input
       ref={ref}
       type={type}
-      className={errors
-          ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
-          : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500',
-      }
+      className={errors ? 'input-error' : ''}
       {...props}
     />
   )
@@ -62,12 +59,7 @@ const Input = React.forwardRef<
     <input
       ref={ref}
       type={type}
-      className={cx(
-        'block w-full rounded-md text-gray-800 shadow-xs sm:text-sm',
-        errors
-          ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
-          : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500'
-      )}
+      className={cx('input input-bordered w-full', errors && 'input-error')}
       {...props}
     />
   )

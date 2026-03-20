@@ -44,11 +44,11 @@ export default function Example({
           <SubHeading>{description}</SubHeading>
         </div>
         {countLines && (
-          <div className="flex flex-col items-center justify-center space-y-2 rounded-md border-2 border-white p-4">
-            <div className="font-bold text-2xl text-white sm:text-5xl">
+          <div className="flex flex-col items-center justify-center space-y-2 rounded-md border-2 border-base-content p-4">
+            <div className="font-bold text-2xl text-base-content sm:text-5xl">
               {lineCount}
             </div>
-            <div className="text-gray-300">lines of code</div>
+            <div className="text-base-content/60">lines of code</div>
           </div>
         )}
       </div>
@@ -57,7 +57,11 @@ export default function Example({
         <div className="xl:flex-1">{children}</div>
       </div>
       {data ? (
-        <div id="action-data" className="flex flex-col space-y-4">
+        <div
+          id="action-data"
+          data-theme="dark"
+          className="flex flex-col space-y-4"
+        >
           <h4>
             This data was returned by our <em>action</em>. We got it through the{' '}
             <em>actionData</em> prop passed to our route component.

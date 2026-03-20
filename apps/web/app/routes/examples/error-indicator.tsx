@@ -30,11 +30,11 @@ export default () => (
         <Field key={name} {...props}>
           {({ Label, SmartInput, Errors }) => (
             <>
-              <Label className={errors ? 'text-red-600' : undefined} />
+              <Label className={errors ? 'text-error' : undefined} />
               <SmartInput
                 className={
                   errors
-                    ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
+                    ? 'input-error'
                     : undefined
                 }
               />
@@ -75,14 +75,8 @@ export default function Component() {
             <Field key={name} {...props}>
               {({ Label, SmartInput, Errors }) => (
                 <>
-                  <Label className={errors ? 'text-red-600' : undefined} />
-                  <SmartInput
-                    className={
-                      errors
-                        ? 'border-red-600 focus:border-red-600 focus:ring-red-600'
-                        : undefined
-                    }
-                  />
+                  <Label className={errors ? 'text-error' : undefined} />
+                  <SmartInput className={errors ? 'input-error' : undefined} />
                   <Errors />
                 </>
               )}

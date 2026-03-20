@@ -1,38 +1,29 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-@plugin "@tailwindcss/forms";
-@plugin "tailwind-scrollbar";
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #ec4899;
+  --color-primary-content: #ffffff;
+  --color-base-100: #ffffff;
+  --color-base-200: #f9f9fb;
+  --color-base-300: #e4e7ea;
+  --color-base-content: #343e49;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary: #ec4899;
+  --color-primary-content: #ffffff;
+  --color-base-100: #0e151d;
+  --color-base-200: #1a2230;
+  --color-base-300: #343e49;
+  --color-base-content: #e4e7ea;
+}
 
 @theme {
   --font-sans: "Inter", "ui-sans-serif", "system-ui", "sans-serif",
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-@layer base {
-  label[for] {
-    @apply cursor-pointer;
-  }
-
-  sub,
-  sup {
-    @apply font-[60%] leading-[0] relative align-baseline;
-  }
-
-  sup {
-    @apply top-0 align-super;
-  }
-
-  sub {
-    @apply bottom-0 align-sub;
-  }
-  body {
-    @apply text-base text-white;
-  }
-  body * {
-    @apply font-[inherit] text-current;
-  }
-  h1,
-  .h1 {
-    @apply text-2xl font-bold leading-7 sm:text-5xl sm:leading-none text-pink-500;
-  }
 }

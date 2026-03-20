@@ -20,7 +20,7 @@ test('With JS enabled', async ({ example }) => {
   await button.click()
 
   // Show fields that are invalid using class
-  const invalidClass = 'border-red-600 focus:border-red-600 focus:ring-red-600'
+  const invalidClass = 'input-error'
 
   expect(await email.input.getAttribute('class')).toContain(invalidClass)
 

@@ -8,10 +8,10 @@ import {
 } from '@heroicons/react/20/solid'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
+import { Link } from 'react-router'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
-import ButtonLink from '~/ui/button-link'
 import Code from '~/ui/code'
 import Feature from '~/ui/feature'
 import Heading from '~/ui/heading'
@@ -81,10 +81,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <div className="flex flex-col space-x-0 space-y-6 xl:flex-row xl:space-x-6 xl:space-y-0">
           <Code>{code}</Code>
           <div className="xl:flex-1">
-            <h3 className="pb-6 text-center text-gray-400 text-lg">
+            <h3 className="pb-6 text-center text-base-content/60 text-lg">
               This tiny code creates the form below 👇🏽
             </h3>
-            <h2 className="pb-6 text-center text-white text-xl md:text-3xl">
+            <h2 className="pb-6 text-center text-base-content text-xl md:text-3xl">
               E2E{' '}
               <span className="underline decoration-green-500">type-safe</span>,
               with client + server{' '}
@@ -106,7 +106,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   <Field name="howDidYouFindUs" />
                   <Errors />
                   <div className="flex items-center space-x-4">
-                    <h4 className="flex-1 text-center text-gray-500">
+                    <h4 className="flex-1 text-center text-base-content/60">
                       (Go ahead, try it with JS disabled as well 😉)
                     </h4>
                     <Button />
@@ -140,7 +140,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           </Feature>
         </dl>
         <div className="flex justify-center">
-          <ButtonLink to="/get-started">Get Started</ButtonLink>
+          <Link to="/get-started" className="btn btn-primary">
+            Get Started
+          </Link>
         </div>
       </div>
     </div>

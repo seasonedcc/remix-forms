@@ -6,13 +6,6 @@ export default function Label({
 }: JSX.IntrinsicElements['label']) {
   return (
     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
-    <label
-      className={cx(
-        'block font-medium',
-        className,
-        !className && 'text-gray-400'
-      )}
-      {...props}
-    />
+    <label className={cx('label', className)} {...props} />
   )
 }

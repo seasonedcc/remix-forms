@@ -50,7 +50,7 @@ export default function Component() {
                   <>
                     <Label />
                     <Input
-                      className="block w-full rounded-md border-gray-300 text-gray-800 shadow-xs focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
+                      className="input input-bordered w-full"
                       type="text"
                       name="oneTag"
                       ref={tagRef}
