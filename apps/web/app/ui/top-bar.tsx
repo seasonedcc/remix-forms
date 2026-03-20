@@ -1,5 +1,5 @@
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import * as Collapsible from '@radix-ui/react-collapsible'
+import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { cx } from '~/helpers'
@@ -49,9 +49,9 @@ export default function TopBar() {
             <Collapsible.Trigger asChild>
               <button className="btn btn-ghost btn-square">
                 {open ? (
-                  <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                  <X className="block h-6 w-6" aria-hidden="true" />
                 ) : (
-                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
                 )}
               </button>
             </Collapsible.Trigger>

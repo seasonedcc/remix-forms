@@ -1,5 +1,5 @@
-import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import * as Collapsible from '@radix-ui/react-collapsible'
+import { ChevronDown, X } from 'lucide-react'
 import { type ReactNode, useEffect, useState } from 'react'
 import { type NavLinkProps, useLocation } from 'react-router'
 import { cx } from '~/helpers'
@@ -26,12 +26,12 @@ function Nav({
           <div className="flex w-full px-4 md:hidden">
             {open ? (
               <button className="btn btn-ghost absolute top-1 right-1">
-                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                <X className="block h-6 w-6" aria-hidden="true" />
               </button>
             ) : (
               <button className="btn btn-outline mt-2 flex-1">
                 <span>{menuTitle}</span>
-                <ChevronDownIcon className="size-6" aria-hidden="true" />
+                <ChevronDown className="size-6" aria-hidden="true" />
               </button>
             )}
           </div>

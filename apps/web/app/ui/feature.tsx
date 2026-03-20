@@ -1,12 +1,7 @@
-import type { RefAttributes, SVGProps } from 'react'
+import type { LucideIcon } from 'lucide-react'
 
 type Props = {
-  icon: React.ComponentType<
-    Omit<SVGProps<SVGSVGElement>, 'ref'> & {
-      title?: string | undefined
-      titleId?: string | undefined
-    } & RefAttributes<SVGSVGElement>
-  >
+  icon: LucideIcon
   title: string
   children: React.ReactNode
 }

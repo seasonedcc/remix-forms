@@ -14,7 +14,6 @@
     "test:ci": "playwright test"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-collapsible": "^1.1.2",
     "@react-router/node": "7.13.1",
     "@react-router/serve": "7.13.1",
@@ -24,6 +23,7 @@
     "highlight.js": "^11.11.1",
     "isbot": "^5.1.20",
     "lodash-es": "4.17.21",
+    "lucide-react": "^0.577.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.64.0",

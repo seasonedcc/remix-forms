@@ -1,13 +1,13 @@
-import {
-  BeakerIcon,
-  ClipboardDocumentCheckIcon,
-  CloudIcon,
-  CursorArrowRaysIcon,
-  ScaleIcon,
-  ShieldCheckIcon,
-} from '@heroicons/react/20/solid'
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
+import {
+  ClipboardCheck,
+  Cloud,
+  FlaskConical,
+  MousePointerClick,
+  Scale,
+  ShieldCheck,
+} from 'lucide-react'
 import { Link } from 'react-router'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
@@ -129,25 +129,22 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           </p>
         </div>
         <dl className="auto-rows-min space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 md:space-y-0 xl:grid-cols-3">
-          <Feature icon={BeakerIcon} title="100% customizable UI">
+          <Feature icon={FlaskConical} title="100% customizable UI">
             Customize everything without losing our accessible defaults.
           </Feature>
-          <Feature icon={ScaleIcon} title="Single source of truth">
+          <Feature icon={Scale} title="Single source of truth">
             Write your schema once and derive everything else from it.
           </Feature>
-          <Feature icon={ShieldCheckIcon} title="Bulletproof DX">
+          <Feature icon={ShieldCheck} title="Bulletproof DX">
             End-to-end typed to your schema. Goodbye typos, hello autocomplete!
           </Feature>
-          <Feature icon={CloudIcon} title="Server-side wiring">
+          <Feature icon={Cloud} title="Server-side wiring">
             Perform secure server-side mutations with zero boilerplate.
           </Feature>
-          <Feature
-            icon={ClipboardDocumentCheckIcon}
-            title="Full-stack validation"
-          >
+          <Feature icon={ClipboardCheck} title="Full-stack validation">
             Validate everything both on the client and the server.
           </Feature>
-          <Feature icon={CursorArrowRaysIcon} title="Focus management">
+          <Feature icon={MousePointerClick} title="Focus management">
             Focus on the first field with error even for server-side failures.
           </Feature>
         </dl>
