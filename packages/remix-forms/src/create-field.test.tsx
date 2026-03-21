@@ -396,3 +396,93 @@ describe('component mappings', () => {
     expect(radioHtml).toContain('data-radio="true"')
   })
 })
+
+describe('element type comparison safety', () => {
+  it('does not inject error props into plain div elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" errors={['Oops']}>
+        {({ Errors }) => (
+          <>
+            <div className="wrapper">content</div>
+            <Errors />
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('role="alert"')
+    expect(html).not.toMatch(/class="wrapper"[^>]*role="alert"/)
+  })
+
+  it('does not inject label props into plain label elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo">
+        {({ Label, SmartInput }) => (
+          <>
+            <label htmlFor="other">Other</label>
+            <Label />
+            <SmartInput />
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('for="other"')
+    expect(html).toContain('id="label-for-foo"')
+    const otherLabel = html.match(/<label[^>]*for="other"[^>]*>/)
+    expect(otherLabel?.[0]).not.toContain('id="label-for-foo"')
+  })
+
+  it('does not inject input props into plain input elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo">
+        {({ Input }) => (
+          <>
+            <input type="text" data-custom="true" />
+            <Input />
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('data-custom="true"')
+    const customInput = html.match(/<input[^>]*data-custom="true"[^>]*/)
+    expect(customInput?.[0]).not.toContain('name="foo"')
+  })
+
+  it('does not inject select props into plain select elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" options={[{ name: 'A', value: 'a' }]}>
+        {({ Select }) => (
+          <>
+            <select data-custom="true">
+              <option>X</option>
+            </select>
+            <Select />
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('data-custom="true"')
+    const customSelect = html.match(/<select[^>]*data-custom="true"[^>]*/)
+    expect(customSelect?.[0]).not.toContain('name="foo"')
+  })
+
+  it('does not inject textarea props into plain textarea elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" multiline>
+        {({ Multiline }) => (
+          <>
+            <textarea data-custom="true" />
+            <Multiline />
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('data-custom="true"')
+    const customTextarea = html.match(/<textarea[^>]*data-custom="true"[^>]*/)
+    expect(customTextarea?.[0]).not.toContain('name="foo"')
+  })
+})
