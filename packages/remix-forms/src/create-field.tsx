@@ -185,6 +185,67 @@ export function useField() {
   return context
 }
 
+const DefaultField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultLabel = React.forwardRef<
+  HTMLLabelElement,
+  JSX.IntrinsicElements['label']
+  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
+>((props, ref) => <label {...props} ref={ref} />)
+
+const DefaultInput = React.forwardRef<
+  HTMLInputElement,
+  JSX.IntrinsicElements['input']
+>((props, ref) => <input {...props} ref={ref} />)
+
+const DefaultMultiline = React.forwardRef<
+  HTMLTextAreaElement,
+  JSX.IntrinsicElements['textarea']
+>((props, ref) => <textarea {...props} ref={ref} />)
+
+const DefaultSelect = React.forwardRef<
+  HTMLSelectElement,
+  JSX.IntrinsicElements['select']
+>((props, ref) => <select {...props} ref={ref} />)
+
+const DefaultCheckbox = React.forwardRef<
+  HTMLInputElement,
+  JSX.IntrinsicElements['input']
+>((props, ref) => <input {...props} ref={ref} />)
+
+const DefaultRadio = React.forwardRef<
+  HTMLInputElement,
+  JSX.IntrinsicElements['input']
+>((props, ref) => <input {...props} ref={ref} />)
+
+const DefaultRadioGroup = React.forwardRef<
+  HTMLFieldSetElement,
+  JSX.IntrinsicElements['fieldset']
+>((props, ref) => <fieldset {...props} ref={ref} />)
+
+const DefaultRadioWrapper = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultCheckboxWrapper = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultFieldErrors = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultFieldError = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
 const makeSelectOption = ({ name, value }: Option) => (
   <option key={String(value)} value={value}>
     {name}
@@ -197,13 +258,13 @@ const makeOptionComponents = (
 ) => (options ? options.map(fn) : undefined)
 
 function createSmartInput({
-  inputComponent: Input = 'input',
-  multilineComponent: Multiline = 'textarea',
-  selectComponent: Select = 'select',
-  checkboxComponent: Checkbox = 'input',
-  labelComponent: Label = 'label',
-  radioComponent: Radio = 'input',
-  radioWrapperComponent: RadioWrapper = 'div',
+  inputComponent: Input = DefaultInput,
+  multilineComponent: Multiline = DefaultMultiline,
+  selectComponent: Select = DefaultSelect,
+  checkboxComponent: Checkbox = DefaultCheckbox,
+  labelComponent: Label = DefaultLabel,
+  radioComponent: Radio = DefaultRadio,
+  radioWrapperComponent: RadioWrapper = DefaultRadioWrapper,
 }: ComponentMappings) {
   return ({
     fieldType,
@@ -286,18 +347,18 @@ function createSmartInput({
 
 function createField<Schema extends FormSchema>({
   register,
-  fieldComponent: Field = 'div',
-  labelComponent: Label = 'label',
-  inputComponent: Input = 'input',
-  multilineComponent: Multiline = 'textarea',
-  selectComponent: Select = 'select',
-  radioComponent: Radio = 'input',
-  checkboxComponent: Checkbox = 'input',
-  checkboxWrapperComponent: CheckboxWrapper = 'div',
-  radioGroupComponent: RadioGroup = 'fieldset',
-  radioWrapperComponent: RadioWrapper = 'div',
-  fieldErrorsComponent: Errors = 'div',
-  errorComponent: Error = 'div',
+  fieldComponent: Field = DefaultField,
+  labelComponent: Label = DefaultLabel,
+  inputComponent: Input = DefaultInput,
+  multilineComponent: Multiline = DefaultMultiline,
+  selectComponent: Select = DefaultSelect,
+  radioComponent: Radio = DefaultRadio,
+  checkboxComponent: Checkbox = DefaultCheckbox,
+  checkboxWrapperComponent: CheckboxWrapper = DefaultCheckboxWrapper,
+  radioGroupComponent: RadioGroup = DefaultRadioGroup,
+  radioWrapperComponent: RadioWrapper = DefaultRadioWrapper,
+  fieldErrorsComponent: Errors = DefaultFieldErrors,
+  errorComponent: Error = DefaultFieldError,
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
@@ -625,4 +686,4 @@ function createField<Schema extends FormSchema>({
 }
 
 export type { FieldType, FieldComponent, ComponentMappings, Option }
-export { createField }
+export { createField, DefaultFieldError }

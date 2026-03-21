@@ -27,7 +27,7 @@ import type {
   FieldType,
   Option,
 } from './create-field'
-import { createField } from './create-field'
+import { DefaultFieldError, createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
@@ -38,6 +38,21 @@ import type {
   KeysOfStrings,
 } from './prelude'
 import { browser, mapObject } from './prelude'
+
+const DefaultFieldsWrapper = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultGlobalErrors = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => <button {...props} ref={ref} />)
 
 type Field<SchemaType> = {
   shape: SchemaInfo
@@ -245,10 +260,10 @@ function SchemaForm<Schema extends FormSchema>({
   mode = 'onSubmit',
   reValidateMode = 'onChange',
   renderField = defaultRenderField,
-  fieldsComponent: FieldsComponent = 'div',
+  fieldsComponent: FieldsComponent = DefaultFieldsWrapper,
   fieldComponent,
-  globalErrorsComponent: Errors = 'div',
-  errorComponent: Error = 'div',
+  globalErrorsComponent: Errors = DefaultGlobalErrors,
+  errorComponent: Error = DefaultFieldError,
   fieldErrorsComponent,
   labelComponent,
   inputComponent,
@@ -259,7 +274,7 @@ function SchemaForm<Schema extends FormSchema>({
   checkboxWrapperComponent,
   radioGroupComponent,
   radioWrapperComponent,
-  buttonComponent: Button = 'button',
+  buttonComponent: Button = DefaultButton,
   buttonLabel: rawButtonLabel = 'OK',
   pendingButtonLabel,
   method = 'POST',

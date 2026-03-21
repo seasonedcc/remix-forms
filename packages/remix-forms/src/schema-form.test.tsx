@@ -546,3 +546,50 @@ it('promotes dot-path errors from action data to global errors', () => {
   expect(html).toContain('Required')
   expect(html).toContain('Invalid')
 })
+
+describe('element type comparison safety', () => {
+  it('does not inject error props into plain div elements in children', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} errors={{ _global: ['Oops'] }}>
+        {({ Field, Errors }) => (
+          <>
+            <div className="wrapper">
+              <Field name="name" />
+            </div>
+            <Errors />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('role="alert"')
+    expect(html).not.toMatch(/class="wrapper"[^>]*role="alert"/)
+  })
+
+  it('does not inject button props into plain button elements in children', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, Button }) => (
+          <>
+            <Field name="name" />
+            <button type="button" data-custom="true">
+              Cancel
+            </button>
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('data-custom="true"')
+    const customButton = html.match(
+      /<button[^>]*data-custom="true"[^>]*>[^<]*<\/button>/
+    )
+    expect(customButton?.[0]).toContain('Cancel')
+    expect(customButton?.[0]).not.toContain('OK')
+  })
+})
