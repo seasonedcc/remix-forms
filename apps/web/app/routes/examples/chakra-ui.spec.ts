@@ -19,7 +19,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectError(email, 'Invalid email address')
   await example.expectError(
     password,
-    'Too small: expected string to have >=8 characters',
+    'Too small: expected string to have >=8 characters'
   )
   await expect(email.input).toBeFocused()
 
@@ -33,7 +33,7 @@ test('With JS enabled', async ({ example }) => {
   await password.input.fill('short')
   await example.expectError(
     password,
-    'Too small: expected string to have >=8 characters',
+    'Too small: expected string to have >=8 characters'
   )
 
   // Make form valid
@@ -62,7 +62,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await example.expectError(email, 'Invalid email address')
   await example.expectErrors(
     password,
-    'Too small: expected string to have >=8 characters',
+    'Too small: expected string to have >=8 characters'
   )
   await example.expectAutoFocus(email)
   await example.expectNoAutoFocus(password)
@@ -81,7 +81,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await page.reload()
   await example.expectError(
     password,
-    'Too small: expected string to have >=8 characters',
+    'Too small: expected string to have >=8 characters'
   )
 
   // Make form valid and submit
