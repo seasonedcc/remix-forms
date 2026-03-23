@@ -182,6 +182,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   beforeChildren?: React.ReactNode
   onNavigation?: OnNavigation<Schema>
   children?: Children<Schema>
+  idPrefix?: string
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
 
@@ -236,6 +237,7 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param props.errors - Error messages keyed by field name
  * @param props.values - Initial values for fields
  * @param props.emptyOptionLabel - Label for the empty select option
+ * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
  * @param props.flushSync - Whether to flush React updates synchronously
  * @returns A form element ready to be used inside a React Router v7 route
  *
@@ -293,10 +295,13 @@ function SchemaForm<Schema extends FormSchema>({
   autoFocus: autoFocusProp,
   errors: errorsProp,
   values: valuesProp,
+  idPrefix: idPrefixProp,
   flushSync,
   ...props
 }: SchemaFormProps<Schema>) {
   type SchemaType = Infer<Schema>
+  const generatedId = React.useId()
+  const idPrefix = idPrefixProp ?? generatedId
   const Component = fetcher?.Form ?? component
   const navigationSubmit = useSubmit()
   const submit = fetcher?.submit ?? navigationSubmit
@@ -365,6 +370,7 @@ function SchemaForm<Schema extends FormSchema>({
     () =>
       createField<Schema>({
         register: form.register,
+        idPrefix,
         fieldComponent,
         labelComponent,
         inputComponent,
@@ -379,6 +385,7 @@ function SchemaForm<Schema extends FormSchema>({
         errorComponent: Error,
       }),
     [
+      idPrefix,
       fieldComponent,
       labelComponent,
       inputComponent,
