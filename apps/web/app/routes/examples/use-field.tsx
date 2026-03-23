@@ -34,7 +34,7 @@ const Input = React.forwardRef<
 })
 
 export default () => (
-  <SchemaForm schema={schema} inputComponent={Input} />
+  <SchemaForm schema={schema} components={{ input: Input }} />
 )`
 
 const schema = z.object({
@@ -67,6 +67,6 @@ const Input = React.forwardRef<
 
 export default () => (
   <Example title={title} description={description}>
-    <SchemaForm schema={schema} inputComponent={Input} />
+    <SchemaForm schema={schema} components={{ input: Input }} />
   </Example>
 )

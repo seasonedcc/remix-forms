@@ -19,10 +19,12 @@ const choiceSchema = z.object({ choice: z.string() })
 const ChoiceField = createField<typeof choiceSchema>({
   register,
   idPrefix: '',
-  radioComponent: React.forwardRef<
-    HTMLInputElement,
-    React.ComponentPropsWithoutRef<'input'>
-  >((props, ref) => <input ref={ref} {...props} />),
+  components: {
+    radio: React.forwardRef<
+      HTMLInputElement,
+      React.ComponentPropsWithoutRef<'input'>
+    >((props, ref) => <input ref={ref} {...props} />),
+  },
 })
 
 afterEach(() => {
@@ -122,7 +124,10 @@ describe('createField', () => {
 
   it('registers the field using setValueAs for coercion', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({ register, idPrefix: '' })
+    const NumField = createField<typeof schema>({
+      register,
+      idPrefix: '',
+    })
 
     renderToStaticMarkup(
       <NumField
@@ -141,7 +146,10 @@ describe('createField', () => {
 
   it('returns null from setValueAs when coercion fails', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({ register, idPrefix: '' })
+    const NumField = createField<typeof schema>({
+      register,
+      idPrefix: '',
+    })
 
     renderToStaticMarkup(
       <NumField
@@ -310,23 +318,25 @@ describe('component mappings', () => {
     const CustomField = createField<typeof schema>({
       register,
       idPrefix: '',
-      fieldComponent: (props: React.ComponentProps<'section'>) => (
-        <section data-field {...props} />
-      ),
-      labelComponent: (props: React.ComponentProps<'label'>) => (
-        // biome-ignore lint/a11y/noLabelWithoutControl: test component
-        <label data-label {...props} />
-      ),
-      inputComponent: React.forwardRef<
-        HTMLInputElement,
-        React.ComponentProps<'input'>
-      >((props, ref) => <input data-input ref={ref} {...props} />),
-      fieldErrorsComponent: (props: React.ComponentProps<'div'>) => (
-        <div data-errors {...props} />
-      ),
-      errorComponent: (props: React.ComponentProps<'span'>) => (
-        <span data-error {...props} />
-      ),
+      components: {
+        field: (props: React.ComponentProps<'section'>) => (
+          <section data-field {...props} />
+        ),
+        label: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-label {...props} />
+        ),
+        input: React.forwardRef<
+          HTMLInputElement,
+          React.ComponentProps<'input'>
+        >((props, ref) => <input data-input ref={ref} {...props} />),
+        fieldErrors: (props: React.ComponentProps<'div'>) => (
+          <div data-errors {...props} />
+        ),
+        error: (props: React.ComponentProps<'span'>) => (
+          <span data-error {...props} />
+        ),
+      },
     })
 
     const html = renderToStaticMarkup(
@@ -345,13 +355,15 @@ describe('component mappings', () => {
     const BoolField = createField<typeof agreeSchema>({
       register,
       idPrefix: '',
-      checkboxComponent: React.forwardRef<
-        HTMLInputElement,
-        React.ComponentProps<'input'>
-      >((props, ref) => <input data-checkbox ref={ref} {...props} />),
-      checkboxWrapperComponent: (props: React.ComponentProps<'div'>) => (
-        <div data-cbwrap {...props} />
-      ),
+      components: {
+        checkbox: React.forwardRef<
+          HTMLInputElement,
+          React.ComponentProps<'input'>
+        >((props, ref) => <input data-checkbox ref={ref} {...props} />),
+        checkboxWrapper: (props: React.ComponentProps<'div'>) => (
+          <div data-cbwrap {...props} />
+        ),
+      },
     })
 
     const boolHtml = renderToStaticMarkup(
@@ -363,10 +375,12 @@ describe('component mappings', () => {
     const MultiField = createField<typeof schema>({
       register,
       idPrefix: '',
-      multilineComponent: React.forwardRef<
-        HTMLTextAreaElement,
-        React.ComponentProps<'textarea'>
-      >((props, ref) => <textarea data-multi ref={ref} {...props} />),
+      components: {
+        multiline: React.forwardRef<
+          HTMLTextAreaElement,
+          React.ComponentProps<'textarea'>
+        >((props, ref) => <textarea data-multi ref={ref} {...props} />),
+      },
     })
     const multiHtml = renderToStaticMarkup(
       <MultiField name="foo" label="Foo" multiline />
@@ -376,16 +390,18 @@ describe('component mappings', () => {
     const RadioField = createField<typeof choiceSchema>({
       register,
       idPrefix: '',
-      radioGroupComponent: (props: React.ComponentProps<'fieldset'>) => (
-        <fieldset data-radio-group {...props} />
-      ),
-      radioWrapperComponent: (props: React.ComponentProps<'div'>) => (
-        <div data-radio-wrap {...props} />
-      ),
-      radioComponent: React.forwardRef<
-        HTMLInputElement,
-        React.ComponentProps<'input'>
-      >((props, ref) => <input data-radio ref={ref} {...props} />),
+      components: {
+        radioGroup: (props: React.ComponentProps<'fieldset'>) => (
+          <fieldset data-radio-group {...props} />
+        ),
+        radioWrapper: (props: React.ComponentProps<'div'>) => (
+          <div data-radio-wrap {...props} />
+        ),
+        radio: React.forwardRef<
+          HTMLInputElement,
+          React.ComponentProps<'input'>
+        >((props, ref) => <input data-radio ref={ref} {...props} />),
+      },
     })
 
     const radioHtml = renderToStaticMarkup(

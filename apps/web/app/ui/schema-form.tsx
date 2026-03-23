@@ -23,21 +23,24 @@ function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <BaseForm
       className="flex flex-col gap-6"
-      fieldsComponent={Fields}
-      fieldComponent={Field}
-      labelComponent={Label}
-      inputComponent={Input}
-      multilineComponent={TextArea}
-      selectComponent={Select}
-      radioComponent={Radio}
-      radioGroupComponent={RadioGroup}
-      radioWrapperComponent={InputWrapper}
-      checkboxWrapperComponent={InputWrapper}
-      checkboxComponent={Checkbox}
-      buttonComponent={SubmitButton}
-      globalErrorsComponent={Errors}
-      errorComponent={Error}
       {...props}
+      components={{
+        fields: Fields,
+        field: Field,
+        label: Label,
+        input: Input,
+        multiline: TextArea,
+        select: Select,
+        radio: Radio,
+        radioGroup: RadioGroup,
+        radioWrapper: InputWrapper,
+        checkboxWrapper: InputWrapper,
+        checkbox: Checkbox,
+        button: SubmitButton,
+        globalErrors: Errors,
+        error: Error,
+        ...props.components,
+      }}
     />
   )
 }

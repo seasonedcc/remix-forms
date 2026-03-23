@@ -21,38 +21,15 @@ import {
 import { schemaFields } from 'schema-info'
 import type { SchemaInfo } from 'schema-info'
 import { mapChildren, reduceElements } from './children-traversal'
-import type {
-  ComponentMappings,
-  FieldComponent,
-  FieldType,
-  Option,
-} from './create-field'
-import { DefaultFieldError, createField } from './create-field'
+import type { FieldComponent, FieldType, Option } from './create-field'
+import { createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
+import type { ComponentMap, ResolveComponents } from './defaults'
+import { defaultComponents } from './defaults'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
-import type {
-  ComponentOrTagName,
-  FormSchema,
-  Infer,
-  KeysOfStrings,
-} from './prelude'
+import type { FormSchema, Infer, KeysOfStrings } from './prelude'
 import { browser, mapObject } from './prelude'
-
-const DefaultFieldsWrapper = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultGlobalErrors = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultButton = React.forwardRef<
-  HTMLButtonElement,
-  JSX.IntrinsicElements['button']
->((props, ref) => <button {...props} ref={ref} />)
 
 /**
  * HTML input types that can be automatically inferred from a schema
@@ -106,8 +83,12 @@ type Field<SchemaType> = {
  * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
  * ```
  */
-type RenderFieldProps<Schema extends FormSchema> = Field<Infer<Schema>> & {
-  Field: FieldComponent<Schema>
+type RenderFieldProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
+  Components extends Partial<ComponentMap> = {},
+> = Field<Infer<Schema>> & {
+  Field: FieldComponent<Schema, Components>
 }
 
 /**
@@ -126,18 +107,24 @@ type RenderFieldProps<Schema extends FormSchema> = Field<Infer<Schema>> & {
  * const renderField = ({ name }) => <input name={String(name)} />
  * ```
  */
-type RenderField<Schema extends FormSchema> = (
-  props: RenderFieldProps<Schema>
-) => JSX.Element
+type RenderField<
+  Schema extends FormSchema,
+  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
+  Components extends Partial<ComponentMap> = {},
+> = (props: RenderFieldProps<Schema, Components>) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
-type Children<Schema extends FormSchema> = (
+type Children<
+  Schema extends FormSchema,
+  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
+  Components extends Partial<ComponentMap> = {},
+> = (
   helpers: {
-    Field: FieldComponent<Schema>
-    Errors: ComponentOrTagName<'div'>
-    Error: ComponentOrTagName<'div'>
-    Button: ComponentOrTagName<'button'>
+    Field: FieldComponent<Schema, Components>
+    Errors: ResolveComponents<Components>['globalErrors']
+    Error: ResolveComponents<Components>['error']
+    Button: ResolveComponents<Components>['button']
     submit: () => void
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } & UseFormReturn<Infer<Schema>, any>
@@ -165,7 +152,12 @@ type OnNavigation<Schema extends FormSchema> = (
  * <SchemaForm schema={schema} renderField={({ Field, ...f }) => <Field {...f} />} />
  * ```
  */
-type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
+type SchemaFormProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
+  Components extends Partial<ComponentMap> = {},
+> = {
+  components?: Components
   component?: typeof ReactRouterForm
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   fetcher?: FetcherWithComponents<any>
@@ -174,10 +166,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
     ValidationMode,
     'onBlur' | 'onChange' | 'onSubmit'
   >
-  renderField?: RenderField<Schema>
-  fieldsComponent?: ComponentOrTagName<'div'>
-  globalErrorsComponent?: ComponentOrTagName<'div'>
-  buttonComponent?: ComponentOrTagName<'button'>
+  renderField?: RenderField<Schema, Components>
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
@@ -197,7 +186,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   autoFocus?: keyof Infer<Schema>
   beforeChildren?: React.ReactNode
   onNavigation?: OnNavigation<Schema>
-  children?: Children<Schema>
+  children?: Children<Schema, Components>
   idPrefix?: string
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
@@ -238,21 +227,7 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
  * @param props.renderField - Custom field rendering function
- * @param props.fieldsComponent - Component used to wrap all auto-generated fields
- * @param props.fieldComponent - Component used for each field container
- * @param props.labelComponent - Component used for labels
- * @param props.inputComponent - Component used for standard inputs
- * @param props.multilineComponent - Component used for multiline inputs
- * @param props.selectComponent - Component used for select inputs
- * @param props.checkboxComponent - Component used for checkbox inputs
- * @param props.radioComponent - Component used for radio inputs
- * @param props.checkboxWrapperComponent - Wrapper around checkbox inputs
- * @param props.radioGroupComponent - Wrapper around radio options
- * @param props.radioWrapperComponent - Wrapper around individual radio inputs
- * @param props.globalErrorsComponent - Component for rendering global errors
- * @param props.fieldErrorsComponent - Component for rendering per-field errors
- * @param props.errorComponent - Component for rendering error messages
- * @param props.buttonComponent - Component used for the submit button
+ * @param props.components - Custom components to override defaults
  * @param props.buttonLabel - Text shown in the submit button
  * @param props.pendingButtonLabel - Text shown while submitting
  * @param props.method - HTTP method used to submit the form
@@ -291,27 +266,17 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * <SchemaForm schema={schema} fetcher={fetcher} />
  * ```
  */
-function SchemaForm<Schema extends FormSchema>({
+function SchemaForm<
+  Schema extends FormSchema,
+  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
+  Components extends Partial<ComponentMap> = {},
+>({
+  components: componentsProp,
   component = ReactRouterForm,
   fetcher,
   mode = 'onSubmit',
   reValidateMode = 'onChange',
   renderField = defaultRenderField,
-  fieldsComponent: FieldsComponent = DefaultFieldsWrapper,
-  fieldComponent,
-  globalErrorsComponent: Errors = DefaultGlobalErrors,
-  errorComponent: Error = DefaultFieldError,
-  fieldErrorsComponent,
-  labelComponent,
-  inputComponent,
-  multilineComponent,
-  selectComponent,
-  checkboxComponent,
-  radioComponent,
-  checkboxWrapperComponent,
-  radioGroupComponent,
-  radioWrapperComponent,
-  buttonComponent: Button = DefaultButton,
   buttonLabel: rawButtonLabel = 'OK',
   pendingButtonLabel,
   method = 'POST',
@@ -334,10 +299,21 @@ function SchemaForm<Schema extends FormSchema>({
   idPrefix: idPrefixProp,
   flushSync,
   ...props
-}: SchemaFormProps<Schema>) {
+}: SchemaFormProps<Schema, Components>) {
   type SchemaType = Infer<Schema>
   const generatedId = React.useId()
   const idPrefix = idPrefixProp ?? generatedId
+
+  const rc = { ...defaultComponents, ...componentsProp } as Record<
+    string,
+    // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
+    React.ComponentType<any>
+  >
+  const FieldsComponent = rc.fields
+  const Errors = rc.globalErrors
+  const Error = rc.error
+  const Button = rc.button
+
   const Component = fetcher?.Form ?? component
   const navigationSubmit = useSubmit()
   const submit = fetcher?.submit ?? navigationSubmit
@@ -404,38 +380,12 @@ function SchemaForm<Schema extends FormSchema>({
 
   const Field = React.useMemo(
     () =>
-      createField<Schema>({
+      createField<Schema, Components>({
         register: form.register,
         idPrefix,
-        fieldComponent,
-        labelComponent,
-        inputComponent,
-        multilineComponent,
-        selectComponent,
-        checkboxComponent,
-        radioComponent,
-        checkboxWrapperComponent,
-        radioGroupComponent,
-        radioWrapperComponent,
-        fieldErrorsComponent,
-        errorComponent: Error,
+        components: componentsProp,
       }),
-    [
-      idPrefix,
-      fieldComponent,
-      labelComponent,
-      inputComponent,
-      multilineComponent,
-      selectComponent,
-      checkboxComponent,
-      radioComponent,
-      checkboxWrapperComponent,
-      radioGroupComponent,
-      radioWrapperComponent,
-      fieldErrorsComponent,
-      Error,
-      form.register,
-    ]
+    [idPrefix, ...Object.values(componentsProp ?? {}), form.register]
   )
 
   const fieldErrors = React.useCallback(
@@ -450,7 +400,11 @@ function SchemaForm<Schema extends FormSchema>({
     Object.keys(fields).find((key) => fieldErrors(key)?.length)
 
   const makeField = (key: string) => {
-    const info = fields[key] ?? { type: null, optional: false, nullable: false }
+    const info = fields[key] ?? {
+      type: null,
+      optional: false,
+      nullable: false,
+    }
     const { optional, nullable, enumValues } = info
 
     const required = !(optional || nullable)
@@ -542,7 +496,8 @@ function SchemaForm<Schema extends FormSchema>({
     navigationState !== 'idle' ? undefined : globalErrors
 
   const customChildren = mapChildren(
-    childrenFn?.({
+    // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
+    (childrenFn as ((...args: any[]) => React.ReactNode) | undefined)?.({
       Field,
       Errors,
       Error,

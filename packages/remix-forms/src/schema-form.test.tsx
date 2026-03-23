@@ -415,7 +415,7 @@ it('uses globalErrorsComponent when provided', () => {
     <SchemaForm
       schema={schema}
       errors={{ _global: ['Oops'] }}
-      globalErrorsComponent={Errors}
+      components={{ globalErrors: Errors }}
     />
   )
 
@@ -430,7 +430,7 @@ it('renders the button using buttonComponent', () => {
   )
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} components={{ button: Button }} />
   )
 
   expect(html).toContain('data-btn="true"')
@@ -470,8 +470,7 @@ it('uses fieldErrorsComponent and errorComponent when provided', () => {
     <SchemaForm
       schema={schema}
       errors={{ name: ['Oops'] }}
-      fieldErrorsComponent={Errors}
-      errorComponent={Error}
+      components={{ fieldErrors: Errors, error: Error }}
     />
   )
 
@@ -503,7 +502,7 @@ it('uses fieldsComponent to wrap auto-generated fields', () => {
   )
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} fieldsComponent={FieldsWrapper} />
+    <SchemaForm schema={schema} components={{ fields: FieldsWrapper }} />
   )
 
   expect(html).toContain('data-fields="true"')

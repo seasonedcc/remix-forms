@@ -11,3 +11,5 @@ export type {
 } from './schema-form'
 
 export type { FormActionProps, MutationResult } from './mutations'
+
+export type { ComponentMap } from './defaults'

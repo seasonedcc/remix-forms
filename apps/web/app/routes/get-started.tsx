@@ -21,19 +21,22 @@ function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
   return (
     <BaseForm<Schema>
       className={/* your form classes */}
-      fieldsComponent={/* your custom fields wrapper */}
-      fieldComponent={/* your custom Field */}
-      labelComponent={/* your custom Label */}
-      inputComponent={/* your custom Input */}
-      multilineComponent={/* your custom Multiline */}
-      selectComponent={/* your custom Select */}
-      checkboxComponent={/* your custom Checkbox */}
-      checkboxWrapperComponent={/* your custom checkbox wrapper */}
-      buttonComponent={/* your custom Button */}
-      fieldErrorsComponent={/* your custom FieldErrors */}
-      globalErrorsComponent={/* your custom GlobalErrors */}
-      errorComponent={/* your custom Error */}
       {...props}
+      components={{
+        fields: /* your custom fields wrapper */,
+        field: /* your custom Field */,
+        label: /* your custom Label */,
+        input: /* your custom Input */,
+        multiline: /* your custom Multiline */,
+        select: /* your custom Select */,
+        checkbox: /* your custom Checkbox */,
+        checkboxWrapper: /* your custom checkbox wrapper */,
+        button: /* your custom Button */,
+        fieldErrors: /* your custom FieldErrors */,
+        globalErrors: /* your custom GlobalErrors */,
+        error: /* your custom Error */,
+        ...props.components,
+      }}
     />
   )
 }

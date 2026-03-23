@@ -5,10 +5,6 @@ type FormSchema = StandardSchemaV1<Record<string, any>>
 
 type Infer<T extends StandardSchemaV1> = StandardSchemaV1.InferOutput<T>
 
-type ComponentOrTagName<ElementType extends keyof JSX.IntrinsicElements> =
-  | React.ComponentType<JSX.IntrinsicElements[ElementType]>
-  | string
-
 type KeysOfStrings<T extends object> = {
   [K in keyof T]: T[K] extends string ? K : never
 }[keyof T]
@@ -28,4 +24,4 @@ function browser(): boolean {
 
 export { mapObject, browser }
 
-export type { FormSchema, Infer, ComponentOrTagName, KeysOfStrings }
+export type { FormSchema, Infer, KeysOfStrings }
