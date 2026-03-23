@@ -11,6 +11,22 @@ Automate the release workflow for the `remix-forms` npm package.
 
 ## Instructions
 
+### 0. Verify on main branch
+
+Before doing anything else, confirm the working tree is on `main` and up to date:
+
+```bash
+git branch --show-current
+```
+
+If not on `main`, switch and pull:
+
+```bash
+git checkout main && git pull
+```
+
+**Never start a release from a feature branch.** Version bumps, commits, and tags must land on `main`.
+
 ### 1. Determine the next version
 
 Find the latest git tag:
@@ -86,8 +102,8 @@ Once the user confirms the publish, write release notes by thoroughly analyzing 
 
 Do not just list PRs. Study the actual code changes to understand what they mean for users:
 
-1. **Check the public API diff** — look at changes to `packages/remix-forms/src/index.ts` for added/removed exports.
-2. **Check dependency changes** — diff `packages/remix-forms/package.json` for new/removed/changed peer dependencies and dependencies.
+1. **Check dependency changes first** — diff `packages/remix-forms/package.json` for new/removed/changed `peerDependencies` and `dependencies`. Peer dependency bumps are the highest-impact breaking changes because they gate who can install the package at all (e.g., raising the React peer dep from `>=16.8` to `>=18` blocks every user on React 17 or below). Flag these immediately.
+2. **Check the public API diff** — look at changes to `packages/remix-forms/src/index.ts` for added/removed exports.
 3. **Filter to package-relevant changes** — use `git log <last-tag>..HEAD --oneline -- packages/remix-forms/` to identify commits that actually affect the published package (vs website-only changes).
 4. **Read the changed source code** — don't assume what a change does from the PR title alone. Read the actual diffs to understand user-facing impact. For example, an internal dependency upgrade may introduce stricter behavior, but if the package catches and handles it internally, it's not a user-facing breaking change.
 
@@ -95,7 +111,7 @@ Do not just list PRs. Study the actual code changes to understand what they mean
 
 Structure depends on the nature of the changes:
 
-- **Releases with breaking changes**: Start with a `## Breaking Changes` section containing narrative subsections that explain each breaking change, what it replaces, and what users need to do. Follow with a `## What's Changed` section listing PRs.
+- **Releases with breaking changes**: Start with a `## Breaking Changes` section containing narrative subsections that explain each breaking change, what it replaces, and what users need to do. Order breaking changes by impact: **dependency requirement changes first** (peer dep bumps affect every user at install time), then behavioral or API changes (which only affect users after installation). Follow with a `## What's Changed` section listing PRs.
 - **Minor/patch releases**: A `## What's Changed` section with bullet points linking to merged PRs.
 
 List merged PRs between the two tags:
