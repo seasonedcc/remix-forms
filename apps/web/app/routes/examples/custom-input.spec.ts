@@ -10,7 +10,7 @@ test('With JS enabled', async ({ example }) => {
   // Render
   await example.expectField(firstName)
   await expect(email.label).toHaveText('Email')
-  await expect(email.label).toHaveId('label-for-email')
+  await expect(email.label).toHaveId(/label-for-email$/)
   await expect(email.input).toHaveAttribute('type', 'email')
   await expect(email.input).toHaveClass('rounded-md border-2 border-dashed')
   await expect(button).toBeEnabled()
@@ -24,7 +24,7 @@ test('With JS enabled', async ({ example }) => {
     'Too small: expected string to have >=1 characters'
   )
 
-  const emailErrors = page.locator('#errors-for-email:visible')
+  const emailErrors = page.locator('[id$="errors-for-email"]:visible')
   await expect(emailErrors).toHaveAttribute('role', 'alert')
 
   await expect(emailErrors).toHaveText(
@@ -67,7 +67,7 @@ testWithoutJS('With JS disabled', async ({ example }) => {
     'Too small: expected string to have >=1 characters'
   )
 
-  const emailErrors = page.locator('#errors-for-email:visible')
+  const emailErrors = page.locator('[id$="errors-for-email"]:visible')
   await expect(emailErrors).toHaveAttribute('role', 'alert')
 
   await expect(emailErrors.locator('div').first()).toHaveText(

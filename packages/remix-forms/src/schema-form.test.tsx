@@ -170,7 +170,7 @@ describe('SchemaForm', () => {
     )
 
     const beforeIndex = html.indexOf('id="first"')
-    const fieldIndex = html.indexOf('for="name"')
+    const fieldIndex = html.search(/for="[^"]*name"/)
     expect(beforeIndex).toBeGreaterThan(-1)
     expect(fieldIndex).toBeGreaterThan(-1)
     expect(beforeIndex).toBeLessThan(fieldIndex)

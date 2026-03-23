@@ -14,10 +14,11 @@ import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
 
 const schema = z.object({ foo: z.string() })
-const Field = createField<typeof schema>({ register })
+const Field = createField<typeof schema>({ register, idPrefix: '' })
 const choiceSchema = z.object({ choice: z.string() })
 const ChoiceField = createField<typeof choiceSchema>({
   register,
+  idPrefix: '',
   radioComponent: React.forwardRef<
     HTMLInputElement,
     React.ComponentPropsWithoutRef<'input'>
@@ -121,7 +122,7 @@ describe('createField', () => {
 
   it('registers the field using setValueAs for coercion', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({ register })
+    const NumField = createField<typeof schema>({ register, idPrefix: '' })
 
     renderToStaticMarkup(
       <NumField
@@ -140,7 +141,7 @@ describe('createField', () => {
 
   it('returns null from setValueAs when coercion fails', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({ register })
+    const NumField = createField<typeof schema>({ register, idPrefix: '' })
 
     renderToStaticMarkup(
       <NumField
@@ -308,6 +309,7 @@ describe('component mappings', () => {
   it('uses custom components for field layout and errors', () => {
     const CustomField = createField<typeof schema>({
       register,
+      idPrefix: '',
       fieldComponent: (props: React.ComponentProps<'section'>) => (
         <section data-field {...props} />
       ),
@@ -342,6 +344,7 @@ describe('component mappings', () => {
     const agreeSchema = z.object({ agree: z.boolean() })
     const BoolField = createField<typeof agreeSchema>({
       register,
+      idPrefix: '',
       checkboxComponent: React.forwardRef<
         HTMLInputElement,
         React.ComponentProps<'input'>
@@ -359,6 +362,7 @@ describe('component mappings', () => {
 
     const MultiField = createField<typeof schema>({
       register,
+      idPrefix: '',
       multilineComponent: React.forwardRef<
         HTMLTextAreaElement,
         React.ComponentProps<'textarea'>
@@ -371,6 +375,7 @@ describe('component mappings', () => {
 
     const RadioField = createField<typeof choiceSchema>({
       register,
+      idPrefix: '',
       radioGroupComponent: (props: React.ComponentProps<'fieldset'>) => (
         <fieldset data-radio-group {...props} />
       ),

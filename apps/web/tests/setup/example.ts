@@ -38,7 +38,7 @@ class Example {
   field(name: string) {
     return {
       name,
-      label: this.page.locator(`label[for="${name}"]:visible`),
+      label: this.page.locator(`label[for$="${name}"]:visible`),
       input: this.page.locator(`[name="${name}"]:visible`),
     }
   }
@@ -60,7 +60,7 @@ class Example {
 
     if (label) {
       await expect(field.label).toHaveText(label)
-      await expect(field.label).toHaveId(`label-for-${field.name}`)
+      await expect(field.label).toHaveId(new RegExp(`label-for-${field.name}$`))
     }
 
     await expect(field.input).toHaveValue(value)
@@ -77,7 +77,7 @@ class Example {
 
     await expect(field.input).toHaveAttribute(
       'aria-labelledby',
-      `label-for-${field.name}`
+      new RegExp(`label-for-${field.name}$`)
     )
 
     await expect(field.input).toHaveAttribute('aria-required', String(required))
@@ -106,14 +106,14 @@ class Example {
 
   async expectInvalid(field: Field) {
     await expect(
-      this.page.locator(`#errors-for-${field.name}:visible`)
+      this.page.locator(`[id$="errors-for-${field.name}"]:visible`)
     ).toHaveAttribute('role', 'alert')
 
     await expect(field.input).toHaveAttribute('aria-invalid', 'true')
 
     await expect(field.input).toHaveAttribute(
       'aria-describedby',
-      `errors-for-${field.name}`
+      new RegExp(`errors-for-${field.name}$`)
     )
   }
 
@@ -137,7 +137,7 @@ class Example {
 
   async expectErrorMessage(fieldName: string, message: string) {
     await expect(
-      this.page.locator(`#errors-for-${fieldName}:visible`)
+      this.page.locator(`[id$="errors-for-${fieldName}"]:visible`)
     ).toHaveText(message)
   }
 
@@ -146,7 +146,7 @@ class Example {
 
     for (let index = 0; index < messages.length; index++) {
       await expect(
-        this.page.locator(`#errors-for-${field.name} > div`).nth(index)
+        this.page.locator(`[id$="errors-for-${field.name}"] > div`).nth(index)
       ).toHaveText(messages[index])
     }
   }

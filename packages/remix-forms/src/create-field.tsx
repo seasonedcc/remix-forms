@@ -258,6 +258,7 @@ const makeOptionComponents = (
 ) => (options ? options.map(fn) : undefined)
 
 function createSmartInput({
+  idPrefix,
   inputComponent: Input = DefaultInput,
   multilineComponent: Multiline = DefaultMultiline,
   selectComponent: Select = DefaultSelect,
@@ -265,7 +266,7 @@ function createSmartInput({
   labelComponent: Label = DefaultLabel,
   radioComponent: Radio = DefaultRadio,
   radioWrapperComponent: RadioWrapper = DefaultRadioWrapper,
-}: ComponentMappings) {
+}: { idPrefix: string } & ComponentMappings) {
   return ({
     fieldType,
     type,
@@ -304,7 +305,7 @@ function createSmartInput({
     const { name } = registerProps
 
     const commonProps = {
-      id: name,
+      id: `${idPrefix}${name}`,
       autoFocus,
       ...registerProps,
       ...props,
@@ -347,6 +348,7 @@ function createSmartInput({
 
 function createField<Schema extends FormSchema>({
   register,
+  idPrefix,
   fieldComponent: Field = DefaultField,
   labelComponent: Label = DefaultLabel,
   inputComponent: Input = DefaultInput,
@@ -362,6 +364,7 @@ function createField<Schema extends FormSchema>({
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
+  idPrefix: string
 } & ComponentMappings): FieldComponent<Schema> {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return React.forwardRef<any, FieldProps<Schema>>(
@@ -427,8 +430,8 @@ function createField<Schema extends FormSchema>({
         },
       })
 
-      const labelId = `label-for-${name.toString()}`
-      const errorsId = `errors-for-${name.toString()}`
+      const labelId = `${idPrefix}label-for-${name.toString()}`
+      const errorsId = `${idPrefix}errors-for-${name.toString()}`
 
       const a11yProps = {
         'aria-labelledby': labelId,
@@ -440,6 +443,7 @@ function createField<Schema extends FormSchema>({
       const SmartInput = React.useMemo(
         () =>
           createSmartInput({
+            idPrefix,
             inputComponent: Input,
             multilineComponent: Multiline,
             selectComponent: Select,
@@ -448,7 +452,7 @@ function createField<Schema extends FormSchema>({
             radioWrapperComponent: RadioWrapper,
             labelComponent: Label,
           }),
-        []
+        [idPrefix]
       )
 
       if (childrenFn) {
@@ -484,7 +488,7 @@ function createField<Schema extends FormSchema>({
           if (child.type === Label) {
             return React.cloneElement(child, {
               id: labelId,
-              htmlFor: String(name),
+              htmlFor: `${idPrefix}${String(name)}`,
               children: label,
               ...child.props,
             })
@@ -511,7 +515,7 @@ function createField<Schema extends FormSchema>({
           }
           if (child.type === Input) {
             return React.cloneElement(child, {
-              id: String(name),
+              id: `${idPrefix}${String(name)}`,
               type,
               ...registerProps,
               ...a11yProps,
@@ -525,7 +529,7 @@ function createField<Schema extends FormSchema>({
           }
           if (child.type === Multiline) {
             return React.cloneElement(child, {
-              id: String(name),
+              id: `${idPrefix}${String(name)}`,
               ...registerProps,
               ...a11yProps,
               placeholder,
@@ -538,7 +542,7 @@ function createField<Schema extends FormSchema>({
           }
           if (child.type === Select) {
             return React.cloneElement(child, {
-              id: String(name),
+              id: `${idPrefix}${String(name)}`,
               ...registerProps,
               ...a11yProps,
               autoFocus,
@@ -554,7 +558,7 @@ function createField<Schema extends FormSchema>({
             (child.type !== 'input' || child.props.type === 'checkbox')
           ) {
             return React.cloneElement(child, {
-              id: String(name),
+              id: `${idPrefix}${String(name)}`,
               type,
               autoFocus,
               ...registerProps,
@@ -576,7 +580,7 @@ function createField<Schema extends FormSchema>({
             (child.type !== 'input' || child.props.type === 'radio')
           ) {
             return React.cloneElement(child, {
-              id: `${String(name)}-${child.props.value}`,
+              id: `${idPrefix}${String(name)}-${child.props.value}`,
               type: 'radio',
               autoFocus,
               ...registerProps,
@@ -656,7 +660,7 @@ function createField<Schema extends FormSchema>({
             {fieldType === 'boolean' ? (
               <CheckboxWrapper>
                 {smartInput}
-                <Label id={labelId} htmlFor={String(name)}>
+                <Label id={labelId} htmlFor={`${idPrefix}${String(name)}`}>
                   {label}
                 </Label>
               </CheckboxWrapper>
@@ -667,7 +671,7 @@ function createField<Schema extends FormSchema>({
               </>
             ) : (
               <>
-                <Label id={labelId} htmlFor={String(name)}>
+                <Label id={labelId} htmlFor={`${idPrefix}${String(name)}`}>
                   {label}
                 </Label>
                 {smartInput}
