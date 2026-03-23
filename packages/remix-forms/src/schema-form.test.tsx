@@ -547,6 +547,67 @@ it('promotes dot-path errors from action data to global errors', () => {
   expect(html).toContain('Invalid')
 })
 
+describe('autoInputTypes', () => {
+  it('auto-detects date input type from schema format by default', () => {
+    const schema = z.object({ birthday: z.string().date() })
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('type="date"')
+  })
+
+  it('auto-detects datetime-local input type from schema format by default', () => {
+    const schema = z.object({ createdAt: z.string().datetime() })
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('type="datetime-local"')
+  })
+
+  it('auto-detects time input type from schema format by default', () => {
+    const schema = z.object({ alarm: z.string().time() })
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('type="time"')
+  })
+
+  it('does not auto-detect email input type by default', () => {
+    const schema = z.object({ email: z.string().email() })
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('type="text"')
+  })
+
+  it('auto-detects email when included in autoInputTypes', () => {
+    const schema = z.object({ email: z.string().email() })
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        autoInputTypes={['date', 'datetime-local', 'time', 'email']}
+      />
+    )
+    expect(html).toContain('type="email"')
+  })
+
+  it('auto-detects url when included in autoInputTypes', () => {
+    const schema = z.object({ website: z.string().url() })
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} autoInputTypes={['url']} />
+    )
+    expect(html).toContain('type="url"')
+  })
+
+  it('disables all format auto-detection when autoInputTypes is empty', () => {
+    const schema = z.object({ birthday: z.string().date() })
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} autoInputTypes={[]} />
+    )
+    expect(html).toContain('type="text"')
+  })
+
+  it('prefers explicit inputTypes over auto-detected format', () => {
+    const schema = z.object({ birthday: z.string().date() })
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} inputTypes={{ birthday: 'text' }} />
+    )
+    expect(html).toContain('type="text"')
+  })
+})
+
 describe('element type comparison safety', () => {
   it('does not inject error props into plain div elements in children', () => {
     const schema = z.object({ name: z.string() })

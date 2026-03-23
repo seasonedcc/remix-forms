@@ -3,6 +3,7 @@ export { useField } from './create-field'
 export { formAction, performMutation } from './mutations'
 
 export type {
+  AutoInputType,
   SchemaFormProps,
   RenderFieldProps,
   RenderField,
