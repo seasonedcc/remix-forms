@@ -1,4 +1,4 @@
-export { SchemaForm } from './schema-form'
+export { SchemaForm, makeSchemaForm } from './schema-form'
 export { useField } from './create-field'
 export { formAction, performMutation } from './mutations'
 
@@ -12,4 +12,4 @@ export type {
 
 export type { FormActionProps, MutationResult } from './mutations'
 
-export type { ComponentMap } from './defaults'
+export type { ComponentMap, MergeComponents } from './defaults'

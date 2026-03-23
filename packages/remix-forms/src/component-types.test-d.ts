@@ -3,6 +3,8 @@ import { expectTypeOf, it } from 'vitest'
 import type {
   ComponentMap,
   DefaultComponents,
+  MergeComponents,
+  NoOverrides,
   PropsOf,
   ResolveComponents,
 } from './defaults'
@@ -105,4 +107,39 @@ it('defaultComponents has all ComponentMap keys', () => {
   expectTypeOf<keyof typeof defaultComponents>().toEqualTypeOf<
     keyof ComponentMap
   >()
+})
+
+it('NoOverrides extends Partial<ComponentMap>', () => {
+  expectTypeOf<NoOverrides>().toExtend<Partial<ComponentMap>>()
+})
+
+it('MergeComponents falls through to base when no overrides', () => {
+  type MyInput = React.FC<{ size: string }>
+  type Base = { input: MyInput }
+  type Merged = MergeComponents<Base, NoOverrides>
+
+  expectTypeOf<Merged['input']>().toEqualTypeOf<MyInput>()
+  expectTypeOf<Merged['label']>().toEqualTypeOf<DefaultComponents['label']>()
+})
+
+it('MergeComponents uses override over base', () => {
+  type BaseInput = React.FC<{ size: string }>
+  type OverrideInput = React.FC<{ variant: string }>
+  type Merged = MergeComponents<{ input: BaseInput }, { input: OverrideInput }>
+
+  expectTypeOf<Merged['input']>().toEqualTypeOf<OverrideInput>()
+})
+
+it('MergeComponents 3-level cascade: override > base > default', () => {
+  type BaseInput = React.FC<{ size: string }>
+  type BaseButton = React.FC<{ variant: string }>
+  type OverrideInput = React.FC<{ x: number }>
+  type Merged = MergeComponents<
+    { input: BaseInput; button: BaseButton },
+    { input: OverrideInput }
+  >
+
+  expectTypeOf<Merged['input']>().toEqualTypeOf<OverrideInput>()
+  expectTypeOf<Merged['button']>().toEqualTypeOf<BaseButton>()
+  expectTypeOf<Merged['label']>().toEqualTypeOf<DefaultComponents['label']>()
 })

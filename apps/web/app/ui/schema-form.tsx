@@ -1,8 +1,4 @@
-import {
-  SchemaForm as BaseForm,
-  type FormSchema,
-  type SchemaFormProps,
-} from 'remix-forms'
+import { makeSchemaForm } from 'remix-forms'
 import Checkbox from './checkbox'
 import Error from './error'
 import Errors from './errors'
@@ -19,30 +15,21 @@ import RadioGroup from './radio-group'
 import Fields from './fields'
 import TextArea from './text-area'
 
-function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
-  return (
-    <BaseForm
-      className="flex flex-col gap-6"
-      {...props}
-      components={{
-        fields: Fields,
-        field: Field,
-        label: Label,
-        input: Input,
-        multiline: TextArea,
-        select: Select,
-        radio: Radio,
-        radioGroup: RadioGroup,
-        radioWrapper: InputWrapper,
-        checkboxWrapper: InputWrapper,
-        checkbox: Checkbox,
-        button: SubmitButton,
-        globalErrors: Errors,
-        error: Error,
-        ...props.components,
-      }}
-    />
-  )
-}
+const SchemaForm = makeSchemaForm({
+  fields: Fields,
+  field: Field,
+  label: Label,
+  input: Input,
+  multiline: TextArea,
+  select: Select,
+  radio: Radio,
+  radioGroup: RadioGroup,
+  radioWrapper: InputWrapper,
+  checkboxWrapper: InputWrapper,
+  checkbox: Checkbox,
+  button: SubmitButton,
+  globalErrors: Errors,
+  error: Error,
+})
 
 export { SchemaForm }

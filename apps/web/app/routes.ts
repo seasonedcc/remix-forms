@@ -47,6 +47,7 @@ export const exampleRouteGroups = {
     'Dynamic form',
     'Empty option label',
     'Auto complete',
+    'Chakra UI',
   ],
   renderField: [
     'Required indicator',

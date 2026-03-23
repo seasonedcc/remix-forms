@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import type { UseFormRegister } from 'react-hook-form'
 import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 import { createField, useField } from './create-field'
+import { defaultComponents } from './defaults'
 
 const register = vi.fn((name: string) => ({
   name,
@@ -14,12 +15,16 @@ import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
 
 const schema = z.object({ foo: z.string() })
-const Field = createField<typeof schema>({ register, idPrefix: '' })
-const choiceSchema = z.object({ choice: z.string() })
-const ChoiceField = createField<typeof choiceSchema>({
+const Field = createField<typeof schema>({
+  register,
+  idPrefix: '',
+  components: defaultComponents,
+})
+const ChoiceField = createField({
   register,
   idPrefix: '',
   components: {
+    ...defaultComponents,
     radio: React.forwardRef<
       HTMLInputElement,
       React.ComponentPropsWithoutRef<'input'>
@@ -127,6 +132,7 @@ describe('createField', () => {
     const NumField = createField<typeof schema>({
       register,
       idPrefix: '',
+      components: defaultComponents,
     })
 
     renderToStaticMarkup(
@@ -149,6 +155,7 @@ describe('createField', () => {
     const NumField = createField<typeof schema>({
       register,
       idPrefix: '',
+      components: defaultComponents,
     })
 
     renderToStaticMarkup(
@@ -315,10 +322,11 @@ describe('createField', () => {
 
 describe('component mappings', () => {
   it('uses custom components for field layout and errors', () => {
-    const CustomField = createField<typeof schema>({
+    const CustomField = createField({
       register,
       idPrefix: '',
       components: {
+        ...defaultComponents,
         field: (props: React.ComponentProps<'section'>) => (
           <section data-field {...props} />
         ),
@@ -351,11 +359,11 @@ describe('component mappings', () => {
   })
 
   it('uses custom components for multiline, checkbox and radio inputs', () => {
-    const agreeSchema = z.object({ agree: z.boolean() })
-    const BoolField = createField<typeof agreeSchema>({
+    const BoolField = createField({
       register,
       idPrefix: '',
       components: {
+        ...defaultComponents,
         checkbox: React.forwardRef<
           HTMLInputElement,
           React.ComponentProps<'input'>
@@ -372,10 +380,11 @@ describe('component mappings', () => {
     expect(boolHtml).toContain('data-cbwrap="true"')
     expect(boolHtml).toContain('data-checkbox="true"')
 
-    const MultiField = createField<typeof schema>({
+    const MultiField = createField({
       register,
       idPrefix: '',
       components: {
+        ...defaultComponents,
         multiline: React.forwardRef<
           HTMLTextAreaElement,
           React.ComponentProps<'textarea'>
@@ -387,10 +396,11 @@ describe('component mappings', () => {
     )
     expect(multiHtml).toContain('data-multi="true"')
 
-    const RadioField = createField<typeof choiceSchema>({
+    const RadioField = createField({
       register,
       idPrefix: '',
       components: {
+        ...defaultComponents,
         radioGroup: (props: React.ComponentProps<'fieldset'>) => (
           <fieldset data-radio-group {...props} />
         ),

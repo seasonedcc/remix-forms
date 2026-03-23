@@ -14,32 +14,22 @@ const description = 'The full-stack form library for React Router v7'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const stylesCode = `import type { SchemaFormProps, FormSchema } from 'remix-forms'
-import { SchemaForm as BaseForm } from 'remix-forms'
+const stylesCode = `import { makeSchemaForm } from 'remix-forms'
 
-function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
-  return (
-    <BaseForm<Schema>
-      className={/* your form classes */}
-      {...props}
-      components={{
-        fields: /* your custom fields wrapper */,
-        field: /* your custom Field */,
-        label: /* your custom Label */,
-        input: /* your custom Input */,
-        multiline: /* your custom Multiline */,
-        select: /* your custom Select */,
-        checkbox: /* your custom Checkbox */,
-        checkboxWrapper: /* your custom checkbox wrapper */,
-        button: /* your custom Button */,
-        fieldErrors: /* your custom FieldErrors */,
-        globalErrors: /* your custom GlobalErrors */,
-        error: /* your custom Error */,
-        ...props.components,
-      }}
-    />
-  )
-}
+const SchemaForm = makeSchemaForm({
+  fields: /* your custom fields wrapper */,
+  field: /* your custom Field */,
+  label: /* your custom Label */,
+  input: /* your custom Input */,
+  multiline: /* your custom Multiline */,
+  select: /* your custom Select */,
+  checkbox: /* your custom Checkbox */,
+  checkboxWrapper: /* your custom checkbox wrapper */,
+  button: /* your custom Button */,
+  fieldErrors: /* your custom FieldErrors */,
+  globalErrors: /* your custom GlobalErrors */,
+  error: /* your custom Error */,
+})
 
 export { SchemaForm }
 `

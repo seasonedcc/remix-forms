@@ -165,13 +165,33 @@ type ResolveComponents<Components extends Partial<ComponentMap>> = {
     : DefaultComponents[K]
 }
 
+type NoOverrides = Record<never, never>
+
+type MergeComponents<
+  Base extends Partial<ComponentMap>,
+  Override extends Partial<ComponentMap>,
+> = {
+  [K in keyof DefaultComponents]: K extends keyof Override
+    ? Override[K] extends undefined
+      ? ResolveComponents<Base>[K]
+      : NonNullable<Override[K]>
+    : ResolveComponents<Base>[K]
+}
+
 type PropsOf<T> = T extends React.ComponentType<infer P>
   ? P
   : T extends keyof JSX.IntrinsicElements
     ? JSX.IntrinsicElements[T]
     : Record<string, unknown>
 
-export type { ComponentMap, DefaultComponents, ResolveComponents, PropsOf }
+export type {
+  ComponentMap,
+  DefaultComponents,
+  NoOverrides,
+  ResolveComponents,
+  MergeComponents,
+  PropsOf,
+}
 
 export {
   DefaultField,

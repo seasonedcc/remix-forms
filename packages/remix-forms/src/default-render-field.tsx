@@ -1,12 +1,12 @@
-import type { ComponentMap } from './defaults'
+import type { DefaultComponents } from './defaults'
 import type { FormSchema } from './prelude'
 import type { RenderFieldProps } from './schema-form'
 
 function defaultRenderField<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
->({ Field, name, ...props }: RenderFieldProps<Schema, Components>) {
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
+>({ Field, name, ...props }: RenderFieldProps<Schema, Resolved>) {
   return <Field key={String(name)} name={name} {...props} />
 }
 

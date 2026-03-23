@@ -2,8 +2,7 @@ import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import { findElement, findParent, mapChildren } from './children-traversal'
-import type { ComponentMap, ResolveComponents } from './defaults'
-import { defaultComponents } from './defaults'
+import type { DefaultComponents } from './defaults'
 import type { FormSchema, Infer } from './prelude'
 import { mapObject } from './prelude'
 import type { Field } from './schema-form'
@@ -15,8 +14,7 @@ type Option = { name: string } & Required<
 type Children<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Resolved parameter
-  Resolved extends Record<string, any> = ResolveComponents<{}>,
+  Resolved extends Record<string, any> = DefaultComponents,
 > = (
   helpers: FieldBaseProps<Schema> & {
     Label: Resolved['label']
@@ -56,28 +54,28 @@ function getInputType(
 
 type FieldBaseProps<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
 > = Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
   name: keyof Infer<Schema>
   type?: JSX.IntrinsicElements['input']['type']
-  children?: Children<Schema, ResolveComponents<Components>>
+  children?: Children<Schema, Resolved>
 }
 
 type FieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
-> = FieldBaseProps<Schema, Components> &
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
+> = FieldBaseProps<Schema, Resolved> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
 type FieldComponent<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
 > = React.ForwardRefExoticComponent<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  FieldProps<Schema, Components> & React.RefAttributes<any>
+  FieldProps<Schema, Resolved> & React.RefAttributes<any>
 >
 
 type SmartInputProps = {
@@ -241,23 +239,20 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
 
 function createField<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
 >({
   register,
   idPrefix,
-  components: componentsProp = {} as Components,
+  components,
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
   idPrefix: string
-  components?: Components
-}): FieldComponent<Schema, Components> {
-  const c = { ...defaultComponents, ...componentsProp } as Record<
-    string,
-    // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
-    React.ComponentType<any>
-  >
+  components: Resolved
+}): FieldComponent<Schema, Resolved> {
+  // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
+  const c = components as Record<string, React.ComponentType<any>>
   const Field = c.field
   const Label = c.label
   const Input = c.input
@@ -272,7 +267,7 @@ function createField<
   const Error = c.error
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  return React.forwardRef<any, FieldProps<Schema, Components>>(
+  return React.forwardRef<any, FieldProps<Schema, Resolved>>(
     (
       {
         fieldType = 'string',
@@ -589,4 +584,4 @@ function createField<
 }
 
 export type { FieldType, FieldComponent, Option }
-export { createField, defaultComponents }
+export { createField }

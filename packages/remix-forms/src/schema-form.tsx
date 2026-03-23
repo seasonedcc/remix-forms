@@ -24,7 +24,12 @@ import { mapChildren, reduceElements } from './children-traversal'
 import type { FieldComponent, FieldType, Option } from './create-field'
 import { createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
-import type { ComponentMap, ResolveComponents } from './defaults'
+import type {
+  ComponentMap,
+  DefaultComponents,
+  MergeComponents,
+  NoOverrides,
+} from './defaults'
 import { defaultComponents } from './defaults'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
@@ -68,63 +73,45 @@ type Field<SchemaType> = {
 /**
  * Props passed to a custom field rendering component.
  *
- * When using the {@link SchemaForm.renderField | renderField} prop you
- * receive these props for each field in the schema. They include the built
- * in `Field` component plus the computed metadata for that particular form
- * field.
- *
  * @example
  * ```tsx
  * const MyField = ({ Field, name }) => <Field name={name} />
  * ```
- *
- * @example
- * ```tsx
- * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
- * ```
  */
 type RenderFieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
 > = Field<Infer<Schema>> & {
-  Field: FieldComponent<Schema, Components>
+  Field: FieldComponent<Schema, Resolved>
 }
 
 /**
  * Function signature used for rendering form fields.
  *
- * The function is called once for every key in the provided schema and
- * should return the JSX that renders that field.
- *
  * @example
  * ```tsx
  * const renderField = ({ Field, ...props }) => <Field {...props} />
  * ```
- *
- * @example
- * ```tsx
- * const renderField = ({ name }) => <input name={String(name)} />
- * ```
  */
 type RenderField<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
-> = (props: RenderFieldProps<Schema, Components>) => JSX.Element
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
+> = (props: RenderFieldProps<Schema, Resolved>) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
 type Children<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any> = DefaultComponents,
 > = (
   helpers: {
-    Field: FieldComponent<Schema, Components>
-    Errors: ResolveComponents<Components>['globalErrors']
-    Error: ResolveComponents<Components>['error']
-    Button: ResolveComponents<Components>['button']
+    Field: FieldComponent<Schema, Resolved>
+    Errors: Resolved['globalErrors']
+    Error: Resolved['error']
+    Button: Resolved['button']
     submit: () => void
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } & UseFormReturn<Infer<Schema>, any>
@@ -149,13 +136,13 @@ type OnNavigation<Schema extends FormSchema> = (
  *
  * @example
  * ```tsx
- * <SchemaForm schema={schema} renderField={({ Field, ...f }) => <Field {...f} />} />
+ * <SchemaForm schema={schema} components={{ input: MyInput }} />
  * ```
  */
 type SchemaFormProps<
   Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
+  Base extends Partial<ComponentMap> = DefaultComponents,
+  Components extends Partial<ComponentMap> = NoOverrides,
 > = {
   components?: Components
   component?: typeof ReactRouterForm
@@ -166,7 +153,7 @@ type SchemaFormProps<
     ValidationMode,
     'onBlur' | 'onChange' | 'onSubmit'
   >
-  renderField?: RenderField<Schema, Components>
+  renderField?: RenderField<Schema, MergeComponents<Base, Components>>
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
@@ -186,7 +173,7 @@ type SchemaFormProps<
   autoFocus?: keyof Infer<Schema>
   beforeChildren?: React.ReactNode
   onNavigation?: OnNavigation<Schema>
-  children?: Children<Schema, Components>
+  children?: Children<Schema, MergeComponents<Base, Components>>
   idPrefix?: string
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
@@ -213,435 +200,416 @@ function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
   return (info.type ?? 'string') as FieldType
 }
-/**
 
+/**
+ * Create a SchemaForm component with custom base components.
  *
- * This component is the easiest way to create a form in Remix. It
- * automatically wires up inputs with React Hook Form, handles client side
- * validation and integrates with React Router navigation state.
- * Provide a schema and the form will generate fields and labels
- * automatically.
+ * The factory captures base components as concrete types so that both
+ * wrapper-level and per-form component types flow through to Field
+ * children render props with full type safety.
  *
- * @param props.component - Form component used for rendering
- * @param props.fetcher - Fetcher object returned by `useFetcher()`
- * @param props.mode - Validation trigger mode for React Hook Form
- * @param props.reValidateMode - Validation mode after submission
- * @param props.renderField - Custom field rendering function
- * @param props.components - Custom components to override defaults
- * @param props.buttonLabel - Text shown in the submit button
- * @param props.pendingButtonLabel - Text shown while submitting
- * @param props.method - HTTP method used to submit the form
- * @param props.schema - Schema describing the form
- * @param props.beforeChildren - Elements rendered before generated fields
- * @param props.onNavigation - Callback when navigation state changes
- * @param props.children - Custom content instead of the default layout
- * @param props.labels - Custom labels for form fields
- * @param props.placeholders - Placeholder text for fields
- * @param props.options - Select and radio options for fields
- * @param props.inputTypes - Custom input types per field
- * @param props.autoInputTypes - HTML input types to assign automatically based on schema format. Defaults to `['date', 'datetime-local', 'time']`
- * @param props.hiddenFields - Fields rendered as hidden inputs
- * @param props.multiline - Fields rendered with the multiline component
- * @param props.radio - Fields rendered as radio groups
- * @param props.autoFocus - Field that should receive focus initially
- * @param props.errors - Error messages keyed by field name
- * @param props.values - Initial values for fields
- * @param props.emptyOptionLabel - Label for the empty select option
- * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
- * @param props.flushSync - Whether to flush React updates synchronously
- * @returns A form element ready to be used inside a React Router v7 route
+ * @param base - Partial component map providing base-level defaults.
+ *   Unspecified slots fall back to the built-in defaults.
+ * @returns A SchemaForm component that uses the provided base components.
  *
  * @example
  * ```tsx
- * const schema = z.object({ name: z.string() })
+ * import { makeSchemaForm } from 'remix-forms'
  *
- * export default function Route() {
- *   return <SchemaForm schema={schema} />
- * }
- * ```
- *
- * @example
- * ```tsx
- * const fetcher = useFetcher()
- * <SchemaForm schema={schema} fetcher={fetcher} />
+ * const SchemaForm = makeSchemaForm({
+ *   input: MyInput,
+ *   button: MyButton,
+ * })
  * ```
  */
-function SchemaForm<
-  Schema extends FormSchema,
-  // biome-ignore lint/complexity/noBannedTypes: generic default for optional Components parameter
-  Components extends Partial<ComponentMap> = {},
->({
-  components: componentsProp,
-  component = ReactRouterForm,
-  fetcher,
-  mode = 'onSubmit',
-  reValidateMode = 'onChange',
-  renderField = defaultRenderField,
-  buttonLabel: rawButtonLabel = 'OK',
-  pendingButtonLabel,
-  method = 'POST',
-  schema,
-  beforeChildren,
-  onNavigation,
-  children: childrenFn,
-  labels,
-  placeholders,
-  options,
-  inputTypes,
-  autoInputTypes = ['date', 'datetime-local', 'time'],
-  emptyOptionLabel = '',
-  hiddenFields,
-  multiline,
-  radio,
-  autoFocus: autoFocusProp,
-  errors: errorsProp,
-  values: valuesProp,
-  idPrefix: idPrefixProp,
-  flushSync,
-  ...props
-}: SchemaFormProps<Schema, Components>) {
-  type SchemaType = Infer<Schema>
-  const generatedId = React.useId()
-  const idPrefix = idPrefixProp ?? generatedId
-
-  const rc = { ...defaultComponents, ...componentsProp } as Record<
+function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
+  const mergedBase = { ...defaultComponents, ...base } as Record<
     string,
     // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
     React.ComponentType<any>
   >
-  const FieldsComponent = rc.fields
-  const Errors = rc.globalErrors
-  const Error = rc.error
-  const Button = rc.button
 
-  const Component = fetcher?.Form ?? component
-  const navigationSubmit = useSubmit()
-  const submit = fetcher?.submit ?? navigationSubmit
-  const navigation = useNavigation()
-  const navigationState = fetcher ? fetcher.state : navigation.state
-  const navigationActionData = useActionData()
-  const actionData = fetcher ? fetcher.data : navigationActionData
-  const actionErrors = actionData?.errors as FormErrors<SchemaType>
-  const actionValues = actionData?.values as FormValues<SchemaType>
+  return function SchemaForm<
+    Schema extends FormSchema,
+    Components extends Partial<ComponentMap> = NoOverrides,
+  >({
+    components: componentsProp,
+    component = ReactRouterForm,
+    fetcher,
+    mode = 'onSubmit',
+    reValidateMode = 'onChange',
+    renderField = defaultRenderField,
+    buttonLabel: rawButtonLabel = 'OK',
+    pendingButtonLabel,
+    method = 'POST',
+    schema,
+    beforeChildren,
+    onNavigation,
+    children: childrenFn,
+    labels,
+    placeholders,
+    options,
+    inputTypes,
+    autoInputTypes = ['date', 'datetime-local', 'time'],
+    emptyOptionLabel = '',
+    hiddenFields,
+    multiline,
+    radio,
+    autoFocus: autoFocusProp,
+    errors: errorsProp,
+    values: valuesProp,
+    idPrefix: idPrefixProp,
+    flushSync,
+    ...props
+  }: SchemaFormProps<Schema, Base, Components>) {
+    type SchemaType = Infer<Schema>
+    const generatedId = React.useId()
+    const idPrefix = idPrefixProp ?? generatedId
 
-  const errors = React.useMemo(
-    () => ({ ...errorsProp, ...actionErrors }),
-    [errorsProp, actionErrors]
-  )
+    const rc = { ...mergedBase, ...componentsProp } as Record<
+      string,
+      // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
+      React.ComponentType<any>
+    >
+    const FieldsComponent = rc.fields
+    const Errors = rc.globalErrors
+    const Error = rc.error
+    const Button = rc.button
 
-  const values = React.useMemo(
-    () => ({ ...valuesProp, ...actionValues }),
-    [valuesProp, actionValues]
-  )
+    const Component = fetcher?.Form ?? component
+    const navigationSubmit = useSubmit()
+    const submit = fetcher?.submit ?? navigationSubmit
+    const navigation = useNavigation()
+    const navigationState = fetcher ? fetcher.state : navigation.state
+    const navigationActionData = useActionData()
+    const actionData = fetcher ? fetcher.data : navigationActionData
+    const actionErrors = actionData?.errors as FormErrors<SchemaType>
+    const actionValues = actionData?.values as FormValues<SchemaType>
 
-  const fields = schemaFields(schema)
-  const defaultValues = mapObject(fields, (key, info) => {
-    const defaultValue = coerceToForm(
-      values[key] ?? info.getDefaultValue?.(),
-      info
+    const errors = React.useMemo(
+      () => ({ ...errorsProp, ...actionErrors }),
+      [errorsProp, actionErrors]
     )
 
-    return [key, defaultValue] as never
-  }) as DeepPartial<SchemaType>
-
-  const form = useForm<SchemaType>({
-    resolver: standardSchemaResolver(schema),
-    mode,
-    reValidateMode,
-    defaultValues: defaultValues as DefaultValues<SchemaType>,
-  })
-
-  const { formState, reset } = form
-  const { errors: formErrors, isValid } = formState
-
-  const formRef = React.useRef<HTMLFormElement>(null)
-
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const onSubmit = (event: any) => {
-    form.handleSubmit(() => {
-      if (!formRef.current) return
-
-      return submit(formRef.current, {
-        method,
-        replace: props.replace,
-        preventScrollReset: props.preventScrollReset,
-        navigate: props.navigate,
-        fetcherKey: props.fetcherKey,
-        flushSync,
-      })
-    })(event)
-  }
-
-  const doSubmit = () => {
-    formRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true })
+    const values = React.useMemo(
+      () => ({ ...valuesProp, ...actionValues }),
+      [valuesProp, actionValues]
     )
-  }
 
-  const Field = React.useMemo(
-    () =>
-      createField<Schema, Components>({
-        register: form.register,
-        idPrefix,
-        components: componentsProp,
-      }),
-    [idPrefix, ...Object.values(componentsProp ?? {}), form.register]
-  )
+    const fields = schemaFields(schema)
+    const defaultValues = mapObject(fields, (key, info) => {
+      const defaultValue = coerceToForm(
+        values[key] ?? info.getDefaultValue?.(),
+        info
+      )
 
-  const fieldErrors = React.useCallback(
-    (key: keyof SchemaType & string) => {
-      const message = (formErrors[key] as unknown as FieldError)?.message
-      return browser() ? message && [message] : errors?.[key]
-    },
-    [errors, formErrors]
-  )
+      return [key, defaultValue] as never
+    }) as DeepPartial<SchemaType>
 
-  const firstErroredField = () =>
-    Object.keys(fields).find((key) => fieldErrors(key)?.length)
+    const form = useForm<SchemaType>({
+      resolver: standardSchemaResolver(schema),
+      mode,
+      reValidateMode,
+      defaultValues: defaultValues as DefaultValues<SchemaType>,
+    })
 
-  const makeField = (key: string) => {
-    const info = fields[key] ?? {
-      type: null,
-      optional: false,
-      nullable: false,
+    const { formState, reset } = form
+    const { errors: formErrors, isValid } = formState
+
+    const formRef = React.useRef<HTMLFormElement>(null)
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const onSubmit = (event: any) => {
+      form.handleSubmit(() => {
+        if (!formRef.current) return
+
+        return submit(formRef.current, {
+          method,
+          replace: props.replace,
+          preventScrollReset: props.preventScrollReset,
+          navigate: props.navigate,
+          fetcherKey: props.fetcherKey,
+          flushSync,
+        })
+      })(event)
     }
-    const { optional, nullable, enumValues } = info
 
-    const required = !(optional || nullable)
+    const doSubmit = () => {
+      formRef.current?.dispatchEvent(
+        new Event('submit', { cancelable: true, bubbles: true })
+      )
+    }
 
-    const fieldOptions =
-      options?.[key] ||
-      enumValues?.map((value: string) => ({
-        name: inferLabel(value),
-        value,
-      }))
+    const Field = React.useMemo(
+      () =>
+        createField<Schema, MergeComponents<Base, Components>>({
+          register: form.register,
+          idPrefix,
+          // biome-ignore lint/suspicious/noExplicitAny: rc is the merged components — generics ensure type safety at the consumer level
+          components: rc as any,
+        }),
+      [idPrefix, ...Object.values(componentsProp ?? {}), form.register]
+    )
 
-    const fieldOptionsPlusEmpty = () =>
-      fieldOptions && [
-        { name: emptyOptionLabel, value: '' },
-        ...(fieldOptions ?? []),
-      ]
+    const fieldErrors = React.useCallback(
+      (key: keyof SchemaType & string) => {
+        const message = (formErrors[key] as unknown as FieldError)?.message
+        return browser() ? message && [message] : errors?.[key]
+      },
+      [errors, formErrors]
+    )
 
-    return {
-      shape: info,
-      fieldType: uiFieldType(info),
-      type: inputTypes?.[key] ?? resolveAutoInputType(info, autoInputTypes),
-      name: key,
-      required,
-      dirty: key in formState.dirtyFields,
-      label: labels?.[key] || inferLabel(String(key)),
-      options: required ? fieldOptions : fieldOptionsPlusEmpty(),
-      errors: fieldErrors(key),
-      autoFocus: key === firstErroredField() || key === autoFocusProp,
-      value: defaultValues[key],
-      hidden:
-        hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
-      multiline: multiline && Boolean(multiline.find((item) => item === key)),
-      radio: radio && Boolean(radio.find((item) => item === key)),
-      placeholder: placeholders?.[key],
-    } as Field<SchemaType>
-  }
+    const firstErroredField = () =>
+      Object.keys(fields).find((key) => fieldErrors(key)?.length)
 
-  const hiddenFieldsErrorsToGlobal = React.useCallback(
-    (globalErrors: string[] = []) => {
-      const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
-        const hiddenFieldErrors = fieldErrors(
-          hiddenField as keyof SchemaType & string
-        )
+    const makeField = (key: string) => {
+      const info = fields[key] ?? {
+        type: null,
+        optional: false,
+        nullable: false,
+      }
+      const { optional, nullable, enumValues } = info
 
-        if (Array.isArray(hiddenFieldErrors)) {
-          const hiddenFieldLabel =
-            labels?.[hiddenField] || inferLabel(String(hiddenField))
-          return hiddenFieldErrors.map(
-            (error) => `${hiddenFieldLabel}: ${error}`
+      const required = !(optional || nullable)
+
+      const fieldOptions =
+        options?.[key] ||
+        enumValues?.map((value: string) => ({
+          name: inferLabel(value),
+          value,
+        }))
+
+      const fieldOptionsPlusEmpty = () =>
+        fieldOptions && [
+          { name: emptyOptionLabel, value: '' },
+          ...(fieldOptions ?? []),
+        ]
+
+      return {
+        shape: info,
+        fieldType: uiFieldType(info),
+        type: inputTypes?.[key] ?? resolveAutoInputType(info, autoInputTypes),
+        name: key,
+        required,
+        dirty: key in formState.dirtyFields,
+        label: labels?.[key] || inferLabel(String(key)),
+        options: required ? fieldOptions : fieldOptionsPlusEmpty(),
+        errors: fieldErrors(key),
+        autoFocus: key === firstErroredField() || key === autoFocusProp,
+        value: defaultValues[key],
+        hidden:
+          hiddenFields && Boolean(hiddenFields.find((item) => item === key)),
+        multiline: multiline && Boolean(multiline.find((item) => item === key)),
+        radio: radio && Boolean(radio.find((item) => item === key)),
+        placeholder: placeholders?.[key],
+      } as Field<SchemaType>
+    }
+
+    const hiddenFieldsErrorsToGlobal = React.useCallback(
+      (globalErrors: string[] = []) => {
+        const deepHiddenFieldsErrors = hiddenFields?.map((hiddenField) => {
+          const hiddenFieldErrors = fieldErrors(
+            hiddenField as keyof SchemaType & string
           )
-        }
-        return []
-      })
-      const hiddenFieldsErrors: string[] = deepHiddenFieldsErrors?.flat() || []
 
-      const allGlobalErrors = ([] as string[])
-        .concat(globalErrors, hiddenFieldsErrors)
-        .filter((error) => typeof error === 'string')
+          if (Array.isArray(hiddenFieldErrors)) {
+            const hiddenFieldLabel =
+              labels?.[hiddenField] || inferLabel(String(hiddenField))
+            return hiddenFieldErrors.map(
+              (error) => `${hiddenFieldLabel}: ${error}`
+            )
+          }
+          return []
+        })
+        const hiddenFieldsErrors: string[] =
+          deepHiddenFieldsErrors?.flat() || []
 
-      return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
-    },
-    [fieldErrors, hiddenFields, labels]
-  )
+        const allGlobalErrors = ([] as string[])
+          .concat(globalErrors, hiddenFieldsErrors)
+          .filter((error) => typeof error === 'string')
 
-  const orphanedErrors = React.useMemo(() => {
-    const fieldKeys = new Set(Object.keys(fields))
-    return Object.entries(errors)
-      .filter(([key]) => key !== '_global' && !fieldKeys.has(key))
-      .flatMap(([, msgs]) => msgs ?? [])
-  }, [errors, fields])
+        return allGlobalErrors.length > 0 ? allGlobalErrors : undefined
+      },
+      [fieldErrors, hiddenFields, labels]
+    )
 
-  const globalErrors = React.useMemo(
-    () =>
-      hiddenFieldsErrorsToGlobal([
-        ...(errors?._global ?? []),
-        ...orphanedErrors,
-      ]),
-    [errors?._global, orphanedErrors, hiddenFieldsErrorsToGlobal]
-  )
+    const orphanedErrors = React.useMemo(() => {
+      const fieldKeys = new Set(Object.keys(fields))
+      return Object.entries(errors)
+        .filter(([key]) => key !== '_global' && !fieldKeys.has(key))
+        .flatMap(([, msgs]) => msgs ?? [])
+    }, [errors, fields])
 
-  const buttonLabel =
-    navigationState !== 'idle'
-      ? (pendingButtonLabel ?? rawButtonLabel)
-      : rawButtonLabel
+    const globalErrors = React.useMemo(
+      () =>
+        hiddenFieldsErrorsToGlobal([
+          ...(errors?._global ?? []),
+          ...orphanedErrors,
+        ]),
+      [errors?._global, orphanedErrors, hiddenFieldsErrorsToGlobal]
+    )
 
-  const [disabled, setDisabled] = React.useState(false)
+    const buttonLabel =
+      navigationState !== 'idle'
+        ? (pendingButtonLabel ?? rawButtonLabel)
+        : rawButtonLabel
 
-  const globalErrorsToDisplay =
-    navigationState !== 'idle' ? undefined : globalErrors
+    const [disabled, setDisabled] = React.useState(false)
 
-  const customChildren = mapChildren(
-    // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
-    (childrenFn as ((...args: any[]) => React.ReactNode) | undefined)?.({
-      Field,
-      Errors,
-      Error,
-      Button,
-      submit: doSubmit,
-      ...form,
-    }),
-    (child) => {
-      if (child.type === Field) {
-        const { name } = child.props
-        const field = makeField(name)
+    const globalErrorsToDisplay =
+      navigationState !== 'idle' ? undefined : globalErrors
 
-        const autoFocus = firstErroredField()
-          ? field?.autoFocus
-          : (child.props.autoFocus ?? field?.autoFocus)
+    const customChildren = mapChildren(
+      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
+      (childrenFn as ((...args: any[]) => React.ReactNode) | undefined)?.({
+        Field,
+        Errors,
+        Error,
+        Button,
+        submit: doSubmit,
+        ...form,
+      }),
+      (child) => {
+        if (child.type === Field) {
+          const { name } = child.props
+          const field = makeField(name)
 
-        if (!child.props.children && field) {
-          return renderField({
-            Field,
-            ...field,
+          const autoFocus = firstErroredField()
+            ? field?.autoFocus
+            : (child.props.autoFocus ?? field?.autoFocus)
+
+          if (!child.props.children && field) {
+            return renderField({
+              Field,
+              ...field,
+              ...child.props,
+              autoFocus,
+            })
+          }
+
+          return React.cloneElement(child, {
+            shape: field?.shape,
+            fieldType: field?.fieldType,
+            label: field?.label,
+            placeholder: field?.placeholder,
+            required: field?.required,
+            options: field?.options,
+            value: field?.value,
+            errors: field?.errors,
+            hidden: field?.hidden,
+            multiline: field?.multiline,
             ...child.props,
             autoFocus,
           })
         }
+        if (child.type === Errors) {
+          if (!child.props.children && !globalErrorsToDisplay?.length)
+            return null
 
-        return React.cloneElement(child, {
-          shape: field?.shape,
-          fieldType: field?.fieldType,
-          label: field?.label,
-          placeholder: field?.placeholder,
-          required: field?.required,
-          options: field?.options,
-          value: field?.value,
-          errors: field?.errors,
-          hidden: field?.hidden,
-          multiline: field?.multiline,
-          ...child.props,
-          autoFocus,
-        })
-      }
-      if (child.type === Errors) {
-        if (!child.props.children && !globalErrorsToDisplay?.length) return null
+          if (child.props.children || !globalErrorsToDisplay?.length) {
+            return React.cloneElement(child, {
+              role: 'alert',
+              ...child.props,
+            })
+          }
 
-        if (child.props.children || !globalErrorsToDisplay?.length) {
           return React.cloneElement(child, {
             role: 'alert',
+            children: globalErrorsToDisplay.map((error) => (
+              <Error key={error}>{error}</Error>
+            )),
             ...child.props,
           })
         }
+        if (child.type === Button) {
+          const onClick = ['button', 'reset'].includes(child.props.type)
+            ? undefined
+            : onSubmit
 
-        return React.cloneElement(child, {
-          role: 'alert',
-          children: globalErrorsToDisplay.map((error) => (
-            <Error key={error}>{error}</Error>
-          )),
-          ...child.props,
-        })
-      }
-      if (child.type === Button) {
-        const onClick = ['button', 'reset'].includes(child.props.type)
-          ? undefined
-          : onSubmit
-
-        return React.cloneElement(child, {
-          disabled,
-          children: buttonLabel,
-          onClick,
-          ...child.props,
-        })
-      }
-      return child
-    }
-  )
-
-  const defaultChildren = () => (
-    <>
-      <FieldsComponent>
-        {Object.keys(fields)
-          .map(makeField)
-          .map((field) => renderField({ Field, ...field }))}
-      </FieldsComponent>
-      {globalErrorsToDisplay?.length && (
-        <Errors role="alert">
-          {globalErrorsToDisplay.map((error) => (
-            <Error key={error}>{error}</Error>
-          ))}
-        </Errors>
-      )}
-      <Button disabled={disabled}>{buttonLabel}</Button>
-    </>
-  )
-
-  React.useEffect(() => {
-    const submitting = navigationState !== 'idle'
-
-    const shouldDisable =
-      mode === 'onChange' || mode === 'all'
-        ? submitting || !isValid
-        : submitting
-
-    setDisabled(shouldDisable)
-  }, [navigationState, formState, mode, isValid])
-
-  React.useEffect(() => {
-    const newDefaults = Object.fromEntries(
-      reduceElements(customChildren, [] as string[][], (prev, child) => {
-        if (child.type === Field) {
-          const { name, value } = child.props
-          prev.push([name, value])
+          return React.cloneElement(child, {
+            disabled,
+            children: buttonLabel,
+            onClick,
+            ...child.props,
+          })
         }
-        return prev
-      })
+        return child
+      }
     )
-    reset({ ...defaultValues, ...newDefaults })
-  }, [])
 
-  React.useEffect(() => {
-    Object.keys(errors).forEach((key) => {
-      if (key === '_global') return
-      form.setError(key as Path<Infer<Schema>>, {
-        type: 'custom',
-        message: (errors[key] ?? []).join(', '),
+    const defaultChildren = () => (
+      <>
+        <FieldsComponent>
+          {Object.keys(fields)
+            .map(makeField)
+            .map((field) => renderField({ Field, ...field }))}
+        </FieldsComponent>
+        {globalErrorsToDisplay?.length && (
+          <Errors role="alert">
+            {globalErrorsToDisplay.map((error) => (
+              <Error key={error}>{error}</Error>
+            ))}
+          </Errors>
+        )}
+        <Button disabled={disabled}>{buttonLabel}</Button>
+      </>
+    )
+
+    React.useEffect(() => {
+      const submitting = navigationState !== 'idle'
+
+      const shouldDisable =
+        mode === 'onChange' || mode === 'all'
+          ? submitting || !isValid
+          : submitting
+
+      setDisabled(shouldDisable)
+    }, [navigationState, formState, mode, isValid])
+
+    React.useEffect(() => {
+      const newDefaults = Object.fromEntries(
+        reduceElements(customChildren, [] as string[][], (prev, child) => {
+          if (child.type === Field) {
+            const { name, value } = child.props
+            prev.push([name, value])
+          }
+          return prev
+        })
+      )
+      reset({ ...defaultValues, ...newDefaults })
+    }, [])
+
+    React.useEffect(() => {
+      Object.keys(errors).forEach((key) => {
+        if (key === '_global') return
+        form.setError(key as Path<Infer<Schema>>, {
+          type: 'custom',
+          message: (errors[key] ?? []).join(', '),
+        })
       })
-    })
-    if (firstErroredField()) {
-      try {
-        form.setFocus(firstErroredField() as Path<SchemaType>)
-      } catch {}
-    }
-  }, [errorsProp, actionData])
+      if (firstErroredField()) {
+        try {
+          form.setFocus(firstErroredField() as Path<SchemaType>)
+        } catch {}
+      }
+    }, [errorsProp, actionData])
 
-  React.useEffect(() => {
-    onNavigation?.(form)
-  }, [navigationState])
+    React.useEffect(() => {
+      onNavigation?.(form)
+    }, [navigationState])
 
-  return (
-    <FormProvider {...form}>
-      <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
-        {beforeChildren}
-        {customChildren ?? defaultChildren()}
-      </Component>
-    </FormProvider>
-  )
+    return (
+      <FormProvider {...form}>
+        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
+          {beforeChildren}
+          {customChildren ?? defaultChildren()}
+        </Component>
+      </FormProvider>
+    )
+  }
 }
+
+const SchemaForm = makeSchemaForm(defaultComponents)
 
 export type {
   AutoInputType,
@@ -652,4 +620,4 @@ export type {
   FormSchema,
 }
 
-export { SchemaForm }
+export { SchemaForm, makeSchemaForm }
