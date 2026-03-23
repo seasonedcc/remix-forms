@@ -54,6 +54,21 @@ const DefaultButton = React.forwardRef<
   JSX.IntrinsicElements['button']
 >((props, ref) => <button {...props} ref={ref} />)
 
+/**
+ * HTML input types that can be automatically inferred from a schema
+ * field's {@link SchemaInfo.format | format} metadata.
+ *
+ * When a field's format maps to one of these input types and that type is
+ * included in the {@link SchemaFormProps.autoInputTypes | autoInputTypes}
+ * array, the corresponding `<input type="...">` is set automatically.
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} autoInputTypes={['date', 'email']} />
+ * ```
+ */
+type AutoInputType = 'date' | 'datetime-local' | 'time' | 'email' | 'url'
+
 type Field<SchemaType> = {
   shape: SchemaInfo
   fieldType: FieldType
@@ -176,6 +191,7 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   inputTypes?: Partial<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
   >
+  autoInputTypes?: AutoInputType[]
   multiline?: Array<keyof Infer<Schema>>
   radio?: Array<KeysOfStrings<Infer<Schema>>>
   autoFocus?: keyof Infer<Schema>
@@ -185,6 +201,24 @@ type SchemaFormProps<Schema extends FormSchema> = ComponentMappings & {
   idPrefix?: string
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
+
+const formatToInputType: Partial<Record<string, AutoInputType>> = {
+  date: 'date',
+  datetime: 'datetime-local',
+  time: 'time',
+  email: 'email',
+  url: 'url',
+}
+
+function resolveAutoInputType(
+  info: SchemaInfo,
+  allowedTypes: AutoInputType[]
+): AutoInputType | undefined {
+  if (!info.format) return undefined
+  const mapped = formatToInputType[info.format]
+  if (!mapped || !allowedTypes.includes(mapped)) return undefined
+  return mapped
+}
 
 function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
@@ -230,6 +264,7 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param props.placeholders - Placeholder text for fields
  * @param props.options - Select and radio options for fields
  * @param props.inputTypes - Custom input types per field
+ * @param props.autoInputTypes - HTML input types to assign automatically based on schema format. Defaults to `['date', 'datetime-local', 'time']`
  * @param props.hiddenFields - Fields rendered as hidden inputs
  * @param props.multiline - Fields rendered with the multiline component
  * @param props.radio - Fields rendered as radio groups
@@ -288,6 +323,7 @@ function SchemaForm<Schema extends FormSchema>({
   placeholders,
   options,
   inputTypes,
+  autoInputTypes = ['date', 'datetime-local', 'time'],
   emptyOptionLabel = '',
   hiddenFields,
   multiline,
@@ -435,7 +471,7 @@ function SchemaForm<Schema extends FormSchema>({
     return {
       shape: info,
       fieldType: uiFieldType(info),
-      type: inputTypes?.[key],
+      type: inputTypes?.[key] ?? resolveAutoInputType(info, autoInputTypes),
       name: key,
       required,
       dirty: key in formState.dirtyFields,
@@ -653,6 +689,7 @@ function SchemaForm<Schema extends FormSchema>({
 }
 
 export type {
+  AutoInputType,
   Field,
   RenderFieldProps,
   RenderField,
