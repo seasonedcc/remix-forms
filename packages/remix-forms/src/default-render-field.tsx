@@ -7,11 +7,12 @@ function defaultRenderField<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 >({
   Field,
   name,
   ...props
-}: RenderFieldProps<Schema, Resolved, Multiline, Radio>) {
+}: RenderFieldProps<Schema, Resolved, Multiline, Radio, Hidden>) {
   return <Field key={String(name)} name={name} {...props} />
 }
 

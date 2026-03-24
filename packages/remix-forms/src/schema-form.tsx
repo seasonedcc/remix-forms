@@ -92,8 +92,9 @@ type RenderFieldProps<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = Field<Infer<Schema>> & {
-  Field: FieldComponent<Schema, Resolved, Multiline, Radio>
+  Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
 }
 
 /**
@@ -118,7 +119,10 @@ type RenderField<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
-> = (props: RenderFieldProps<Schema, Resolved, Multiline, Radio>) => JSX.Element
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = (
+  props: RenderFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
+) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
@@ -128,9 +132,10 @@ type Children<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = (
   helpers: {
-    Field: FieldComponent<Schema, Resolved, Multiline, Radio>
+    Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
     Errors: Resolved['globalErrors']
     Error: Resolved['error']
     Button: Resolved['button']
@@ -167,6 +172,7 @@ type SchemaFormProps<
   Components extends Partial<ComponentMap>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<KeysOfStrings<Infer<Schema>>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = {
   components?: Components
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -180,7 +186,8 @@ type SchemaFormProps<
     Schema,
     MergeComponents<Base, Components>,
     Multiline,
-    Radio
+    Radio,
+    Hidden
   >
   buttonLabel?: string
   pendingButtonLabel?: string
@@ -194,7 +201,7 @@ type SchemaFormProps<
   >
   options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
-  hiddenFields?: Array<keyof Infer<Schema>>
+  hiddenFields?: Hidden
   inputTypes?: Partial<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
   >
@@ -208,7 +215,8 @@ type SchemaFormProps<
     Schema,
     MergeComponents<Base, Components>,
     Multiline,
-    Radio
+    Radio,
+    Hidden
   >
   idPrefix?: string
   flushSync?: boolean
@@ -272,6 +280,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     const Radio extends ReadonlyArray<
       KeysOfStrings<Infer<Schema>>
     > = readonly [],
+    const Hidden extends ReadonlyArray<keyof Infer<Schema>> = readonly [],
   >({
     components: componentsProp,
     fetcher,
@@ -301,7 +310,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     idPrefix: idPrefixProp,
     flushSync,
     ...props
-  }: SchemaFormProps<Schema, Base, Components, Multiline, Radio>) {
+  }: SchemaFormProps<Schema, Base, Components, Multiline, Radio, Hidden>) {
     type SchemaType = Infer<Schema>
     const generatedId = React.useId()
     const idPrefix = idPrefixProp ?? generatedId
@@ -387,7 +396,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
           Schema,
           MergeComponents<Base, Components>,
           Multiline,
-          Radio
+          Radio,
+          Hidden
         >({
           register: form.register,
           idPrefix,

@@ -199,7 +199,9 @@ it('SmartInputSlot resolves boolean field to checkbox', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'flag',
+    undefined,
     undefined,
     undefined
   >
@@ -213,7 +215,9 @@ it('SmartInputSlot resolves optional boolean to checkbox', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'flag',
+    undefined,
     undefined,
     undefined
   >
@@ -227,7 +231,9 @@ it('SmartInputSlot resolves string to input', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'name',
+    undefined,
     undefined,
     undefined
   >
@@ -241,7 +247,9 @@ it('SmartInputSlot resolves enum to select', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'role',
+    undefined,
     undefined,
     undefined
   >
@@ -255,7 +263,9 @@ it('SmartInputSlot resolves optional enum to select', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'role',
+    undefined,
     undefined,
     undefined
   >
@@ -269,7 +279,9 @@ it('SmartInputSlot resolves string in config multiline to multiline', () => {
     S,
     readonly ['bio'],
     readonly [],
+    readonly [],
     'bio',
+    undefined,
     undefined,
     undefined
   >
@@ -283,7 +295,9 @@ it('SmartInputSlot resolves enum in config radio to radio', () => {
     S,
     readonly [],
     readonly ['role'],
+    readonly [],
     'role',
+    undefined,
     undefined,
     undefined
   >
@@ -297,8 +311,10 @@ it('SmartInputSlot resolves Field-level multiline=true to multiline', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'notes',
     true,
+    undefined,
     undefined
   >
   expectTypeOf<Slot>().toEqualTypeOf<'multiline'>()
@@ -311,9 +327,11 @@ it('SmartInputSlot resolves Field-level radio=true to radio', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'choice',
     undefined,
-    true
+    true,
+    undefined
   >
   expectTypeOf<Slot>().toEqualTypeOf<'radio'>()
 })
@@ -325,9 +343,11 @@ it('SmartInputSlot: Field-level radio=true overrides config multiline', () => {
     S,
     readonly ['field'],
     readonly [],
+    readonly [],
     'field',
     undefined,
-    true
+    true,
+    undefined
   >
   expectTypeOf<Slot>().toEqualTypeOf<'radio'>()
 })
@@ -339,11 +359,107 @@ it('SmartInputSlot: boolean always wins over Field-level radio', () => {
     S,
     readonly [],
     readonly [],
+    readonly [],
     'flag',
+    undefined,
+    true,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
+})
+
+it('SmartInputSlot: Field-level hidden=true resolves boolean to input', () => {
+  const schema = z.object({ flag: z.boolean() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly [],
+    'flag',
+    undefined,
     undefined,
     true
   >
-  expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
+  expectTypeOf<Slot>().toEqualTypeOf<'input'>()
+})
+
+it('SmartInputSlot: Field-level hidden=true resolves enum to input', () => {
+  const schema = z.object({ role: z.enum(['a', 'b']) })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly [],
+    'role',
+    undefined,
+    undefined,
+    true
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'input'>()
+})
+
+it('SmartInputSlot: schema-level Hidden resolves boolean to input', () => {
+  const schema = z.object({ flag: z.boolean() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly ['flag'],
+    'flag',
+    undefined,
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'input'>()
+})
+
+it('SmartInputSlot: schema-level Hidden resolves enum to input', () => {
+  const schema = z.object({ role: z.enum(['a', 'b']) })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly ['role'],
+    'role',
+    undefined,
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'input'>()
+})
+
+it('SmartInputSlot: schema-level Hidden does not affect other fields', () => {
+  const schema = z.object({
+    secret: z.string(),
+    flag: z.boolean(),
+  })
+  type S = typeof schema
+  type HiddenSlot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly ['secret'],
+    'secret',
+    undefined,
+    undefined,
+    undefined
+  >
+  type VisibleSlot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    readonly ['secret'],
+    'flag',
+    undefined,
+    undefined,
+    undefined
+  >
+  expectTypeOf<HiddenSlot>().toEqualTypeOf<'input'>()
+  expectTypeOf<VisibleSlot>().toEqualTypeOf<'checkbox'>()
 })
 
 // --- StripDefaultProps ---
