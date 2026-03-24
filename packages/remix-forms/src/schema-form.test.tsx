@@ -763,3 +763,20 @@ describe('element type comparison safety', () => {
     expect(customButton?.[0]).not.toContain('OK')
   })
 })
+
+describe('SchemaForm hidden field errors', () => {
+  it('promotes hidden field errors to global errors', () => {
+    const schema = z.object({ visible: z.string(), secret: z.string() })
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['secret']}
+        labels={{ secret: 'Secret' }}
+        errors={{ secret: ['Missing'] }}
+      />
+    )
+
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Secret: Missing')
+  })
+})
