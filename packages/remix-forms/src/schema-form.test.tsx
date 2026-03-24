@@ -392,6 +392,71 @@ describe('SchemaForm', () => {
     expect(html).toContain('autoComplete="organization"')
     expect(html).toContain('autoComplete="shipping"')
   })
+
+  it('applies schema-level autoComplete to generated inputs', () => {
+    const schema = z.object({
+      name: z.string(),
+      email: z.string(),
+      bio: z.string(),
+      role: z.enum(['a', 'b']),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        autoComplete={{
+          name: 'name',
+          email: 'email',
+          bio: 'on',
+          role: 'organization',
+        }}
+        multiline={['bio']}
+      />
+    )
+
+    expect(html).toContain('autoComplete="name"')
+    expect(html).toContain('autoComplete="email"')
+    expect(html).toContain('autoComplete="on"')
+    expect(html).toContain('autoComplete="organization"')
+  })
+
+  it('passes schema-level autoComplete through renderField', () => {
+    const schema = z.object({ email: z.string() })
+    const renderField: RenderField<
+      typeof schema,
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any,
+      readonly [],
+      readonly []
+    > = vi.fn(({ Field, name, autoComplete }) => (
+      <Field name={name} autoComplete={autoComplete} />
+    ))
+
+    renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        autoComplete={{ email: 'email' }}
+        renderField={renderField}
+      />
+    )
+
+    expect(renderField).toHaveBeenCalledWith(
+      expect.objectContaining({ autoComplete: 'email' })
+    )
+  })
+
+  it('lets Field-level autoComplete override schema-level', () => {
+    const schema = z.object({ email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} autoComplete={{ email: 'email' }}>
+        {({ Field }) => <Field name="email" autoComplete="off" />}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('autoComplete="off"')
+    expect(html).not.toContain('autoComplete="email"')
+  })
 })
 it('uses provided form component for rendering', () => {
   const schema = z.object({ name: z.string() })
