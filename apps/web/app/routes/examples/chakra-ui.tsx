@@ -6,16 +6,17 @@ import { formAction, makeSchemaForm } from 'remix-forms'
 import { z } from 'zod'
 import { cx, metaTags } from '~/helpers'
 import Checkbox from '~/ui/checkbox'
+import CheckboxLabel from '~/ui/checkbox-label'
 import Error from '~/ui/error'
 import Errors from '~/ui/errors'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
 import Field from '~/ui/field'
 import Fields from '~/ui/fields'
-import InputWrapper from '~/ui/input-wrapper'
 import Label from '~/ui/label'
 import Radio from '~/ui/radio'
 import RadioGroup from '~/ui/radio-group'
+import RadioLabel from '~/ui/radio-label'
 import Select from '~/ui/select'
 import type { Route } from './+types/chakra-ui'
 
@@ -243,9 +244,9 @@ const SchemaForm = makeSchemaForm({
   select: Select,
   radio: Radio,
   radioGroup: RadioGroup,
-  radioWrapper: InputWrapper,
-  checkboxWrapper: InputWrapper,
+  radioLabel: RadioLabel,
   checkbox: Checkbox,
+  checkboxLabel: CheckboxLabel,
   button: ChakraButton,
   globalErrors: Errors,
   error: Error,

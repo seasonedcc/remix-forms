@@ -71,19 +71,15 @@ type RadioSlotProps = {
 
 type CheckboxLabelSlotProps = {
   id?: string
-  htmlFor?: string
   children?: React.ReactNode
 }
 
 type RadioLabelSlotProps = {
   id?: string
-  htmlFor?: string
   children?: React.ReactNode
 }
 
 type RadioGroupSlotProps = { children?: React.ReactNode }
-
-type WrapperSlotProps = { children?: React.ReactNode }
 
 type ErrorContainerSlotProps = {
   id?: string
@@ -123,9 +119,7 @@ type ComponentMap = {
   select: ComponentFor<SelectSlotProps>
   checkbox: ComponentFor<CheckboxSlotProps>
   radio: ComponentFor<RadioSlotProps>
-  checkboxWrapper: ComponentFor<WrapperSlotProps>
   checkboxLabel: ComponentFor<CheckboxLabelSlotProps>
-  radioWrapper: ComponentFor<WrapperSlotProps>
   radioGroup: ComponentFor<RadioGroupSlotProps>
   radioLabel: ComponentFor<RadioLabelSlotProps>
   fieldErrors: ComponentFor<ErrorContainerSlotProps>
@@ -178,26 +172,16 @@ const DefaultRadioGroup = React.forwardRef<
   JSX.IntrinsicElements['fieldset']
 >((props, ref) => <fieldset {...props} ref={ref} />)
 
-const DefaultRadioWrapper = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
 const DefaultRadioLabel = React.forwardRef<
   HTMLLabelElement,
   JSX.IntrinsicElements['label']
-  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
+  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, input is nested at render time
 >((props, ref) => <label {...props} ref={ref} />)
-
-const DefaultCheckboxWrapper = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
 
 const DefaultCheckboxLabel = React.forwardRef<
   HTMLLabelElement,
   JSX.IntrinsicElements['label']
-  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
+  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, input is nested at render time
 >((props, ref) => <label {...props} ref={ref} />)
 
 const DefaultFieldErrors = React.forwardRef<
@@ -234,9 +218,7 @@ type DefaultComponents = {
   select: typeof DefaultSelect
   checkbox: typeof DefaultCheckbox
   radio: typeof DefaultRadio
-  checkboxWrapper: typeof DefaultCheckboxWrapper
   checkboxLabel: typeof DefaultCheckboxLabel
-  radioWrapper: typeof DefaultRadioWrapper
   radioGroup: typeof DefaultRadioGroup
   radioLabel: typeof DefaultRadioLabel
   fieldErrors: typeof DefaultFieldErrors
@@ -255,9 +237,7 @@ const defaultComponents: DefaultComponents = {
   select: DefaultSelect,
   checkbox: DefaultCheckbox,
   radio: DefaultRadio,
-  checkboxWrapper: DefaultCheckboxWrapper,
   checkboxLabel: DefaultCheckboxLabel,
-  radioWrapper: DefaultRadioWrapper,
   radioGroup: DefaultRadioGroup,
   radioLabel: DefaultRadioLabel,
   fieldErrors: DefaultFieldErrors,
@@ -314,9 +294,7 @@ export {
   DefaultCheckbox,
   DefaultRadio,
   DefaultRadioGroup,
-  DefaultRadioWrapper,
   DefaultRadioLabel,
-  DefaultCheckboxWrapper,
   DefaultCheckboxLabel,
   DefaultFieldErrors,
   DefaultFieldError,

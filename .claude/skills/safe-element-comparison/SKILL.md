@@ -39,8 +39,8 @@ All default components are defined at module scope as `React.forwardRef` wrapper
 | `DefaultCheckbox` | `<input>` | `checkboxComponent` |
 | `DefaultRadio` | `<input>` | `radioComponent` |
 | `DefaultRadioGroup` | `<fieldset>` | `radioGroupComponent` |
-| `DefaultRadioWrapper` | `<div>` | `radioWrapperComponent` |
-| `DefaultCheckboxWrapper` | `<div>` | `checkboxWrapperComponent` |
+| `DefaultRadioLabel` | `<label>` | `radioLabelComponent` |
+| `DefaultCheckboxLabel` | `<label>` | `checkboxLabelComponent` |
 | `DefaultFieldErrors` | `<div>` | `fieldErrorsComponent` |
 | `DefaultFieldError` | `<div>` | `errorComponent` |
 

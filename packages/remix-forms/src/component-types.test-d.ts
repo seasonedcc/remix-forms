@@ -143,10 +143,14 @@ it('ResolveComponents defaults checkboxLabel and radioLabel', () => {
   >()
 })
 
+it('ComponentMap does not include checkboxWrapper or radioWrapper', () => {
+  expectTypeOf<ComponentMap>().not.toHaveProperty('checkboxWrapper')
+  expectTypeOf<ComponentMap>().not.toHaveProperty('radioWrapper')
+})
+
 it('MergeComponents overrides checkboxLabel and radioLabel', () => {
   type CustomLabel = React.FC<{
     id?: string
-    htmlFor?: string
     children?: React.ReactNode
     variant?: string
   }>

@@ -5,7 +5,10 @@ export default function RadioLabel({
   ...props
 }: JSX.IntrinsicElements['label']) {
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: association happens at render time via htmlFor
-    <label className={cx('label', className)} {...props} />
+    // biome-ignore lint/a11y/noLabelWithoutControl: input is nested at render time
+    <label
+      className={cx('label flex cursor-pointer items-center gap-2', className)}
+      {...props}
+    />
   )
 }

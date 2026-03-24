@@ -31,7 +31,7 @@ test('With JS enabled', async ({ example }) => {
   })
 
   await expect(newsletter.input.locator('..')).toHaveClass(
-    'flex items-center gap-2'
+    'label flex cursor-pointer items-center gap-2'
   )
 
   // Client-side validation

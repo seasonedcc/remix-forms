@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  label[for] {
+  label[for],
+  label:has(> input) {
     @apply cursor-pointer;
   }
 
