@@ -22,7 +22,7 @@ import type { Route } from './+types/chakra-ui'
 
 const title = 'Chakra UI'
 const description =
-  'In this example, we show how makeSchemaForm enables type-safe integration with UI libraries like Chakra UI.'
+  'In this example, we show how makeSchemaForm enables type-safe integration with UI libraries like Chakra UI. Field accepts the same type-safe props as SmartInput — no children render prop needed for simple cases.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
@@ -43,29 +43,19 @@ const schema = z.object({
 })
 
 export default () => (
-  <SchemaForm schema={schema} multiline={['bio']} radio={['role']}>
+  <SchemaForm
+    schema={schema}
+    multiline={['bio']}
+    radio={['role']}
+    labels={{ firstName: 'First name', email: 'Email address' }}
+  >
     {({ Field, Errors, Button }) => (
       <>
-        <Field name="firstName">
-          {({ Label, SmartInput, Errors }) => (
-            <>
-              <Label>First name</Label>
-              {/* SmartInput knows this is an input field — accepts ChakraInput props */}
-              <SmartInput size="lg" />
-              <Errors />
-            </>
-          )}
-        </Field>
-        <Field name="email">
-          {({ Label, SmartInput, Errors }) => (
-            <>
-              <Label>Email address</Label>
-              {/* SmartInput infers input slot — variant is a ChakraInput prop */}
-              <SmartInput variant="filled" />
-              <Errors />
-            </>
-          )}
-        </Field>
+        {/* size is a ChakraInput prop — no children needed */}
+        <Field name="firstName" size="lg" />
+        {/* variant on the input + className on the wrapper via fieldProps */}
+        <Field name="email" variant="filled" fieldProps={{ className: 'col-span-full' }} />
+        {/* Children render prop still works for custom layouts */}
         <Field name="password" type="password">
           {({ Label, SmartInput, Errors }) => (
             <>
@@ -75,22 +65,22 @@ export default () => (
             </>
           )}
         </Field>
-        <Field name="bio">
+        {/* resize on Field is forwarded to SmartInput; size on SmartInput composes */}
+        <Field name="bio" resize="none">
           {({ Label, SmartInput, Errors }) => (
             <>
               <Label>Bio</Label>
-              {/* SmartInput knows bio is multiline — accepts ChakraTextarea props */}
-              <SmartInput resize="none" />
+              <SmartInput size="lg" />
               <Errors />
             </>
           )}
         </Field>
+        {/* Children render prop for custom radio layout */}
         <Field name="role">
-          {({ Label, SmartInput, RadioGroup, Errors }) => (
+          {({ Label, RadioGroup, SmartInput, Errors }) => (
             <>
               <Label>Role</Label>
               <RadioGroup>
-                {/* SmartInput knows role is radio (enum in radio config) */}
                 <SmartInput />
               </RadioGroup>
               <Errors />
@@ -261,9 +251,8 @@ export default function Component() {
           In this example, we show how <em>makeSchemaForm</em> enables type-safe
           integration with UI libraries like{' '}
           <ExternalLink href="https://chakra-ui.com/">Chakra UI</ExternalLink>.
-          SmartInput automatically infers which component it will render from
-          the schema and form config, giving you the exact props of that
-          component.
+          Field accepts the same type-safe props as SmartInput — no children
+          render prop needed for simple cases.
         </>
       }
     >
@@ -272,28 +261,17 @@ export default function Component() {
         multiline={['bio']}
         radio={['role']}
         inputTypes={{ password: 'password' }}
+        labels={{ firstName: 'First name', email: 'Email address' }}
         buttonLabel="Sign up"
       >
         {({ Field, Errors, Button }) => (
           <>
-            <Field name="firstName">
-              {({ Label, SmartInput, Errors }) => (
-                <>
-                  <Label>First name</Label>
-                  <SmartInput size="lg" />
-                  <Errors />
-                </>
-              )}
-            </Field>
-            <Field name="email">
-              {({ Label, SmartInput, Errors }) => (
-                <>
-                  <Label>Email address</Label>
-                  <SmartInput variant="filled" />
-                  <Errors />
-                </>
-              )}
-            </Field>
+            <Field name="firstName" size="lg" />
+            <Field
+              name="email"
+              variant="filled"
+              fieldProps={{ className: 'col-span-full' }}
+            />
             <Field name="password" type="password">
               {({ Label, SmartInput, Errors }) => (
                 <>
@@ -303,17 +281,17 @@ export default function Component() {
                 </>
               )}
             </Field>
-            <Field name="bio">
+            <Field name="bio" resize="none">
               {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label>Bio</Label>
-                  <SmartInput resize="none" />
+                  <SmartInput size="lg" />
                   <Errors />
                 </>
               )}
             </Field>
             <Field name="role">
-              {({ Label, SmartInput, RadioGroup, Errors }) => (
+              {({ Label, RadioGroup, SmartInput, Errors }) => (
                 <>
                   <Label>Role</Label>
                   <RadioGroup>

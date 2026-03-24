@@ -794,6 +794,22 @@ describe('schema-level props forwarded to Field with custom children', () => {
   })
 })
 
+describe('fieldProps in SchemaForm custom children', () => {
+  it('passes fieldProps to the wrapper element', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="name" fieldProps={{ className: 'custom-wrapper' }} />
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('class="custom-wrapper"')
+  })
+})
+
 describe('SchemaForm hidden field errors', () => {
   it('promotes hidden field errors to global errors', () => {
     const schema = z.object({ visible: z.string(), secret: z.string() })

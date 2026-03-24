@@ -53,7 +53,7 @@ export default () => {
           <div className="flex justify-end gap-2">
             <Field
               name="name"
-              className="flex-1 flex-col gap-2"
+              fieldProps={{ className: "flex-1 flex-col gap-2" }}
               placeholder="Add to-do"
               autoFocus
             >
@@ -116,7 +116,7 @@ export default function Component() {
             <div className="flex justify-end gap-2">
               <Field
                 name="name"
-                className="flex-1 flex-col gap-2"
+                fieldProps={{ className: 'flex-1 flex-col gap-2' }}
                 placeholder="Add to-do"
                 autoFocus
               >

@@ -80,15 +80,22 @@ type FieldBaseProps<
   H extends boolean | undefined,
 > = Omit<
   Partial<Field<Infer<Schema>>>,
-  'name' | 'multiline' | 'radio' | 'hidden'
+  'name' | 'multiline' | 'radio' | 'hidden' | 'autoComplete'
 > & {
   name: Name
   multiline?: M
   radio?: R
   hidden?: H
-  type?: JSX.IntrinsicElements['input']['type']
   children?: Children<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
+  fieldProps?: Omit<PropsOf<Resolved['field']>, 'children'>
 }
+
+type SmartInputInternalKeys =
+  | 'registerProps'
+  | 'a11yProps'
+  | 'className'
+  | 'defaultValue'
+  | 'defaultChecked'
 
 type FieldProps<
   Schema extends FormSchema,
@@ -102,7 +109,21 @@ type FieldProps<
   R extends boolean | undefined,
   H extends boolean | undefined,
 > = FieldBaseProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H> &
-  Omit<PropsOf<Resolved['field']>, 'children'>
+  Omit<
+    SmartInputProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>,
+    | keyof FieldBaseProps<
+        Schema,
+        Resolved,
+        Multiline,
+        Radio,
+        Hidden,
+        Name,
+        M,
+        R,
+        H
+      >
+    | SmartInputInternalKeys
+  >
 
 type FieldComponent<
   Schema extends FormSchema,
@@ -407,7 +428,8 @@ function createField<
         hidden = false,
         autoComplete,
         children: childrenFn,
-        ...props
+        fieldProps,
+        ...smartInputExtra
       }: // biome-ignore lint/suspicious/noExplicitAny: internal implementation — generics are for the external API
       Record<string, any>,
       ref
@@ -434,7 +456,10 @@ function createField<
         ? errors.map((error: string) => <Error key={error}>{error}</Error>)
         : undefined
 
-      const style = hidden ? { display: 'none' } : undefined
+      const { style: userStyle, ...restFieldProps } = fieldProps ?? {}
+      const mergedStyle = hidden
+        ? { display: 'none' as const, ...userStyle }
+        : userStyle
       const type =
         typeProp ?? (hidden ? 'hidden' : getInputType(fieldType, radio))
 
@@ -528,6 +553,7 @@ function createField<
               ...smartChildProps
             } = child.props
             return React.cloneElement(child, {
+              ...smartInputExtra,
               ...smartInputProps,
               ...smartChildProps,
             })
@@ -645,7 +671,7 @@ function createField<
 
         return (
           <FieldContext.Provider value={field}>
-            <Field hidden={hidden} style={style} {...props}>
+            <Field hidden={hidden} style={mergedStyle} {...restFieldProps}>
               {children}
             </Field>
           </FieldContext.Provider>
@@ -665,12 +691,13 @@ function createField<
           autoComplete={autoComplete}
           value={value}
           a11yProps={a11yProps}
+          {...smartInputExtra}
         />
       )
 
       return (
         <FieldContext.Provider value={field}>
-          <Field hidden={hidden} style={style} {...props}>
+          <Field hidden={hidden} style={mergedStyle} {...restFieldProps}>
             {fieldType === 'boolean' ? (
               <CheckboxLabel id={labelId}>
                 {smartInput}
@@ -705,7 +732,9 @@ export type {
   FieldType,
   FieldComponent,
   Option,
+  SmartInputProps,
   SmartInputSlot,
+  SmartInputInternalKeys,
   StripDefaultProps,
   IsBoolean,
   IsEnum,
