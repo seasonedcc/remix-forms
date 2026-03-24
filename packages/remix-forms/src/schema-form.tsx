@@ -693,7 +693,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @param props.schema - Schema describing the form
  * @param props.beforeChildren - Elements rendered before generated fields
  * @param props.onNavigation - Callback when navigation state changes
- * @param props.children - Custom content instead of the default layout
+ * @param props.children - Render function for custom layout. Receives `Field`, `Fields`, `Errors`, `Error`, `Button`, `submit` and the React Hook Form return value. Use `Fields` to render all schema fields automatically while customizing the surrounding layout
  * @param props.labels - Custom labels for form fields
  * @param props.placeholders - Placeholder text for fields
  * @param props.autoComplete - Autocomplete hints for fields
@@ -719,6 +719,21 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @example
  * ```tsx
  * <SchemaForm schema={schema} components={{ input: MyInput }} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema}>
+ *   {({ Field, Fields, Errors, Button }) => (
+ *     <>
+ *       <Fields>
+ *         <Field name="email" label="E-mail" />
+ *       </Fields>
+ *       <Errors />
+ *       <Button />
+ *     </>
+ *   )}
+ * </SchemaForm>
  * ```
  */
 const SchemaForm = makeSchemaForm(defaultComponents)
