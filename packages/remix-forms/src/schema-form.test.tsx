@@ -217,6 +217,44 @@ describe('SchemaForm', () => {
     expect(html).toContain('value="b"')
   })
 
+  it('uses custom radioLabel component for radio option labels', () => {
+    const schema = z.object({ choice: z.enum(['a', 'b']) })
+    const RadioLabel = (props: React.ComponentProps<'label'>) => (
+      // biome-ignore lint/a11y/noLabelWithoutControl: test component
+      <label data-radio-label {...props} />
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        radio={['choice']}
+        components={{ radioLabel: RadioLabel }}
+      />
+    )
+
+    expect(html).toContain('data-radio-label="true"')
+    expect(html).toContain('>A</label>')
+    expect(html).toContain('>B</label>')
+  })
+
+  it('uses custom checkboxLabel component for boolean fields', () => {
+    const schema = z.object({ agree: z.boolean() })
+    const CheckboxLabel = (props: React.ComponentProps<'label'>) => (
+      // biome-ignore lint/a11y/noLabelWithoutControl: test component
+      <label data-checkbox-label {...props} />
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        components={{ checkboxLabel: CheckboxLabel }}
+      />
+    )
+
+    expect(html).toContain('data-checkbox-label="true"')
+    expect(html).toContain('Agree')
+  })
+
   it('applies custom input types', () => {
     const schema = z.object({ email: z.string() })
 

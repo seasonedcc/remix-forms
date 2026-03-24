@@ -69,6 +69,18 @@ type RadioSlotProps = {
   autoFocus?: boolean
 }
 
+type CheckboxLabelSlotProps = {
+  id?: string
+  htmlFor?: string
+  children?: React.ReactNode
+}
+
+type RadioLabelSlotProps = {
+  id?: string
+  htmlFor?: string
+  children?: React.ReactNode
+}
+
 type RadioGroupSlotProps = { children?: React.ReactNode }
 
 type WrapperSlotProps = { children?: React.ReactNode }
@@ -112,8 +124,10 @@ type ComponentMap = {
   checkbox: ComponentFor<CheckboxSlotProps>
   radio: ComponentFor<RadioSlotProps>
   checkboxWrapper: ComponentFor<WrapperSlotProps>
+  checkboxLabel: ComponentFor<CheckboxLabelSlotProps>
   radioWrapper: ComponentFor<WrapperSlotProps>
   radioGroup: ComponentFor<RadioGroupSlotProps>
+  radioLabel: ComponentFor<RadioLabelSlotProps>
   fieldErrors: ComponentFor<ErrorContainerSlotProps>
   error: ComponentFor<ErrorSlotProps>
   fields: ComponentFor<FieldsSlotProps>
@@ -169,10 +183,22 @@ const DefaultRadioWrapper = React.forwardRef<
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
 
+const DefaultRadioLabel = React.forwardRef<
+  HTMLLabelElement,
+  JSX.IntrinsicElements['label']
+  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
+>((props, ref) => <label {...props} ref={ref} />)
+
 const DefaultCheckboxWrapper = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultCheckboxLabel = React.forwardRef<
+  HTMLLabelElement,
+  JSX.IntrinsicElements['label']
+  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
+>((props, ref) => <label {...props} ref={ref} />)
 
 const DefaultFieldErrors = React.forwardRef<
   HTMLDivElement,
@@ -209,8 +235,10 @@ type DefaultComponents = {
   checkbox: typeof DefaultCheckbox
   radio: typeof DefaultRadio
   checkboxWrapper: typeof DefaultCheckboxWrapper
+  checkboxLabel: typeof DefaultCheckboxLabel
   radioWrapper: typeof DefaultRadioWrapper
   radioGroup: typeof DefaultRadioGroup
+  radioLabel: typeof DefaultRadioLabel
   fieldErrors: typeof DefaultFieldErrors
   error: typeof DefaultFieldError
   fields: typeof DefaultFieldsWrapper
@@ -228,8 +256,10 @@ const defaultComponents: DefaultComponents = {
   checkbox: DefaultCheckbox,
   radio: DefaultRadio,
   checkboxWrapper: DefaultCheckboxWrapper,
+  checkboxLabel: DefaultCheckboxLabel,
   radioWrapper: DefaultRadioWrapper,
   radioGroup: DefaultRadioGroup,
+  radioLabel: DefaultRadioLabel,
   fieldErrors: DefaultFieldErrors,
   error: DefaultFieldError,
   fields: DefaultFieldsWrapper,
@@ -285,7 +315,9 @@ export {
   DefaultRadio,
   DefaultRadioGroup,
   DefaultRadioWrapper,
+  DefaultRadioLabel,
   DefaultCheckboxWrapper,
+  DefaultCheckboxLabel,
   DefaultFieldErrors,
   DefaultFieldError,
   DefaultFieldsWrapper,

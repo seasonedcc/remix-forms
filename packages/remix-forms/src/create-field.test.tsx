@@ -360,17 +360,17 @@ describe('createField', () => {
           { name: 'B', value: 'b' },
         ]}
       >
-        {({ Label, RadioGroup, RadioWrapper, Radio }) => (
+        {({ Label, RadioLabel, RadioGroup, RadioWrapper, Radio }) => (
           <>
             <Label>Pick one</Label>
             <RadioGroup>
               <RadioWrapper>
                 <Radio value="a" type="radio" />
-                <Label>A</Label>
+                <RadioLabel>A</RadioLabel>
               </RadioWrapper>
               <RadioWrapper>
                 <Radio value="b" type="radio" />
-                <Label>B</Label>
+                <RadioLabel>B</RadioLabel>
               </RadioWrapper>
             </RadioGroup>
           </>
@@ -382,6 +382,54 @@ describe('createField', () => {
     expect(html).toContain('for="choice-a"')
     expect(html).toContain('id="choice-b"')
     expect(html).toContain('for="choice-b"')
+  })
+
+  it('links RadioLabel to generated ids when using children', () => {
+    const html = renderToStaticMarkup(
+      <ChoiceField
+        name="choice"
+        label="Choice"
+        radio
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      >
+        {({ RadioLabel, RadioGroup, RadioWrapper, Radio }) => (
+          <RadioGroup>
+            <RadioWrapper>
+              <Radio value="a" type="radio" />
+              <RadioLabel>A</RadioLabel>
+            </RadioWrapper>
+            <RadioWrapper>
+              <Radio value="b" type="radio" />
+              <RadioLabel>B</RadioLabel>
+            </RadioWrapper>
+          </RadioGroup>
+        )}
+      </ChoiceField>
+    )
+
+    expect(html).toContain('id="choice-a"')
+    expect(html).toContain('for="choice-a"')
+    expect(html).toContain('id="choice-b"')
+    expect(html).toContain('for="choice-b"')
+  })
+
+  it('provides CheckboxLabel in children render function', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Agree" fieldType="boolean">
+        {({ CheckboxWrapper, Checkbox, CheckboxLabel }) => (
+          <CheckboxWrapper>
+            <Checkbox />
+            <CheckboxLabel />
+          </CheckboxWrapper>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('for="foo"')
+    expect(html).toContain('Agree')
   })
 
   it('creates radio inputs with fieldset and linked labels by default', () => {
@@ -510,6 +558,114 @@ describe('component mappings', () => {
     expect(radioHtml).toContain('data-radio-group="true"')
     expect(radioHtml).toContain('data-radio-wrap="true"')
     expect(radioHtml).toContain('data-radio="true"')
+  })
+
+  it('uses custom checkboxLabel component for boolean fields', () => {
+    const BoolField = createField({
+      register,
+      idPrefix: '',
+      components: {
+        ...defaultComponents,
+        checkboxLabel: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-checkbox-label {...props} />
+        ),
+      },
+    })
+
+    const html = renderToStaticMarkup(
+      <BoolField name="agree" label="Agree" fieldType="boolean" />
+    )
+    expect(html).toContain('data-checkbox-label="true"')
+    expect(html).toContain('Agree')
+  })
+
+  it('uses custom radioLabel component for radio option labels', () => {
+    const RadioField = createField({
+      register,
+      idPrefix: '',
+      components: {
+        ...defaultComponents,
+        radioLabel: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-radio-label {...props} />
+        ),
+      },
+    })
+
+    const html = renderToStaticMarkup(
+      <RadioField
+        name="choice"
+        label="Choice"
+        radio
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      />
+    )
+    expect(html).toContain('data-radio-label="true"')
+    expect(html).toContain('>A</label>')
+    expect(html).toContain('>B</label>')
+  })
+
+  it('keeps label and radioLabel independent', () => {
+    const IndField = createField({
+      register,
+      idPrefix: '',
+      components: {
+        ...defaultComponents,
+        label: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-field-label {...props} />
+        ),
+        radioLabel: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-radio-label {...props} />
+        ),
+      },
+    })
+
+    const html = renderToStaticMarkup(
+      <IndField
+        name="choice"
+        label="Choice"
+        radio
+        options={[{ name: 'A', value: 'a' }]}
+      />
+    )
+    expect(html).toContain('data-field-label="true"')
+    expect(html).toContain('data-radio-label="true"')
+  })
+
+  it('keeps label and checkboxLabel independent', () => {
+    const IndField = createField({
+      register,
+      idPrefix: '',
+      components: {
+        ...defaultComponents,
+        label: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-field-label {...props} />
+        ),
+        checkboxLabel: (props: React.ComponentProps<'label'>) => (
+          // biome-ignore lint/a11y/noLabelWithoutControl: test component
+          <label data-checkbox-label {...props} />
+        ),
+      },
+    })
+
+    const htmlBool = renderToStaticMarkup(
+      <IndField name="agree" label="Agree" fieldType="boolean" />
+    )
+    expect(htmlBool).toContain('data-checkbox-label="true"')
+    expect(htmlBool).not.toContain('data-field-label="true"')
+
+    const htmlString = renderToStaticMarkup(
+      <IndField name="name" label="Name" />
+    )
+    expect(htmlString).toContain('data-field-label="true"')
+    expect(htmlString).not.toContain('data-checkbox-label="true"')
   })
 })
 
@@ -675,17 +831,17 @@ describe('defaultValue/defaultChecked stripping', () => {
           { name: 'B', value: 'b' },
         ]}
       >
-        {({ RadioGroup, RadioWrapper, Radio, Label }) => (
+        {({ RadioGroup, RadioWrapper, Radio, RadioLabel }) => (
           <RadioGroup>
             <RadioWrapper>
               {/* @ts-expect-error defaultChecked is stripped from user-facing type */}
               <Radio value="a" type="radio" defaultChecked={false} />
-              <Label>A</Label>
+              <RadioLabel>A</RadioLabel>
             </RadioWrapper>
             <RadioWrapper>
               {/* @ts-expect-error defaultChecked is stripped from user-facing type */}
               <Radio value="b" type="radio" defaultChecked={true} />
-              <Label>B</Label>
+              <RadioLabel>B</RadioLabel>
             </RadioWrapper>
           </RadioGroup>
         )}
