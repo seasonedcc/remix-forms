@@ -532,3 +532,98 @@ describe('element type comparison safety', () => {
     expect(customTextarea?.[0]).not.toContain('name="foo"')
   })
 })
+
+describe('defaultValue/defaultChecked stripping', () => {
+  it('strips defaultValue from Input child props', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" value="correct">
+        {({ Input }) => (
+          // @ts-expect-error defaultValue is stripped from user-facing type
+          <Input defaultValue="wrong" />
+        )}
+      </Field>
+    )
+    expect(html).toContain('value="correct"')
+    expect(html).not.toContain('value="wrong"')
+  })
+
+  it('strips defaultValue from Multiline child props', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" value="correct" multiline>
+        {({ Multiline }) => (
+          // @ts-expect-error defaultValue is stripped from user-facing type
+          <Multiline defaultValue="wrong" />
+        )}
+      </Field>
+    )
+    expect(html).toContain('correct')
+    expect(html).not.toContain('wrong')
+  })
+
+  it('strips defaultValue from Select child props', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        value="a"
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      >
+        {({ Select }) => (
+          // @ts-expect-error defaultValue is stripped from user-facing type
+          <Select defaultValue="b" />
+        )}
+      </Field>
+    )
+    expect(html).toContain('<option value="a" selected="">A</option>')
+    expect(html).not.toContain('<option value="b" selected')
+  })
+
+  it('strips defaultChecked from Checkbox child props', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldType="boolean" value={false}>
+        {({ Checkbox }) => (
+          // @ts-expect-error defaultChecked is stripped from user-facing type
+          <Checkbox defaultChecked={true} />
+        )}
+      </Field>
+    )
+    expect(html).not.toContain('checked')
+  })
+
+  it('strips defaultChecked from Radio child props', () => {
+    const html = renderToStaticMarkup(
+      <ChoiceField
+        name="choice"
+        label="Choice"
+        radio
+        value="a"
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+      >
+        {({ RadioGroup, RadioWrapper, Radio, Label }) => (
+          <RadioGroup>
+            <RadioWrapper>
+              {/* @ts-expect-error defaultChecked is stripped from user-facing type */}
+              <Radio value="a" type="radio" defaultChecked={false} />
+              <Label>A</Label>
+            </RadioWrapper>
+            <RadioWrapper>
+              {/* @ts-expect-error defaultChecked is stripped from user-facing type */}
+              <Radio value="b" type="radio" defaultChecked={true} />
+              <Label>B</Label>
+            </RadioWrapper>
+          </RadioGroup>
+        )}
+      </ChoiceField>
+    )
+    const radioA = html.match(/<input[^>]*value="a"[^>]*/)
+    expect(radioA?.[0]).toContain('checked')
+    const radioB = html.match(/<input[^>]*value="b"[^>]*/)
+    expect(radioB?.[0]).not.toContain('checked')
+  })
+})

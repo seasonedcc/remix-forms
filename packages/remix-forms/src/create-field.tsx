@@ -4,6 +4,10 @@ import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import { findElement, findParent, mapChildren } from './children-traversal'
 import type { PropsOf } from './defaults'
 import type { FormSchema, Infer } from './prelude'
+
+type StripDefaultProps<C, Keys extends string> = React.ComponentType<
+  Omit<PropsOf<C>, Keys>
+>
 import { mapObject } from './prelude'
 import type { Field } from './schema-form'
 
@@ -28,13 +32,13 @@ type Children<
     SmartInput: React.ComponentType<
       SmartInputProps<Schema, Resolved, Multiline, Radio, Name, M, R>
     >
-    Input: Resolved['input']
-    Multiline: Resolved['multiline']
-    Select: Resolved['select']
-    Checkbox: Resolved['checkbox']
+    Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
+    Multiline: StripDefaultProps<Resolved['multiline'], 'defaultValue'>
+    Select: StripDefaultProps<Resolved['select'], 'defaultValue'>
+    Checkbox: StripDefaultProps<Resolved['checkbox'], 'defaultChecked'>
     RadioGroup: Resolved['radioGroup']
     RadioWrapper: Resolved['radioWrapper']
-    Radio: Resolved['radio']
+    Radio: StripDefaultProps<Resolved['radio'], 'defaultChecked'>
     CheckboxWrapper: Resolved['checkboxWrapper']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
@@ -161,8 +165,11 @@ type SmartInputProps<
   M extends boolean | undefined,
   R extends boolean | undefined,
 > = SmartInputBaseProps &
-  Partial<
-    PropsOf<Resolved[SmartInputSlot<Schema, Multiline, Radio, Name, M, R>]>
+  Omit<
+    Partial<
+      PropsOf<Resolved[SmartInputSlot<Schema, Multiline, Radio, Name, M, R>]>
+    >,
+    'defaultValue' | 'defaultChecked'
   >
 
 const FieldContext = React.createContext<
@@ -245,6 +252,12 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
   }: SmartInputBaseProps) => {
     if (!registerProps) return null
 
+    const {
+      defaultValue: _dv,
+      defaultChecked: _dc,
+      ...safeProps
+    } = props as Record<string, unknown>
+
     const makeRadioOption =
       (props: Record<string, unknown>, checkedValue: Option['value']) =>
       ({ name, value }: Option) => {
@@ -270,7 +283,7 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
       id: `${idPrefix}${name}`,
       autoFocus,
       ...registerProps,
-      ...props,
+      ...safeProps,
     }
 
     const withAutoComplete = { ...commonProps, autoComplete }
@@ -473,12 +486,18 @@ function createField<
               a11yProps,
             }
 
+            const {
+              defaultValue: _sdv,
+              defaultChecked: _sdc,
+              ...smartChildProps
+            } = child.props
             return React.cloneElement(child, {
               ...smartInputProps,
-              ...child.props,
+              ...smartChildProps,
             })
           }
           if (child.type === Input) {
+            const { defaultValue: _, ...inputProps } = child.props
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}`,
               type,
@@ -488,11 +507,12 @@ function createField<
               autoFocus,
               autoComplete,
               defaultValue: value,
-              ...child.props,
+              ...inputProps,
               ref: mergedRef,
             })
           }
           if (child.type === Multiline) {
+            const { defaultValue: _, ...multilineProps } = child.props
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}`,
               ...registerProps,
@@ -501,11 +521,12 @@ function createField<
               autoFocus,
               autoComplete,
               defaultValue: value,
-              ...child.props,
+              ...multilineProps,
               ref: mergedRef,
             })
           }
           if (child.type === Select) {
+            const { defaultValue: _, ...selectProps } = child.props
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}`,
               ...registerProps,
@@ -514,7 +535,7 @@ function createField<
               autoComplete,
               defaultValue: value,
               children: makeOptionComponents(makeSelectOption, options),
-              ...child.props,
+              ...selectProps,
               ref: mergedRef,
             })
           }
@@ -523,6 +544,7 @@ function createField<
             ((child.type as unknown) !== 'input' ||
               child.props.type === 'checkbox')
           ) {
+            const { defaultChecked: _, ...checkboxProps } = child.props
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}`,
               type,
@@ -531,7 +553,7 @@ function createField<
               ...a11yProps,
               placeholder,
               defaultChecked: Boolean(value),
-              ...child.props,
+              ...checkboxProps,
               ref: mergedRef,
             })
           }
@@ -546,13 +568,14 @@ function createField<
             ((child.type as unknown) !== 'input' ||
               child.props.type === 'radio')
           ) {
+            const { defaultChecked: _, ...radioProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}-${child.props.value}`,
+              id: `${idPrefix}${String(name)}-${radioProps.value}`,
               type: 'radio',
               autoFocus,
               ...registerProps,
-              defaultChecked: value === child.props.value,
-              ...child.props,
+              defaultChecked: value === radioProps.value,
+              ...radioProps,
               ref: mergedRef,
             })
           }
@@ -661,6 +684,7 @@ export type {
   FieldComponent,
   Option,
   SmartInputSlot,
+  StripDefaultProps,
   IsBoolean,
   IsEnum,
 }
