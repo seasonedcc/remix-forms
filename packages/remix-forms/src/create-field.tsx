@@ -1,7 +1,7 @@
 import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
-import { findElement, findParent, mapChildren } from './children-traversal'
+import { mapChildren } from './children-traversal'
 import type { PropsOf } from './defaults'
 import type { FormSchema, Infer } from './prelude'
 
@@ -39,10 +39,8 @@ type Children<
     Select: StripDefaultProps<Resolved['select'], 'defaultValue'>
     Checkbox: StripDefaultProps<Resolved['checkbox'], 'defaultChecked'>
     RadioGroup: Resolved['radioGroup']
-    RadioWrapper: Resolved['radioWrapper']
     RadioLabel: Resolved['radioLabel']
     Radio: StripDefaultProps<Resolved['radio'], 'defaultChecked'>
-    CheckboxWrapper: Resolved['checkboxWrapper']
     CheckboxLabel: Resolved['checkboxLabel']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
@@ -265,7 +263,6 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
     select: Select,
     checkbox: Checkbox,
     radio: Radio,
-    radioWrapper: RadioWrapper,
     radioLabel: RadioLabel,
   } = components
 
@@ -298,17 +295,15 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
           key === 'id' ? [key, `${propValue}-${value}`] : [key, propValue]
         )
         return (
-          <RadioWrapper key={String(propsWithUniqueId?.id)}>
+          <RadioLabel key={String(propsWithUniqueId?.id)}>
             <Radio
               type="radio"
               value={value}
               defaultChecked={value === checkedValue}
               {...propsWithUniqueId}
             />
-            <RadioLabel htmlFor={String(propsWithUniqueId?.id)}>
-              {name}
-            </RadioLabel>
-          </RadioWrapper>
+            {name}
+          </RadioLabel>
         )
       }
 
@@ -386,10 +381,8 @@ function createField<
   const Select = c.select
   const Radio = c.radio
   const Checkbox = c.checkbox
-  const CheckboxWrapper = c.checkboxWrapper
   const CheckboxLabel = c.checkboxLabel
   const RadioGroup = c.radioGroup
-  const RadioWrapper = c.radioWrapper
   const RadioLabel = c.radioLabel
   const Errors = c.fieldErrors
   const Error = c.error
@@ -486,9 +479,7 @@ function createField<
             Checkbox,
             Radio,
             RadioGroup,
-            RadioWrapper,
             RadioLabel,
-            CheckboxWrapper,
             CheckboxLabel,
             Errors,
             Error,
@@ -627,7 +618,6 @@ function createField<
           if (child.type === CheckboxLabel) {
             return React.cloneElement(child, {
               id: labelId,
-              htmlFor: `${idPrefix}${String(name)}`,
               children: label,
               ...child.props,
             })
@@ -653,29 +643,10 @@ function createField<
           return child
         })
 
-        const fixRadioLabels = (children: React.ReactNode) =>
-          mapChildren(children, (child) => {
-            if (child.type === RadioLabel) {
-              const parent = findParent(children, child)
-              if (parent && parent.type === RadioWrapper) {
-                const radioChild = findElement(
-                  parent.props?.children,
-                  (ch) => ch.type === Radio
-                )
-                if (radioChild) {
-                  return React.cloneElement(child, {
-                    htmlFor: radioChild.props.id,
-                  })
-                }
-              }
-            }
-            return child
-          })
-
         return (
           <FieldContext.Provider value={field}>
             <Field hidden={hidden} style={style} {...props}>
-              {fixRadioLabels(children)}
+              {children}
             </Field>
           </FieldContext.Provider>
         )
@@ -701,15 +672,10 @@ function createField<
         <FieldContext.Provider value={field}>
           <Field hidden={hidden} style={style} {...props}>
             {fieldType === 'boolean' ? (
-              <CheckboxWrapper>
+              <CheckboxLabel id={labelId}>
                 {smartInput}
-                <CheckboxLabel
-                  id={labelId}
-                  htmlFor={`${idPrefix}${String(name)}`}
-                >
-                  {label}
-                </CheckboxLabel>
-              </CheckboxWrapper>
+                {label}
+              </CheckboxLabel>
             ) : radio ? (
               <>
                 <Label id={labelId}>{label}</Label>

@@ -38,7 +38,7 @@ class Example {
   field(name: string) {
     return {
       name,
-      label: this.page.locator(`label[for$="${name}"]:visible`),
+      label: this.page.locator(`label[id$="label-for-${name}"]:visible`),
       input: this.page.locator(`[name="${name}"]:visible`),
     }
   }

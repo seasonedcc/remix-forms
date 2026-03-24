@@ -28,16 +28,14 @@ export default () => (
 
       return (
         <Field key={name} {...props}>
-          {({ Label, CheckboxLabel, CheckboxWrapper, SmartInput, Errors }) => {
+          {({ Label, CheckboxLabel, SmartInput, Errors }) => {
             const inputWithLabel =
               fieldType === 'boolean' ? (
-                <CheckboxWrapper>
+                <CheckboxLabel>
                   <SmartInput />
-                  <CheckboxLabel>
-                    {label}
-                    {required && <sup>*</sup>}
-                  </CheckboxLabel>
-                </CheckboxWrapper>
+                  {label}
+                  {required && <sup>*</sup>}
+                </CheckboxLabel>
               ) : (
                 <>
                   <Label>
@@ -87,22 +85,14 @@ export default function Component() {
 
           return (
             <Field key={name} {...props}>
-              {({
-                Label,
-                CheckboxLabel,
-                CheckboxWrapper,
-                SmartInput,
-                Errors,
-              }) => {
+              {({ Label, CheckboxLabel, SmartInput, Errors }) => {
                 const inputWithLabel =
                   fieldType === 'boolean' ? (
-                    <CheckboxWrapper>
+                    <CheckboxLabel>
                       <SmartInput />
-                      <CheckboxLabel>
-                        {label}
-                        {required && <sup>*</sup>}
-                      </CheckboxLabel>
-                    </CheckboxWrapper>
+                      {label}
+                      {required && <sup>*</sup>}
+                    </CheckboxLabel>
                   ) : (
                     <>
                       <Label>
