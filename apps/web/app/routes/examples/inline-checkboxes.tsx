@@ -28,23 +28,22 @@ export default () => (
 
       return (
         <Field key={name} {...props}>
-          {({ Label, CheckboxWrapper, SmartInput, Errors }) => {
-            const labelElement = (
-              <Label>
-                {label}
-                {required && <sup>*</sup>}
-              </Label>
-            )
-
+          {({ Label, CheckboxLabel, CheckboxWrapper, SmartInput, Errors }) => {
             const inputWithLabel =
               fieldType === 'boolean' ? (
                 <CheckboxWrapper>
                   <SmartInput />
-                  {labelElement}
+                  <CheckboxLabel>
+                    {label}
+                    {required && <sup>*</sup>}
+                  </CheckboxLabel>
                 </CheckboxWrapper>
               ) : (
                 <>
-                  {labelElement}
+                  <Label>
+                    {label}
+                    {required && <sup>*</sup>}
+                  </Label>
                   <SmartInput />
                 </>
               )
@@ -88,23 +87,28 @@ export default function Component() {
 
           return (
             <Field key={name} {...props}>
-              {({ Label, CheckboxWrapper, SmartInput, Errors }) => {
-                const labelElement = (
-                  <Label>
-                    {label}
-                    {required && <sup>*</sup>}
-                  </Label>
-                )
-
+              {({
+                Label,
+                CheckboxLabel,
+                CheckboxWrapper,
+                SmartInput,
+                Errors,
+              }) => {
                 const inputWithLabel =
                   fieldType === 'boolean' ? (
                     <CheckboxWrapper>
                       <SmartInput />
-                      {labelElement}
+                      <CheckboxLabel>
+                        {label}
+                        {required && <sup>*</sup>}
+                      </CheckboxLabel>
                     </CheckboxWrapper>
                   ) : (
                     <>
-                      {labelElement}
+                      <Label>
+                        {label}
+                        {required && <sup>*</sup>}
+                      </Label>
                       <SmartInput />
                     </>
                   )
