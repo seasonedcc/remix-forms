@@ -262,53 +262,6 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     React.ComponentType<any>
   >
 
-  /**
-   * Schema-driven form component.
-   *
-   * This component is the easiest way to create a form in React Router. It
-   * automatically wires up inputs with React Hook Form, handles client side
-   * validation and integrates with React Router navigation state.
-   * Provide a schema and the form will generate fields and labels
-   * automatically.
-   *
-   * @param props.components - Partial component map to override base components for this form
-   * @param props.fetcher - Fetcher object returned by `useFetcher()`
-   * @param props.mode - Validation trigger mode for React Hook Form
-   * @param props.reValidateMode - Validation mode after submission
-   * @param props.renderField - Custom field rendering function
-   * @param props.buttonLabel - Text shown in the submit button
-   * @param props.pendingButtonLabel - Text shown while submitting
-   * @param props.method - HTTP method used to submit the form
-   * @param props.schema - Schema describing the form
-   * @param props.beforeChildren - Elements rendered before generated fields
-   * @param props.onNavigation - Callback when navigation state changes
-   * @param props.children - Custom content instead of the default layout
-   * @param props.labels - Custom labels for form fields
-   * @param props.placeholders - Placeholder text for fields
-   * @param props.options - Select and radio options for fields
-   * @param props.inputTypes - Custom input types per field
-   * @param props.autoInputTypes - HTML input types to assign automatically based on schema format. Defaults to `['date', 'datetime-local', 'time']`
-   * @param props.hiddenFields - Fields rendered as hidden inputs
-   * @param props.multiline - Fields rendered with the multiline component
-   * @param props.radio - Fields rendered as radio groups
-   * @param props.autoFocus - Field that should receive focus initially
-   * @param props.errors - Error messages keyed by field name
-   * @param props.values - Initial values for fields
-   * @param props.emptyOptionLabel - Label for the empty select option
-   * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
-   * @param props.flushSync - Whether to flush React updates synchronously
-   * @returns A form element ready to be used inside a React Router v7 route
-   *
-   * @example
-   * ```tsx
-   * <SchemaForm schema={schema} />
-   * ```
-   *
-   * @example
-   * ```tsx
-   * <SchemaForm schema={schema} components={{ input: MyInput }} />
-   * ```
-   */
   return function SchemaForm<
     Schema extends FormSchema,
     Components extends Partial<ComponentMap> = NoOverrides,
@@ -703,6 +656,53 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
   }
 }
 
+/**
+ * Schema-driven form component.
+ *
+ * This component is the easiest way to create a form in React Router. It
+ * automatically wires up inputs with React Hook Form, handles client side
+ * validation and integrates with React Router navigation state.
+ * Provide a schema and the form will generate fields and labels
+ * automatically.
+ *
+ * @param props.components - Partial component map to override base components for this form
+ * @param props.fetcher - Fetcher object returned by `useFetcher()`
+ * @param props.mode - Validation trigger mode for React Hook Form
+ * @param props.reValidateMode - Validation mode after submission
+ * @param props.renderField - Custom field rendering function
+ * @param props.buttonLabel - Text shown in the submit button
+ * @param props.pendingButtonLabel - Text shown while submitting
+ * @param props.method - HTTP method used to submit the form
+ * @param props.schema - Schema describing the form
+ * @param props.beforeChildren - Elements rendered before generated fields
+ * @param props.onNavigation - Callback when navigation state changes
+ * @param props.children - Custom content instead of the default layout
+ * @param props.labels - Custom labels for form fields
+ * @param props.placeholders - Placeholder text for fields
+ * @param props.options - Select and radio options for fields
+ * @param props.inputTypes - Custom input types per field
+ * @param props.autoInputTypes - HTML input types to assign automatically based on schema format. Defaults to `['date', 'datetime-local', 'time']`
+ * @param props.hiddenFields - Fields rendered as hidden inputs
+ * @param props.multiline - Fields rendered with the multiline component
+ * @param props.radio - Fields rendered as radio groups
+ * @param props.autoFocus - Field that should receive focus initially
+ * @param props.errors - Error messages keyed by field name
+ * @param props.values - Initial values for fields
+ * @param props.emptyOptionLabel - Label for the empty select option
+ * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
+ * @param props.flushSync - Whether to flush React updates synchronously
+ * @returns A form element ready to be used inside a React Router v7 route
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema} components={{ input: MyInput }} />
+ * ```
+ */
 const SchemaForm = makeSchemaForm(defaultComponents)
 
 export type {
