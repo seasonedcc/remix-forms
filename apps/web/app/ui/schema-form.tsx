@@ -2,19 +2,20 @@ import * as React from 'react'
 import { Form } from 'react-router'
 import { makeSchemaForm } from 'remix-forms'
 import Checkbox from './checkbox'
+import CheckboxLabel from './checkbox-label'
+import CheckboxWrapper from './checkbox-wrapper'
 import Error from './error'
 import Errors from './errors'
 import Field from './field'
+import Fields from './fields'
 import Input from './input'
 import Label from './label'
 import Radio from './radio'
+import RadioGroup from './radio-group'
+import RadioLabel from './radio-label'
+import RadioWrapper from './radio-wrapper'
 import Select from './select'
 import SubmitButton from './submit-button'
-
-import InputWrapper from './input-wrapper'
-import RadioGroup from './radio-group'
-
-import Fields from './fields'
 import TextArea from './text-area'
 
 const StyledForm = React.forwardRef<
@@ -32,8 +33,10 @@ const SchemaForm = makeSchemaForm({
   select: Select,
   radio: Radio,
   radioGroup: RadioGroup,
-  radioWrapper: InputWrapper,
-  checkboxWrapper: InputWrapper,
+  radioWrapper: RadioWrapper,
+  radioLabel: RadioLabel,
+  checkboxWrapper: CheckboxWrapper,
+  checkboxLabel: CheckboxLabel,
   checkbox: Checkbox,
   button: SubmitButton,
   globalErrors: Errors,

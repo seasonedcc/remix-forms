@@ -127,6 +127,37 @@ it('defaultComponents has all ComponentMap keys', () => {
   >()
 })
 
+it('ComponentMap includes checkboxLabel and radioLabel slots', () => {
+  expectTypeOf<ComponentMap>().toHaveProperty('checkboxLabel')
+  expectTypeOf<ComponentMap>().toHaveProperty('radioLabel')
+})
+
+it('ResolveComponents defaults checkboxLabel and radioLabel', () => {
+  // biome-ignore lint/complexity/noBannedTypes: testing with empty object type
+  type Resolved = ResolveComponents<{}>
+  expectTypeOf<Resolved['checkboxLabel']>().toEqualTypeOf<
+    DefaultComponents['checkboxLabel']
+  >()
+  expectTypeOf<Resolved['radioLabel']>().toEqualTypeOf<
+    DefaultComponents['radioLabel']
+  >()
+})
+
+it('MergeComponents overrides checkboxLabel and radioLabel', () => {
+  type CustomLabel = React.FC<{
+    id?: string
+    htmlFor?: string
+    children?: React.ReactNode
+    variant?: string
+  }>
+  type Merged = MergeComponents<
+    { checkboxLabel: CustomLabel },
+    { radioLabel: CustomLabel }
+  >
+  expectTypeOf<Merged['checkboxLabel']>().toEqualTypeOf<CustomLabel>()
+  expectTypeOf<Merged['radioLabel']>().toEqualTypeOf<CustomLabel>()
+})
+
 it('NoOverrides extends Partial<ComponentMap>', () => {
   expectTypeOf<NoOverrides>().toExtend<Partial<ComponentMap>>()
 })

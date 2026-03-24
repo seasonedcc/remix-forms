@@ -41,17 +41,17 @@ export default function Component() {
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
             <em>You&apos;ll hear from us at this address 👆🏽</em>
             <Field name="howDidYouFindUs">
-              {({ Label, RadioGroup, RadioWrapper, Radio }) => (
+              {({ Label, RadioLabel, RadioGroup, RadioWrapper, Radio }) => (
                 <>
                   <Label />
                   <RadioGroup>
                     <RadioWrapper>
                       <Radio value="google" />
-                      <Label>Google</Label>
+                      <RadioLabel>Google</RadioLabel>
                     </RadioWrapper>
                     <RadioWrapper>
                       <Radio value="aFriend" />
-                      <Label>From a friend</Label>
+                      <RadioLabel>From a friend</RadioLabel>
                     </RadioWrapper>
                   </RadioGroup>
                 </>

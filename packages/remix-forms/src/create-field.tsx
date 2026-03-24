@@ -40,8 +40,10 @@ type Children<
     Checkbox: StripDefaultProps<Resolved['checkbox'], 'defaultChecked'>
     RadioGroup: Resolved['radioGroup']
     RadioWrapper: Resolved['radioWrapper']
+    RadioLabel: Resolved['radioLabel']
     Radio: StripDefaultProps<Resolved['radio'], 'defaultChecked'>
     CheckboxWrapper: Resolved['checkboxWrapper']
+    CheckboxLabel: Resolved['checkboxLabel']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -262,9 +264,9 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
     multiline: Multiline,
     select: Select,
     checkbox: Checkbox,
-    label: Label,
     radio: Radio,
     radioWrapper: RadioWrapper,
+    radioLabel: RadioLabel,
   } = components
 
   return ({
@@ -303,7 +305,9 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
               defaultChecked={value === checkedValue}
               {...propsWithUniqueId}
             />
-            <Label htmlFor={String(propsWithUniqueId?.id)}>{name}</Label>
+            <RadioLabel htmlFor={String(propsWithUniqueId?.id)}>
+              {name}
+            </RadioLabel>
           </RadioWrapper>
         )
       }
@@ -383,8 +387,10 @@ function createField<
   const Radio = c.radio
   const Checkbox = c.checkbox
   const CheckboxWrapper = c.checkboxWrapper
+  const CheckboxLabel = c.checkboxLabel
   const RadioGroup = c.radioGroup
   const RadioWrapper = c.radioWrapper
+  const RadioLabel = c.radioLabel
   const Errors = c.fieldErrors
   const Error = c.error
 
@@ -481,7 +487,9 @@ function createField<
             Radio,
             RadioGroup,
             RadioWrapper,
+            RadioLabel,
             CheckboxWrapper,
+            CheckboxLabel,
             Errors,
             Error,
             ref,
@@ -616,6 +624,14 @@ function createField<
               ref: mergedRef,
             })
           }
+          if (child.type === CheckboxLabel) {
+            return React.cloneElement(child, {
+              id: labelId,
+              htmlFor: `${idPrefix}${String(name)}`,
+              children: label,
+              ...child.props,
+            })
+          }
           if (child.type === Errors) {
             if (!child.props.children && !errors?.length) return null
 
@@ -639,7 +655,7 @@ function createField<
 
         const fixRadioLabels = (children: React.ReactNode) =>
           mapChildren(children, (child) => {
-            if (child.type === Label) {
+            if (child.type === RadioLabel) {
               const parent = findParent(children, child)
               if (parent && parent.type === RadioWrapper) {
                 const radioChild = findElement(
@@ -687,9 +703,12 @@ function createField<
             {fieldType === 'boolean' ? (
               <CheckboxWrapper>
                 {smartInput}
-                <Label id={labelId} htmlFor={`${idPrefix}${String(name)}`}>
+                <CheckboxLabel
+                  id={labelId}
+                  htmlFor={`${idPrefix}${String(name)}`}
+                >
                   {label}
-                </Label>
+                </CheckboxLabel>
               </CheckboxWrapper>
             ) : radio ? (
               <>
