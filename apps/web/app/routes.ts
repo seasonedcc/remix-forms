@@ -58,6 +58,7 @@ export const exampleRouteGroups = {
 }
 
 const testRoutes = [
+  'button-name-value',
   'fetcher-with-other-forms-error',
   'field-with-radio-children',
   'field-with-ref',
