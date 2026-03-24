@@ -360,10 +360,11 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const onSubmit = (event: any) => {
+      const target = event.currentTarget ?? formRef.current
       form.handleSubmit(() => {
         if (!formRef.current) return
 
-        return submit(formRef.current, {
+        return submit(target, {
           method,
           replace: props.replace,
           preventScrollReset: props.preventScrollReset,
