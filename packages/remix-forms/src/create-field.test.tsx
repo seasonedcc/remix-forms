@@ -741,6 +741,28 @@ describe('element type comparison safety', () => {
     expect(customSelect?.[0]).not.toContain('name="foo"')
   })
 
+  it('does not inject checkboxLabel props into plain label elements', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldType="boolean">
+        {({ CheckboxWrapper, Checkbox, CheckboxLabel }) => (
+          <>
+            <CheckboxWrapper>
+              <Checkbox />
+              <CheckboxLabel />
+            </CheckboxWrapper>
+            {/* biome-ignore lint/a11y/noLabelWithoutControl: test element */}
+            <label data-custom="true">Unrelated</label>
+          </>
+        )}
+      </Field>
+    )
+
+    expect(html).toContain('id="label-for-foo"')
+    expect(html).toContain('data-custom="true"')
+    const customLabel = html.match(/<label[^>]*data-custom="true"[^>]*>/)
+    expect(customLabel?.[0]).not.toContain('id="label-for-foo"')
+  })
+
   it('does not inject textarea props into plain textarea elements', () => {
     const html = renderToStaticMarkup(
       <Field name="foo" label="Foo" multiline>
