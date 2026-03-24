@@ -1,7 +1,12 @@
 import type * as React from 'react'
 import { expectTypeOf, it } from 'vitest'
 import * as z from 'zod'
-import type { IsBoolean, IsEnum, SmartInputSlot } from './create-field'
+import type {
+  IsBoolean,
+  IsEnum,
+  SmartInputSlot,
+  StripDefaultProps,
+} from './create-field'
 import type {
   ComponentMap,
   DefaultComponents,
@@ -339,4 +344,53 @@ it('SmartInputSlot: boolean always wins over Field-level radio', () => {
     true
   >
   expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
+})
+
+// --- StripDefaultProps ---
+
+it('StripDefaultProps removes specified props from a component type', () => {
+  type MyComp = React.ComponentType<{
+    defaultValue?: string
+    name: string
+    id?: string
+  }>
+  type Stripped = StripDefaultProps<MyComp, 'defaultValue'>
+  type Expected = React.ComponentType<{ name: string; id?: string }>
+  expectTypeOf<Stripped>().toEqualTypeOf<Expected>()
+})
+
+it('StripDefaultProps removes defaultValue from resolved Input', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type StrippedInput = StripDefaultProps<Resolved['input'], 'defaultValue'>
+  expectTypeOf<PropsOf<StrippedInput>>().not.toHaveProperty('defaultValue')
+})
+
+it('StripDefaultProps removes defaultValue from resolved Multiline', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type StrippedMultiline = StripDefaultProps<
+    Resolved['multiline'],
+    'defaultValue'
+  >
+  expectTypeOf<PropsOf<StrippedMultiline>>().not.toHaveProperty('defaultValue')
+})
+
+it('StripDefaultProps removes defaultValue from resolved Select', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type StrippedSelect = StripDefaultProps<Resolved['select'], 'defaultValue'>
+  expectTypeOf<PropsOf<StrippedSelect>>().not.toHaveProperty('defaultValue')
+})
+
+it('StripDefaultProps removes defaultChecked from resolved Checkbox', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type StrippedCheckbox = StripDefaultProps<
+    Resolved['checkbox'],
+    'defaultChecked'
+  >
+  expectTypeOf<PropsOf<StrippedCheckbox>>().not.toHaveProperty('defaultChecked')
+})
+
+it('StripDefaultProps removes defaultChecked from resolved Radio', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type StrippedRadio = StripDefaultProps<Resolved['radio'], 'defaultChecked'>
+  expectTypeOf<PropsOf<StrippedRadio>>().not.toHaveProperty('defaultChecked')
 })
