@@ -2,6 +2,7 @@ import type * as React from 'react'
 import { expectTypeOf, it } from 'vitest'
 import * as z from 'zod'
 import type {
+  FieldComponent,
   IsBoolean,
   IsEnum,
   SmartInputSlot,
@@ -544,4 +545,54 @@ it('StripDefaultProps removes defaultChecked from resolved Radio', () => {
   type Resolved = ResolveComponents<Record<never, never>>
   type StrippedRadio = StripDefaultProps<Resolved['radio'], 'defaultChecked'>
   expectTypeOf<PropsOf<StrippedRadio>>().not.toHaveProperty('defaultChecked')
+})
+
+// --- FieldComponent wrapper props inference ---
+
+it('PropsOf extracts props from a forwardRef component', () => {
+  type MyRef = React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<{ size: string; color: number }> &
+      React.RefAttributes<HTMLDivElement>
+  >
+  expectTypeOf<PropsOf<MyRef>>().toHaveProperty('size')
+  expectTypeOf<PropsOf<MyRef>>().toHaveProperty('color')
+})
+
+it('FieldComponent with default components accepts field wrapper props', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().toHaveProperty('className')
+})
+
+it('FieldComponent with custom field component accepts custom wrapper props', () => {
+  type CustomField = React.FC<{
+    hidden?: boolean
+    style?: React.CSSProperties
+    children?: React.ReactNode
+    variant?: 'outlined' | 'filled'
+  }>
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = MergeComponents<{ field: CustomField }, NoOverrides>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().toHaveProperty('variant')
+})
+
+it('FieldComponent with custom field component rejects div-only props', () => {
+  type CustomField = React.FC<{
+    hidden?: boolean
+    style?: React.CSSProperties
+    children?: React.ReactNode
+    variant?: 'outlined' | 'filled'
+  }>
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = MergeComponents<{ field: CustomField }, NoOverrides>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().not.toHaveProperty('className')
 })

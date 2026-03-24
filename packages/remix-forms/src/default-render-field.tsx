@@ -13,7 +13,8 @@ function defaultRenderField<
   name,
   ...props
 }: RenderFieldProps<Schema, Resolved, Multiline, Radio, Hidden>) {
-  return <Field key={String(name)} name={name} {...props} />
+  // biome-ignore lint/suspicious/noExplicitAny: Resolved is generic here — type safety is enforced at the call site
+  return <Field key={String(name)} name={name} {...(props as any)} />
 }
 
 export { defaultRenderField }
