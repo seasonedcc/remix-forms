@@ -67,7 +67,9 @@ function expandFieldsSentinel(
         return React.createElement(fieldIdentity, { key, name: key })
       })
 
-      return React.createElement(FieldsWrapper, null, ...fieldElements)
+      // biome-ignore lint/suspicious/noExplicitAny: sentinel props vary per fields slot
+      const { children: _c, ...wrapperProps } = child.props as any
+      return React.createElement(FieldsWrapper, wrapperProps, ...fieldElements)
     }
 
     // biome-ignore lint/suspicious/noExplicitAny: generic React element traversal

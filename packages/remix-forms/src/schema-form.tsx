@@ -137,7 +137,7 @@ type Children<
 > = (
   helpers: {
     Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
-    Fields: typeof FieldsSentinel
+    Fields: Resolved['fields']
     Errors: Resolved['globalErrors']
     Error: Resolved['error']
     Button: Resolved['button']

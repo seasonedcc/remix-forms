@@ -24,7 +24,7 @@ export default () => (
   <SchemaForm schema={schema}>
     {({ Field, Fields, Errors, Button }) => (
       <>
-        <Fields>
+        <Fields className="gap-4">
           <Field name="email" label="E-mail" />
           <Field name="message" multiline placeholder="Your message" />
         </Fields>
@@ -57,7 +57,7 @@ export default function Component() {
       <SchemaForm schema={schema}>
         {({ Field, Fields, Errors, Button }) => (
           <>
-            <Fields>
+            <Fields className="gap-4">
               <Field name="email" label="E-mail" />
               <Field name="message" multiline placeholder="Your message" />
             </Fields>

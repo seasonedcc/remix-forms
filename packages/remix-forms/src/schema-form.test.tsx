@@ -1051,4 +1051,26 @@ describe('Fields component', () => {
     expect(html).toContain('helper text')
     expect(html).toContain('name="email"')
   })
+
+  it('forwards props to the fields wrapper component', () => {
+    const schema = z.object({ name: z.string() })
+    const FieldsWrapper = (props: React.HTMLAttributes<HTMLDivElement>) => (
+      <div data-fields-wrapper {...props} />
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} components={{ fields: FieldsWrapper }}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields className="grid-cols-2" />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('data-fields-wrapper="true"')
+    expect(html).toContain('class="grid-cols-2"')
+  })
 })

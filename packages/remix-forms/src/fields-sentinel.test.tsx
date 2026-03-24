@@ -88,6 +88,40 @@ describe('expandFieldsSentinel', () => {
     expect(html).toContain('data-field="third"')
   })
 
+  it('forwards sentinel props to the wrapper component', () => {
+    function PropsWrapper({
+      children,
+      ...rest
+    }: { children?: React.ReactNode } & Record<string, unknown>) {
+      return (
+        <section data-fields {...rest}>
+          {children}
+        </section>
+      )
+    }
+
+    const opts = { ...defaultOptions, FieldsWrapper: PropsWrapper }
+
+    const html = renderToStaticMarkup(
+      React.createElement(
+        'div',
+        null,
+        expandFieldsSentinel(
+          // biome-ignore lint/suspicious/noExplicitAny: test — sentinel accepts any props at runtime
+          React.createElement(FieldsSentinel as any, {
+            className: 'grid-cols-2',
+            'data-custom': 'yes',
+          }),
+          opts
+        )
+      )
+    )
+
+    expect(html).toContain('class="grid-cols-2"')
+    expect(html).toContain('data-custom="yes"')
+    expect(html).toContain('data-fields')
+  })
+
   it('expands sentinel nested inside other elements', () => {
     const html = renderExpanded(
       <div className="wrapper">
