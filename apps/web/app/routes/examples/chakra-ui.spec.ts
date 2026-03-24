@@ -3,54 +3,79 @@ import { expect, test, testWithoutJS } from 'tests/setup/tests'
 const route = '/examples/forms/chakra-ui'
 
 test('With JS enabled', async ({ example }) => {
-  const { email, password, page } = example
+  const { page } = example
+  const firstName = example.field('firstName')
+  const email = example.field('email')
+  const password = example.field('password')
+  const bio = example.field('bio')
   const button = page.locator('form button:has-text("Sign up"):visible')
 
   await page.goto(route)
 
   // Render
+  await example.expectField(firstName, { label: 'First name' })
   await example.expectField(email, { label: 'Email address' })
   await example.expectField(password, { type: 'password' })
+  await example.expectField(bio, { multiline: true, required: false })
+  await example.expectRadioToHaveOptions('role', [
+    { name: 'Developer', value: 'developer' },
+    { name: 'Designer', value: 'designer' },
+    { name: 'Manager', value: 'manager' },
+  ])
   await expect(button).toBeEnabled()
+
+  // Custom props render correctly
+  await expect(firstName.input).toHaveClass(/input-lg/)
+  await expect(email.input).toHaveClass(/bg-base-200/)
+  await expect(bio.input).toHaveClass(/resize-none/)
 
   // Client-side validation
   await button.click()
 
+  await example.expectError(
+    firstName,
+    'Too small: expected string to have >=1 characters'
+  )
   await example.expectError(email, 'Invalid email address')
   await example.expectError(
     password,
     'Too small: expected string to have >=8 characters'
   )
-  await expect(email.input).toBeFocused()
+  await expect(firstName.input).toBeFocused()
 
-  // Make first field valid, focus moves to second
-  await email.input.fill('john@doe.com')
-  await button.click()
+  // Fill required fields
+  await firstName.input.fill('Jane')
+  await example.expectValid(firstName)
+
+  await email.input.fill('jane@doe.com')
   await example.expectValid(email)
-  await expect(password.input).toBeFocused()
 
-  // Try too-short password
-  await password.input.fill('short')
-  await example.expectError(
-    password,
-    'Too small: expected string to have >=8 characters'
-  )
-
-  // Make form valid
   await password.input.fill('longpassword')
   await example.expectValid(password)
+
+  // Select a radio option
+  await page.locator('[name="role"][value="designer"]').click()
+
+  // Optionally fill bio
+  await bio.input.fill('Hello world')
 
   // Submit
   await button.click()
   await expect(button).toBeDisabled()
   await example.expectData({
-    email: 'john@doe.com',
+    firstName: 'Jane',
+    email: 'jane@doe.com',
     password: 'longpassword',
+    bio: 'Hello world',
+    role: 'designer',
   })
 })
 
 testWithoutJS('With JS disabled', async ({ example }) => {
-  const { email, password, page } = example
+  const { page } = example
+  const firstName = example.field('firstName')
+  const email = example.field('email')
+  const password = example.field('password')
   const button = page.locator('form button:has-text("Sign up"):visible')
 
   await page.goto(route)
@@ -59,37 +84,45 @@ testWithoutJS('With JS disabled', async ({ example }) => {
   await button.click()
   await page.reload()
 
+  await example.expectError(
+    firstName,
+    'Too small: expected string to have >=1 characters'
+  )
   await example.expectError(email, 'Invalid email address')
   await example.expectErrors(
     password,
     'Too small: expected string to have >=8 characters'
   )
-  await example.expectAutoFocus(email)
-  await example.expectNoAutoFocus(password)
+  await example.expectAutoFocus(firstName)
+  await example.expectNoAutoFocus(email)
 
-  // Make first field valid, focus moves to second
-  await email.input.fill('john@doe.com')
+  // Fill first field, focus moves
+  await firstName.input.fill('Jane')
+  await button.click()
+  await page.reload()
+  await example.expectValid(firstName)
+  await example.expectNoAutoFocus(firstName)
+  await example.expectAutoFocus(email)
+
+  // Fill email
+  await email.input.fill('jane@doe.com')
   await button.click()
   await page.reload()
   await example.expectValid(email)
-  await example.expectNoAutoFocus(email)
   await example.expectAutoFocus(password)
 
-  // Try too-short password
-  await password.input.fill('short')
-  await button.click()
-  await page.reload()
-  await example.expectError(
-    password,
-    'Too small: expected string to have >=8 characters'
-  )
-
-  // Make form valid and submit
+  // Fill password
   await password.input.fill('longpassword')
+  // Select a radio option
+  await page.locator('[name="role"][value="manager"]').click()
+
+  // Submit
   await button.click()
   await page.reload()
   await example.expectData({
-    email: 'john@doe.com',
+    firstName: 'Jane',
+    email: 'jane@doe.com',
     password: 'longpassword',
+    role: 'manager',
   })
 })

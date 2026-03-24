@@ -24,12 +24,7 @@ import { mapChildren, reduceElements } from './children-traversal'
 import type { FieldComponent, FieldType, Option } from './create-field'
 import { createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
-import type {
-  ComponentMap,
-  DefaultComponents,
-  MergeComponents,
-  NoOverrides,
-} from './defaults'
+import type { ComponentMap, MergeComponents, NoOverrides } from './defaults'
 import { defaultComponents } from './defaults'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
@@ -81,9 +76,11 @@ type Field<SchemaType> = {
 type RenderFieldProps<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
 > = Field<Infer<Schema>> & {
-  Field: FieldComponent<Schema, Resolved>
+  Field: FieldComponent<Schema, Resolved, Multiline, Radio>
 }
 
 /**
@@ -97,18 +94,22 @@ type RenderFieldProps<
 type RenderField<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
-> = (props: RenderFieldProps<Schema, Resolved>) => JSX.Element
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+> = (props: RenderFieldProps<Schema, Resolved, Multiline, Radio>) => JSX.Element
 
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
 type Children<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
 > = (
   helpers: {
-    Field: FieldComponent<Schema, Resolved>
+    Field: FieldComponent<Schema, Resolved, Multiline, Radio>
     Errors: Resolved['globalErrors']
     Error: Resolved['error']
     Button: Resolved['button']
@@ -141,8 +142,10 @@ type OnNavigation<Schema extends FormSchema> = (
  */
 type SchemaFormProps<
   Schema extends FormSchema,
-  Base extends Partial<ComponentMap> = DefaultComponents,
-  Components extends Partial<ComponentMap> = NoOverrides,
+  Base extends Partial<ComponentMap>,
+  Components extends Partial<ComponentMap>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<KeysOfStrings<Infer<Schema>>>,
 > = {
   components?: Components
   component?: typeof ReactRouterForm
@@ -153,7 +156,12 @@ type SchemaFormProps<
     ValidationMode,
     'onBlur' | 'onChange' | 'onSubmit'
   >
-  renderField?: RenderField<Schema, MergeComponents<Base, Components>>
+  renderField?: RenderField<
+    Schema,
+    MergeComponents<Base, Components>,
+    Multiline,
+    Radio
+  >
   buttonLabel?: string
   pendingButtonLabel?: string
   schema: Schema
@@ -168,12 +176,17 @@ type SchemaFormProps<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
   >
   autoInputTypes?: AutoInputType[]
-  multiline?: Array<keyof Infer<Schema>>
-  radio?: Array<KeysOfStrings<Infer<Schema>>>
+  multiline?: Multiline
+  radio?: Radio
   autoFocus?: keyof Infer<Schema>
   beforeChildren?: React.ReactNode
   onNavigation?: OnNavigation<Schema>
-  children?: Children<Schema, MergeComponents<Base, Components>>
+  children?: Children<
+    Schema,
+    MergeComponents<Base, Components>,
+    Multiline,
+    Radio
+  >
   idPrefix?: string
   flushSync?: boolean
 } & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
@@ -232,6 +245,10 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
   return function SchemaForm<
     Schema extends FormSchema,
     Components extends Partial<ComponentMap> = NoOverrides,
+    const Multiline extends ReadonlyArray<keyof Infer<Schema>> = readonly [],
+    const Radio extends ReadonlyArray<
+      KeysOfStrings<Infer<Schema>>
+    > = readonly [],
   >({
     components: componentsProp,
     component = ReactRouterForm,
@@ -261,7 +278,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     idPrefix: idPrefixProp,
     flushSync,
     ...props
-  }: SchemaFormProps<Schema, Base, Components>) {
+  }: SchemaFormProps<Schema, Base, Components, Multiline, Radio>) {
     type SchemaType = Infer<Schema>
     const generatedId = React.useId()
     const idPrefix = idPrefixProp ?? generatedId
@@ -342,7 +359,12 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
 
     const Field = React.useMemo(
       () =>
-        createField<Schema, MergeComponents<Base, Components>>({
+        createField<
+          Schema,
+          MergeComponents<Base, Components>,
+          Multiline,
+          Radio
+        >({
           register: form.register,
           idPrefix,
           // biome-ignore lint/suspicious/noExplicitAny: rc is the merged components — generics ensure type safety at the consumer level
@@ -498,6 +520,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
             errors: field?.errors,
             hidden: field?.hidden,
             multiline: field?.multiline,
+            radio: field?.radio,
             ...child.props,
             autoFocus,
           })

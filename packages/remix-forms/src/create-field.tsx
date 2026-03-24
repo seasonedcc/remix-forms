@@ -2,7 +2,7 @@ import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import { findElement, findParent, mapChildren } from './children-traversal'
-import type { DefaultComponents } from './defaults'
+import type { PropsOf } from './defaults'
 import type { FormSchema, Infer } from './prelude'
 import { mapObject } from './prelude'
 import type { Field } from './schema-form'
@@ -14,11 +14,20 @@ type Option = { name: string } & Required<
 type Children<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
 > = (
-  helpers: FieldBaseProps<Schema> & {
+  helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
+    name: Name
+    type?: JSX.IntrinsicElements['input']['type']
     Label: Resolved['label']
-    SmartInput: React.ComponentType<SmartInputProps>
+    SmartInput: React.ComponentType<
+      SmartInputProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+    >
     Input: Resolved['input']
     Multiline: Resolved['multiline']
     Select: Resolved['select']
@@ -55,30 +64,47 @@ function getInputType(
 type FieldBaseProps<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
-> = Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
-  name: keyof Infer<Schema>
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = Omit<Partial<Field<Infer<Schema>>>, 'name' | 'multiline' | 'radio'> & {
+  name: Name
+  multiline?: M
+  radio?: R
   type?: JSX.IntrinsicElements['input']['type']
-  children?: Children<Schema, Resolved>
+  children?: Children<Schema, Resolved, Multiline, Radio, Name, M, R>
 }
 
 type FieldProps<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
-> = FieldBaseProps<Schema, Resolved> &
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = FieldBaseProps<Schema, Resolved, Multiline, Radio, Name, M, R> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
 type FieldComponent<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
-> = React.ForwardRefExoticComponent<
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  FieldProps<Schema, Resolved> & React.RefAttributes<any>
->
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+> = <
+  Name extends keyof Infer<Schema>,
+  const M extends boolean | undefined = undefined,
+  const R extends boolean | undefined = undefined,
+>(
+  props: FieldProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+) => React.ReactElement | null
 
-type SmartInputProps = {
+type SmartInputBaseProps = {
   fieldType?: FieldType
   type?: React.HTMLInputTypeAttribute
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -93,6 +119,51 @@ type SmartInputProps = {
   className?: string
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
+
+type IsBoolean<T> = [NonNullable<T>] extends [boolean] ? true : false
+
+type IsEnum<T> = [NonNullable<T>] extends [string]
+  ? [string] extends [NonNullable<T>]
+    ? false
+    : true
+  : false
+
+type SmartInputSlot<
+  Schema extends FormSchema,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = Name extends unknown
+  ? IsBoolean<Infer<Schema>[Name]> extends true
+    ? 'checkbox'
+    : R extends true
+      ? 'radio'
+      : Name extends Radio[number]
+        ? 'radio'
+        : IsEnum<Infer<Schema>[Name]> extends true
+          ? 'select'
+          : M extends true
+            ? 'multiline'
+            : Name extends Multiline[number]
+              ? 'multiline'
+              : 'input'
+  : never
+
+type SmartInputProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = SmartInputBaseProps &
+  Partial<
+    PropsOf<Resolved[SmartInputSlot<Schema, Multiline, Radio, Name, M, R>]>
+  >
 
 const FieldContext = React.createContext<
   Partial<Omit<Field<never>, 'name'>> | undefined
@@ -171,7 +242,7 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
     registerProps,
     a11yProps,
     ...props
-  }: SmartInputProps) => {
+  }: SmartInputBaseProps) => {
     if (!registerProps) return null
 
     const makeRadioOption =
@@ -240,7 +311,9 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
 function createField<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any> = DefaultComponents,
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
 >({
   register,
   idPrefix,
@@ -250,7 +323,7 @@ function createField<
   register: UseFormRegister<any>
   idPrefix: string
   components: Resolved
-}): FieldComponent<Schema, Resolved> {
+}): FieldComponent<Schema, Resolved, Multiline, Radio> {
   // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
   const c = components as Record<string, React.ComponentType<any>>
   const Field = c.field
@@ -266,8 +339,7 @@ function createField<
   const Errors = c.fieldErrors
   const Error = c.error
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  return React.forwardRef<any, FieldProps<Schema, Resolved>>(
+  return React.forwardRef(
     (
       {
         fieldType = 'string',
@@ -288,7 +360,8 @@ function createField<
         autoComplete,
         children: childrenFn,
         ...props
-      },
+      }: // biome-ignore lint/suspicious/noExplicitAny: internal implementation — generics are for the external API
+      Record<string, any>,
       ref
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
@@ -310,7 +383,7 @@ function createField<
       }
 
       const errorsChildren = errors?.length
-        ? errors.map((error) => <Error key={error}>{error}</Error>)
+        ? errors.map((error: string) => <Error key={error}>{error}</Error>)
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
@@ -386,7 +459,7 @@ function createField<
             })
           }
           if (child.type === SmartInput) {
-            const smartInputProps: SmartInputProps = {
+            const smartInputProps: SmartInputBaseProps = {
               fieldType,
               type,
               options: options,
@@ -580,8 +653,15 @@ function createField<
         </FieldContext.Provider>
       )
     }
-  )
+  ) as unknown as FieldComponent<Schema, Resolved, Multiline, Radio>
 }
 
-export type { FieldType, FieldComponent, Option }
+export type {
+  FieldType,
+  FieldComponent,
+  Option,
+  SmartInputSlot,
+  IsBoolean,
+  IsEnum,
+}
 export { createField }

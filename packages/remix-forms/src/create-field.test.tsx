@@ -15,7 +15,12 @@ import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
 
 const schema = z.object({ foo: z.string() })
-const Field = createField<typeof schema>({
+const Field = createField<
+  typeof schema,
+  typeof defaultComponents,
+  readonly [],
+  readonly []
+>({
   register,
   idPrefix: '',
   components: defaultComponents,
@@ -129,7 +134,12 @@ describe('createField', () => {
 
   it('registers the field using setValueAs for coercion', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({
+    const NumField = createField<
+      typeof schema,
+      typeof defaultComponents,
+      readonly [],
+      readonly []
+    >({
       register,
       idPrefix: '',
       components: defaultComponents,
@@ -152,7 +162,12 @@ describe('createField', () => {
 
   it('returns null from setValueAs when coercion fails', () => {
     const schema = z.object({ amount: z.number() })
-    const NumField = createField<typeof schema>({
+    const NumField = createField<
+      typeof schema,
+      typeof defaultComponents,
+      readonly [],
+      readonly []
+    >({
       register,
       idPrefix: '',
       components: defaultComponents,

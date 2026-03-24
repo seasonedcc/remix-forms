@@ -15,35 +15,43 @@ const description =
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `import { makeSchemaForm } from 'remix-forms'
-import {
-  Button,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-} from '@chakra-ui/react'
 
 const SchemaForm = makeSchemaForm({
-  input: Input,
-  button: Button,
-  label: FormLabel,
-  error: FormErrorMessage,
+  input: ChakraInput,
+  multiline: ChakraTextarea,
+  button: ChakraButton,
+  label: ChakraLabel,
+  error: ChakraError,
 })
 
 const schema = z.object({
+  firstName: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
+  bio: z.string().optional(),
+  role: z.enum(['developer', 'designer', 'manager']),
 })
 
 export default () => (
-  <SchemaForm schema={schema}>
+  <SchemaForm schema={schema} multiline={['bio']} radio={['role']}>
     {({ Field, Errors, Button }) => (
       <>
+        <Field name="firstName">
+          {({ Label, SmartInput, Errors }) => (
+            <>
+              <Label>First name</Label>
+              {/* SmartInput knows this is an input field — accepts ChakraInput props */}
+              <SmartInput size="lg" />
+              <Errors />
+            </>
+          )}
+        </Field>
         <Field name="email">
-          {({ Label, Input, Errors }) => (
+          {({ Label, SmartInput, Errors }) => (
             <>
               <Label>Email address</Label>
-              {/* Type-safe! Input accepts Chakra's size and variant props */}
-              <Input size="lg" variant="filled" />
+              {/* SmartInput infers input slot — variant is a ChakraInput prop */}
+              <SmartInput variant="filled" />
               <Errors />
             </>
           )}
@@ -57,8 +65,27 @@ export default () => (
             </>
           )}
         </Field>
+        <Field name="bio">
+          {({ Label, SmartInput, Errors }) => (
+            <>
+              <Label>Bio</Label>
+              {/* SmartInput knows bio is multiline — accepts ChakraTextarea props */}
+              <SmartInput resize="none" />
+              <Errors />
+            </>
+          )}
+        </Field>
+        <Field name="role">
+          {({ Label, SmartInput, Errors }) => (
+            <>
+              <Label>Role</Label>
+              {/* SmartInput knows role is radio (enum in radio config) */}
+              <SmartInput />
+              <Errors />
+            </>
+          )}
+        </Field>
         <Errors />
-        {/* Type-safe! Button accepts Chakra's colorScheme prop */}
         <Button colorScheme="blue" size="lg">
           Sign up
         </Button>
@@ -68,8 +95,11 @@ export default () => (
 )`
 
 const schema = z.object({
+  firstName: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
+  bio: z.string().optional(),
+  role: z.enum(['developer', 'designer', 'manager']),
 })
 
 export const loader = () => ({
@@ -84,10 +114,16 @@ export const action = async ({ request }: Route.ActionArgs) =>
 type ChakraSize = 'xs' | 'sm' | 'md' | 'lg'
 type ChakraVariant = 'outline' | 'filled' | 'flushed' | 'unstyled'
 type ChakraColorScheme = 'blue' | 'green' | 'red' | 'orange' | 'purple' | 'teal'
+type ChakraResize = 'none' | 'vertical' | 'horizontal' | 'both'
 
 type ChakraInputProps = Omit<JSX.IntrinsicElements['input'], 'size'> & {
   size?: ChakraSize
   variant?: ChakraVariant
+}
+
+type ChakraTextareaProps = Omit<JSX.IntrinsicElements['textarea'], 'size'> & {
+  size?: ChakraSize
+  resize?: ChakraResize
 }
 
 type ChakraButtonProps = Omit<
@@ -125,6 +161,13 @@ const colorSchemeClasses: Record<ChakraColorScheme, string> = {
   teal: 'btn-accent',
 }
 
+const resizeClasses: Record<ChakraResize, string> = {
+  none: 'resize-none',
+  vertical: 'resize-y',
+  horizontal: 'resize-x',
+  both: 'resize',
+}
+
 const ChakraInput = React.forwardRef<HTMLInputElement, ChakraInputProps>(
   (
     { size = 'md', variant = 'outline', type = 'text', className, ...props },
@@ -144,6 +187,22 @@ const ChakraInput = React.forwardRef<HTMLInputElement, ChakraInputProps>(
     />
   )
 )
+
+const ChakraTextarea = React.forwardRef<
+  HTMLTextAreaElement,
+  ChakraTextareaProps
+>(({ size = 'md', resize = 'vertical', className, ...props }, ref) => (
+  <textarea
+    ref={ref}
+    className={cx(
+      'textarea textarea-bordered w-full',
+      sizeClasses[size],
+      resizeClasses[resize],
+      className
+    )}
+    {...props}
+  />
+))
 
 const ChakraButton = React.forwardRef<HTMLButtonElement, ChakraButtonProps>(
   ({ size = 'md', colorScheme = 'blue', className, ...props }, ref) => (
@@ -177,6 +236,7 @@ const ChakraError = (props: JSX.IntrinsicElements['div']) => (
 
 const SchemaForm = makeSchemaForm({
   input: ChakraInput,
+  multiline: ChakraTextarea,
   button: ChakraButton,
   label: ChakraLabel,
   error: ChakraError,
@@ -191,23 +251,35 @@ export default function Component() {
           In this example, we show how <em>makeSchemaForm</em> enables type-safe
           integration with UI libraries like{' '}
           <ExternalLink href="https://chakra-ui.com/">Chakra UI</ExternalLink>.
-          Custom props like <em>size</em>, <em>variant</em>, and{' '}
-          <em>colorScheme</em> flow through to Field children automatically.
+          SmartInput automatically infers which component it will render from
+          the schema and form config, giving you the exact props of that
+          component.
         </>
       }
     >
       <SchemaForm
         schema={schema}
+        multiline={['bio']}
+        radio={['role']}
         inputTypes={{ password: 'password' }}
         buttonLabel="Sign up"
       >
         {({ Field, Errors, Button }) => (
           <>
+            <Field name="firstName">
+              {({ Label, SmartInput, Errors }) => (
+                <>
+                  <Label>First name</Label>
+                  <SmartInput size="lg" />
+                  <Errors />
+                </>
+              )}
+            </Field>
             <Field name="email">
-              {({ Label, Input, Errors }) => (
+              {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label>Email address</Label>
-                  <Input size="lg" variant="filled" />
+                  <SmartInput variant="filled" />
                   <Errors />
                 </>
               )}
@@ -216,6 +288,24 @@ export default function Component() {
               {({ Label, SmartInput, Errors }) => (
                 <>
                   <Label>Password</Label>
+                  <SmartInput />
+                  <Errors />
+                </>
+              )}
+            </Field>
+            <Field name="bio">
+              {({ Label, SmartInput, Errors }) => (
+                <>
+                  <Label>Bio</Label>
+                  <SmartInput resize="none" />
+                  <Errors />
+                </>
+              )}
+            </Field>
+            <Field name="role">
+              {({ Label, SmartInput, Errors }) => (
+                <>
+                  <Label>Role</Label>
                   <SmartInput />
                   <Errors />
                 </>

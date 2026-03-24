@@ -1,5 +1,7 @@
 import type * as React from 'react'
 import { expectTypeOf, it } from 'vitest'
+import * as z from 'zod'
+import type { IsBoolean, IsEnum, SmartInputSlot } from './create-field'
 import type {
   ComponentMap,
   DefaultComponents,
@@ -142,4 +144,178 @@ it('MergeComponents 3-level cascade: override > base > default', () => {
   expectTypeOf<Merged['input']>().toEqualTypeOf<OverrideInput>()
   expectTypeOf<Merged['button']>().toEqualTypeOf<BaseButton>()
   expectTypeOf<Merged['label']>().toEqualTypeOf<DefaultComponents['label']>()
+})
+
+// --- IsBoolean / IsEnum helpers ---
+
+it('IsBoolean detects boolean fields', () => {
+  expectTypeOf<IsBoolean<boolean>>().toEqualTypeOf<true>()
+  expectTypeOf<IsBoolean<boolean | undefined>>().toEqualTypeOf<true>()
+  expectTypeOf<IsBoolean<string>>().toEqualTypeOf<false>()
+  expectTypeOf<IsBoolean<number>>().toEqualTypeOf<false>()
+})
+
+it('IsEnum detects string literal unions', () => {
+  expectTypeOf<IsEnum<'a' | 'b'>>().toEqualTypeOf<true>()
+  expectTypeOf<IsEnum<'a' | 'b' | undefined>>().toEqualTypeOf<true>()
+  expectTypeOf<IsEnum<string>>().toEqualTypeOf<false>()
+  expectTypeOf<IsEnum<string | undefined>>().toEqualTypeOf<false>()
+  expectTypeOf<IsEnum<boolean>>().toEqualTypeOf<false>()
+  expectTypeOf<IsEnum<number>>().toEqualTypeOf<false>()
+})
+
+// --- SmartInputSlot ---
+
+it('SmartInputSlot resolves boolean field to checkbox', () => {
+  const schema = z.object({ flag: z.boolean() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'flag',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
+})
+
+it('SmartInputSlot resolves optional boolean to checkbox', () => {
+  const schema = z.object({ flag: z.boolean().optional() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'flag',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
+})
+
+it('SmartInputSlot resolves string to input', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'name',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'input'>()
+})
+
+it('SmartInputSlot resolves enum to select', () => {
+  const schema = z.object({ role: z.enum(['a', 'b']) })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'role',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'select'>()
+})
+
+it('SmartInputSlot resolves optional enum to select', () => {
+  const schema = z.object({ role: z.enum(['a', 'b']).optional() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'role',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'select'>()
+})
+
+it('SmartInputSlot resolves string in config multiline to multiline', () => {
+  const schema = z.object({ bio: z.string() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly ['bio'],
+    readonly [],
+    'bio',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'multiline'>()
+})
+
+it('SmartInputSlot resolves enum in config radio to radio', () => {
+  const schema = z.object({ role: z.enum(['a', 'b']) })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly ['role'],
+    'role',
+    undefined,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'radio'>()
+})
+
+it('SmartInputSlot resolves Field-level multiline=true to multiline', () => {
+  const schema = z.object({ notes: z.string() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'notes',
+    true,
+    undefined
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'multiline'>()
+})
+
+it('SmartInputSlot resolves Field-level radio=true to radio', () => {
+  const schema = z.object({ choice: z.string() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'choice',
+    undefined,
+    true
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'radio'>()
+})
+
+it('SmartInputSlot: Field-level radio=true overrides config multiline', () => {
+  const schema = z.object({ field: z.string() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly ['field'],
+    readonly [],
+    'field',
+    undefined,
+    true
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'radio'>()
+})
+
+it('SmartInputSlot: boolean always wins over Field-level radio', () => {
+  const schema = z.object({ flag: z.boolean() })
+  type S = typeof schema
+  type Slot = SmartInputSlot<
+    S,
+    readonly [],
+    readonly [],
+    'flag',
+    undefined,
+    true
+  >
+  expectTypeOf<Slot>().toEqualTypeOf<'checkbox'>()
 })
