@@ -1,11 +1,22 @@
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
 import * as React from 'react'
+import { Form } from 'react-router'
 import { formAction, makeSchemaForm } from 'remix-forms'
 import { z } from 'zod'
 import { cx, metaTags } from '~/helpers'
+import Checkbox from '~/ui/checkbox'
+import Error from '~/ui/error'
+import Errors from '~/ui/errors'
 import Example from '~/ui/example'
 import ExternalLink from '~/ui/external-link'
+import Field from '~/ui/field'
+import Fields from '~/ui/fields'
+import InputWrapper from '~/ui/input-wrapper'
+import Label from '~/ui/label'
+import Radio from '~/ui/radio'
+import RadioGroup from '~/ui/radio-group'
+import Select from '~/ui/select'
 import type { Route } from './+types/chakra-ui'
 
 const title = 'Chakra UI'
@@ -20,8 +31,6 @@ const SchemaForm = makeSchemaForm({
   input: ChakraInput,
   multiline: ChakraTextarea,
   button: ChakraButton,
-  label: ChakraLabel,
-  error: ChakraError,
 })
 
 const schema = z.object({
@@ -76,11 +85,13 @@ export default () => (
           )}
         </Field>
         <Field name="role">
-          {({ Label, SmartInput, Errors }) => (
+          {({ Label, SmartInput, RadioGroup, Errors }) => (
             <>
               <Label>Role</Label>
-              {/* SmartInput knows role is radio (enum in radio config) */}
-              <SmartInput />
+              <RadioGroup>
+                {/* SmartInput knows role is radio (enum in radio config) */}
+                <SmartInput />
+              </RadioGroup>
               <Errors />
             </>
           )}
@@ -132,10 +143,6 @@ type ChakraButtonProps = Omit<
 > & {
   size?: ChakraSize
   colorScheme?: ChakraColorScheme
-}
-
-type ChakraLabelProps = JSX.IntrinsicElements['label'] & {
-  fontSize?: ChakraSize
 }
 
 const sizeClasses: Record<ChakraSize, string> = {
@@ -221,25 +228,27 @@ const ChakraButton = React.forwardRef<HTMLButtonElement, ChakraButtonProps>(
   )
 )
 
-const ChakraLabel = ({
-  fontSize: _fontSize,
-  className,
-  ...props
-}: ChakraLabelProps) => (
-  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component
-  <label className={cx('label', className)} {...props} />
-)
-
-const ChakraError = (props: JSX.IntrinsicElements['div']) => (
-  <div className="text-error text-sm" {...props} />
-)
+const StyledForm = React.forwardRef<
+  HTMLFormElement,
+  React.ComponentPropsWithRef<typeof Form>
+>((props, ref) => <Form ref={ref} className="flex flex-col gap-6" {...props} />)
 
 const SchemaForm = makeSchemaForm({
+  form: StyledForm,
+  fields: Fields,
+  field: Field,
+  label: Label,
   input: ChakraInput,
   multiline: ChakraTextarea,
+  select: Select,
+  radio: Radio,
+  radioGroup: RadioGroup,
+  radioWrapper: InputWrapper,
+  checkboxWrapper: InputWrapper,
+  checkbox: Checkbox,
   button: ChakraButton,
-  label: ChakraLabel,
-  error: ChakraError,
+  globalErrors: Errors,
+  error: Error,
 })
 
 export default function Component() {
@@ -303,10 +312,12 @@ export default function Component() {
               )}
             </Field>
             <Field name="role">
-              {({ Label, SmartInput, Errors }) => (
+              {({ Label, SmartInput, RadioGroup, Errors }) => (
                 <>
                   <Label>Role</Label>
-                  <SmartInput />
+                  <RadioGroup>
+                    <SmartInput />
+                  </RadioGroup>
                   <Errors />
                 </>
               )}
