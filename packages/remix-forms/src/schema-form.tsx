@@ -189,6 +189,9 @@ type SchemaFormProps<
   values?: FormValues<Infer<Schema>>
   labels?: Partial<Record<keyof Infer<Schema>, string>>
   placeholders?: Partial<Record<keyof Infer<Schema>, string>>
+  autoComplete?: Partial<
+    Record<keyof Infer<Schema>, JSX.IntrinsicElements['input']['autoComplete']>
+  >
   options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
   hiddenFields?: Array<keyof Infer<Schema>>
@@ -209,7 +212,7 @@ type SchemaFormProps<
   >
   idPrefix?: string
   flushSync?: boolean
-} & Omit<ReactRouterFormProps, 'children' | 'autoFocus'>
+} & Omit<ReactRouterFormProps, 'children' | 'autoFocus' | 'autoComplete'>
 
 const formatToInputType: Partial<Record<string, AutoInputType>> = {
   date: 'date',
@@ -284,6 +287,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     children: childrenFn,
     labels,
     placeholders,
+    autoComplete: autoCompleteProp,
     options,
     inputTypes,
     autoInputTypes = ['date', 'datetime-local', 'time'],
@@ -443,6 +447,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
         multiline: multiline && Boolean(multiline.find((item) => item === key)),
         radio: radio && Boolean(radio.find((item) => item === key)),
         placeholder: placeholders?.[key],
+        autoComplete: autoCompleteProp?.[key],
       } as Field<SchemaType>
     }
 
@@ -679,6 +684,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @param props.children - Custom content instead of the default layout
  * @param props.labels - Custom labels for form fields
  * @param props.placeholders - Placeholder text for fields
+ * @param props.autoComplete - Autocomplete hints for fields
  * @param props.options - Select and radio options for fields
  * @param props.inputTypes - Custom input types per field
  * @param props.autoInputTypes - HTML input types to assign automatically based on schema format. Defaults to `['date', 'datetime-local', 'time']`

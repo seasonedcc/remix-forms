@@ -15,6 +15,7 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   name: z.string().min(1),
+  email: z.string().min(1).email(),
   roleId: z.number().int(),
   bio: z.string().min(1),
 })
@@ -25,6 +26,7 @@ export default () => (
     autoFocus="name"
     labels={{ roleId: 'Role' }}
     placeholders={{ name: 'Your name', bio: 'Your story' }}
+    autoComplete={{ email: 'email' }}
     options={{
       roleId: [
         { name: 'Designer', value: 1 },
@@ -38,6 +40,7 @@ export default () => (
 
 const schema = z.object({
   name: z.string().min(1),
+  email: z.string().min(1).email(),
   roleId: z.number().int(),
   bio: z.string().min(1),
 })
@@ -59,6 +62,7 @@ export default function Component() {
         autoFocus="name"
         labels={{ roleId: 'Role' }}
         placeholders={{ name: 'Your name', bio: 'Your story' }}
+        autoComplete={{ email: 'email' }}
         options={{
           roleId: [
             { name: 'Designer', value: 1 },
