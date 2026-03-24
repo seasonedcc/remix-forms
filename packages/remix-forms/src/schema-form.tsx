@@ -545,17 +545,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
           }
 
           return React.cloneElement(child, {
-            shape: field?.shape,
-            fieldType: field?.fieldType,
-            label: field?.label,
-            placeholder: field?.placeholder,
-            required: field?.required,
-            options: field?.options,
-            value: field?.value,
-            errors: field?.errors,
-            hidden: field?.hidden,
-            multiline: field?.multiline,
-            radio: field?.radio,
+            ...field,
             ...child.props,
             autoFocus,
           })

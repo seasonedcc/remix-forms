@@ -764,6 +764,36 @@ describe('element type comparison safety', () => {
   })
 })
 
+describe('schema-level props forwarded to Field with custom children', () => {
+  it('forwards inputTypes to Field with custom children', () => {
+    const schema = z.object({ email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} inputTypes={{ email: 'email' }}>
+        {({ Field }) => (
+          <Field name="email">{({ SmartInput }) => <SmartInput />}</Field>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('type="email"')
+  })
+
+  it('forwards autoComplete to Field with custom children', () => {
+    const schema = z.object({ email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} autoComplete={{ email: 'username' }}>
+        {({ Field }) => (
+          <Field name="email">{({ SmartInput }) => <SmartInput />}</Field>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('autoComplete="username"')
+  })
+})
+
 describe('SchemaForm hidden field errors', () => {
   it('promotes hidden field errors to global errors', () => {
     const schema = z.object({ visible: z.string(), secret: z.string() })
