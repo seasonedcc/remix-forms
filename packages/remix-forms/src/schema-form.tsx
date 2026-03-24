@@ -12,8 +12,6 @@ import type {
 import { FormProvider, useForm } from 'react-hook-form'
 import {
   type FetcherWithComponents,
-  Form as ReactRouterForm,
-  type FormProps as ReactRouterFormProps,
   useActionData,
   useNavigation,
   useSubmit,
@@ -24,7 +22,12 @@ import { mapChildren, reduceElements } from './children-traversal'
 import type { FieldComponent, FieldType, Option } from './create-field'
 import { createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
-import type { ComponentMap, MergeComponents, NoOverrides } from './defaults'
+import type {
+  ComponentMap,
+  MergeComponents,
+  NoOverrides,
+  ReactRouterFormProps,
+} from './defaults'
 import { defaultComponents } from './defaults'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
@@ -148,7 +151,6 @@ type SchemaFormProps<
   Radio extends ReadonlyArray<KeysOfStrings<Infer<Schema>>>,
 > = {
   components?: Components
-  component?: typeof ReactRouterForm
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
@@ -251,7 +253,6 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     > = readonly [],
   >({
     components: componentsProp,
-    component = ReactRouterForm,
     fetcher,
     mode = 'onSubmit',
     reValidateMode = 'onChange',
@@ -293,7 +294,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     const Error = rc.error
     const Button = rc.button
 
-    const Component = fetcher?.Form ?? component
+    const FormComponent = fetcher?.Form ?? rc.form
     const navigationSubmit = useSubmit()
     const submit = fetcher?.submit ?? navigationSubmit
     const navigation = useNavigation()
@@ -623,10 +624,15 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
 
     return (
       <FormProvider {...form}>
-        <Component ref={formRef} method={method} onSubmit={onSubmit} {...props}>
+        <FormComponent
+          ref={formRef}
+          method={method}
+          onSubmit={onSubmit}
+          {...props}
+        >
           {beforeChildren}
           {customChildren ?? defaultChildren()}
-        </Component>
+        </FormComponent>
       </FormProvider>
     )
   }

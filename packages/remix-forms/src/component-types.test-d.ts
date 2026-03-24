@@ -53,14 +53,18 @@ it('ResolveComponents defaults all slots when Components is empty', () => {
 })
 
 it('ResolveComponents uses the override when provided', () => {
-  type MyInput = React.FC<{ size: string }>
+  type MyInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
   type Resolved = ResolveComponents<{ input: MyInput }>
 
   expectTypeOf<Resolved['input']>().toEqualTypeOf<MyInput>()
 })
 
 it('ResolveComponents keeps other slots at defaults when partially overridden', () => {
-  type MyInput = React.FC<{ size: string }>
+  type MyInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
   type Resolved = ResolveComponents<{ input: MyInput }>
 
   expectTypeOf<Resolved['label']>().toEqualTypeOf<DefaultComponents['label']>()
@@ -73,8 +77,12 @@ it('ResolveComponents keeps other slots at defaults when partially overridden', 
 })
 
 it('ResolveComponents handles multiple overrides', () => {
-  type MyInput = React.FC<{ size: string }>
-  type MyButton = React.FC<{ variant: 'primary' | 'secondary' }>
+  type MyInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
+  type MyButton = React.FC<
+    JSX.IntrinsicElements['button'] & { variant?: 'primary' | 'secondary' }
+  >
   type Resolved = ResolveComponents<{ input: MyInput; button: MyButton }>
 
   expectTypeOf<Resolved['input']>().toEqualTypeOf<MyInput>()
@@ -84,18 +92,21 @@ it('ResolveComponents handles multiple overrides', () => {
 
 it('ResolveComponents strips undefined from optional overrides', () => {
   type Resolved = ResolveComponents<{
-    input: React.FC<{ x: number }> | undefined
+    input: React.FC<JSX.IntrinsicElements['input'] & { x?: number }> | undefined
   }>
 
-  expectTypeOf<Resolved['input']>().toEqualTypeOf<React.FC<{ x: number }>>()
+  expectTypeOf<Resolved['input']>().toEqualTypeOf<
+    React.FC<JSX.IntrinsicElements['input'] & { x?: number }>
+  >()
 })
 
-it('ComponentMap allows both component types and strings', () => {
+it('ComponentMap accepts components that handle the slot props', () => {
   expectTypeOf<{ input: React.FC }>().toExtend<Partial<ComponentMap>>()
-  expectTypeOf<{ input: 'input' }>().toExtend<Partial<ComponentMap>>()
   expectTypeOf<{
     input: React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<{ size: string }> &
+      React.PropsWithoutRef<
+        JSX.IntrinsicElements['input'] & { size?: string }
+      > &
         React.RefAttributes<HTMLInputElement>
     >
   }>().toExtend<Partial<ComponentMap>>()
@@ -116,7 +127,9 @@ it('NoOverrides extends Partial<ComponentMap>', () => {
 })
 
 it('MergeComponents falls through to base when no overrides', () => {
-  type MyInput = React.FC<{ size: string }>
+  type MyInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
   type Base = { input: MyInput }
   type Merged = MergeComponents<Base, NoOverrides>
 
@@ -125,17 +138,25 @@ it('MergeComponents falls through to base when no overrides', () => {
 })
 
 it('MergeComponents uses override over base', () => {
-  type BaseInput = React.FC<{ size: string }>
-  type OverrideInput = React.FC<{ variant: string }>
+  type BaseInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
+  type OverrideInput = React.FC<
+    JSX.IntrinsicElements['input'] & { variant?: string }
+  >
   type Merged = MergeComponents<{ input: BaseInput }, { input: OverrideInput }>
 
   expectTypeOf<Merged['input']>().toEqualTypeOf<OverrideInput>()
 })
 
 it('MergeComponents 3-level cascade: override > base > default', () => {
-  type BaseInput = React.FC<{ size: string }>
-  type BaseButton = React.FC<{ variant: string }>
-  type OverrideInput = React.FC<{ x: number }>
+  type BaseInput = React.FC<
+    Omit<JSX.IntrinsicElements['input'], 'size'> & { size?: string }
+  >
+  type BaseButton = React.FC<
+    JSX.IntrinsicElements['button'] & { variant?: string }
+  >
+  type OverrideInput = React.FC<JSX.IntrinsicElements['input'] & { x?: number }>
   type Merged = MergeComponents<
     { input: BaseInput; button: BaseButton },
     { input: OverrideInput }

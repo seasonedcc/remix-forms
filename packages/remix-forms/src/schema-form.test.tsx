@@ -393,7 +393,7 @@ describe('SchemaForm', () => {
     expect(html).toContain('autoComplete="shipping"')
   })
 })
-it('uses provided component for form rendering', () => {
+it('uses provided form component for rendering', () => {
   const schema = z.object({ name: z.string() })
   const CustomForm = React.forwardRef<
     HTMLFormElement,
@@ -403,7 +403,7 @@ it('uses provided component for form rendering', () => {
   )) as unknown as typeof ReactRouterForm
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} component={CustomForm} />
+    <SchemaForm schema={schema} components={{ form: CustomForm }} />
   )
 
   expect(html).toContain('data-custom="true"')

@@ -1,3 +1,5 @@
+import * as React from 'react'
+import { Form } from 'react-router'
 import { makeSchemaForm } from 'remix-forms'
 import Checkbox from './checkbox'
 import Error from './error'
@@ -15,7 +17,13 @@ import RadioGroup from './radio-group'
 import Fields from './fields'
 import TextArea from './text-area'
 
+const StyledForm = React.forwardRef<
+  HTMLFormElement,
+  React.ComponentPropsWithRef<typeof Form>
+>((props, ref) => <Form ref={ref} className="flex flex-col gap-6" {...props} />)
+
 const SchemaForm = makeSchemaForm({
+  form: StyledForm,
   fields: Fields,
   field: Field,
   label: Label,

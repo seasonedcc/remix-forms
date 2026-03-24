@@ -17,6 +17,7 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 const stylesCode = `import { makeSchemaForm } from 'remix-forms'
 
 const SchemaForm = makeSchemaForm({
+  form: /* your custom Form */,
   fields: /* your custom fields wrapper */,
   field: /* your custom Field */,
   label: /* your custom Label */,
@@ -234,12 +235,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <p>
           PS: you don&apos;t need to customize everything. We&apos;ll use
           standard html tags if you don&apos;t.
-        </p>
-        <p>
-          When passing custom components, always pass actual React components
-          rather than string tag names like <em>&quot;div&quot;</em> or{' '}
-          <em>&quot;input&quot;</em>. Remix Forms identifies these components by
-          reference in the JSX tree, so strings can cause unexpected behavior.
         </p>
       </div>
       <SubHeading>That&apos;s it!</SubHeading>
