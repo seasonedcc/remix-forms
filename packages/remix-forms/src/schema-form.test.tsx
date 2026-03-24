@@ -325,13 +325,17 @@ describe('SchemaForm', () => {
 
   it('uses custom renderField for each field', () => {
     const schema = z.object({ first: z.string(), second: z.string() })
-    const renderField: RenderField<typeof schema> = vi.fn(
-      ({ Field, name, label }) => (
-        <div className="custom">
-          <Field name={name} label={label} />
-        </div>
-      )
-    )
+    const renderField: RenderField<
+      typeof schema,
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any,
+      readonly [],
+      readonly []
+    > = vi.fn(({ Field, name, label }) => (
+      <div className="custom">
+        <Field name={name} label={label} />
+      </div>
+    ))
 
     const html = renderToStaticMarkup(
       <SchemaForm schema={schema} renderField={renderField} />
@@ -389,7 +393,7 @@ describe('SchemaForm', () => {
     expect(html).toContain('autoComplete="shipping"')
   })
 })
-it('uses provided component for form rendering', () => {
+it('uses provided form component for rendering', () => {
   const schema = z.object({ name: z.string() })
   const CustomForm = React.forwardRef<
     HTMLFormElement,
@@ -399,7 +403,7 @@ it('uses provided component for form rendering', () => {
   )) as unknown as typeof ReactRouterForm
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} component={CustomForm} />
+    <SchemaForm schema={schema} components={{ form: CustomForm }} />
   )
 
   expect(html).toContain('data-custom="true"')
@@ -415,7 +419,7 @@ it('uses globalErrorsComponent when provided', () => {
     <SchemaForm
       schema={schema}
       errors={{ _global: ['Oops'] }}
-      globalErrorsComponent={Errors}
+      components={{ globalErrors: Errors }}
     />
   )
 
@@ -430,7 +434,7 @@ it('renders the button using buttonComponent', () => {
   )
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} components={{ button: Button }} />
   )
 
   expect(html).toContain('data-btn="true"')
@@ -470,8 +474,7 @@ it('uses fieldErrorsComponent and errorComponent when provided', () => {
     <SchemaForm
       schema={schema}
       errors={{ name: ['Oops'] }}
-      fieldErrorsComponent={Errors}
-      errorComponent={Error}
+      components={{ fieldErrors: Errors, error: Error }}
     />
   )
 
@@ -503,7 +506,7 @@ it('uses fieldsComponent to wrap auto-generated fields', () => {
   )
 
   const html = renderToStaticMarkup(
-    <SchemaForm schema={schema} fieldsComponent={FieldsWrapper} />
+    <SchemaForm schema={schema} components={{ fields: FieldsWrapper }} />
   )
 
   expect(html).toContain('data-fields="true"')

@@ -27,7 +27,7 @@ const Button = ({ children, ...props }: JSX.IntrinsicElements['button']) => {
 }
 
 export default () => (
-    <SchemaForm schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} components={{ button: Button }} />
   )
 }`
 
@@ -53,6 +53,6 @@ const Button = ({ children, ...props }: JSX.IntrinsicElements['button']) => {
 
 export default () => (
   <Example title={title} description={description}>
-    <SchemaForm schema={schema} buttonComponent={Button} />
+    <SchemaForm schema={schema} components={{ button: Button }} />
   </Example>
 )

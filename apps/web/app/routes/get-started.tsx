@@ -14,29 +14,23 @@ const description = 'The full-stack form library for React Router v7'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
-const stylesCode = `import type { SchemaFormProps, FormSchema } from 'remix-forms'
-import { SchemaForm as BaseForm } from 'remix-forms'
+const stylesCode = `import { makeSchemaForm } from 'remix-forms'
 
-function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
-  return (
-    <BaseForm<Schema>
-      className={/* your form classes */}
-      fieldsComponent={/* your custom fields wrapper */}
-      fieldComponent={/* your custom Field */}
-      labelComponent={/* your custom Label */}
-      inputComponent={/* your custom Input */}
-      multilineComponent={/* your custom Multiline */}
-      selectComponent={/* your custom Select */}
-      checkboxComponent={/* your custom Checkbox */}
-      checkboxWrapperComponent={/* your custom checkbox wrapper */}
-      buttonComponent={/* your custom Button */}
-      fieldErrorsComponent={/* your custom FieldErrors */}
-      globalErrorsComponent={/* your custom GlobalErrors */}
-      errorComponent={/* your custom Error */}
-      {...props}
-    />
-  )
-}
+const SchemaForm = makeSchemaForm({
+  form: /* your custom Form */,
+  fields: /* your custom fields wrapper */,
+  field: /* your custom Field */,
+  label: /* your custom Label */,
+  input: /* your custom Input */,
+  multiline: /* your custom Multiline */,
+  select: /* your custom Select */,
+  checkbox: /* your custom Checkbox */,
+  checkboxWrapper: /* your custom checkbox wrapper */,
+  button: /* your custom Button */,
+  fieldErrors: /* your custom FieldErrors */,
+  globalErrors: /* your custom GlobalErrors */,
+  error: /* your custom Error */,
+})
 
 export { SchemaForm }
 `
@@ -241,12 +235,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <p>
           PS: you don&apos;t need to customize everything. We&apos;ll use
           standard html tags if you don&apos;t.
-        </p>
-        <p>
-          When passing custom components, always pass actual React components
-          rather than string tag names like <em>&quot;div&quot;</em> or{' '}
-          <em>&quot;input&quot;</em>. Remix Forms identifies these components by
-          reference in the JSX tree, so strings can cause unexpected behavior.
         </p>
       </div>
       <SubHeading>That&apos;s it!</SubHeading>

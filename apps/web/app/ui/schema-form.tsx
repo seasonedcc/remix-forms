@@ -1,8 +1,6 @@
-import {
-  SchemaForm as BaseForm,
-  type FormSchema,
-  type SchemaFormProps,
-} from 'remix-forms'
+import * as React from 'react'
+import { Form } from 'react-router'
+import { makeSchemaForm } from 'remix-forms'
 import Checkbox from './checkbox'
 import Error from './error'
 import Errors from './errors'
@@ -19,27 +17,27 @@ import RadioGroup from './radio-group'
 import Fields from './fields'
 import TextArea from './text-area'
 
-function SchemaForm<Schema extends FormSchema>(props: SchemaFormProps<Schema>) {
-  return (
-    <BaseForm
-      className="flex flex-col gap-6"
-      fieldsComponent={Fields}
-      fieldComponent={Field}
-      labelComponent={Label}
-      inputComponent={Input}
-      multilineComponent={TextArea}
-      selectComponent={Select}
-      radioComponent={Radio}
-      radioGroupComponent={RadioGroup}
-      radioWrapperComponent={InputWrapper}
-      checkboxWrapperComponent={InputWrapper}
-      checkboxComponent={Checkbox}
-      buttonComponent={SubmitButton}
-      globalErrorsComponent={Errors}
-      errorComponent={Error}
-      {...props}
-    />
-  )
-}
+const StyledForm = React.forwardRef<
+  HTMLFormElement,
+  React.ComponentPropsWithRef<typeof Form>
+>((props, ref) => <Form ref={ref} className="flex flex-col gap-6" {...props} />)
+
+const SchemaForm = makeSchemaForm({
+  form: StyledForm,
+  fields: Fields,
+  field: Field,
+  label: Label,
+  input: Input,
+  multiline: TextArea,
+  select: Select,
+  radio: Radio,
+  radioGroup: RadioGroup,
+  radioWrapper: InputWrapper,
+  checkboxWrapper: InputWrapper,
+  checkbox: Checkbox,
+  button: SubmitButton,
+  globalErrors: Errors,
+  error: Error,
+})
 
 export { SchemaForm }

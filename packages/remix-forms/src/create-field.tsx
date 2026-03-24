@@ -2,7 +2,8 @@ import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
 import { findElement, findParent, mapChildren } from './children-traversal'
-import type { ComponentOrTagName, FormSchema, Infer } from './prelude'
+import type { PropsOf } from './defaults'
+import type { FormSchema, Infer } from './prelude'
 import { mapObject } from './prelude'
 import type { Field } from './schema-form'
 
@@ -10,45 +11,33 @@ type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<Schema extends FormSchema> = (
-  helpers: FieldBaseProps<Schema> & {
-    Label: ComponentOrTagName<'label'>
-    SmartInput: React.ComponentType<SmartInputProps>
-    Input:
-      | React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-            React.RefAttributes<HTMLInputElement>
-        >
-      | string
-    Multiline:
-      | React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-            React.RefAttributes<HTMLTextAreaElement>
-        >
-      | string
-    Select:
-      | React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-            React.RefAttributes<HTMLSelectElement>
-        >
-      | string
-    Checkbox:
-      | React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-            React.RefAttributes<HTMLInputElement>
-        >
-      | string
-    RadioGroup: ComponentOrTagName<'fieldset'>
-    RadioWrapper: ComponentOrTagName<'div'>
-    Radio:
-      | React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-            React.RefAttributes<HTMLInputElement>
-        >
-      | string
-    CheckboxWrapper: ComponentOrTagName<'div'>
-    Errors: ComponentOrTagName<'div'>
-    Error: ComponentOrTagName<'div'>
+type Children<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = (
+  helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
+    name: Name
+    type?: JSX.IntrinsicElements['input']['type']
+    Label: Resolved['label']
+    SmartInput: React.ComponentType<
+      SmartInputProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+    >
+    Input: Resolved['input']
+    Multiline: Resolved['multiline']
+    Select: Resolved['select']
+    Checkbox: Resolved['checkbox']
+    RadioGroup: Resolved['radioGroup']
+    RadioWrapper: Resolved['radioWrapper']
+    Radio: Resolved['radio']
+    CheckboxWrapper: Resolved['checkboxWrapper']
+    Errors: Resolved['fieldErrors']
+    Error: Resolved['error']
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     ref: React.ForwardedRef<any>
   }
@@ -72,63 +61,50 @@ function getInputType(
   return types[type]
 }
 
-type FieldBaseProps<Schema extends FormSchema> = Omit<
-  Partial<Field<Infer<Schema>>>,
-  'name'
-> & {
-  name: keyof Infer<Schema>
+type FieldBaseProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = Omit<Partial<Field<Infer<Schema>>>, 'name' | 'multiline' | 'radio'> & {
+  name: Name
+  multiline?: M
+  radio?: R
   type?: JSX.IntrinsicElements['input']['type']
-  children?: Children<Schema>
+  children?: Children<Schema, Resolved, Multiline, Radio, Name, M, R>
 }
 
-type FieldProps<Schema extends FormSchema> = FieldBaseProps<Schema> &
+type FieldProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = FieldBaseProps<Schema, Resolved, Multiline, Radio, Name, M, R> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
-type FieldComponent<Schema extends FormSchema> =
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  React.ForwardRefExoticComponent<FieldProps<Schema> & React.RefAttributes<any>>
+type FieldComponent<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+> = <
+  Name extends keyof Infer<Schema>,
+  const M extends boolean | undefined = undefined,
+  const R extends boolean | undefined = undefined,
+>(
+  props: FieldProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+) => React.ReactElement | null
 
-type ComponentMappings = {
-  fieldComponent?: ComponentOrTagName<'div'>
-  labelComponent?: ComponentOrTagName<'label'>
-  inputComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  multilineComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['textarea']> &
-          React.RefAttributes<HTMLTextAreaElement>
-      >
-    | string
-  selectComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['select']> &
-          React.RefAttributes<HTMLSelectElement>
-      >
-    | string
-  checkboxComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  radioComponent?:
-    | React.ForwardRefExoticComponent<
-        React.PropsWithoutRef<JSX.IntrinsicElements['input']> &
-          React.RefAttributes<HTMLInputElement>
-      >
-    | string
-  checkboxWrapperComponent?: ComponentOrTagName<'div'>
-  radioWrapperComponent?: ComponentOrTagName<'div'>
-  radioGroupComponent?: ComponentOrTagName<'fieldset'>
-  fieldErrorsComponent?: ComponentOrTagName<'div'>
-  errorComponent?: ComponentOrTagName<'div'>
-}
-
-type SmartInputProps = {
+type SmartInputBaseProps = {
   fieldType?: FieldType
   type?: React.HTMLInputTypeAttribute
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -143,6 +119,51 @@ type SmartInputProps = {
   className?: string
   a11yProps?: Record<`aria-${string}`, string | boolean | undefined>
 }
+
+type IsBoolean<T> = [NonNullable<T>] extends [boolean] ? true : false
+
+type IsEnum<T> = [NonNullable<T>] extends [string]
+  ? [string] extends [NonNullable<T>]
+    ? false
+    : true
+  : false
+
+type SmartInputSlot<
+  Schema extends FormSchema,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = Name extends unknown
+  ? IsBoolean<Infer<Schema>[Name]> extends true
+    ? 'checkbox'
+    : R extends true
+      ? 'radio'
+      : Name extends Radio[number]
+        ? 'radio'
+        : IsEnum<Infer<Schema>[Name]> extends true
+          ? 'select'
+          : M extends true
+            ? 'multiline'
+            : Name extends Multiline[number]
+              ? 'multiline'
+              : 'input'
+  : never
+
+type SmartInputProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+> = SmartInputBaseProps &
+  Partial<
+    PropsOf<Resolved[SmartInputSlot<Schema, Multiline, Radio, Name, M, R>]>
+  >
 
 const FieldContext = React.createContext<
   Partial<Omit<Field<never>, 'name'>> | undefined
@@ -185,67 +206,6 @@ export function useField() {
   return context
 }
 
-const DefaultField = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultLabel = React.forwardRef<
-  HTMLLabelElement,
-  JSX.IntrinsicElements['label']
-  // biome-ignore lint/a11y/noLabelWithoutControl: wrapper component, association happens at render time
->((props, ref) => <label {...props} ref={ref} />)
-
-const DefaultInput = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
->((props, ref) => <input {...props} ref={ref} />)
-
-const DefaultMultiline = React.forwardRef<
-  HTMLTextAreaElement,
-  JSX.IntrinsicElements['textarea']
->((props, ref) => <textarea {...props} ref={ref} />)
-
-const DefaultSelect = React.forwardRef<
-  HTMLSelectElement,
-  JSX.IntrinsicElements['select']
->((props, ref) => <select {...props} ref={ref} />)
-
-const DefaultCheckbox = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
->((props, ref) => <input {...props} ref={ref} />)
-
-const DefaultRadio = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
->((props, ref) => <input {...props} ref={ref} />)
-
-const DefaultRadioGroup = React.forwardRef<
-  HTMLFieldSetElement,
-  JSX.IntrinsicElements['fieldset']
->((props, ref) => <fieldset {...props} ref={ref} />)
-
-const DefaultRadioWrapper = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultCheckboxWrapper = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultFieldErrors = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
-const DefaultFieldError = React.forwardRef<
-  HTMLDivElement,
-  JSX.IntrinsicElements['div']
->((props, ref) => <div {...props} ref={ref} />)
-
 const makeSelectOption = ({ name, value }: Option) => (
   <option key={String(value)} value={value}>
     {name}
@@ -257,16 +217,18 @@ const makeOptionComponents = (
   options: Option[] | undefined
 ) => (options ? options.map(fn) : undefined)
 
-function createSmartInput({
-  idPrefix,
-  inputComponent: Input = DefaultInput,
-  multilineComponent: Multiline = DefaultMultiline,
-  selectComponent: Select = DefaultSelect,
-  checkboxComponent: Checkbox = DefaultCheckbox,
-  labelComponent: Label = DefaultLabel,
-  radioComponent: Radio = DefaultRadio,
-  radioWrapperComponent: RadioWrapper = DefaultRadioWrapper,
-}: { idPrefix: string } & ComponentMappings) {
+// biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+function createSmartInput(idPrefix: string, components: Record<string, any>) {
+  const {
+    input: Input,
+    multiline: Multiline,
+    select: Select,
+    checkbox: Checkbox,
+    label: Label,
+    radio: Radio,
+    radioWrapper: RadioWrapper,
+  } = components
+
   return ({
     fieldType,
     type,
@@ -280,7 +242,7 @@ function createSmartInput({
     registerProps,
     a11yProps,
     ...props
-  }: SmartInputProps) => {
+  }: SmartInputBaseProps) => {
     if (!registerProps) return null
 
     const makeRadioOption =
@@ -346,28 +308,38 @@ function createSmartInput({
   }
 }
 
-function createField<Schema extends FormSchema>({
+function createField<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+>({
   register,
   idPrefix,
-  fieldComponent: Field = DefaultField,
-  labelComponent: Label = DefaultLabel,
-  inputComponent: Input = DefaultInput,
-  multilineComponent: Multiline = DefaultMultiline,
-  selectComponent: Select = DefaultSelect,
-  radioComponent: Radio = DefaultRadio,
-  checkboxComponent: Checkbox = DefaultCheckbox,
-  checkboxWrapperComponent: CheckboxWrapper = DefaultCheckboxWrapper,
-  radioGroupComponent: RadioGroup = DefaultRadioGroup,
-  radioWrapperComponent: RadioWrapper = DefaultRadioWrapper,
-  fieldErrorsComponent: Errors = DefaultFieldErrors,
-  errorComponent: Error = DefaultFieldError,
+  components,
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
   idPrefix: string
-} & ComponentMappings): FieldComponent<Schema> {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  return React.forwardRef<any, FieldProps<Schema>>(
+  components: Resolved
+}): FieldComponent<Schema, Resolved, Multiline, Radio> {
+  // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
+  const c = components as Record<string, React.ComponentType<any>>
+  const Field = c.field
+  const Label = c.label
+  const Input = c.input
+  const Multiline = c.multiline
+  const Select = c.select
+  const Radio = c.radio
+  const Checkbox = c.checkbox
+  const CheckboxWrapper = c.checkboxWrapper
+  const RadioGroup = c.radioGroup
+  const RadioWrapper = c.radioWrapper
+  const Errors = c.fieldErrors
+  const Error = c.error
+
+  return React.forwardRef(
     (
       {
         fieldType = 'string',
@@ -388,7 +360,8 @@ function createField<Schema extends FormSchema>({
         autoComplete,
         children: childrenFn,
         ...props
-      },
+      }: // biome-ignore lint/suspicious/noExplicitAny: internal implementation — generics are for the external API
+      Record<string, any>,
       ref
     ) => {
       const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
@@ -410,7 +383,7 @@ function createField<Schema extends FormSchema>({
       }
 
       const errorsChildren = errors?.length
-        ? errors.map((error) => <Error key={error}>{error}</Error>)
+        ? errors.map((error: string) => <Error key={error}>{error}</Error>)
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
@@ -441,39 +414,31 @@ function createField<Schema extends FormSchema>({
       }
 
       const SmartInput = React.useMemo(
-        () =>
-          createSmartInput({
-            idPrefix,
-            inputComponent: Input,
-            multilineComponent: Multiline,
-            selectComponent: Select,
-            checkboxComponent: Checkbox,
-            radioComponent: Radio,
-            radioWrapperComponent: RadioWrapper,
-            labelComponent: Label,
-          }),
+        () => createSmartInput(idPrefix, c),
         [idPrefix]
       )
 
       if (childrenFn) {
-        const childrenDefinition = childrenFn({
-          Label,
-          SmartInput,
-          Input,
-          Multiline,
-          Select,
-          Checkbox,
-          Radio,
-          RadioGroup,
-          RadioWrapper,
-          CheckboxWrapper,
-          Errors,
-          Error,
-          ref,
-          name,
-          type,
-          ...field,
-        })
+        const childrenDefinition =
+          // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via FieldBaseProps
+          (childrenFn as (...args: any[]) => React.ReactNode)({
+            Label,
+            SmartInput,
+            Input,
+            Multiline,
+            Select,
+            Checkbox,
+            Radio,
+            RadioGroup,
+            RadioWrapper,
+            CheckboxWrapper,
+            Errors,
+            Error,
+            ref,
+            name,
+            type,
+            ...field,
+          })
 
         const children = mapChildren(childrenDefinition, (child) => {
           const mergedRef = (instance: unknown) => {
@@ -494,7 +459,7 @@ function createField<Schema extends FormSchema>({
             })
           }
           if (child.type === SmartInput) {
-            const smartInputProps: SmartInputProps = {
+            const smartInputProps: SmartInputBaseProps = {
               fieldType,
               type,
               options: options,
@@ -555,7 +520,8 @@ function createField<Schema extends FormSchema>({
           }
           if (
             child.type === Checkbox &&
-            (child.type !== 'input' || child.props.type === 'checkbox')
+            ((child.type as unknown) !== 'input' ||
+              child.props.type === 'checkbox')
           ) {
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}`,
@@ -577,7 +543,8 @@ function createField<Schema extends FormSchema>({
           }
           if (
             child.type === Radio &&
-            (child.type !== 'input' || child.props.type === 'radio')
+            ((child.type as unknown) !== 'input' ||
+              child.props.type === 'radio')
           ) {
             return React.cloneElement(child, {
               id: `${idPrefix}${String(name)}-${child.props.value}`,
@@ -686,8 +653,15 @@ function createField<Schema extends FormSchema>({
         </FieldContext.Provider>
       )
     }
-  )
+  ) as unknown as FieldComponent<Schema, Resolved, Multiline, Radio>
 }
 
-export type { FieldType, FieldComponent, ComponentMappings, Option }
-export { createField, DefaultFieldError }
+export type {
+  FieldType,
+  FieldComponent,
+  Option,
+  SmartInputSlot,
+  IsBoolean,
+  IsEnum,
+}
+export { createField }
