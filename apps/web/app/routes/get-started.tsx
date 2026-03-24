@@ -26,6 +26,11 @@ const SchemaForm = makeSchemaForm({
   select: /* your custom Select */,
   checkbox: /* your custom Checkbox */,
   checkboxWrapper: /* your custom checkbox wrapper */,
+  checkboxLabel: /* your custom checkbox label */,
+  radio: /* your custom Radio */,
+  radioGroup: /* your custom radio group wrapper */,
+  radioWrapper: /* your custom radio option wrapper */,
+  radioLabel: /* your custom radio option label */,
   button: /* your custom Button */,
   fieldErrors: /* your custom FieldErrors */,
   globalErrors: /* your custom GlobalErrors */,
@@ -225,16 +230,21 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <Code>{stylesCode}</Code>
       <div className="flex flex-col gap-2">
         <p>
-          Check out{' '}
+          You don&apos;t need to customize every slot — sensible defaults are
+          provided for any slot you leave out. Check out{' '}
           <ExternalLink href="https://github.com/seasonedcc/remix-forms/blob/main/apps/web/app/ui/schema-form.tsx">
             how we customized the styles
           </ExternalLink>{' '}
-          for this website. We basically created a bunch of UI components and
-          passed them to our custom form.
+          for this website.
         </p>
         <p>
-          PS: you don&apos;t need to customize everything. We&apos;ll use
-          standard html tags if you don&apos;t.
+          <strong>Important:</strong> each slot must be a{' '}
+          <strong>unique component</strong>. Even if two slots render identical
+          markup, define them as separate functions or <em>forwardRef</em>{' '}
+          wrappers. The library identifies components by reference equality, so
+          reusing the same component for multiple slots (e.g. passing{' '}
+          <em>Label</em> for both <em>label</em> and <em>checkboxLabel</em>)
+          will cause the wrong props to be injected.
         </p>
       </div>
       <SubHeading>That&apos;s it!</SubHeading>
