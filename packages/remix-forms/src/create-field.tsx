@@ -21,16 +21,18 @@ type Children<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
   Name extends keyof Infer<Schema>,
   M extends boolean | undefined,
   R extends boolean | undefined,
+  H extends boolean | undefined,
 > = (
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
     name: Name
     type?: JSX.IntrinsicElements['input']['type']
     Label: Resolved['label']
     SmartInput: React.ComponentType<
-      SmartInputProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+      SmartInputProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
     >
     Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
     Multiline: StripDefaultProps<Resolved['multiline'], 'defaultValue'>
@@ -71,15 +73,21 @@ type FieldBaseProps<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
   Name extends keyof Infer<Schema>,
   M extends boolean | undefined,
   R extends boolean | undefined,
-> = Omit<Partial<Field<Infer<Schema>>>, 'name' | 'multiline' | 'radio'> & {
+  H extends boolean | undefined,
+> = Omit<
+  Partial<Field<Infer<Schema>>>,
+  'name' | 'multiline' | 'radio' | 'hidden'
+> & {
   name: Name
   multiline?: M
   radio?: R
+  hidden?: H
   type?: JSX.IntrinsicElements['input']['type']
-  children?: Children<Schema, Resolved, Multiline, Radio, Name, M, R>
+  children?: Children<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
 }
 
 type FieldProps<
@@ -88,10 +96,12 @@ type FieldProps<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
   Name extends keyof Infer<Schema>,
   M extends boolean | undefined,
   R extends boolean | undefined,
-> = FieldBaseProps<Schema, Resolved, Multiline, Radio, Name, M, R> &
+  H extends boolean | undefined,
+> = FieldBaseProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H> &
   Omit<JSX.IntrinsicElements['div'], 'children'>
 
 type FieldComponent<
@@ -100,12 +110,14 @@ type FieldComponent<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = <
   Name extends keyof Infer<Schema>,
   const M extends boolean | undefined = undefined,
   const R extends boolean | undefined = undefined,
+  const H extends boolean | undefined = undefined,
 >(
-  props: FieldProps<Schema, Resolved, Multiline, Radio, Name, M, R>
+  props: FieldProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
 ) => React.ReactElement | null
 
 type SmartInputBaseProps = {
@@ -136,24 +148,30 @@ type SmartInputSlot<
   Schema extends FormSchema,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
   Name extends keyof Infer<Schema>,
   M extends boolean | undefined,
   R extends boolean | undefined,
-> = Name extends unknown
-  ? IsBoolean<Infer<Schema>[Name]> extends true
-    ? 'checkbox'
-    : R extends true
-      ? 'radio'
-      : Name extends Radio[number]
-        ? 'radio'
-        : IsEnum<Infer<Schema>[Name]> extends true
-          ? 'select'
-          : M extends true
-            ? 'multiline'
-            : Name extends Multiline[number]
-              ? 'multiline'
-              : 'input'
-  : never
+  H extends boolean | undefined,
+> = H extends true
+  ? 'input'
+  : Name extends unknown
+    ? Name extends Hidden[number]
+      ? 'input'
+      : IsBoolean<Infer<Schema>[Name]> extends true
+        ? 'checkbox'
+        : R extends true
+          ? 'radio'
+          : Name extends Radio[number]
+            ? 'radio'
+            : IsEnum<Infer<Schema>[Name]> extends true
+              ? 'select'
+              : M extends true
+                ? 'multiline'
+                : Name extends Multiline[number]
+                  ? 'multiline'
+                  : 'input'
+    : never
 
 type SmartInputProps<
   Schema extends FormSchema,
@@ -161,13 +179,26 @@ type SmartInputProps<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
   Name extends keyof Infer<Schema>,
   M extends boolean | undefined,
   R extends boolean | undefined,
+  H extends boolean | undefined,
 > = SmartInputBaseProps &
   Omit<
     Partial<
-      PropsOf<Resolved[SmartInputSlot<Schema, Multiline, Radio, Name, M, R>]>
+      PropsOf<
+        Resolved[SmartInputSlot<
+          Schema,
+          Multiline,
+          Radio,
+          Hidden,
+          Name,
+          M,
+          R,
+          H
+        >]
+      >
     >,
     'defaultValue' | 'defaultChecked'
   >
@@ -288,6 +319,10 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
 
     const withAutoComplete = { ...commonProps, autoComplete }
 
+    if (type === 'hidden') {
+      return <Input type="hidden" defaultValue={value} {...commonProps} />
+    }
+
     return fieldType === 'boolean' ? (
       <Checkbox
         type="checkbox"
@@ -327,6 +362,7 @@ function createField<
   Resolved extends Record<string, any>,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 >({
   register,
   idPrefix,
@@ -336,7 +372,7 @@ function createField<
   register: UseFormRegister<any>
   idPrefix: string
   components: Resolved
-}): FieldComponent<Schema, Resolved, Multiline, Radio> {
+}): FieldComponent<Schema, Resolved, Multiline, Radio, Hidden> {
   // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
   const c = components as Record<string, React.ComponentType<any>>
   const Field = c.field
@@ -400,7 +436,8 @@ function createField<
         : undefined
 
       const style = hidden ? { display: 'none' } : undefined
-      const type = typeProp ?? getInputType(fieldType, radio)
+      const type =
+        typeProp ?? (hidden ? 'hidden' : getInputType(fieldType, radio))
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
         setValueAs: (value) => {
@@ -676,7 +713,7 @@ function createField<
         </FieldContext.Provider>
       )
     }
-  ) as unknown as FieldComponent<Schema, Resolved, Multiline, Radio>
+  ) as unknown as FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
 }
 
 export type {

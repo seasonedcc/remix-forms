@@ -19,6 +19,7 @@ const Field = createField<
   typeof schema,
   typeof defaultComponents,
   readonly [],
+  readonly [],
   readonly []
 >({
   register,
@@ -138,6 +139,7 @@ describe('createField', () => {
       typeof schema,
       typeof defaultComponents,
       readonly [],
+      readonly [],
       readonly []
     >({
       register,
@@ -165,6 +167,7 @@ describe('createField', () => {
     const NumField = createField<
       typeof schema,
       typeof defaultComponents,
+      readonly [],
       readonly [],
       readonly []
     >({
@@ -215,12 +218,79 @@ describe('createField', () => {
     expect(html).toContain('<option value="b">B</option>')
   })
 
-  it('applies placeholder and hidden style', () => {
-    const html = renderToStaticMarkup(
-      <Field name="foo" label="Foo" placeholder="Enter" hidden />
-    )
-    expect(html).toContain('placeholder="Enter"')
+  it('applies hidden style and type="hidden" on the input', () => {
+    const html = renderToStaticMarkup(<Field name="foo" label="Foo" hidden />)
     expect(html).toContain('style="display:none"')
+    expect(html).toContain('type="hidden"')
+    expect(html).not.toContain('type="text"')
+  })
+
+  it('renders type="hidden" for boolean fields when hidden', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldType="boolean" hidden />
+    )
+    expect(html).toContain('type="hidden"')
+    expect(html).not.toContain('type="checkbox"')
+  })
+
+  it('renders type="hidden" instead of select when hidden', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        options={[
+          { name: 'A', value: 'a' },
+          { name: 'B', value: 'b' },
+        ]}
+        value="a"
+        hidden
+      />
+    )
+    expect(html).toContain('type="hidden"')
+    expect(html).not.toContain('<select')
+  })
+
+  it('renders type="hidden" instead of textarea when hidden and multiline', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" multiline hidden />
+    )
+    expect(html).toContain('type="hidden"')
+    expect(html).not.toContain('<textarea')
+  })
+
+  it('respects explicit type prop over hidden (escape hatch)', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" hidden type="email" />
+    )
+    expect(html).toContain('type="email"')
+    expect(html).not.toContain('type="hidden"')
+  })
+
+  it('passes type="hidden" to SmartInput children when hidden', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" hidden>
+        {({ SmartInput }) => <SmartInput />}
+      </Field>
+    )
+    expect(html).toContain('type="hidden"')
+  })
+
+  it('passes type="hidden" to Input children when hidden', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" hidden>
+        {({ Input }) => <Input />}
+      </Field>
+    )
+    expect(html).toContain('type="hidden"')
+  })
+
+  it('allows SmartInput children to override hidden type (escape hatch)', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" hidden>
+        {({ SmartInput }) => <SmartInput type="text" />}
+      </Field>
+    )
+    expect(html).toContain('type="text"')
   })
 
   it('sets the autoFocus attribute when requested', () => {

@@ -271,6 +271,7 @@ describe('SchemaForm', () => {
     )
 
     expect(html).toMatch(/style="display:none"/)
+    expect(html).toContain('type="hidden"')
   })
 
   it('overrides labels and placeholders', () => {
@@ -329,6 +330,7 @@ describe('SchemaForm', () => {
       typeof schema,
       // biome-ignore lint/suspicious/noExplicitAny: test helper
       any,
+      readonly [],
       readonly [],
       readonly []
     > = vi.fn(({ Field, name, label }) => (
@@ -426,6 +428,7 @@ describe('SchemaForm', () => {
       typeof schema,
       // biome-ignore lint/suspicious/noExplicitAny: test helper
       any,
+      readonly [],
       readonly [],
       readonly []
     > = vi.fn(({ Field, name, autoComplete }) => (
