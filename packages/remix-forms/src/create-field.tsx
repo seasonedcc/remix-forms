@@ -102,7 +102,7 @@ type FieldProps<
   R extends boolean | undefined,
   H extends boolean | undefined,
 > = FieldBaseProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H> &
-  Omit<JSX.IntrinsicElements['div'], 'children'>
+  Omit<PropsOf<Resolved['field']>, 'children'>
 
 type FieldComponent<
   Schema extends FormSchema,
