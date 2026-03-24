@@ -36,6 +36,7 @@ export const exampleRouteGroups = {
     'Input types',
     'Form with children',
     'Field with children',
+    'Fields component',
     'Field layout',
     'Custom input',
     'Async validation',
@@ -62,6 +63,7 @@ const testRoutes = [
   'fetcher-with-other-forms-error',
   'field-with-radio-children',
   'field-with-ref',
+  'fields-component',
   'hidden-field-with-errors',
   'accented-options',
 ]

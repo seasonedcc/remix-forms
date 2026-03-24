@@ -29,6 +29,7 @@ import type {
   ReactRouterFormProps,
 } from './defaults'
 import { defaultComponents } from './defaults'
+import { FieldsSentinel, expandFieldsSentinel } from './fields-sentinel'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
 import type { FormSchema, Infer, KeysOfStrings } from './prelude'
@@ -136,6 +137,7 @@ type Children<
 > = (
   helpers: {
     Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
+    Fields: Resolved['fields']
     Errors: Resolved['globalErrors']
     Error: Resolved['error']
     Button: Resolved['button']
@@ -320,7 +322,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
       // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
       React.ComponentType<any>
     >
-    const FieldsComponent = rc.fields
+    const FieldsWrapper = rc.fields
     const Errors = rc.globalErrors
     const Error = rc.error
     const Button = rc.button
@@ -516,82 +518,91 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     const globalErrorsToDisplay =
       navigationState !== 'idle' ? undefined : globalErrors
 
-    const customChildren = mapChildren(
+    const rawChildren =
       // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
       (childrenFn as ((...args: any[]) => React.ReactNode) | undefined)?.({
         Field,
+        Fields: FieldsSentinel,
         Errors,
         Error,
         Button,
         submit: doSubmit,
         ...form,
-      }),
-      (child) => {
-        if (child.type === Field) {
-          const { name } = child.props
-          const field = makeField(name)
+      })
 
-          const autoFocus = firstErroredField()
-            ? field?.autoFocus
-            : (child.props.autoFocus ?? field?.autoFocus)
+    const expandedChildren = rawChildren
+      ? expandFieldsSentinel(rawChildren, {
+          sentinelType: FieldsSentinel,
+          fieldIdentity: Field,
+          schemaKeys: Object.keys(fields),
+          FieldsWrapper,
+        })
+      : rawChildren
 
-          if (!child.props.children && field) {
-            return renderField({
-              Field,
-              ...field,
-              ...child.props,
-              autoFocus,
-            })
-          }
+    const customChildren = mapChildren(expandedChildren, (child) => {
+      if (child.type === Field) {
+        const { name } = child.props
+        const field = makeField(name)
 
-          return React.cloneElement(child, {
+        const autoFocus = firstErroredField()
+          ? field?.autoFocus
+          : (child.props.autoFocus ?? field?.autoFocus)
+
+        if (!child.props.children && field) {
+          return renderField({
+            Field,
             ...field,
             ...child.props,
             autoFocus,
           })
         }
-        if (child.type === Errors) {
-          if (!child.props.children && !globalErrorsToDisplay?.length)
-            return null
 
-          if (child.props.children || !globalErrorsToDisplay?.length) {
-            return React.cloneElement(child, {
-              role: 'alert',
-              ...child.props,
-            })
-          }
+        return React.cloneElement(child, {
+          ...field,
+          ...child.props,
+          autoFocus,
+        })
+      }
+      if (child.type === Errors) {
+        if (!child.props.children && !globalErrorsToDisplay?.length) return null
 
+        if (child.props.children || !globalErrorsToDisplay?.length) {
           return React.cloneElement(child, {
             role: 'alert',
-            children: globalErrorsToDisplay.map((error) => (
-              <Error key={error}>{error}</Error>
-            )),
             ...child.props,
           })
         }
-        if (child.type === Button) {
-          const onClick = ['button', 'reset'].includes(child.props.type)
-            ? undefined
-            : onSubmit
 
-          return React.cloneElement(child, {
-            disabled,
-            children: buttonLabel,
-            onClick,
-            ...child.props,
-          })
-        }
-        return child
+        return React.cloneElement(child, {
+          role: 'alert',
+          children: globalErrorsToDisplay.map((error) => (
+            <Error key={error}>{error}</Error>
+          )),
+          ...child.props,
+        })
       }
-    )
+      if (child.type === Button) {
+        const onClick = ['button', 'reset'].includes(child.props.type)
+          ? undefined
+          : onSubmit
+
+        return React.cloneElement(child, {
+          disabled,
+          children: buttonLabel,
+          onClick,
+          ...child.props,
+        })
+      }
+      return child
+    })
 
     const defaultChildren = () => (
       <>
-        <FieldsComponent>
+        <FieldsWrapper>
           {Object.keys(fields)
             .map(makeField)
             .map((field) => renderField({ Field, ...field }))}
-        </FieldsComponent>
+        </FieldsWrapper>
         {globalErrorsToDisplay?.length && (
           <Errors role="alert">
             {globalErrorsToDisplay.map((error) => (
@@ -682,7 +693,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @param props.schema - Schema describing the form
  * @param props.beforeChildren - Elements rendered before generated fields
  * @param props.onNavigation - Callback when navigation state changes
- * @param props.children - Custom content instead of the default layout
+ * @param props.children - Render function for custom layout. Receives `Field`, `Fields`, `Errors`, `Error`, `Button`, `submit` and the React Hook Form return value. Use `Fields` to render all schema fields automatically while customizing the surrounding layout
  * @param props.labels - Custom labels for form fields
  * @param props.placeholders - Placeholder text for fields
  * @param props.autoComplete - Autocomplete hints for fields
@@ -708,6 +719,21 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @example
  * ```tsx
  * <SchemaForm schema={schema} components={{ input: MyInput }} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SchemaForm schema={schema}>
+ *   {({ Field, Fields, Errors, Button }) => (
+ *     <>
+ *       <Fields>
+ *         <Field name="email" label="E-mail" />
+ *       </Fields>
+ *       <Errors />
+ *       <Button />
+ *     </>
+ *   )}
+ * </SchemaForm>
  * ```
  */
 const SchemaForm = makeSchemaForm(defaultComponents)

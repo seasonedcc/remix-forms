@@ -826,3 +826,251 @@ describe('SchemaForm hidden field errors', () => {
     expect(html).toContain('Secret: Missing')
   })
 })
+
+describe('Fields component', () => {
+  it('renders all schema fields when used without children', () => {
+    const schema = z.object({
+      firstName: z.string(),
+      email: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('First Name')
+    expect(html).toContain('name="firstName"')
+    expect(html).toContain('Email')
+    expect(html).toContain('name="email"')
+  })
+
+  it('renders same output as auto-generated form', () => {
+    const schema = z.object({
+      firstName: z.string(),
+      email: z.string(),
+    })
+
+    const autoHtml = renderToStaticMarkup(<SchemaForm schema={schema} />)
+
+    const fieldsHtml = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    const extractFields = (html: string) => {
+      const match = html.match(/name="firstName"/)
+      return match !== null
+    }
+    expect(extractFields(autoHtml)).toBe(true)
+    expect(extractFields(fieldsHtml)).toBe(true)
+
+    expect(fieldsHtml).toContain('name="firstName"')
+    expect(fieldsHtml).toContain('name="email"')
+    expect(fieldsHtml).toContain('First Name')
+    expect(fieldsHtml).toContain('Email')
+  })
+
+  it('applies overrides from Field children while rendering all fields', () => {
+    const schema = z.object({
+      firstName: z.string(),
+      email: z.string(),
+      age: z.number(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, Fields, Errors, Button }) => (
+          <>
+            <Fields>
+              <Field name="email" label="E-mail Address" />
+            </Fields>
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('First Name')
+    expect(html).toContain('name="firstName"')
+    expect(html).toContain('E-mail Address')
+    expect(html).toContain('name="email"')
+    expect(html).toContain('Age')
+    expect(html).toContain('name="age"')
+  })
+
+  it('preserves schema field order regardless of override order', () => {
+    const schema = z.object({
+      firstName: z.string(),
+      email: z.string(),
+      age: z.number(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, Fields, Errors, Button }) => (
+          <>
+            <Fields>
+              <Field name="age" label="Your Age" />
+              <Field name="firstName" label="Your Name" />
+            </Fields>
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    const firstNameIdx = html.indexOf('Your Name')
+    const emailIdx = html.indexOf('name="email"')
+    const ageIdx = html.indexOf('Your Age')
+
+    expect(firstNameIdx).toBeLessThan(emailIdx)
+    expect(emailIdx).toBeLessThan(ageIdx)
+  })
+
+  it('works alongside Errors and Button', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} errors={{ _global: ['Oops'] }}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="name"')
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Oops')
+    expect(html).toMatch(/<button/)
+  })
+
+  it('works with renderField prop', () => {
+    const schema = z.object({ first: z.string(), second: z.string() })
+    const renderField: RenderField<
+      typeof schema,
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any,
+      readonly [],
+      readonly [],
+      readonly []
+    > = vi.fn(({ Field, name, label }) => (
+      <div className="custom-render">
+        <Field name={name} label={label} />
+      </div>
+    ))
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} renderField={renderField}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(renderField).toHaveBeenCalledTimes(2)
+    expect(html).toContain('class="custom-render"')
+  })
+
+  it('works with hiddenFields', () => {
+    const schema = z.object({ visible: z.string(), secret: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} hiddenFields={['secret']}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="visible"')
+    expect(html).toContain('type="hidden"')
+    expect(html).toMatch(/style="display:none"/)
+  })
+
+  it('supports Field overrides with custom children function', () => {
+    const schema = z.object({
+      firstName: z.string(),
+      email: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field, Fields, Errors, Button }) => (
+          <>
+            <Fields>
+              <Field name="email">
+                {({ Label, SmartInput, Errors }) => (
+                  <>
+                    <Label>Custom E-mail</Label>
+                    <em>helper text</em>
+                    <SmartInput />
+                    <Errors />
+                  </>
+                )}
+              </Field>
+            </Fields>
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('First Name')
+    expect(html).toContain('name="firstName"')
+    expect(html).toContain('Custom E-mail')
+    expect(html).toContain('helper text')
+    expect(html).toContain('name="email"')
+  })
+
+  it('forwards props to the fields wrapper component', () => {
+    const schema = z.object({ name: z.string() })
+    const FieldsWrapper = (props: React.HTMLAttributes<HTMLDivElement>) => (
+      <div data-fields-wrapper {...props} />
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} components={{ fields: FieldsWrapper }}>
+        {({ Fields, Errors, Button }) => (
+          <>
+            <Fields className="grid-cols-2" />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('data-fields-wrapper="true"')
+    expect(html).toContain('class="grid-cols-2"')
+  })
+})
