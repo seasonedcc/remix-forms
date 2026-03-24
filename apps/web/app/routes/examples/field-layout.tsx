@@ -25,12 +25,12 @@ export default () => (
     {({ Field, Errors, Button }) => (
       <>
         <div className="flex gap-4">
-          <Field name="street" className="flex-[3]" />
-          <Field name="number" className="flex-[1]" />
+          <Field name="street" fieldProps={{ className: "flex-[3]" }} />
+          <Field name="number" fieldProps={{ className: "flex-[1]" }} />
         </div>
         <Field name="extendedAddress" />
         <div className="flex gap-4">
-          <Field name="city" className="flex-1" />
+          <Field name="city" fieldProps={{ className: "flex-1" }} />
           <Field name="state" />
         </div>
         <Errors />
@@ -64,12 +64,12 @@ export default function Component() {
         {({ Field, Errors, Button }) => (
           <>
             <div className="flex gap-4">
-              <Field name="street" className="flex-[3]" />
-              <Field name="number" className="flex-[1]" />
+              <Field name="street" fieldProps={{ className: 'flex-[3]' }} />
+              <Field name="number" fieldProps={{ className: 'flex-[1]' }} />
             </div>
             <Field name="extendedAddress" />
             <div className="flex gap-4">
-              <Field name="city" className="flex-1" />
+              <Field name="city" fieldProps={{ className: 'flex-1' }} />
               <Field name="state" />
             </div>
             <Errors />

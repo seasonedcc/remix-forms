@@ -21,8 +21,10 @@ export default () => (
       <>
         <Field
           name="token"
-          onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
-            if (ev.target.value.length === 4) submit()
+          fieldProps={{
+            onChange: (ev: React.ChangeEvent<HTMLInputElement>) => {
+              if (ev.target.value.length === 4) submit()
+            },
           }}
         />
         <Errors />
@@ -53,8 +55,10 @@ export default function Component() {
             <Field
               name="token"
               placeholder="Type 4 digits"
-              onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
-                if (ev.target.value.length === 4) submit()
+              fieldProps={{
+                onChange: (ev: React.ChangeEvent<HTMLInputElement>) => {
+                  if (ev.target.value.length === 4) submit()
+                },
               }}
             />
             <Errors />

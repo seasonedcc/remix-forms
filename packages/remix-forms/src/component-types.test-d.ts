@@ -547,7 +547,7 @@ it('StripDefaultProps removes defaultChecked from resolved Radio', () => {
   expectTypeOf<PropsOf<StrippedRadio>>().not.toHaveProperty('defaultChecked')
 })
 
-// --- FieldComponent wrapper props inference ---
+// --- PropsOf with forwardRef ---
 
 it('PropsOf extracts props from a forwardRef component', () => {
   type MyRef = React.ForwardRefExoticComponent<
@@ -558,41 +558,77 @@ it('PropsOf extracts props from a forwardRef component', () => {
   expectTypeOf<PropsOf<MyRef>>().toHaveProperty('color')
 })
 
-it('FieldComponent with default components accepts field wrapper props', () => {
+// --- FieldComponent inferred SmartInput props ---
+
+it('Field accepts type prop (from SmartInput inferred)', () => {
   const schema = z.object({ name: z.string() })
   type S = typeof schema
   type Resolved = ResolveComponents<Record<never, never>>
   type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
   type Props = Parameters<FC>[0]
-  expectTypeOf<Props>().toHaveProperty('className')
+  expectTypeOf<Props>().toHaveProperty('type')
 })
 
-it('FieldComponent with custom field component accepts custom wrapper props', () => {
-  type CustomField = React.FC<{
-    hidden?: boolean
-    style?: React.CSSProperties
-    children?: React.ReactNode
-    variant?: 'outlined' | 'filled'
-  }>
+it('Field accepts autoComplete prop (from SmartInput inferred)', () => {
   const schema = z.object({ name: z.string() })
   type S = typeof schema
-  type Resolved = MergeComponents<{ field: CustomField }, NoOverrides>
+  type Resolved = ResolveComponents<Record<never, never>>
   type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
   type Props = Parameters<FC>[0]
-  expectTypeOf<Props>().toHaveProperty('variant')
+  expectTypeOf<Props>().toHaveProperty('autoComplete')
 })
 
-it('FieldComponent with custom field component rejects div-only props', () => {
-  type CustomField = React.FC<{
-    hidden?: boolean
-    style?: React.CSSProperties
-    children?: React.ReactNode
-    variant?: 'outlined' | 'filled'
-  }>
+it('Field does not accept registerProps (internal)', () => {
   const schema = z.object({ name: z.string() })
   type S = typeof schema
-  type Resolved = MergeComponents<{ field: CustomField }, NoOverrides>
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().not.toHaveProperty('registerProps')
+})
+
+it('Field does not accept a11yProps (internal)', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().not.toHaveProperty('a11yProps')
+})
+
+it('Field does not accept className (internal)', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
   type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
   type Props = Parameters<FC>[0]
   expectTypeOf<Props>().not.toHaveProperty('className')
+})
+
+// --- fieldProps wrapper prop inference ---
+
+it('fieldProps accepts wrapper component props', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props>().toHaveProperty('fieldProps')
+})
+
+it('fieldProps with custom field component accepts custom wrapper props', () => {
+  type CustomField = React.FC<{
+    hidden?: boolean
+    style?: React.CSSProperties
+    children?: React.ReactNode
+    variant?: 'outlined' | 'filled'
+  }>
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = MergeComponents<{ field: CustomField }, NoOverrides>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type Props = Parameters<FC>[0]
+  type FieldPropsType = NonNullable<Props['fieldProps']>
+  expectTypeOf<FieldPropsType>().toHaveProperty('variant')
+  expectTypeOf<FieldPropsType>().not.toHaveProperty('className')
 })

@@ -875,3 +875,82 @@ describe('defaultValue/defaultChecked stripping', () => {
     expect(radioB?.[0]).not.toContain('checked')
   })
 })
+
+describe('SmartInput inferred props on Field', () => {
+  it('forwards type="email" to the input', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" type="email" />
+    )
+    expect(html).toContain('type="email"')
+  })
+
+  it('forwards autoComplete to the input', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" autoComplete="username" />
+    )
+    expect(html).toContain('autoComplete="username"')
+  })
+
+  it('forwards extra props to a multiline textarea', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" multiline rows={5} />
+    )
+    expect(html).toContain('<textarea')
+    expect(html).toContain('rows="5"')
+  })
+
+  it('forwards extra props to SmartInput via cloneElement when children are provided', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" multiline rows={5}>
+        {({ SmartInput }) => <SmartInput />}
+      </Field>
+    )
+    expect(html).toContain('<textarea')
+    expect(html).toContain('rows="5"')
+  })
+
+  it('child SmartInput props override Field-level inferred props', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" multiline rows={5}>
+        {({ SmartInput }) => <SmartInput rows={10} />}
+      </Field>
+    )
+    expect(html).toContain('rows="10"')
+    expect(html).not.toContain('rows="5"')
+  })
+})
+
+describe('fieldProps', () => {
+  it('passes fieldProps to the wrapper element', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Foo" fieldProps={{ className: 'my-wrapper' }} />
+    )
+    expect(html).toContain('class="my-wrapper"')
+  })
+
+  it('merges user style with hidden style, user takes precedence', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        hidden
+        fieldProps={{ style: { color: 'red' } }}
+      />
+    )
+    expect(html).toContain('display:none')
+    expect(html).toContain('color:red')
+  })
+
+  it('user style overrides internal hidden display', () => {
+    const html = renderToStaticMarkup(
+      <Field
+        name="foo"
+        label="Foo"
+        hidden
+        fieldProps={{ style: { display: 'block' } }}
+      />
+    )
+    expect(html).toContain('display:block')
+    expect(html).not.toContain('display:none')
+  })
+})
