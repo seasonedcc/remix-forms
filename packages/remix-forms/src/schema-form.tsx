@@ -341,6 +341,10 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param options.renderForm - Default form layout function used when no
  *   `children` or per-form `renderForm` is provided. Receives the same
  *   helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`.
+ * @param options.renderField - Default field rendering function used when no
+ *   per-form `renderField` is provided. Receives the `Field` component plus
+ *   field metadata. Each individual form can override this with its own
+ *   `renderField` prop.
  * @returns A SchemaForm component that uses the provided base components.
  *
  * @example
@@ -368,6 +372,18 @@ function uiFieldType(info: SchemaInfo): FieldType {
  *   }
  * )
  * ```
+ *
+ * @example
+ * ```tsx
+ * const SchemaForm = makeSchemaForm(
+ *   { input: MyInput },
+ *   {
+ *     renderField: ({ Field, name, ...props }) => (
+ *       <Field key={name} name={name} {...props} />
+ *     ),
+ *   }
+ * )
+ * ```
  */
 function makeSchemaForm<Base extends Partial<ComponentMap>>(
   base: Base,
@@ -379,9 +395,17 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       readonly never[],
       readonly never[]
     >
+    renderField?: RenderField<
+      FormSchema,
+      ResolveComponents<Base>,
+      readonly never[],
+      readonly never[],
+      readonly never[]
+    >
   }
 ) {
   const factoryRenderForm = options?.renderForm
+  const factoryRenderField = options?.renderField
   const mergedBase = { ...defaultComponents, ...base } as Record<
     string,
     // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
@@ -401,7 +425,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     fetcher,
     mode = 'onSubmit',
     reValidateMode = 'onChange',
-    renderField = defaultRenderField,
+    renderField: renderFieldProp,
     renderForm: renderFormProp,
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel,
@@ -636,6 +660,10 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       // biome-ignore lint/suspicious/noExplicitAny: factory-level renderForm uses widened generics — type safety is enforced at the consumer level
       renderFormProp ?? (factoryRenderForm as any) ?? defaultRenderForm
 
+    const effectiveRenderField =
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level renderField uses widened generics — type safety is enforced at the consumer level
+      renderFieldProp ?? (factoryRenderField as any) ?? defaultRenderField
+
     const childrenHelpers = {
       Field,
       Fields: FieldsSentinel,
@@ -679,7 +707,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
           : (child.props.autoFocus ?? field?.autoFocus)
 
         if (!child.props.children && field) {
-          return renderField({
+          return effectiveRenderField({
             Field,
             ...field,
             ...child.props,
@@ -798,7 +826,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.fetcher - Fetcher object returned by `useFetcher()`
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
- * @param props.renderField - Custom field rendering function
+ * @param props.renderField - Custom field rendering function. Can also be set globally via `makeSchemaForm`
  * @param props.renderForm - Custom form layout function. Called when no `children` is provided. Receives the same helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`. Can also be set globally via `makeSchemaForm`
  * @param props.buttonLabel - Text shown in the submit button
  * @param props.pendingButtonLabel - Text shown while submitting

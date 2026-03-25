@@ -56,6 +56,7 @@ export const exampleRouteGroups = {
     'Error indicator',
     'Dirty indicator',
     'Inline checkboxes',
+    'Global render field',
   ],
 }
 
