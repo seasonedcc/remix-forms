@@ -22,11 +22,13 @@ import { mapChildren, reduceElements } from './children-traversal'
 import type { FieldComponent, FieldType, Option } from './create-field'
 import { createField } from './create-field'
 import { defaultRenderField } from './default-render-field'
+import { defaultRenderForm } from './default-render-form'
 import type {
   ComponentMap,
   MergeComponents,
   NoOverrides,
   ReactRouterFormProps,
+  ResolveComponents,
 } from './defaults'
 import { defaultComponents } from './defaults'
 import { FieldsSentinel, expandFieldsSentinel } from './fields-sentinel'
@@ -125,6 +127,78 @@ type RenderField<
   props: RenderFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
 ) => JSX.Element
 
+/**
+ * Props passed to a custom form rendering function.
+ *
+ * Extends the same helpers available via the `children` render prop with
+ * extra context about the form's current state: the `fetcher` instance,
+ * the computed `disabled` flag and the resolved `buttonLabel`.
+ *
+ * @example
+ * ```tsx
+ * const myRenderForm = ({ Fields, Errors, Button }) => (
+ *   <>
+ *     <Fields />
+ *     <Errors />
+ *     <Button />
+ *   </>
+ * )
+ * ```
+ */
+type RenderFormProps<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = {
+  Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
+  Fields: Resolved['fields']
+  Errors: Resolved['globalErrors']
+  Error: Resolved['error']
+  Button: Resolved['button']
+  submit: () => void
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  fetcher: FetcherWithComponents<any> | undefined
+  disabled: boolean
+  buttonLabel: string
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+} & UseFormReturn<Infer<Schema>, any>
+
+/**
+ * Function signature used for rendering the form layout.
+ *
+ * Called when no explicit `children` prop is provided. Can be set globally
+ * via {@link makeSchemaForm} so all forms share the same layout, or
+ * per-form via the `renderForm` prop on {@link SchemaForm}.
+ *
+ * The output goes through the same processing pipeline as `children`:
+ * `Fields` auto-renders all schema fields, `Errors` receives error
+ * messages, and `Button` gets `disabled` and label injected.
+ *
+ * @example
+ * ```tsx
+ * const renderForm = ({ Fields, Errors, Button }) => (
+ *   <>
+ *     <Fields />
+ *     <Errors />
+ *     <Button />
+ *   </>
+ * )
+ * ```
+ */
+type RenderForm<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = (
+  props: RenderFormProps<Schema, Resolved, Multiline, Radio, Hidden>
+) => React.ReactNode
+
 type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
 type Children<
@@ -185,6 +259,13 @@ type SchemaFormProps<
     'onBlur' | 'onChange' | 'onSubmit'
   >
   renderField?: RenderField<
+    Schema,
+    MergeComponents<Base, Components>,
+    Multiline,
+    Radio,
+    Hidden
+  >
+  renderForm?: RenderForm<
     Schema,
     MergeComponents<Base, Components>,
     Multiline,
@@ -256,6 +337,10 @@ function uiFieldType(info: SchemaInfo): FieldType {
  *
  * @param base - Partial component map providing base-level defaults.
  *   Unspecified slots fall back to the built-in defaults.
+ * @param options - Optional configuration for the factory.
+ * @param options.renderForm - Default form layout function used when no
+ *   `children` or per-form `renderForm` is provided. Receives the same
+ *   helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`.
  * @returns A SchemaForm component that uses the provided base components.
  *
  * @example
@@ -267,8 +352,36 @@ function uiFieldType(info: SchemaInfo): FieldType {
  *   button: MyButton,
  * })
  * ```
+ *
+ * @example
+ * ```tsx
+ * const SchemaForm = makeSchemaForm(
+ *   { input: MyInput },
+ *   {
+ *     renderForm: ({ Fields, Errors, Button }) => (
+ *       <>
+ *         <Fields />
+ *         <Errors />
+ *         <Button />
+ *       </>
+ *     ),
+ *   }
+ * )
+ * ```
  */
-function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
+function makeSchemaForm<Base extends Partial<ComponentMap>>(
+  base: Base,
+  options?: {
+    renderForm?: RenderForm<
+      FormSchema,
+      ResolveComponents<Base>,
+      readonly never[],
+      readonly never[],
+      readonly never[]
+    >
+  }
+) {
+  const factoryRenderForm = options?.renderForm
   const mergedBase = { ...defaultComponents, ...base } as Record<
     string,
     // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
@@ -289,6 +402,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     mode = 'onSubmit',
     reValidateMode = 'onChange',
     renderField = defaultRenderField,
+    renderForm: renderFormProp,
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel,
     method = 'POST',
@@ -518,28 +632,44 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
     const globalErrorsToDisplay =
       navigationState !== 'idle' ? undefined : globalErrors
 
+    const effectiveRenderForm =
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level renderForm uses widened generics — type safety is enforced at the consumer level
+      renderFormProp ?? (factoryRenderForm as any) ?? defaultRenderForm
+
+    const childrenHelpers = {
+      Field,
+      Fields: FieldsSentinel,
+      Errors,
+      Error,
+      Button,
+      submit: doSubmit,
+      ...form,
+    }
+
     const rawChildren =
       // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
       (childrenFn as ((...args: any[]) => React.ReactNode) | undefined)?.({
-        Field,
-        Fields: FieldsSentinel,
-        Errors,
-        Error,
-        Button,
-        submit: doSubmit,
-        ...form,
+        ...childrenHelpers,
       })
 
-    const expandedChildren = rawChildren
-      ? expandFieldsSentinel(rawChildren, {
-          sentinelType: FieldsSentinel,
-          fieldIdentity: Field,
-          schemaKeys: Object.keys(fields),
-          FieldsWrapper,
-        })
-      : rawChildren
+    const rawContent =
+      rawChildren ??
+      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via SchemaFormProps
+      (effectiveRenderForm as (...args: any[]) => React.ReactNode)({
+        ...childrenHelpers,
+        fetcher,
+        disabled,
+        buttonLabel,
+      })
 
-    const customChildren = mapChildren(expandedChildren, (child) => {
+    const expandedContent = expandFieldsSentinel(rawContent, {
+      sentinelType: FieldsSentinel,
+      fieldIdentity: Field,
+      schemaKeys: Object.keys(fields),
+      FieldsWrapper,
+    })
+
+    const processedContent = mapChildren(expandedContent, (child) => {
       if (child.type === Field) {
         const { name } = child.props
         const field = makeField(name)
@@ -596,24 +726,6 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
       return child
     })
 
-    const defaultChildren = () => (
-      <>
-        <FieldsWrapper>
-          {Object.keys(fields)
-            .map(makeField)
-            .map((field) => renderField({ Field, ...field }))}
-        </FieldsWrapper>
-        {globalErrorsToDisplay?.length && (
-          <Errors role="alert">
-            {globalErrorsToDisplay.map((error) => (
-              <Error key={error}>{error}</Error>
-            ))}
-          </Errors>
-        )}
-        <Button disabled={disabled}>{buttonLabel}</Button>
-      </>
-    )
-
     React.useEffect(() => {
       const submitting = navigationState !== 'idle'
 
@@ -627,7 +739,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
 
     React.useEffect(() => {
       const newDefaults = Object.fromEntries(
-        reduceElements(customChildren, [] as string[][], (prev, child) => {
+        reduceElements(processedContent, [] as string[][], (prev, child) => {
           if (child.type === Field) {
             const { name, value } = child.props
             prev.push([name, value])
@@ -666,7 +778,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
           {...props}
         >
           {beforeChildren}
-          {customChildren ?? defaultChildren()}
+          {processedContent}
         </FormComponent>
       </FormProvider>
     )
@@ -687,6 +799,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(base: Base) {
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
  * @param props.renderField - Custom field rendering function
+ * @param props.renderForm - Custom form layout function. Called when no `children` is provided. Receives the same helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`. Can also be set globally via `makeSchemaForm`
  * @param props.buttonLabel - Text shown in the submit button
  * @param props.pendingButtonLabel - Text shown while submitting
  * @param props.method - HTTP method used to submit the form
@@ -743,6 +856,8 @@ export type {
   Field,
   RenderFieldProps,
   RenderField,
+  RenderFormProps,
+  RenderForm,
   SchemaFormProps,
   FormSchema,
 }

@@ -7,6 +7,8 @@ export type {
   SchemaFormProps,
   RenderFieldProps,
   RenderField,
+  RenderFormProps,
+  RenderForm,
   FormSchema,
 } from './schema-form'
 

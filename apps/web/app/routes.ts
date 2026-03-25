@@ -50,6 +50,7 @@ export const exampleRouteGroups = {
     'Auto complete',
     'Chakra UI',
   ],
+  renderForm: ['Pending UI', 'Errors first', 'Custom wrapper', 'Global layout'],
   renderField: [
     'Required indicator',
     'Error indicator',

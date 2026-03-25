@@ -17,6 +17,7 @@ import type {
   ResolveComponents,
 } from './defaults'
 import { defaultComponents } from './defaults'
+import type { RenderFormProps, SchemaFormProps } from './schema-form'
 
 it('PropsOf extracts props from a React component', () => {
   type MyProps = { size: string; color: number }
@@ -631,4 +632,58 @@ it('fieldProps with custom field component accepts custom wrapper props', () => 
   type FieldPropsType = NonNullable<Props['fieldProps']>
   expectTypeOf<FieldPropsType>().toHaveProperty('variant')
   expectTypeOf<FieldPropsType>().not.toHaveProperty('className')
+})
+
+// --- RenderForm ---
+
+it('SchemaFormProps accepts optional renderForm', () => {
+  const schema = z.object({ name: z.string() })
+  type Props = SchemaFormProps<
+    typeof schema,
+    Record<never, never>,
+    Record<never, never>,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+  expectTypeOf<Props>().toHaveProperty('renderForm')
+})
+
+it('RenderFormProps includes fetcher, disabled, and buttonLabel', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderFormProps<
+    S,
+    Resolved,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+  expectTypeOf<Props>().toHaveProperty('fetcher')
+  expectTypeOf<Props>().toHaveProperty('disabled')
+  expectTypeOf<Props>().toHaveProperty('buttonLabel')
+  expectTypeOf<Props['disabled']>().toBeBoolean()
+  expectTypeOf<Props['buttonLabel']>().toBeString()
+})
+
+it('RenderFormProps includes component helpers and useFormReturn', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderFormProps<
+    S,
+    Resolved,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+  expectTypeOf<Props>().toHaveProperty('Field')
+  expectTypeOf<Props>().toHaveProperty('Fields')
+  expectTypeOf<Props>().toHaveProperty('Errors')
+  expectTypeOf<Props>().toHaveProperty('Error')
+  expectTypeOf<Props>().toHaveProperty('Button')
+  expectTypeOf<Props>().toHaveProperty('submit')
+  expectTypeOf<Props>().toHaveProperty('register')
+  expectTypeOf<Props>().toHaveProperty('formState')
 })

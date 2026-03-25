@@ -15,7 +15,8 @@ import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Form as ReactRouterForm } from 'react-router'
 import * as z from 'zod'
-import { SchemaForm } from './schema-form'
+import { defaultComponents } from './defaults'
+import { SchemaForm, makeSchemaForm } from './schema-form'
 import type { RenderField } from './schema-form'
 
 import { useActionData, useNavigation } from 'react-router'
@@ -1072,5 +1073,235 @@ describe('Fields component', () => {
 
     expect(html).toContain('data-fields-wrapper="true"')
     expect(html).toContain('class="grid-cols-2"')
+  })
+})
+
+describe('renderForm', () => {
+  it('is called when no children are provided', () => {
+    const schema = z.object({ name: z.string() })
+    const renderForm = vi.fn(({ Fields, Errors, Button }) => (
+      <>
+        <Fields />
+        <Errors />
+        <Button />
+      </>
+    ))
+
+    renderToStaticMarkup(<SchemaForm schema={schema} renderForm={renderForm} />)
+
+    expect(renderForm).toHaveBeenCalledTimes(1)
+  })
+
+  it('is ignored when children are provided', () => {
+    const schema = z.object({ name: z.string() })
+    const renderForm = vi.fn(() => null)
+
+    renderToStaticMarkup(
+      <SchemaForm schema={schema} renderForm={renderForm}>
+        {({ Field, Button }) => (
+          <>
+            <Field name="name" />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(renderForm).not.toHaveBeenCalled()
+  })
+
+  it('receives fetcher, disabled, and buttonLabel', () => {
+    const schema = z.object({ name: z.string() })
+    const fetcher = {
+      submit: vi.fn(),
+      state: 'idle',
+      Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+        <form {...props} />
+      ),
+    }
+
+    const renderForm = vi.fn(
+      ({
+        Fields,
+        Errors,
+        Button,
+        fetcher: f,
+        disabled: d,
+        buttonLabel: bl,
+      }) => {
+        expect(f).toBe(fetcher)
+        expect(typeof d).toBe('boolean')
+        expect(bl).toBe('Send')
+        return (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )
+      }
+    )
+
+    renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        fetcher={fetcher as never}
+        buttonLabel="Send"
+        renderForm={renderForm}
+      />
+    )
+
+    expect(renderForm).toHaveBeenCalled()
+  })
+
+  it('processes Field, Errors, and Button through mapChildren', () => {
+    const schema = z.object({ name: z.string(), email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        errors={{ _global: ['Oops'] }}
+        buttonLabel="Submit"
+        renderForm={({ Field, Errors, Button }) => (
+          <div data-custom>
+            <Field name="email" />
+            <Field name="name" />
+            <Errors />
+            <Button />
+          </div>
+        )}
+      />
+    )
+
+    expect(html).toContain('data-custom')
+    expect(html).toContain('name="email"')
+    expect(html).toContain('name="name"')
+    expect(html).toContain('Oops')
+    expect(html).toContain('role="alert"')
+    expect(html).toMatch(/<button[^>]*>Submit<\/button>/)
+  })
+
+  it('supports Fields sentinel for auto-rendering', () => {
+    const schema = z.object({ name: z.string(), email: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        renderForm={({ Fields, Errors, Button }) => (
+          <>
+            <Fields />
+            <Errors />
+            <Button />
+          </>
+        )}
+      />
+    )
+
+    expect(html).toContain('name="name"')
+    expect(html).toContain('name="email"')
+    expect(html).toContain('Name')
+    expect(html).toContain('Email')
+  })
+
+  it('receives useFormReturn properties', () => {
+    const schema = z.object({ name: z.string() })
+
+    const renderForm = vi.fn((props) => {
+      expect(props.register).toBeDefined()
+      expect(props.formState).toBeDefined()
+      expect(props.getValues).toBeDefined()
+      return (
+        <>
+          <props.Fields />
+          <props.Errors />
+          <props.Button />
+        </>
+      )
+    })
+
+    renderToStaticMarkup(<SchemaForm schema={schema} renderForm={renderForm} />)
+
+    expect(renderForm).toHaveBeenCalled()
+  })
+
+  it('works with makeSchemaForm factory-level renderForm', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderForm: ({ Fields, Errors, Button }) => (
+        <div data-factory>
+          <Fields />
+          <Errors />
+          <Button />
+        </div>
+      ),
+    })
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(<CustomSchemaForm schema={schema} />)
+
+    expect(html).toContain('data-factory')
+    expect(html).toContain('name="name"')
+  })
+
+  it('per-form renderForm overrides factory-level', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderForm: ({ Fields, Errors, Button }) => (
+        <div data-factory>
+          <Fields />
+          <Errors />
+          <Button />
+        </div>
+      ),
+    })
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <CustomSchemaForm
+        schema={schema}
+        renderForm={({ Fields, Errors, Button }) => (
+          <div data-per-form>
+            <Fields />
+            <Errors />
+            <Button />
+          </div>
+        )}
+      />
+    )
+
+    expect(html).toContain('data-per-form')
+    expect(html).not.toContain('data-factory')
+  })
+
+  it('uses pendingButtonLabel in buttonLabel when submitting', () => {
+    const schema = z.object({ name: z.string() })
+    const fetcher = {
+      submit: vi.fn(),
+      state: 'submitting',
+      Form: (props: React.FormHTMLAttributes<HTMLFormElement>) => (
+        <form {...props} />
+      ),
+    }
+
+    const renderForm = vi.fn(({ Fields, Errors, Button, buttonLabel }) => {
+      expect(buttonLabel).toBe('Sending')
+      return (
+        <>
+          <Fields />
+          <Errors />
+          <Button />
+        </>
+      )
+    })
+
+    renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        fetcher={fetcher as never}
+        buttonLabel="Submit"
+        pendingButtonLabel="Sending"
+        renderForm={renderForm}
+      />
+    )
+
+    expect(renderForm).toHaveBeenCalled()
   })
 })
