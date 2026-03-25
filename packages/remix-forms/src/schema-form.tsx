@@ -697,7 +697,38 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       FieldsWrapper,
     })
 
-    const processedContent = mapChildren(expandedContent, (child) => {
+    const renderedFieldNames = reduceElements(
+      expandedContent,
+      new Set<string>(),
+      (set, child) => {
+        if (child.type === Field && child.props.name) {
+          set.add(String(child.props.name))
+        }
+        return set
+      }
+    )
+
+    const missingHiddenFields = (hiddenFields ?? []).filter(
+      (name) => !renderedFieldNames.has(String(name))
+    )
+
+    const contentWithHiddenFields =
+      missingHiddenFields.length > 0
+        ? React.createElement(
+            React.Fragment,
+            null,
+            expandedContent,
+            ...missingHiddenFields.map((name) =>
+              // biome-ignore lint/suspicious/noExplicitAny: Field identity varies per schema — generics are for the external API
+              React.createElement(Field as React.ComponentType<any>, {
+                key: String(name),
+                name: String(name),
+              })
+            )
+          )
+        : expandedContent
+
+    const processedContent = mapChildren(contentWithHiddenFields, (child) => {
       if (child.type === Field) {
         const { name } = child.props
         const field = makeField(name)

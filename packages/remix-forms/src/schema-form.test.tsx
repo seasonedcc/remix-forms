@@ -313,6 +313,83 @@ describe('SchemaForm', () => {
     expect(html).toContain('type="hidden"')
   })
 
+  it('auto-renders hidden fields when custom children omit them', () => {
+    const schema = z.object({ visible: z.string(), secret: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['secret']}
+        values={{ secret: 'abc123' }}
+      >
+        {({ Field, Errors, Button }) => (
+          <>
+            <Field name="visible" />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="visible"')
+    expect(html).toContain('name="secret"')
+    expect(html).toContain('type="hidden"')
+  })
+
+  it('does not duplicate hidden fields when manually rendered in children', () => {
+    const schema = z.object({ visible: z.string(), secret: z.string() })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['secret']}
+        values={{ secret: 'abc123' }}
+      >
+        {({ Field, Errors, Button }) => (
+          <>
+            <Field name="secret" />
+            <Field name="visible" />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    const matches = html.match(/name="secret"/g)
+    expect(matches).toHaveLength(1)
+  })
+
+  it('auto-renders multiple hidden fields with custom children', () => {
+    const schema = z.object({
+      visible: z.string(),
+      token: z.string(),
+      nonce: z.string(),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['token', 'nonce']}
+        values={{ token: 'tok', nonce: 'non' }}
+      >
+        {({ Field, Errors, Button }) => (
+          <>
+            <Field name="visible" />
+            <Errors />
+            <Button />
+          </>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="token"')
+    expect(html).toContain('name="nonce"')
+    const hiddenInputs = html.match(/type="hidden"/g)
+    expect(hiddenInputs).toHaveLength(2)
+  })
+
   it('overrides labels and placeholders', () => {
     const schema = z.object({ name: z.string() })
 

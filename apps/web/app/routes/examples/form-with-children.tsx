@@ -22,10 +22,13 @@ const code = `const schema = z.object({
 })
 
 export default () => (
-  <SchemaForm schema={schema}>
+  <SchemaForm
+    schema={schema}
+    hiddenFields={['csrfToken']}
+    values={{ csrfToken: 'abc123' }}
+  >
     {({ Field, Errors, Button }) => (
       <>
-        <Field name="csrfToken" value="abc123" hidden />
         <Field name="firstName" placeholder="Your first name" />
         <Field name="email" label="E-mail" placeholder="Your e-mail" />
         <em>You'll hear from us at this address 👆🏽</em>
@@ -65,10 +68,13 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <SchemaForm schema={schema}>
+      <SchemaForm
+        schema={schema}
+        hiddenFields={['csrfToken']}
+        values={{ csrfToken: 'abc123' }}
+      >
         {({ Field, Errors, Button }) => (
           <>
-            <Field name="csrfToken" value="abc123" hidden />
             <Field name="firstName" placeholder="Your first name" />
             <Field name="email" label="E-mail" placeholder="Your e-mail" />
             <em>You&apos;ll hear from us at this address 👆🏽</em>
