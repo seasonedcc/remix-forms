@@ -1271,6 +1271,60 @@ describe('renderForm', () => {
     expect(html).not.toContain('data-factory')
   })
 
+  it('works with makeSchemaForm factory-level renderField', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderField: ({ Field, name, ...props }) => (
+        <div data-factory-field>
+          {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+          <Field name={name} {...(props as any)} />
+        </div>
+      ),
+    })
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(<CustomSchemaForm schema={schema} />)
+
+    expect(html).toContain('data-factory-field')
+    expect(html).toContain('name="name"')
+  })
+
+  it('per-form renderField overrides factory-level', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderField: ({ Field, name, ...props }) => (
+        <div data-factory-field>
+          {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+          <Field name={name} {...(props as any)} />
+        </div>
+      ),
+    })
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(
+      <CustomSchemaForm
+        schema={schema}
+        renderField={({ Field, name, ...props }) => (
+          <div data-per-form-field>
+            {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+            <Field name={name} {...(props as any)} />
+          </div>
+        )}
+      />
+    )
+
+    expect(html).toContain('data-per-form-field')
+    expect(html).not.toContain('data-factory-field')
+  })
+
+  it('uses defaultRenderField when no factory or per-form renderField', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents)
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(<CustomSchemaForm schema={schema} />)
+
+    expect(html).toContain('name="name"')
+    expect(html).toContain('Name')
+  })
+
   it('uses pendingButtonLabel in buttonLabel when submitting', () => {
     const schema = z.object({ name: z.string() })
     const fetcher = {
