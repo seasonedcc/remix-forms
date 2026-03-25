@@ -66,6 +66,7 @@ const testRoutes = [
   'field-with-radio-children',
   'field-with-ref',
   'fields-component',
+  'hidden-field-with-custom-children',
   'hidden-field-with-errors',
   'accented-options',
 ]
