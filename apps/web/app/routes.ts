@@ -26,6 +26,7 @@ export const exampleRouteGroups = {
     'Zod Effects',
     'Array of strings',
     'Array of objects',
+    'File upload',
   ],
   Forms: [
     'Auto-generated',

@@ -22,6 +22,7 @@ const SchemaForm = makeSchemaForm({
   field: /* your custom Field */,
   label: /* your custom Label */,
   input: /* your custom Input */,
+  fileInput: /* your custom FileInput */,
   multiline: /* your custom Multiline */,
   select: /* your custom Select */,
   checkbox: /* your custom Checkbox */,
@@ -151,8 +152,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         installed, you'll need the following packages:
       </p>
       <Pre>
-        npm install remix-forms schema-info coerce-form-data
-        composable-functions zod react-hook-form
+        npm install remix-forms @remix-run/form-data-parser schema-info
+        coerce-form-data composable-functions zod react-hook-form
       </Pre>
       <p className="text-base-content/60 text-sm">
         You can replace <em>zod</em> with <em>valibot</em>, <em>yup</em>,{' '}

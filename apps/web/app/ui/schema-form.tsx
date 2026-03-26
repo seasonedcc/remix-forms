@@ -7,6 +7,7 @@ import Error from './error'
 import Errors from './errors'
 import Field from './field'
 import Fields from './fields'
+import FileInput from './file-input'
 import Input from './input'
 import Label from './label'
 import Radio from './radio'
@@ -27,6 +28,7 @@ const SchemaForm = makeSchemaForm({
   field: Field,
   label: Label,
   input: Input,
+  fileInput: FileInput,
   multiline: TextArea,
   select: Select,
   radio: Radio,

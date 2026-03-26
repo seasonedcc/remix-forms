@@ -12,6 +12,10 @@ export type {
   FormSchema,
 } from './schema-form'
 
-export type { FormActionProps, MutationResult } from './mutations'
+export type {
+  FormActionProps,
+  MutationResult,
+  UploadHandler,
+} from './mutations'
 
 export type { ComponentMap, MergeComponents } from './defaults'

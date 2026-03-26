@@ -60,6 +60,14 @@ type CheckboxSlotProps = {
   defaultChecked?: boolean
 }
 
+type FileInputSlotProps = {
+  id?: string
+  type?: string
+  name?: string
+  accept?: string
+  autoFocus?: boolean
+}
+
 type RadioSlotProps = {
   id?: string
   type?: string
@@ -118,6 +126,7 @@ type ComponentMap = {
   multiline: ComponentFor<MultilineSlotProps>
   select: ComponentFor<SelectSlotProps>
   checkbox: ComponentFor<CheckboxSlotProps>
+  fileInput: ComponentFor<FileInputSlotProps>
   radio: ComponentFor<RadioSlotProps>
   checkboxLabel: ComponentFor<CheckboxLabelSlotProps>
   radioGroup: ComponentFor<RadioGroupSlotProps>
@@ -158,6 +167,11 @@ const DefaultSelect = React.forwardRef<
 >((props, ref) => <select {...props} ref={ref} />)
 
 const DefaultCheckbox = React.forwardRef<
+  HTMLInputElement,
+  JSX.IntrinsicElements['input']
+>((props, ref) => <input {...props} ref={ref} />)
+
+const DefaultFileInput = React.forwardRef<
   HTMLInputElement,
   JSX.IntrinsicElements['input']
 >((props, ref) => <input {...props} ref={ref} />)
@@ -217,6 +231,7 @@ type DefaultComponents = {
   multiline: typeof DefaultMultiline
   select: typeof DefaultSelect
   checkbox: typeof DefaultCheckbox
+  fileInput: typeof DefaultFileInput
   radio: typeof DefaultRadio
   checkboxLabel: typeof DefaultCheckboxLabel
   radioGroup: typeof DefaultRadioGroup
@@ -236,6 +251,7 @@ const defaultComponents: DefaultComponents = {
   multiline: DefaultMultiline,
   select: DefaultSelect,
   checkbox: DefaultCheckbox,
+  fileInput: DefaultFileInput,
   radio: DefaultRadio,
   checkboxLabel: DefaultCheckboxLabel,
   radioGroup: DefaultRadioGroup,
@@ -292,6 +308,7 @@ export {
   DefaultMultiline,
   DefaultSelect,
   DefaultCheckbox,
+  DefaultFileInput,
   DefaultRadio,
   DefaultRadioGroup,
   DefaultRadioLabel,

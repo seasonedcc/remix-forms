@@ -1,3 +1,5 @@
+import type { FileUpload } from '@remix-run/form-data-parser'
+import { parseFormData } from '@remix-run/form-data-parser'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type { FormValue } from 'coerce-form-data'
 import { FormDataCoercionError, coerceValue } from 'coerce-form-data'
@@ -5,6 +7,7 @@ import type { ComposableWithSchema } from 'composable-functions'
 import {
   type InputError,
   inputFromForm,
+  inputFromFormData,
   isInputError,
 } from 'composable-functions'
 import { data, redirect } from 'react-router'
@@ -85,11 +88,23 @@ type MutationResult<SchemaType, D> =
   | ({ success: false } & FormActionFailure<SchemaType>)
   | { success: true; data: D }
 
+/**
+ * Function that processes a file upload during form data parsing.
+ *
+ * Called by {@link parseFormData} for each file field in the submitted form.
+ * Return a `File` to make the value available to the mutation, or
+ * `undefined`/`void` to skip the upload.
+ */
+type UploadHandler = (
+  fileUpload: FileUpload
+) => Promise<File | undefined> | File | undefined
+
 type PerformMutationProps<Schema extends FormSchema, D> = {
   request: Request
   schema: Schema
   mutation: ComposableWithSchema<D>
   context?: unknown
+  uploadHandler?: UploadHandler
   transformValues?: (
     values: FormValues<Infer<Schema>>
   ) => Record<string, unknown>
@@ -141,29 +156,62 @@ type FormActionProps<Schema extends FormSchema, D> = {
  */
 async function getFormValues<Schema extends FormSchema>(
   request: Request,
-  schema: Schema
+  schema: Schema,
+  uploadHandler?: UploadHandler
 ): Promise<FormValues<Infer<Schema>>> {
   const fields = schemaFields(schema)
+  const hasFileFields = Object.values(fields).some(
+    (info) => info.type === 'file'
+  )
 
-  const input = await inputFromForm(request)
+  if (!hasFileFields) {
+    const input = await inputFromForm(request)
+    const values: FormValues<Infer<Schema>> = {}
+    for (const key in fields) {
+      const value = input[key]
+      try {
+        values[key as keyof Infer<Schema>] = coerceValue(
+          value as FormValue,
+          fields[key]
+        )
+      } catch (error) {
+        if (error instanceof FormDataCoercionError) {
+          values[key as keyof Infer<Schema>] = null
+        } else {
+          throw error
+        }
+      }
+    }
+    return values
+  }
 
+  const formData = uploadHandler
+    ? await parseFormData(request, uploadHandler)
+    : await request.formData()
+
+  const input = inputFromFormData(formData)
   const values: FormValues<Infer<Schema>> = {}
   for (const key in fields) {
-    const value = input[key]
-    try {
-      values[key as keyof Infer<Schema>] = coerceValue(
-        value as FormValue,
-        fields[key]
-      )
-    } catch (error) {
-      if (error instanceof FormDataCoercionError) {
-        values[key as keyof Infer<Schema>] = null
-      } else {
-        throw error
+    if (fields[key].type === 'file') {
+      const file = formData.get(key)
+      values[key as keyof Infer<Schema>] =
+        file instanceof File && file.size > 0 ? file : null
+    } else {
+      const value = input[key]
+      try {
+        values[key as keyof Infer<Schema>] = coerceValue(
+          value as FormValue,
+          fields[key]
+        )
+      } catch (error) {
+        if (error instanceof FormDataCoercionError) {
+          values[key as keyof Infer<Schema>] = null
+        } else {
+          throw error
+        }
       }
     }
   }
-
   return values
 }
 
@@ -196,10 +244,11 @@ async function performMutation<Schema extends FormSchema, D>({
   schema,
   mutation,
   context,
+  uploadHandler,
   transformResult = (result) => result,
   transformValues = (values) => values,
 }: PerformMutationProps<Schema, D>): Promise<MutationResult<Infer<Schema>, D>> {
-  const values = await getFormValues(request, schema)
+  const values = await getFormValues(request, schema, uploadHandler)
   const result = await mutation(transformValues(values), context)
 
   if (result.success) {
@@ -277,6 +326,7 @@ export type {
   MutationResult,
   PerformMutationProps,
   FormActionProps,
+  UploadHandler,
 }
 
 export { performMutation, formAction, errorMessagesForSchema, getFormValues }

@@ -1435,4 +1435,43 @@ describe('renderForm', () => {
 
     expect(renderForm).toHaveBeenCalled()
   })
+
+  it('auto-sets encType to multipart/form-data when schema has file fields', () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('encType="multipart/form-data"')
+  })
+
+  it('does not set encType when schema has no file fields', () => {
+    const schema = z.object({ name: z.string() })
+
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).not.toContain('enctype')
+  })
+
+  it('renders type="file" for file fields', () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const html = renderToStaticMarkup(<SchemaForm schema={schema} />)
+    expect(html).toContain('type="file"')
+  })
+
+  it('passes accept prop to file fields', () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} accept={{ avatar: 'image/*' }} />
+    )
+    expect(html).toContain('accept="image/*"')
+  })
 })

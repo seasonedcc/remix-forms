@@ -35,6 +35,7 @@ type Children<
       SmartInputProps<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
     >
     Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
+    FileInput: StripDefaultProps<Resolved['fileInput'], 'defaultValue'>
     Multiline: StripDefaultProps<Resolved['multiline'], 'defaultValue'>
     Select: StripDefaultProps<Resolved['select'], 'defaultValue'>
     Checkbox: StripDefaultProps<Resolved['checkbox'], 'defaultChecked'>
@@ -49,13 +50,14 @@ type Children<
   }
 ) => React.ReactNode
 
-type FieldType = 'string' | 'boolean' | 'number' | 'date'
+type FieldType = 'string' | 'boolean' | 'number' | 'date' | 'file'
 
 const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   boolean: 'checkbox',
   string: 'text',
   number: 'text',
   date: 'date',
+  file: 'file',
 }
 
 function getInputType(
@@ -148,6 +150,7 @@ type SmartInputBaseProps = {
   value?: any
   autoFocus?: boolean
   autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
+  accept?: string
   options?: Option[]
   multiline?: boolean
   radio?: boolean
@@ -165,6 +168,8 @@ type IsEnum<T> = [NonNullable<T>] extends [string]
     : true
   : false
 
+type IsFile<T> = [NonNullable<T>] extends [File] ? true : false
+
 type SmartInputSlot<
   Schema extends FormSchema,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
@@ -179,19 +184,21 @@ type SmartInputSlot<
   : Name extends unknown
     ? Name extends Hidden[number]
       ? 'input'
-      : IsBoolean<Infer<Schema>[Name]> extends true
-        ? 'checkbox'
-        : R extends true
-          ? 'radio'
-          : Name extends Radio[number]
+      : IsFile<Infer<Schema>[Name]> extends true
+        ? 'fileInput'
+        : IsBoolean<Infer<Schema>[Name]> extends true
+          ? 'checkbox'
+          : R extends true
             ? 'radio'
-            : IsEnum<Infer<Schema>[Name]> extends true
-              ? 'select'
-              : M extends true
-                ? 'multiline'
-                : Name extends Multiline[number]
+            : Name extends Radio[number]
+              ? 'radio'
+              : IsEnum<Infer<Schema>[Name]> extends true
+                ? 'select'
+                : M extends true
                   ? 'multiline'
-                  : 'input'
+                  : Name extends Multiline[number]
+                    ? 'multiline'
+                    : 'input'
     : never
 
 type SmartInputProps<
@@ -280,6 +287,7 @@ const makeOptionComponents = (
 function createSmartInput(idPrefix: string, components: Record<string, any>) {
   const {
     input: Input,
+    fileInput: FileInput,
     multiline: Multiline,
     select: Select,
     checkbox: Checkbox,
@@ -293,6 +301,7 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
     value,
     autoFocus,
     autoComplete,
+    accept,
     options,
     multiline,
     radio,
@@ -341,6 +350,17 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
 
     if (type === 'hidden') {
       return <Input type="hidden" defaultValue={value} {...commonProps} />
+    }
+
+    if (fieldType === 'file') {
+      return (
+        <FileInput
+          type="file"
+          accept={accept}
+          {...commonProps}
+          {...a11yProps}
+        />
+      )
     }
 
     return fieldType === 'boolean' ? (
@@ -398,6 +418,7 @@ function createField<
   const Field = c.field
   const Label = c.label
   const Input = c.input
+  const FileInput = c.fileInput
   const Multiline = c.multiline
   const Select = c.select
   const Radio = c.radio
@@ -427,6 +448,7 @@ function createField<
         placeholder,
         hidden = false,
         autoComplete,
+        accept,
         children: childrenFn,
         fieldProps,
         ...smartInputExtra
@@ -434,7 +456,12 @@ function createField<
       Record<string, any>,
       ref
     ) => {
-      const value = fieldType === 'date' ? parseDate(rawValue) : rawValue
+      const value =
+        fieldType === 'file'
+          ? undefined
+          : fieldType === 'date'
+            ? parseDate(rawValue)
+            : rawValue
       const field = {
         dirty,
         autoFocus,
@@ -464,17 +491,20 @@ function createField<
         typeProp ?? (hidden ? 'hidden' : getInputType(fieldType, radio))
 
       const { ref: registerRef, ...registerProps } = register(String(name), {
-        setValueAs: (value) => {
-          try {
-            return coerceValue(
-              value,
-              shape ?? { type: null, optional: false, nullable: false }
-            )
-          } catch (error) {
-            if (error instanceof FormDataCoercionError) return null
-            throw error
-          }
-        },
+        setValueAs:
+          fieldType === 'file'
+            ? undefined
+            : (value) => {
+                try {
+                  return coerceValue(
+                    value,
+                    shape ?? { type: null, optional: false, nullable: false }
+                  )
+                } catch (error) {
+                  if (error instanceof FormDataCoercionError) return null
+                  throw error
+                }
+              },
       })
 
       const labelId = `${idPrefix}label-for-${name.toString()}`
@@ -499,6 +529,7 @@ function createField<
             Label,
             SmartInput,
             Input,
+            FileInput,
             Multiline,
             Select,
             Checkbox,
@@ -540,6 +571,7 @@ function createField<
               multiline,
               radio,
               placeholder,
+              accept,
               registerProps: { ...registerProps, ref: mergedRef },
               autoFocus,
               autoComplete,
@@ -570,6 +602,18 @@ function createField<
               autoComplete,
               defaultValue: value,
               ...inputProps,
+              ref: mergedRef,
+            })
+          }
+          if (child.type === FileInput) {
+            return React.cloneElement(child, {
+              id: `${idPrefix}${String(name)}`,
+              type: 'file',
+              accept: child.props.accept ?? accept,
+              ...registerProps,
+              ...a11yProps,
+              autoFocus,
+              ...child.props,
               ref: mergedRef,
             })
           }
@@ -686,6 +730,7 @@ function createField<
           multiline={multiline}
           radio={radio}
           placeholder={placeholder}
+          accept={accept}
           registerProps={{ ref: registerRef, ...registerProps }}
           autoFocus={autoFocus}
           autoComplete={autoComplete}
@@ -738,5 +783,6 @@ export type {
   StripDefaultProps,
   IsBoolean,
   IsEnum,
+  IsFile,
 }
 export { createField }

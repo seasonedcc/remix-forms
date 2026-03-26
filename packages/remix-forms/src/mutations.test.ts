@@ -5,10 +5,11 @@ import {
   type FormValues,
   type MutationResult,
   formAction,
+  getFormValues,
   performMutation,
 } from './mutations'
 
-function makeRequest(body: URLSearchParams) {
+function makeRequest(body: URLSearchParams | FormData) {
   return new Request('https://example.com', { method: 'POST', body })
 }
 
@@ -310,5 +311,89 @@ describe('formAction', () => {
     })
 
     expect(transformResult).toHaveBeenCalled()
+  })
+})
+
+describe('getFormValues with file fields', () => {
+  it('returns File objects for file fields', async () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const fd = new FormData()
+    fd.set('name', 'Jane')
+    fd.set('avatar', new File(['img'], 'avatar.png', { type: 'image/png' }))
+    const request = makeRequest(fd)
+
+    const values = await getFormValues(request, schema)
+
+    expect(values.name).toBe('Jane')
+    expect(values.avatar).toBeInstanceOf(File)
+    expect((values.avatar as File).name).toBe('avatar.png')
+  })
+
+  it('returns null for empty file inputs', async () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const fd = new FormData()
+    fd.set('name', 'Jane')
+    fd.set('avatar', new File([], '', { type: 'application/octet-stream' }))
+    const request = makeRequest(fd)
+
+    const values = await getFormValues(request, schema)
+
+    expect(values.name).toBe('Jane')
+    expect(values.avatar).toBeNull()
+  })
+
+  it('uses existing path for schemas without file fields', async () => {
+    const schema = z.object({ name: z.string(), agree: z.boolean() })
+    const request = makeRequest(
+      new URLSearchParams({ name: 'Jane', agree: 'on' })
+    )
+
+    const values = await getFormValues(request, schema)
+
+    expect(values.name).toBe('Jane')
+    expect(values.agree).toBe(true)
+  })
+
+  it('threads uploadHandler through performMutation', async () => {
+    const schema = z.object({
+      name: z.string(),
+      avatar: z.instanceof(File),
+    })
+
+    const uploadedFile = new File(['uploaded'], 'result.png', {
+      type: 'image/png',
+    })
+    const uploadHandler = vi.fn(async () => uploadedFile)
+
+    const fd = new FormData()
+    fd.set('name', 'Jane')
+    fd.set('avatar', new File(['raw'], 'avatar.png', { type: 'image/png' }))
+    const request = makeRequest(fd)
+
+    const mutation = Object.assign(
+      vi.fn(async (values: { name: string; avatar: File }) => ({
+        success: true as const,
+        data: values.avatar.name,
+      })),
+      { kind: 'composable' }
+    ) as unknown as ComposableWithSchema<string>
+
+    const result = await performMutation({
+      request,
+      schema,
+      mutation,
+      uploadHandler,
+    })
+
+    expect(uploadHandler).toHaveBeenCalled()
+    expect(result.success).toBe(true)
   })
 })

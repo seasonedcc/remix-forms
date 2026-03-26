@@ -954,3 +954,87 @@ describe('fieldProps', () => {
     expect(html).not.toContain('display:none')
   })
 })
+
+describe('file fields', () => {
+  it('renders type="file" for file fieldType', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Avatar" fieldType="file" />
+    )
+    expect(html).toContain('type="file"')
+    expect(html).not.toContain('type="text"')
+  })
+
+  it('does not render defaultValue for file fields', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Avatar" fieldType="file" value="ignored" />
+    )
+    expect(html).not.toContain('value="ignored"')
+    expect(html).not.toContain('defaultValue')
+  })
+
+  it('passes accept attribute to the file input', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Avatar" fieldType="file" accept="image/*" />
+    )
+    expect(html).toContain('accept="image/*"')
+  })
+
+  it('renders type="hidden" when file field is hidden (hidden takes priority)', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Avatar" fieldType="file" hidden />
+    )
+    expect(html).toContain('type="hidden"')
+    expect(html).not.toContain('type="file"')
+  })
+
+  it('uses a custom fileInput component when provided', () => {
+    const CustomFileInput = React.forwardRef<
+      HTMLInputElement,
+      React.ComponentPropsWithoutRef<'input'>
+    >((props, ref) => <input data-custom-file ref={ref} {...props} />)
+
+    const CustomField = createField({
+      register,
+      idPrefix: '',
+      components: { ...defaultComponents, fileInput: CustomFileInput },
+    })
+
+    const html = renderToStaticMarkup(
+      <CustomField name="foo" label="Avatar" fieldType="file" />
+    )
+    expect(html).toContain('data-custom-file')
+    expect(html).toContain('type="file"')
+  })
+
+  it('provides FileInput helper in children render function', () => {
+    const html = renderToStaticMarkup(
+      <Field name="foo" label="Avatar" fieldType="file" accept="image/*">
+        {({ FileInput }) => <FileInput />}
+      </Field>
+    )
+    expect(html).toContain('type="file"')
+    expect(html).toContain('accept="image/*"')
+  })
+
+  it('does not use setValueAs for file fields (RHF bypasses it)', () => {
+    const fileSchema = z.object({ avatar: z.instanceof(File) })
+    const FileField = createField<
+      typeof fileSchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: '',
+      components: defaultComponents,
+    })
+
+    renderToStaticMarkup(
+      <FileField name="avatar" label="Avatar" fieldType="file" />
+    )
+
+    const [, options] = (register as unknown as Mock).mock.calls[0]
+    expect(options.setValueAs).toBeUndefined()
+  })
+})
