@@ -892,6 +892,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.children - Render function for custom layout. Receives `Field`, `Fields`, `Errors`, `Error`, `Button`, `submit` and the React Hook Form return value. Use `Fields` to render all schema fields automatically while customizing the surrounding layout
  * @param props.labels - Custom labels for form fields
  * @param props.placeholders - Placeholder text for fields
+ * @param props.accept - Accept attribute for file fields, keyed by field name (e.g. `{ avatar: 'image/*' }`)
  * @param props.autoComplete - Autocomplete hints for fields
  * @param props.options - Select and radio options for fields
  * @param props.inputTypes - Custom input types per field
