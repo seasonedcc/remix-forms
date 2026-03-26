@@ -32,6 +32,7 @@ const mutation = applySchema(schema)(async (values) => ({
 }))
 
 async function uploadHandler(fileUpload: FileUpload) {
+  // Here you would process the upload
   return fileUpload
 }
 
