@@ -32,12 +32,15 @@ importers:
       '@react-router/serve':
         specifier: 7.13.1
         version: 7.13.1(react-router@7.13.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.8.3)
+      '@remix-run/form-data-parser':
+        specifier: ^0.16.0
+        version: 0.16.0
       coerce-form-data:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       composable-functions:
-        specifier: ^4.5.0
-        version: 4.5.0
+        specifier: ^5.0.0
+        version: 5.0.0
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -68,6 +71,9 @@ importers:
       remix-forms:
         specifier: workspace:*
         version: link:../../packages/remix-forms
+      schema-info:
+        specifier: ^0.4.1
+        version: 0.4.1
       string-ts:
         specifier: ^2.2.0
         version: 2.3.1
@@ -133,6 +139,9 @@ importers:
         specifier: '>=7.27'
         version: 7.71.2(react@18.3.1)
     devDependencies:
+      '@remix-run/form-data-parser':
+        specifier: 0.16.0
+        version: 0.16.0
       '@types/react':
         specifier: '>=18'
         version: 18.3.20
@@ -143,8 +152,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
       coerce-form-data:
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.1.0
+        version: 2.1.0
       effect:
         specifier: ^3.20.0
         version: 3.20.0
@@ -161,8 +170,8 @@ importers:
         specifier: 7.13.1
         version: 7.13.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       schema-info:
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.4.1
+        version: 0.4.1
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.8)(typescript@5.8.3)(yaml@2.8.2)
@@ -1218,6 +1227,15 @@ packages:
     peerDependencies:
       react-router: 7.13.1
 
+  '@remix-run/form-data-parser@0.16.0':
+    resolution: {integrity: sha512-k4QCgCyPURpqe+9Rual1GBJ8Ab6ri82Clfh5ooxq03jKQ1TyQZT5xh+XP0R05+Bqg5bzAZl7r2BpmDEvfoRTWw==}
+
+  '@remix-run/headers@0.19.0':
+    resolution: {integrity: sha512-+62NbkXuXm9r/NdG6KfH9OCKofCWm8VjkrVPICiHKtRl8Gf2Vi6eFTN4mGgBlZRhd5mmEVRV4hTIn/JUSHDAOw==}
+
+  '@remix-run/multipart-parser@0.15.0':
+    resolution: {integrity: sha512-/Ugo6k2bN7gh7Ybyhe7R/NrkD075fHrEfVf17P+NNC9rlWHBQCOSyJ4V8n4wtoG8umeImagU/AuHuUuTwzvHww==}
+
   '@remix-run/node-fetch-server@0.13.0':
     resolution: {integrity: sha512-1EsNo0ZpgXu/90AWoRZf/oE3RVTUS80tiTUpt+hv5pjtAkw7icN4WskDwz/KdAw5ARbJLMhZBrO1NqThmy/McA==}
 
@@ -1637,15 +1655,12 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
-  coerce-form-data@2.0.0:
-    resolution: {integrity: sha512-tO0Hqt5S76S2SgMKKTIQmvULbZD2Ygx8opJFWuhsuTl/qQigYXVpmoyWtbL6AjpoLesqlP3EN0Xf/qcG8FzHVg==}
+  coerce-form-data@2.1.0:
+    resolution: {integrity: sha512-7ZSh9alsDb3GEGJioA9+6Bp3NwLvMvxkTh0XnetugpGRyMYZV+AmcPi5t/m8QTRojsr2l52pXDSz4D0WKaSpQA==}
 
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
-
-  composable-functions@4.5.0:
-    resolution: {integrity: sha512-3ui3xmTtipzyV+efPh4vvep62JKL6H36UN1CMoHb7/4+M7Y3Nqhu5wWHFPwiBggJkFas9vMusLfugP8cErr3iw==}
 
   composable-functions@5.0.0:
     resolution: {integrity: sha512-CV5r9eXpnombeKTHFP895n++aYIJkmpHrlDXqloF0OUYdrXr7CU008R8tcBjaDBcZHrSwB03W1Lv8T8Ly8C37A==}
@@ -2337,8 +2352,8 @@ packages:
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
 
-  schema-info@0.3.0:
-    resolution: {integrity: sha512-qpdxWeRSctUQSTtOXnRM17fgG0x2eMJhf5+3JvMDmQLFB3JlYXszJYhq9YYOpZNAdU6nY7dSeN4iKfjH+ZCTwg==}
+  schema-info@0.4.1:
+    resolution: {integrity: sha512-vl3TUoreScAoco7k8sEBSvUKCxNXzTscthfS3cEZ88saEoYIRf3P/5/W8it8GkypSjNCDJjzN59K5ubYXNnB3w==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -3571,6 +3586,16 @@ snapshots:
       - supports-color
       - typescript
 
+  '@remix-run/form-data-parser@0.16.0':
+    dependencies:
+      '@remix-run/multipart-parser': 0.15.0
+
+  '@remix-run/headers@0.19.0': {}
+
+  '@remix-run/multipart-parser@0.15.0':
+    dependencies:
+      '@remix-run/headers': 0.19.0
+
   '@remix-run/node-fetch-server@0.13.0': {}
 
   '@rollup/rollup-android-arm-eabi@4.59.0':
@@ -3911,11 +3936,9 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
-  coerce-form-data@2.0.0: {}
+  coerce-form-data@2.1.0: {}
 
   commander@4.1.1: {}
-
-  composable-functions@4.5.0: {}
 
   composable-functions@5.0.0: {}
 
@@ -4590,7 +4613,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  schema-info@0.3.0: {}
+  schema-info@0.4.1: {}
 
   semver@6.3.1: {}
 

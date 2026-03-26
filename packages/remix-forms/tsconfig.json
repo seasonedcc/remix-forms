@@ -3,7 +3,8 @@
   "compilerOptions": {
     "target": "es2019",
     "jsx": "react-jsx",
-    "module": "commonjs",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "declaration": true,
     "outDir": "./tsc/",
     "esModuleInterop": true,

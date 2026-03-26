@@ -32,6 +32,7 @@ import type {
 } from './defaults'
 import { defaultComponents } from './defaults'
 import { FieldsSentinel, expandFieldsSentinel } from './fields-sentinel'
+import { makeFileResolver } from './file-resolver'
 import { inferLabel } from './infer-label'
 import type { FormErrors, FormValues } from './mutations'
 import type { FormSchema, Infer, KeysOfStrings } from './prelude'
@@ -63,6 +64,7 @@ type Field<SchemaType> = {
   errors?: string[]
   autoFocus?: boolean
   autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
+  accept?: string
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   value?: any
   hidden?: boolean
@@ -279,6 +281,7 @@ type SchemaFormProps<
   values?: FormValues<Infer<Schema>>
   labels?: Partial<Record<keyof Infer<Schema>, string>>
   placeholders?: Partial<Record<keyof Infer<Schema>, string>>
+  accept?: Partial<Record<keyof Infer<Schema>, string>>
   autoComplete?: Partial<
     Record<keyof Infer<Schema>, JSX.IntrinsicElements['input']['autoComplete']>
   >
@@ -325,6 +328,7 @@ function resolveAutoInputType(
 
 function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
+  if (info.type === 'file') return 'file'
   return (info.type ?? 'string') as FieldType
 }
 
@@ -436,6 +440,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     children: childrenFn,
     labels,
     placeholders,
+    accept: acceptProp,
     autoComplete: autoCompleteProp,
     options,
     inputTypes,
@@ -486,6 +491,12 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     )
 
     const fields = schemaFields(schema)
+    const hasFileFields = Object.values(fields).some(
+      (info) => info.type === 'file'
+    )
+    const effectiveEncType =
+      props.encType ?? (hasFileFields ? 'multipart/form-data' : undefined)
+
     const defaultValues = mapObject(fields, (key, info) => {
       const defaultValue = coerceToForm(
         values[key] ?? info.getDefaultValue?.(),
@@ -495,8 +506,16 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       return [key, defaultValue] as never
     }) as DeepPartial<SchemaType>
 
+    const resolver = React.useMemo(
+      () =>
+        hasFileFields
+          ? makeFileResolver(schema, fields)
+          : standardSchemaResolver(schema),
+      [schema]
+    )
+
     const form = useForm<SchemaType>({
-      resolver: standardSchemaResolver(schema),
+      resolver,
       mode,
       reValidateMode,
       defaultValues: defaultValues as DefaultValues<SchemaType>,
@@ -515,6 +534,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
 
         return submit(target, {
           method,
+          encType: effectiveEncType,
           replace: props.replace,
           preventScrollReset: props.preventScrollReset,
           navigate: props.navigate,
@@ -599,6 +619,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
         radio: radio && Boolean(radio.find((item) => item === key)),
         placeholder: placeholders?.[key],
         autoComplete: autoCompleteProp?.[key],
+        accept: acceptProp?.[key],
       } as Field<SchemaType>
     }
 
@@ -828,13 +849,16 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       onNavigation?.(form)
     }, [navigationState])
 
+    const { encType: _encType, ...formProps } = props
+
     return (
       <FormProvider {...form}>
         <FormComponent
           ref={formRef}
           method={method}
+          encType={effectiveEncType}
           onSubmit={onSubmit}
-          {...props}
+          {...formProps}
         >
           {beforeChildren}
           {processedContent}
