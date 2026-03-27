@@ -100,27 +100,35 @@ Once the user confirms the publish, write release notes by thoroughly analyzing 
 
 #### Analyze changes in depth
 
-Do not just list PRs. Study the actual code changes to understand what they mean for users:
+Do not just list PRs. Study the actual changes to understand what they mean for users:
 
 1. **Check dependency changes first** — diff `packages/remix-forms/package.json` for new/removed/changed `peerDependencies` and `dependencies`. Peer dependency bumps are the highest-impact breaking changes because they gate who can install the package at all (e.g., raising the React peer dep from `>=16.8` to `>=18` blocks every user on React 17 or below). Flag these immediately.
 2. **Check the public API diff** — look at changes to `packages/remix-forms/src/index.ts` for added/removed exports.
 3. **Filter to package-relevant changes** — use `git log <last-tag>..HEAD --oneline -- packages/remix-forms/` to identify commits that actually affect the published package (vs website-only changes).
-4. **Read the changed source code** — don't assume what a change does from the PR title alone. Read the actual diffs to understand user-facing impact. For example, an internal dependency upgrade may introduce stricter behavior, but if the package catches and handles it internally, it's not a user-facing breaking change.
-
-#### Write release notes
-
-Structure depends on the nature of the changes:
-
-- **Releases with breaking changes**: Start with a `## Breaking Changes` section containing narrative subsections that explain each breaking change, what it replaces, and what users need to do. Order breaking changes by impact: **dependency requirement changes first** (peer dep bumps affect every user at install time), then behavioral or API changes (which only affect users after installation). Follow with a `## What's Changed` section listing PRs.
-- **Minor/patch releases**: A `## What's Changed` section with bullet points linking to merged PRs.
-
-List merged PRs between the two tags:
+4. **List merged PRs** between the two tags:
 
 ```bash
 gh pr list --search "is:merged merged:>=<last-tag-date>" --json number,title,author --limit 100
 ```
 
-Format each PR as:
+5. **Read every PR's description** — PR bodies contain author-written summaries, migration instructions, and context that titles and diffs alone don't provide. Read each one:
+
+```bash
+gh pr view <number> --json body,title --jq '.title + "\n---\n" + .body'
+```
+
+Run these in parallel (all PR reads in a single message) for efficiency.
+
+6. **Read the changed source code** when a PR description is missing or unclear — don't assume what a change does from the title alone.
+
+#### Write release notes
+
+Use the following structure. Include only the sections that apply:
+
+- `## Breaking Changes` — narrative subsections explaining each breaking change, what it replaces, and what users need to do. Order by impact: **dependency requirement changes first** (peer dep bumps affect every user at install time), then behavioral or API changes. Include code examples showing before/after when helpful.
+- `## New Features` — bullet points with **bold title**, PR number in parens, and a one-line description drawn from the PR body.
+- `## Bug Fixes` — bullet points with PR number and linked issue closes (e.g. "Closes #123").
+- `## What's Changed` — full PR list with author links, formatted as:
 
 ```
 * <title> by @<author> in https://github.com/seasonedcc/remix-forms/pull/<number>
