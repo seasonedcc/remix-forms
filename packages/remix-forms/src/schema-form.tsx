@@ -329,6 +329,8 @@ function resolveAutoInputType(
 function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
   if (info.type === 'file') return 'file'
+  if (info.type === 'array') return 'array'
+  if (info.type === 'object') return 'object'
   return (info.type ?? 'string') as FieldType
 }
 

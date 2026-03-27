@@ -40,19 +40,18 @@ export default function Component() {
       }
     >
       <SchemaForm schema={schema} values={{ tags: [] }}>
-        {({ Field, Errors, Button, setValue, watch }) => {
+        {({ Field, Errors, Button, watch }) => {
           const tags = watch('tags')
 
           return (
             <>
               <Field name="tags">
-                {({ Label, Errors, Input }) => (
+                {({ label, append }) => (
                   <>
-                    <Label />
-                    <Input
+                    <span>{label}</span>
+                    <input
                       className="input input-bordered w-full"
                       type="text"
-                      name="oneTag"
                       ref={tagRef}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter') {
@@ -60,7 +59,7 @@ export default function Component() {
                           if (tagRef.current) {
                             const value = tagRef.current.value
                             if (value) {
-                              setValue('tags', [...(tags || []), value])
+                              append(value)
                             }
                             tagRef.current.value = ''
                           }
@@ -75,7 +74,6 @@ export default function Component() {
                         </li>
                       ))}
                     </ul>
-                    <Errors />
                   </>
                 )}
               </Field>

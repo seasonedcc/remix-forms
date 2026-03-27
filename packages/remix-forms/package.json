@@ -37,8 +37,8 @@
   },
   "peerDependencies": {
     "@remix-run/form-data-parser": ">=0.16.0",
-    "coerce-form-data": ">=2.1",
-    "schema-info": ">=0.4.1",
+    "coerce-form-data": ">=3.0.0",
+    "schema-info": ">=0.5.0",
     "composable-functions": ">=5",
     "react": ">=18",
     "react-hook-form": ">=7.27",
@@ -46,8 +46,8 @@
   },
   "devDependencies": {
     "@remix-run/form-data-parser": "0.16.0",
-    "coerce-form-data": "2.1.0",
-    "schema-info": "0.4.1",
+    "coerce-form-data": "3.0.0",
+    "schema-info": "0.5.0",
     "arktype": "^2.2.0",
     "effect": "^3.20.0",
     "joi": "^18.0.2",

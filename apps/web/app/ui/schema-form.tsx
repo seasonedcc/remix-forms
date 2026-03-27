@@ -22,6 +22,60 @@ const StyledForm = React.forwardRef<
   React.ComponentPropsWithRef<typeof Form>
 >((props, ref) => <Form ref={ref} className="flex flex-col gap-6" {...props} />)
 
+const ArrayField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div ref={ref} className="flex flex-col gap-2" {...props} />)
+
+const ArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => (
+  <div ref={ref} className="flex items-center gap-2" {...props} />
+))
+
+const AddButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    className="btn btn-outline btn-sm mt-2 self-start"
+    {...props}
+  />
+))
+
+const RemoveButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    className="btn btn-ghost btn-sm text-error"
+    {...props}
+  />
+))
+
+const ArrayEmpty = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => (
+  <div ref={ref} className="py-2 text-base-content/50 text-sm" {...props} />
+))
+
+const ObjectField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => (
+  <div
+    ref={ref}
+    className="flex flex-col gap-4 border-base-300 border-l-2 pl-4"
+    {...props}
+  />
+))
+
 const SchemaForm = makeSchemaForm({
   form: StyledForm,
   fields: Fields,
@@ -39,6 +93,12 @@ const SchemaForm = makeSchemaForm({
   button: SubmitButton,
   globalErrors: Errors,
   error: Error,
+  arrayField: ArrayField,
+  arrayItem: ArrayItem,
+  addButton: AddButton,
+  removeButton: RemoveButton,
+  arrayEmpty: ArrayEmpty,
+  objectField: ObjectField,
 })
 
 export { SchemaForm }
