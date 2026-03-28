@@ -105,6 +105,24 @@ type ButtonSlotProps = {
   children?: React.ReactNode
 }
 
+type ArrayFieldSlotProps = { children?: React.ReactNode }
+
+type ArrayItemSlotProps = { children?: React.ReactNode }
+
+type AddButtonSlotProps = {
+  onClick?: React.MouseEventHandler
+  children?: React.ReactNode
+}
+
+type RemoveButtonSlotProps = {
+  onClick?: React.MouseEventHandler
+  children?: React.ReactNode
+}
+
+type ArrayEmptySlotProps = { children?: React.ReactNode }
+
+type ObjectFieldSlotProps = { children?: React.ReactNode }
+
 /**
  * Describes the full set of component slots available for customisation.
  *
@@ -136,6 +154,12 @@ type ComponentMap = {
   fields: ComponentFor<FieldsSlotProps>
   globalErrors: ComponentFor<ErrorContainerSlotProps>
   button: ComponentFor<ButtonSlotProps>
+  arrayField: ComponentFor<ArrayFieldSlotProps>
+  arrayItem: ComponentFor<ArrayItemSlotProps>
+  addButton: ComponentFor<AddButtonSlotProps>
+  removeButton: ComponentFor<RemoveButtonSlotProps>
+  arrayEmpty: ComponentFor<ArrayEmptySlotProps>
+  objectField: ComponentFor<ObjectFieldSlotProps>
 }
 
 const DefaultForm = ReactRouterForm
@@ -223,6 +247,36 @@ const DefaultButton = React.forwardRef<
   JSX.IntrinsicElements['button']
 >((props, ref) => <button {...props} ref={ref} />)
 
+const DefaultArrayField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultAddButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => <button type="button" {...props} ref={ref} />)
+
+const DefaultRemoveButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => <button type="button" {...props} ref={ref} />)
+
+const DefaultArrayEmpty = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
 type DefaultComponents = {
   form: typeof DefaultForm
   field: typeof DefaultField
@@ -241,6 +295,12 @@ type DefaultComponents = {
   fields: typeof DefaultFieldsWrapper
   globalErrors: typeof DefaultGlobalErrors
   button: typeof DefaultButton
+  arrayField: typeof DefaultArrayField
+  arrayItem: typeof DefaultArrayItem
+  addButton: typeof DefaultAddButton
+  removeButton: typeof DefaultRemoveButton
+  arrayEmpty: typeof DefaultArrayEmpty
+  objectField: typeof DefaultObjectField
 }
 
 const defaultComponents: DefaultComponents = {
@@ -261,6 +321,12 @@ const defaultComponents: DefaultComponents = {
   fields: DefaultFieldsWrapper,
   globalErrors: DefaultGlobalErrors,
   button: DefaultButton,
+  arrayField: DefaultArrayField,
+  arrayItem: DefaultArrayItem,
+  addButton: DefaultAddButton,
+  removeButton: DefaultRemoveButton,
+  arrayEmpty: DefaultArrayEmpty,
+  objectField: DefaultObjectField,
 }
 
 type ResolveComponents<Components extends Partial<ComponentMap>> = {
@@ -318,5 +384,11 @@ export {
   DefaultFieldsWrapper,
   DefaultGlobalErrors,
   DefaultButton,
+  DefaultArrayField,
+  DefaultArrayItem,
+  DefaultAddButton,
+  DefaultRemoveButton,
+  DefaultArrayEmpty,
+  DefaultObjectField,
   defaultComponents,
 }

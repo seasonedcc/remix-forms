@@ -1,6 +1,28 @@
+vi.mock('react-hook-form', async () => {
+  const actual = await vi.importActual('react-hook-form')
+  return {
+    ...actual,
+    useFormContext: vi.fn(() => ({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: () => ({ error: undefined }),
+    })),
+    useFieldArray: vi.fn((_opts: { name: string }) => ({
+      fields: [{ id: 'item-0' }, { id: 'item-1' }],
+      append: vi.fn(),
+      prepend: vi.fn(),
+      remove: vi.fn(),
+      insert: vi.fn(),
+      move: vi.fn(),
+      swap: vi.fn(),
+    })),
+  }
+})
+
 import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { UseFormRegister } from 'react-hook-form'
+import { useFieldArray } from 'react-hook-form'
 import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 import { createField, useField } from './create-field'
 import { defaultComponents } from './defaults'
@@ -1036,5 +1058,282 @@ describe('file fields', () => {
 
     const [, options] = (register as unknown as Mock).mock.calls[0]
     expect(options.setValueAs).toBeUndefined()
+  })
+})
+
+describe('object fields', () => {
+  const objectSchema = z.object({
+    billing: z.object({
+      street: z.string(),
+      city: z.string(),
+    }),
+  })
+
+  const ObjectField = createField<
+    typeof objectSchema,
+    typeof defaultComponents,
+    readonly [],
+    readonly [],
+    readonly []
+  >({
+    register,
+    idPrefix: 'test-',
+    components: defaultComponents,
+  })
+
+  it('auto-renders nested fields for object fieldType', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      />
+    )
+    expect(html).toContain('Billing')
+    expect(html).toContain('Street')
+    expect(html).toContain('City')
+    expect(html).toContain('name="billing[street]"')
+    expect(html).toContain('name="billing[city]"')
+  })
+
+  it('renders custom children with scoped Field for object fieldType', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Field: BillingField, label }) => (
+          <>
+            <h3>{label}</h3>
+            <BillingField name="city" />
+          </>
+        )}
+      </ObjectField>
+    )
+    expect(html).toContain('Billing')
+    expect(html).toContain('City')
+    expect(html).toContain('name="billing[city]"')
+    expect(html).not.toContain('Street')
+  })
+
+  it('recursively renders nested objects', () => {
+    const deepSchema = z.object({
+      company: z.object({
+        address: z.object({
+          street: z.string(),
+          zip: z.string(),
+        }),
+      }),
+    })
+    const DeepField = createField<
+      typeof deepSchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'deep-',
+      components: defaultComponents,
+    })
+    const shape = schemaInfo(deepSchema.shape.company)
+    const html = renderToStaticMarkup(
+      <DeepField
+        name="company"
+        label="Company"
+        fieldType="object"
+        shape={shape}
+      />
+    )
+    expect(html).toContain('Company')
+    expect(html).toContain('Street')
+    expect(html).toContain('Zip')
+    expect(html).toContain('name="company[address][street]"')
+    expect(html).toContain('name="company[address][zip]"')
+  })
+})
+
+describe('array fields', () => {
+  const arraySchema = z.object({
+    tags: z.array(z.string()),
+  })
+
+  const ArrayField = createField<
+    typeof arraySchema,
+    typeof defaultComponents,
+    readonly [],
+    readonly [],
+    readonly []
+  >({
+    register,
+    idPrefix: 'arr-',
+    components: defaultComponents,
+  })
+
+  it('auto-renders array of scalars with add/remove buttons', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape} />
+    )
+    expect(html).toContain('Tags')
+    expect(html).toContain('name="tags[0]"')
+    expect(html).toContain('name="tags[1]"')
+    expect(html).toContain('Remove')
+    expect(html).toContain('Add')
+  })
+
+  it('wraps scalar array items directly without field wrapper or label', () => {
+    const CustomField = createField({
+      register,
+      idPrefix: 'slot-',
+      components: {
+        ...defaultComponents,
+        field: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="field" {...props} />
+        ),
+        arrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-field" {...props} />
+        ),
+        arrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-item" {...props} />
+        ),
+      },
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <CustomField name="tags" label="Tags" fieldType="array" shape={shape} />
+    )
+
+    const fieldCount = (html.match(/data-slot="field"/g) || []).length
+    expect(fieldCount).toBe(1)
+
+    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
+      .length
+    expect(arrayFieldCount).toBe(2)
+
+    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    expect(arrayItemCount).toBe(2)
+  })
+
+  it('renders empty state when useFieldArray returns no items', () => {
+    ;(useFieldArray as unknown as Mock).mockReturnValueOnce({
+      fields: [],
+      append: vi.fn(),
+      prepend: vi.fn(),
+      remove: vi.fn(),
+      insert: vi.fn(),
+      move: vi.fn(),
+      swap: vi.fn(),
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape} />
+    )
+    expect(html).toContain('No items')
+    expect(html).toContain('Add')
+    expect(html).not.toContain('Remove')
+  })
+
+  it('auto-renders array of objects with nested fields', () => {
+    const objArraySchema = z.object({
+      contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+    })
+    const ObjArrayField = createField<
+      typeof objArraySchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'oa-',
+      components: defaultComponents,
+    })
+
+    const shape = schemaInfo(objArraySchema.shape.contacts)
+    const html = renderToStaticMarkup(
+      <ObjArrayField
+        name="contacts"
+        label="Contacts"
+        fieldType="array"
+        shape={shape}
+      />
+    )
+    expect(html).toContain('Contacts')
+    expect(html).toContain('Name')
+    expect(html).toContain('Email')
+    expect(html).toContain('name="contacts[0][name]"')
+    expect(html).toContain('name="contacts[0][email]"')
+    expect(html).toContain('name="contacts[1][name]"')
+    expect(html).toContain('Remove')
+    expect(html).toContain('Add')
+  })
+
+  it('wraps object array sub-fields with their own field slot', () => {
+    const objArraySchema = z.object({
+      contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+    })
+    const CustomField = createField({
+      register,
+      idPrefix: 'oa-slot-',
+      components: {
+        ...defaultComponents,
+        field: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="field" {...props} />
+        ),
+        arrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-field" {...props} />
+        ),
+        arrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-item" {...props} />
+        ),
+      },
+    })
+
+    const shape = schemaInfo(objArraySchema.shape.contacts)
+    const html = renderToStaticMarkup(
+      <CustomField
+        name="contacts"
+        label="Contacts"
+        fieldType="array"
+        shape={shape}
+      />
+    )
+
+    const fieldCount = (html.match(/data-slot="field"/g) || []).length
+    expect(fieldCount).toBe(5)
+
+    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
+      .length
+    expect(arrayFieldCount).toBe(0)
+
+    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    expect(arrayItemCount).toBe(2)
+  })
+
+  it('renders custom children with items and helpers', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ items, label }) => (
+          <div>
+            <span>{label}</span>
+            {items.map((item) => (
+              <div key={item.key} data-index={item.index} />
+            ))}
+          </div>
+        )}
+      </ArrayField>
+    )
+    expect(html).toContain('Tags')
+    expect(html).toContain('data-index="0"')
+    expect(html).toContain('data-index="1"')
   })
 })

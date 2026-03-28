@@ -1,6 +1,6 @@
 import { expect, testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/schemas/numbers'
+const route = '/examples/scalar-schemas/numbers'
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { button, page } = example

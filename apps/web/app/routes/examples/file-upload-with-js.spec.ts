@@ -1,6 +1,6 @@
 import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/schemas/file-upload'
+const route = '/examples/scalar-schemas/file-upload'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example

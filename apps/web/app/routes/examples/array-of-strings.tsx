@@ -1,7 +1,5 @@
 import { applySchema } from 'composable-functions'
 import hljs from 'highlight.js/lib/common'
-import { uniq } from 'lodash-es'
-import { useRef } from 'react'
 import { formAction } from 'remix-forms'
 import { z } from 'zod'
 import { metaTags } from '~/helpers'
@@ -11,13 +9,13 @@ import type { Route } from './+types/array-of-strings'
 
 const title = 'Array of strings'
 const description =
-  'In this example, we use custom inputs to manage an array of string tags.'
+  'In this example, the array field auto-generates inputs with add/remove buttons.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   title: z.string().min(1),
-  tags: z.array(z.string()).min(1),
+  tags: z.array(z.string().min(1)).min(1),
 })
 
 const mutation = applySchema(schema)(async (values) => values)
@@ -25,84 +23,13 @@ const mutation = applySchema(schema)(async (values) => values)
 export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
-export default () => {
-  const tagRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <SchemaForm schema={schema} values={{ tags: [] }}>
-      {({ Field, Errors, Button, watch, setValue }) => {
-        const tags = watch('tags')
-
-        return (
-          <>
-            <Field name="title" />
-            <Field name="tags">
-              {({ Label, Errors }) => (
-                <>
-                  <Label />
-                  <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    placeholder="Add a tag and press Enter..."
-                    ref={tagRef}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault()
-
-                        if (tagRef.current) {
-                          const value = tagRef.current.value
-                          if (value) {
-                            setValue(
-                              'tags',
-                              uniq([...(tags || []), value.toLowerCase()]),
-                              { shouldValidate: true },
-                            )
-                          }
-                          tagRef.current.value = ''
-                        }
-                      }
-                    }}
-                  />
-                  {tags && (
-                    <section className="-ml-1 flex flex-wrap pt-1">
-                      {tags.map((tag) => (
-                        <span key={tag}>
-                          <span className="badge badge-primary m-1 gap-1 py-3">
-                            <span className="flex-1">{tag}</span>
-                            <button
-                              className="ml-1"
-                              onClick={() => {
-                                setValue(
-                                  'tags',
-                                  tags.filter((value) => tag !== value),
-                                  { shouldValidate: true },
-                                )
-                              }}
-                            >
-                              X
-                            </button>
-                          </span>
-                          <input type="hidden" name="tags[]" value={tag} />
-                        </span>
-                      ))}
-                    </section>
-                  )}
-                  <Errors />
-                </>
-              )}
-            </Field>
-            <Errors />
-            <Button />
-          </>
-        )
-      }}
-    </SchemaForm>
-  )
-}`
+export default () => (
+  <SchemaForm schema={schema} />
+)`
 
 const schema = z.object({
   title: z.string().min(1),
-  tags: z.array(z.string()).min(1),
+  tags: z.array(z.string().min(1)).min(1),
 })
 
 export const loader = () => ({
@@ -114,79 +41,8 @@ const mutation = applySchema(schema)(async (values) => values)
 export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
-export default () => {
-  const tagRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <Example title={title} description={description}>
-      <SchemaForm schema={schema} values={{ tags: [] }}>
-        {({ Field, Errors, Button, watch, setValue }) => {
-          const tags = watch('tags')
-
-          return (
-            <>
-              <Field name="title" />
-              <Field name="tags">
-                {({ Label, Errors }) => (
-                  <>
-                    <Label />
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      placeholder="Add a tag and press Enter..."
-                      ref={tagRef}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault()
-
-                          if (tagRef.current) {
-                            const value = tagRef.current.value
-                            if (value) {
-                              setValue(
-                                'tags',
-                                uniq([...tags, value.toLowerCase()]),
-                                { shouldValidate: true }
-                              )
-                            }
-                            tagRef.current.value = ''
-                          }
-                        }
-                      }}
-                    />
-                    {tags && (
-                      <section className="-ml-1 flex flex-wrap pt-1">
-                        {tags.map((tag) => (
-                          <span key={tag}>
-                            <span className="badge badge-primary m-1 gap-1 py-3">
-                              <span className="flex-1">{tag}</span>
-                              <button
-                                className="ml-1"
-                                onClick={() => {
-                                  setValue(
-                                    'tags',
-                                    tags.filter((value) => tag !== value),
-                                    { shouldValidate: true }
-                                  )
-                                }}
-                              >
-                                X
-                              </button>
-                            </span>
-                            <input type="hidden" name="tags[]" value={tag} />
-                          </span>
-                        ))}
-                      </section>
-                    )}
-                    <Errors />
-                  </>
-                )}
-              </Field>
-              <Errors />
-              <Button />
-            </>
-          )
-        }}
-      </SchemaForm>
-    </Example>
-  )
-}
+export default () => (
+  <Example title={title} description={description}>
+    <SchemaForm schema={schema} />
+  </Example>
+)

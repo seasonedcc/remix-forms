@@ -5,19 +5,23 @@ import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { SchemaForm } from '~/ui/schema-form'
-import type { Route } from './+types/array-of-objects'
+import type { Route } from './+types/deeply-nested'
 
-const title = 'Array of objects'
+const title = 'Deeply nested'
 const description =
-  'In this example, the array of objects auto-generates nested fields with add/remove buttons.'
+  'In this example, objects nested inside objects are auto-generated recursively.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
-  title: z.string().min(1),
-  contacts: z
-    .array(z.object({ name: z.string().min(1), email: z.string().email() }))
-    .min(1),
+  company: z.string().min(1),
+  headquarters: z.object({
+    address: z.object({
+      street: z.string().min(1),
+      city: z.string().min(1),
+    }),
+    phone: z.string().min(1),
+  }),
 })
 
 const mutation = applySchema(schema)(async (values) => values)
@@ -30,10 +34,14 @@ export default () => (
 )`
 
 const schema = z.object({
-  title: z.string().min(1),
-  contacts: z
-    .array(z.object({ name: z.string().min(1), email: z.string().email() }))
-    .min(1),
+  company: z.string().min(1),
+  headquarters: z.object({
+    address: z.object({
+      street: z.string().min(1),
+      city: z.string().min(1),
+    }),
+    phone: z.string().min(1),
+  }),
 })
 
 export const loader = () => ({
@@ -45,8 +53,10 @@ const mutation = applySchema(schema)(async (values) => values)
 export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
-export default () => (
-  <Example title={title} description={description}>
-    <SchemaForm schema={schema} />
-  </Example>
-)
+export default function Component() {
+  return (
+    <Example title={title} description={description}>
+      <SchemaForm schema={schema} />
+    </Example>
+  )
+}

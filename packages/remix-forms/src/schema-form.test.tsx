@@ -1474,4 +1474,118 @@ describe('renderForm', () => {
     )
     expect(html).toContain('accept="image/*"')
   })
+
+  it('provides type-safe scoped Field for nested object fields', () => {
+    const schema = z.object({
+      billing: z.object({ street: z.string(), city: z.string() }),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="billing">
+            {({ Field: BillingField }) => (
+              <>
+                <BillingField name="street" />
+                <BillingField name="city" />
+                {/* @ts-expect-error - "invalid" is not a sub-key of billing */}
+                <BillingField name="invalid" />
+              </>
+            )}
+          </Field>
+        )}
+      </SchemaForm>
+    )
+
+    expect(html).toContain('name="billing[street]"')
+    expect(html).toContain('name="billing[city]"')
+  })
+
+  it('rejects invalid props on scoped Field', () => {
+    const schema = z.object({
+      billing: z.object({ street: z.string() }),
+    })
+
+    renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="billing">
+            {({ Field: BillingField }) => (
+              // @ts-expect-error - nonExistentProp is not a valid field prop
+              <BillingField name="street" nonExistentProp="foo" />
+            )}
+          </Field>
+        )}
+      </SchemaForm>
+    )
+  })
+
+  it('gives object children Field/Label, not array helpers', () => {
+    const schema = z.object({
+      author: z.object({ name: z.string() }),
+    })
+
+    renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="author">
+            {(helpers) => {
+              helpers.Field
+              helpers.Label
+              // @ts-expect-error - object children don't have items
+              helpers.items
+              // @ts-expect-error - object children don't have append
+              helpers.append
+              return null
+            }}
+          </Field>
+        )}
+      </SchemaForm>
+    )
+  })
+
+  it('gives array children items/append, not scoped Field', () => {
+    const schema = z.object({
+      tags: z.array(z.string()),
+    })
+
+    renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="tags">
+            {(helpers) => {
+              helpers.items
+              helpers.append
+              helpers.remove
+              // @ts-expect-error - scalar array children don't have Field
+              helpers.Field
+              return null
+            }}
+          </Field>
+        )}
+      </SchemaForm>
+    )
+  })
+
+  it('gives scalar children SmartInput/Input, not Field or items', () => {
+    const schema = z.object({ name: z.string() })
+
+    renderToStaticMarkup(
+      <SchemaForm schema={schema}>
+        {({ Field }) => (
+          <Field name="name">
+            {(helpers) => {
+              helpers.SmartInput
+              helpers.Input
+              // @ts-expect-error - scalar children don't have Field
+              helpers.Field
+              // @ts-expect-error - scalar children don't have items
+              helpers.items
+              return null
+            }}
+          </Field>
+        )}
+      </SchemaForm>
+    )
+  })
 })

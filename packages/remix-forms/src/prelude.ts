@@ -22,6 +22,22 @@ function browser(): boolean {
   return typeof document === 'object'
 }
 
-export { mapObject, browser }
+/**
+ * Convert a react-hook-form dot-path to bracket notation for HTML form
+ * submission. composable-functions' `inputFromForm` only parses bracket
+ * notation, so all nested `name` attributes must use this format.
+ *
+ * @example
+ * ```ts
+ * dotToBracket('contacts.0.name') // 'contacts[0][name]'
+ * dotToBracket('tags.0')          // 'tags[0]'
+ * dotToBracket('billing.street')  // 'billing[street]'
+ * ```
+ */
+function dotToBracket(path: string): string {
+  return path.replace(/\.([^.]+)/g, '[$1]')
+}
+
+export { mapObject, browser, dotToBracket }
 
 export type { FormSchema, Infer, KeysOfStrings }

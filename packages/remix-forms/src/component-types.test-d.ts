@@ -5,6 +5,7 @@ import type {
   FieldComponent,
   IsBoolean,
   IsEnum,
+  ScopedFieldComponent,
   SmartInputSlot,
   StripDefaultProps,
 } from './create-field'
@@ -686,4 +687,227 @@ it('RenderFormProps includes component helpers and useFormReturn', () => {
   expectTypeOf<Props>().toHaveProperty('submit')
   expectTypeOf<Props>().toHaveProperty('register')
   expectTypeOf<Props>().toHaveProperty('formState')
+})
+
+// --- ScopedFieldComponent ---
+
+it('ScopedFieldComponent constrains name to object keys', () => {
+  type T = { street: string; city: string }
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = ScopedFieldComponent<T, Resolved>
+  type Props = Parameters<FC>[0]
+  expectTypeOf<Props['name']>().toEqualTypeOf<'street' | 'city'>()
+})
+
+it('ScopedFieldComponent accepts valid sub-field name', () => {
+  type T = { street: string; city: string }
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = ScopedFieldComponent<T, Resolved>
+  expectTypeOf<{ name: 'street' }>().toMatchTypeOf<Parameters<FC>[0]>()
+})
+
+it('ScopedFieldComponent rejects invalid sub-field name', () => {
+  type T = { street: string; city: string }
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = ScopedFieldComponent<T, Resolved>
+  expectTypeOf<{ name: 'nonexistent' }>().not.toMatchTypeOf<Parameters<FC>[0]>()
+})
+
+// --- ObjectChildren helpers ---
+
+it('ObjectChildren provides typed Field, Label, Errors, Error', () => {
+  const schema = z.object({
+    billing: z.object({ street: z.string(), city: z.string() }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type BillingProps = Parameters<FC>[0] & { name: 'billing' }
+  type BillingChildren = NonNullable<BillingProps['children']>
+  type Helpers = Parameters<BillingChildren>[0]
+  expectTypeOf<Helpers>().toHaveProperty('Field')
+  expectTypeOf<Helpers>().toHaveProperty('Label')
+  expectTypeOf<Helpers>().toHaveProperty('Errors')
+  expectTypeOf<Helpers>().toHaveProperty('Error')
+})
+
+it('ObjectChildren does not expose array or scalar helpers', () => {
+  const schema = z.object({
+    billing: z.object({ street: z.string() }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type BillingProps = Parameters<FC>[0] & { name: 'billing' }
+  type BillingChildren = NonNullable<BillingProps['children']>
+  type Helpers = Parameters<BillingChildren>[0]
+  expectTypeOf<Helpers>().not.toHaveProperty('items')
+  expectTypeOf<Helpers>().not.toHaveProperty('append')
+  expectTypeOf<Helpers>().not.toHaveProperty('SmartInput')
+  expectTypeOf<Helpers>().not.toHaveProperty('Input')
+})
+
+it('ObjectChildren scoped Field constrains name to sub-keys', () => {
+  const schema = z.object({
+    billing: z.object({ street: z.string(), city: z.string() }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type BillingProps = Parameters<FC>[0] & { name: 'billing' }
+  type BillingChildren = NonNullable<BillingProps['children']>
+  type Helpers = Parameters<BillingChildren>[0]
+  type ScopedFC = Helpers['Field']
+  type ScopedProps = Parameters<ScopedFC>[0]
+  expectTypeOf<ScopedProps['name']>().toEqualTypeOf<'street' | 'city'>()
+})
+
+// --- ArrayChildren helpers ---
+
+it('ArrayChildren provides items, append, remove, etc.', () => {
+  const schema = z.object({ tags: z.array(z.string()) })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type TagsProps = Parameters<FC>[0] & { name: 'tags' }
+  type TagsChildren = NonNullable<TagsProps['children']>
+  type Helpers = Parameters<TagsChildren>[0]
+  expectTypeOf<Helpers>().toHaveProperty('items')
+  expectTypeOf<Helpers>().toHaveProperty('append')
+  expectTypeOf<Helpers>().toHaveProperty('prepend')
+  expectTypeOf<Helpers>().toHaveProperty('remove')
+  expectTypeOf<Helpers>().toHaveProperty('insert')
+  expectTypeOf<Helpers>().toHaveProperty('move')
+  expectTypeOf<Helpers>().toHaveProperty('swap')
+})
+
+it('scalar array children items have SmartInput, not Field', () => {
+  const schema = z.object({ tags: z.array(z.string()) })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type TagsProps = Parameters<FC>[0] & { name: 'tags' }
+  type TagsChildren = NonNullable<TagsProps['children']>
+  type Helpers = Parameters<TagsChildren>[0]
+  type Item = Helpers['items'][number]
+  expectTypeOf<Item>().toHaveProperty('SmartInput')
+  expectTypeOf<Item>().toHaveProperty('key')
+  expectTypeOf<Item>().toHaveProperty('index')
+  expectTypeOf<Item>().not.toHaveProperty('Field')
+})
+
+it('object array children items have typed Field, not SmartInput', () => {
+  const schema = z.object({
+    contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type ContactsProps = Parameters<FC>[0] & { name: 'contacts' }
+  type ContactsChildren = NonNullable<ContactsProps['children']>
+  type Helpers = Parameters<ContactsChildren>[0]
+  type Item = Helpers['items'][number]
+  expectTypeOf<Item>().toHaveProperty('Field')
+  expectTypeOf<Item>().toHaveProperty('key')
+  expectTypeOf<Item>().toHaveProperty('index')
+  expectTypeOf<Item>().not.toHaveProperty('SmartInput')
+})
+
+it('object array item Field constrains name to element keys', () => {
+  const schema = z.object({
+    contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type ContactsProps = Parameters<FC>[0] & { name: 'contacts' }
+  type ContactsChildren = NonNullable<ContactsProps['children']>
+  type Helpers = Parameters<ContactsChildren>[0]
+  type ItemFC = Helpers['items'][number]['Field']
+  type ItemProps = Parameters<ItemFC>[0]
+  expectTypeOf<ItemProps['name']>().toEqualTypeOf<'name' | 'email'>()
+})
+
+// --- ScalarChildren helpers ---
+
+it('ScalarChildren provides SmartInput and Input, not Field or items', () => {
+  const schema = z.object({ name: z.string() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type NameProps = Parameters<FC>[0] & { name: 'name' }
+  type NameChildren = NonNullable<NameProps['children']>
+  type Helpers = Parameters<NameChildren>[0]
+  expectTypeOf<Helpers>().toHaveProperty('SmartInput')
+  expectTypeOf<Helpers>().toHaveProperty('Input')
+  expectTypeOf<Helpers>().toHaveProperty('Label')
+  expectTypeOf<Helpers>().not.toHaveProperty('Field')
+  expectTypeOf<Helpers>().not.toHaveProperty('items')
+  expectTypeOf<Helpers>().not.toHaveProperty('append')
+})
+
+// --- Recursive nesting ---
+
+it('deeply nested object provides recursive scoped Field', () => {
+  const schema = z.object({
+    company: z.object({
+      address: z.object({ street: z.string(), zip: z.string() }),
+    }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type CompanyProps = Parameters<FC>[0] & { name: 'company' }
+  type CompanyChildren = NonNullable<CompanyProps['children']>
+  type CompanyHelpers = Parameters<CompanyChildren>[0]
+  type CompanyField = CompanyHelpers['Field']
+  type CompanyFieldProps = Parameters<CompanyField>[0]
+  expectTypeOf<CompanyFieldProps['name']>().toEqualTypeOf<'address'>()
+  type AddressProps = CompanyFieldProps & { name: 'address' }
+  type AddressChildren = NonNullable<AddressProps['children']>
+  type AddressHelpers = Parameters<AddressChildren>[0]
+  type AddressField = AddressHelpers['Field']
+  type AddressFieldProps = Parameters<AddressField>[0]
+  expectTypeOf<AddressFieldProps['name']>().toEqualTypeOf<'street' | 'zip'>()
+})
+
+// --- Optional/nullable nested objects ---
+
+it('optional nested object still provides valid sub-keys', () => {
+  const schema = z.object({
+    profile: z.object({ bio: z.string() }).optional(),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type ProfileProps = Parameters<FC>[0] & { name: 'profile' }
+  type ProfileChildren = NonNullable<ProfileProps['children']>
+  type Helpers = Parameters<ProfileChildren>[0]
+  type ScopedFC = Helpers['Field']
+  type ScopedProps = Parameters<ScopedFC>[0]
+  expectTypeOf<ScopedProps['name']>().toEqualTypeOf<'bio'>()
+})
+
+// --- Mixed nesting: object with array sub-field ---
+
+it('scoped Field for an array-only object provides array children', () => {
+  const schema = z.object({
+    group: z.object({
+      emails: z.array(z.string()),
+    }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type GroupProps = Parameters<FC>[0] & { name: 'group' }
+  type GroupChildren = NonNullable<GroupProps['children']>
+  type GroupHelpers = Parameters<GroupChildren>[0]
+  type GroupField = GroupHelpers['Field']
+  type EmailsProps = Parameters<GroupField>[0] & { name: 'emails' }
+  type EmailsChildren = NonNullable<EmailsProps['children']>
+  type EmailsHelpers = Parameters<EmailsChildren>[0]
+  expectTypeOf<EmailsHelpers>().toHaveProperty('items')
+  expectTypeOf<EmailsHelpers>().toHaveProperty('append')
+  expectTypeOf<EmailsHelpers>().not.toHaveProperty('SmartInput')
+  expectTypeOf<EmailsHelpers>().not.toHaveProperty('Field')
 })

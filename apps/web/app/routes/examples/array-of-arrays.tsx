@@ -5,19 +5,17 @@ import { z } from 'zod'
 import { metaTags } from '~/helpers'
 import Example from '~/ui/example'
 import { SchemaForm } from '~/ui/schema-form'
-import type { Route } from './+types/array-of-objects'
+import type { Route } from './+types/array-of-arrays'
 
-const title = 'Array of objects'
+const title = 'Array of arrays'
 const description =
-  'In this example, the array of objects auto-generates nested fields with add/remove buttons.'
+  'In this example, nested arrays are auto-generated recursively with add/remove controls at each level.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   title: z.string().min(1),
-  contacts: z
-    .array(z.object({ name: z.string().min(1), email: z.string().email() }))
-    .min(1),
+  matrix: z.array(z.array(z.string().min(1)).min(1)).min(1),
 })
 
 const mutation = applySchema(schema)(async (values) => values)
@@ -31,9 +29,7 @@ export default () => (
 
 const schema = z.object({
   title: z.string().min(1),
-  contacts: z
-    .array(z.object({ name: z.string().min(1), email: z.string().email() }))
-    .min(1),
+  matrix: z.array(z.array(z.string().min(1)).min(1)).min(1),
 })
 
 export const loader = () => ({

@@ -329,6 +329,8 @@ function resolveAutoInputType(
 function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
   if (info.type === 'file') return 'file'
+  if (info.type === 'array') return 'array'
+  if (info.type === 'object') return 'object'
   return (info.type ?? 'string') as FieldType
 }
 
@@ -569,7 +571,10 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
 
     const fieldErrors = React.useCallback(
       (key: keyof SchemaType & string) => {
-        const message = (formErrors[key] as unknown as FieldError)?.message
+        const error = formErrors[key]
+        const message =
+          (error as unknown as FieldError)?.message ??
+          (error as unknown as { root?: FieldError })?.root?.message
         return browser() ? message && [message] : errors?.[key]
       },
       [errors, formErrors]

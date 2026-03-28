@@ -1,21 +1,25 @@
+import type { FormValue } from 'coerce-form-data'
 import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
 import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
+import type { SchemaInfo } from 'schema-info'
 import { mapChildren } from './children-traversal'
 import type { PropsOf } from './defaults'
+import { inferLabel } from './infer-label'
 import type { FormSchema, Infer } from './prelude'
 
 type StripDefaultProps<C, Keys extends string> = React.ComponentType<
   Omit<PropsOf<C>, Keys>
 >
-import { mapObject } from './prelude'
+import { dotToBracket, mapObject } from './prelude'
 import type { Field } from './schema-form'
 
 type Option = { name: string } & Required<
   Pick<React.OptionHTMLAttributes<HTMLOptionElement>, 'value'>
 >
 
-type Children<
+type ScalarChildren<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
@@ -50,7 +54,215 @@ type Children<
   }
 ) => React.ReactNode
 
-type FieldType = 'string' | 'boolean' | 'number' | 'date' | 'file'
+type ObjectChildren<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof Infer<Schema>,
+> = (
+  helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
+    name: Name
+    Label: Resolved['label']
+    Field: ScopedFieldComponent<NonNullable<Infer<Schema>[Name]>, Resolved>
+    Errors: Resolved['fieldErrors']
+    Error: Resolved['error']
+  }
+) => React.ReactNode
+
+type ArrayElement<T> = T extends readonly (infer E)[] ? E : never
+
+type ScalarArrayItem<
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  key: string
+  index: number
+  Label: Resolved['label']
+  SmartInput: React.ComponentType<SmartInputBaseProps>
+  Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
+  FileInput: StripDefaultProps<Resolved['fileInput'], 'defaultValue'>
+  Multiline: StripDefaultProps<Resolved['multiline'], 'defaultValue'>
+  Select: StripDefaultProps<Resolved['select'], 'defaultValue'>
+  Checkbox: StripDefaultProps<Resolved['checkbox'], 'defaultChecked'>
+  RadioGroup: Resolved['radioGroup']
+  RadioLabel: Resolved['radioLabel']
+  Radio: StripDefaultProps<Resolved['radio'], 'defaultChecked'>
+  CheckboxLabel: Resolved['checkboxLabel']
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  ref: React.ForwardedRef<any>
+}
+
+type ScopedFieldComponent<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = <Name extends keyof T>(
+  props: ScopedFieldProps<T, Resolved, Name>
+) => React.ReactElement | null
+
+type ScopedFieldProps<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof T,
+> = {
+  name: Name
+  label?: string
+  placeholder?: string
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
+  autoFocus?: boolean
+  multiline?: boolean
+  radio?: boolean
+  hidden?: boolean
+  accept?: string
+  options?: Option[]
+  value?: T[Name]
+  type?: React.HTMLInputTypeAttribute
+  fieldProps?: Omit<PropsOf<Resolved['field']>, 'children'>
+  children?: ScopedChildren<T, Resolved, Name>
+}
+
+type ScopedChildren<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof T,
+> = IsObject<T[Name]> extends true
+  ? ScopedObjectChildren<NonNullable<T[Name]>, Resolved>
+  : IsArray<T[Name]> extends true
+    ? ScopedArrayChildren<T[Name], Resolved>
+    : ScopedScalarChildren<Resolved>
+
+type ScopedObjectChildren<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  Field: ScopedFieldComponent<T, Resolved>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}) => React.ReactNode
+
+type ScopedArrayChildren<
+  V,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+  items: ScopedArrayItemFor<V, Resolved>[]
+  append: (value?: ArrayElement<V>) => void
+  prepend: (value?: ArrayElement<V>) => void
+  remove: (index: number) => void
+  insert: (index: number, value?: ArrayElement<V>) => void
+  move: (from: number, to: number) => void
+  swap: (a: number, b: number) => void
+}) => React.ReactNode
+
+type ScopedScalarChildren<
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  SmartInput: React.ComponentType<SmartInputBaseProps>
+  Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}) => React.ReactNode
+
+type ScopedArrayItemFor<
+  V,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = IsObject<ArrayElement<V>> extends true
+  ? ScopedObjectArrayItem<NonNullable<ArrayElement<V>>, Resolved>
+  : ScalarArrayItem<Resolved>
+
+type ScopedObjectArrayItem<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  key: string
+  index: number
+  Label: Resolved['label']
+  Field: ScopedFieldComponent<Elem, Resolved>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}
+
+type ObjectArrayItem<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  key: string
+  index: number
+  Label: Resolved['label']
+  Field: ScopedFieldComponent<Elem, Resolved>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}
+
+type ArrayItemFor<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof Infer<Schema>,
+> = IsObject<ArrayElement<Infer<Schema>[Name]>> extends true
+  ? ObjectArrayItem<NonNullable<ArrayElement<Infer<Schema>[Name]>>, Resolved>
+  : ScalarArrayItem<Resolved>
+
+type ArrayChildren<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof Infer<Schema>,
+> = (
+  helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
+    name: Name
+    Label: Resolved['label']
+    Errors: Resolved['fieldErrors']
+    Error: Resolved['error']
+    items: ArrayItemFor<Schema, Resolved, Name>[]
+    append: (value?: ArrayElement<Infer<Schema>[Name]>) => void
+    prepend: (value?: ArrayElement<Infer<Schema>[Name]>) => void
+    remove: (index: number) => void
+    insert: (index: number, value?: ArrayElement<Infer<Schema>[Name]>) => void
+    move: (from: number, to: number) => void
+    swap: (a: number, b: number) => void
+  }
+) => React.ReactNode
+
+type Children<
+  Schema extends FormSchema,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+  Name extends keyof Infer<Schema>,
+  M extends boolean | undefined,
+  R extends boolean | undefined,
+  H extends boolean | undefined,
+> = IsObject<Infer<Schema>[Name]> extends true
+  ? ObjectChildren<Schema, Resolved, Name>
+  : IsArray<Infer<Schema>[Name]> extends true
+    ? ArrayChildren<Schema, Resolved, Name>
+    : ScalarChildren<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
+
+type FieldType =
+  | 'string'
+  | 'boolean'
+  | 'number'
+  | 'date'
+  | 'file'
+  | 'array'
+  | 'object'
 
 const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   boolean: 'checkbox',
@@ -58,6 +270,8 @@ const types: Record<FieldType, React.HTMLInputTypeAttribute> = {
   number: 'text',
   date: 'date',
   file: 'file',
+  array: 'text',
+  object: 'text',
 }
 
 function getInputType(
@@ -169,6 +383,24 @@ type IsEnum<T> = [NonNullable<T>] extends [string]
   : false
 
 type IsFile<T> = [NonNullable<T>] extends [File] ? true : false
+
+type IsArray<T> = unknown extends T
+  ? false
+  : [NonNullable<T>] extends [readonly (infer _)[]]
+    ? true
+    : false
+
+type IsObject<T> = unknown extends T
+  ? false
+  : IsArray<T> extends true
+    ? false
+    : IsFile<T> extends true
+      ? false
+      : IsBoolean<T> extends true
+        ? false
+        : [NonNullable<T>] extends [object]
+          ? true
+          : false
 
 type SmartInputSlot<
   Schema extends FormSchema,
@@ -396,6 +628,342 @@ function createSmartInput(idPrefix: string, components: Record<string, any>) {
   }
 }
 
+function defaultValue(info: SchemaInfo): unknown {
+  if (info.getDefaultValue) return info.getDefaultValue()
+  switch (info.type) {
+    case 'string':
+    case 'enum':
+      return ''
+    case 'number':
+      return 0
+    case 'boolean':
+      return false
+    case 'date':
+      return undefined
+    case 'file':
+      return undefined
+    case 'array':
+      return []
+    case 'object':
+      return Object.fromEntries(
+        Object.entries(info.fields).map(([key, fieldInfo]) => [
+          key,
+          defaultValue(fieldInfo),
+        ])
+      )
+    default:
+      return ''
+  }
+}
+
+function fieldTypeFromInfo(info: SchemaInfo): FieldType {
+  if (info.type === 'enum') return 'string'
+  if (info.type === 'file') return 'file'
+  if (info.type === 'array') return 'array'
+  if (info.type === 'object') return 'object'
+  return (info.type ?? 'string') as FieldType
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: internal component — type safety is at the consumer level
+function ArrayFieldInner(props: Record<string, any>) {
+  const {
+    name,
+    label,
+    shape,
+    errors,
+    hidden,
+    fieldProps,
+    childrenFn,
+    field: fieldMeta,
+    idPrefix,
+    components: c,
+    fieldRouter: Router,
+    register,
+  } = props
+
+  const FieldWrapper = c.field
+  const Label = c.label
+  const Errors = c.fieldErrors
+  const Error = c.error
+  const ArrayFieldComp = c.arrayField
+  const ArrayItemComp = c.arrayItem
+  const AddButton = c.addButton
+  const RemoveButton = c.removeButton
+  const ArrayEmptyComp = c.arrayEmpty
+
+  const { control, getFieldState, formState } = useFormContext()
+  const {
+    fields: rhfFields,
+    append,
+    prepend,
+    remove,
+    insert,
+    move,
+    swap,
+  } = useFieldArray({ control, name: String(name) })
+
+  const errorsFor = (path: string): string[] | undefined => {
+    const { error } = getFieldState(path, formState)
+    return error?.message ? [error.message] : undefined
+  }
+
+  const itemShape = shape.item as SchemaInfo
+  const arrayHtmlName = dotToBracket(String(name))
+  const labelId = `${idPrefix}label-for-${arrayHtmlName}`
+  const errorsId = `${idPrefix}errors-for-${arrayHtmlName}`
+
+  const errorsChildren = errors?.length
+    ? errors.map((error: string) => <Error key={error}>{error}</Error>)
+    : undefined
+
+  const { style: userStyle, ...restFieldProps } = fieldProps ?? {}
+  const mergedStyle = hidden
+    ? { display: 'none' as const, ...userStyle }
+    : userStyle
+
+  const appendDefault = (value?: unknown) =>
+    append(value ?? defaultValue(itemShape))
+  const prependDefault = (value?: unknown) =>
+    prepend(value ?? defaultValue(itemShape))
+  const insertDefault = (index: number, value?: unknown) =>
+    insert(index, value ?? defaultValue(itemShape))
+
+  if (childrenFn) {
+    const items = rhfFields.map((rhfField, index) => {
+      const itemName = `${String(name)}.${index}`
+
+      if (itemShape.type === 'object') {
+        const ScopedItemField = React.forwardRef(
+          // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps FieldRouter
+          (subProps: Record<string, any>, subRef) => {
+            const subKey = String(subProps.name)
+            const subShape = itemShape.fields[subKey]
+            if (!subShape) return null
+            const subName = `${itemName}.${subKey}`
+            const subRequired = !(subShape.optional || subShape.nullable)
+            return React.createElement(Router, {
+              ref: subRef,
+              ...subProps,
+              name: subName,
+              shape: subShape,
+              fieldType: fieldTypeFromInfo(subShape),
+              label: subProps.label ?? inferLabel(subKey),
+              required: subRequired,
+            })
+          }
+        )
+        return { key: rhfField.id, index, Field: ScopedItemField }
+      }
+
+      const scalarShape = itemShape
+      const itemRegisterProps = register(itemName, {
+        setValueAs: (value: unknown) => {
+          try {
+            return coerceValue(
+              value as FormValue,
+              scalarShape ?? { type: null, optional: false, nullable: false }
+            )
+          } catch (error) {
+            if (error instanceof FormDataCoercionError) return null
+            throw error
+          }
+        },
+      })
+
+      const ChildSmartInput = createSmartInput(idPrefix, c)
+      const itemFieldType = fieldTypeFromInfo(scalarShape)
+      const itemType = getInputType(itemFieldType, false)
+      const itemValue = ''
+      const itemOptions = scalarShape.enumValues?.map((v: string) => ({
+        name: inferLabel(v),
+        value: v,
+      }))
+      const itemA11y = {
+        'aria-labelledby': labelId,
+        'aria-invalid': false,
+        'aria-required': false as boolean,
+      }
+
+      return {
+        key: rhfField.id,
+        index,
+        SmartInput: (extraProps: SmartInputBaseProps) =>
+          ChildSmartInput({
+            fieldType: itemFieldType,
+            type: itemType,
+            value: itemValue,
+            options: itemOptions,
+            registerProps: itemRegisterProps,
+            a11yProps: itemA11y,
+            ...extraProps,
+          }),
+        Label: c.label,
+        Input: c.input,
+        FileInput: c.fileInput,
+        Multiline: c.multiline,
+        Select: c.select,
+        Checkbox: c.checkbox,
+        Radio: c.radio,
+        RadioGroup: c.radioGroup,
+        RadioLabel: c.radioLabel,
+        CheckboxLabel: c.checkboxLabel,
+        Errors: c.fieldErrors,
+        Error: c.error,
+        ref: itemRegisterProps.ref,
+      }
+    })
+
+    const childrenDefinition =
+      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
+      (childrenFn as (...args: any[]) => React.ReactNode)({
+        name,
+        Label,
+        Errors,
+        Error,
+        items,
+        append: appendDefault,
+        prepend: prependDefault,
+        remove,
+        insert: insertDefault,
+        move,
+        swap,
+        ...fieldMeta,
+      })
+
+    return (
+      <FieldContext.Provider value={fieldMeta}>
+        <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
+          {childrenDefinition}
+        </FieldWrapper>
+      </FieldContext.Provider>
+    )
+  }
+
+  const SmartInput = createSmartInput(idPrefix, c)
+
+  return (
+    <FieldContext.Provider value={fieldMeta}>
+      <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
+        <Label id={labelId}>{label}</Label>
+        {rhfFields.length === 0 && <ArrayEmptyComp>No items</ArrayEmptyComp>}
+        {rhfFields.map((rhfField, index) => {
+          const itemName = `${String(name)}.${index}`
+
+          if (itemShape.type === 'object') {
+            const subFields = Object.keys(itemShape.fields)
+            return (
+              <ArrayItemComp key={rhfField.id}>
+                {subFields.map((subKey) => {
+                  const subShape = itemShape.fields[subKey]
+                  const subName = `${itemName}.${subKey}`
+                  const subRequired = !(subShape.optional || subShape.nullable)
+                  return React.createElement(Router, {
+                    key: subKey,
+                    name: subName,
+                    shape: subShape,
+                    fieldType: fieldTypeFromInfo(subShape),
+                    label: inferLabel(subKey),
+                    required: subRequired,
+                    errors: errorsFor(subName),
+                  })
+                })}
+                <RemoveButton onClick={() => remove(index)}>
+                  Remove
+                </RemoveButton>
+              </ArrayItemComp>
+            )
+          }
+
+          if (itemShape.type === 'array') {
+            return (
+              <ArrayItemComp key={rhfField.id}>
+                {React.createElement(Router, {
+                  name: itemName,
+                  shape: itemShape,
+                  fieldType: 'array' as FieldType,
+                  label: inferLabel(String(index)),
+                  required: !(itemShape.optional || itemShape.nullable),
+                  errors: errorsFor(itemName),
+                })}
+                <RemoveButton onClick={() => remove(index)}>
+                  Remove
+                </RemoveButton>
+              </ArrayItemComp>
+            )
+          }
+
+          const itemHtmlName = dotToBracket(itemName)
+          const { ref: itemRef, ...rawItemRegisterProps } = register(itemName, {
+            setValueAs: (value: unknown) => {
+              try {
+                return coerceValue(
+                  value as FormValue,
+                  itemShape ?? {
+                    type: null,
+                    optional: false,
+                    nullable: false,
+                  }
+                )
+              } catch (error) {
+                if (error instanceof FormDataCoercionError) return null
+                throw error
+              }
+            },
+          })
+          const itemRegisterProps = {
+            ...rawItemRegisterProps,
+            name: itemHtmlName,
+          }
+          const itemFieldType = fieldTypeFromInfo(itemShape)
+          const itemType = getInputType(itemFieldType, false)
+          const itemErrors = errorsFor(itemName)
+          const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
+          const itemOptions = itemShape.enumValues?.map((v: string) => ({
+            name: inferLabel(v),
+            value: v,
+          }))
+          const itemA11y = {
+            'aria-labelledby': labelId,
+            'aria-invalid': Boolean(itemErrors),
+            'aria-describedby': itemErrors ? itemErrorsId : undefined,
+            'aria-required': !(itemShape.optional || itemShape.nullable),
+          }
+          const itemErrorsChildren = itemErrors?.length
+            ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
+            : undefined
+
+          return (
+            <ArrayItemComp key={rhfField.id}>
+              <ArrayFieldComp>
+                <SmartInput
+                  fieldType={itemFieldType}
+                  type={itemType}
+                  options={itemOptions}
+                  value=""
+                  registerProps={{ ref: itemRef, ...itemRegisterProps }}
+                  a11yProps={itemA11y}
+                />
+                {Boolean(itemErrorsChildren) && (
+                  <Errors role="alert" id={itemErrorsId}>
+                    {itemErrorsChildren}
+                  </Errors>
+                )}
+              </ArrayFieldComp>
+              <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
+            </ArrayItemComp>
+          )
+        })}
+        <AddButton onClick={() => appendDefault()}>Add</AddButton>
+        {Boolean(errorsChildren) && (
+          <Errors role="alert" id={errorsId}>
+            {errorsChildren}
+          </Errors>
+        )}
+      </FieldWrapper>
+    </FieldContext.Provider>
+  )
+}
+
 function createField<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
@@ -413,6 +981,11 @@ function createField<
   idPrefix: string
   components: Resolved
 }): FieldComponent<Schema, Resolved, Multiline, Radio, Hidden> {
+  // biome-ignore lint/suspicious/noExplicitAny: forward reference for recursive field rendering (objects/arrays render nested fields)
+  const FieldRouter: { current: React.ComponentType<any> | null } = {
+    current: null,
+  }
+
   // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
   const c = components as Record<string, React.ComponentType<any>>
   const Field = c.field
@@ -429,7 +1002,7 @@ function createField<
   const Errors = c.fieldErrors
   const Error = c.error
 
-  return React.forwardRef(
+  const result = React.forwardRef(
     (
       {
         fieldType = 'string',
@@ -487,10 +1060,114 @@ function createField<
       const mergedStyle = hidden
         ? { display: 'none' as const, ...userStyle }
         : userStyle
+
+      const htmlName = dotToBracket(String(name))
+      const labelId = `${idPrefix}label-for-${htmlName}`
+      const errorsId = `${idPrefix}errors-for-${htmlName}`
+
+      if (fieldType === 'array' && shape?.type === 'array') {
+        return (
+          <ArrayFieldInner
+            name={name}
+            label={label}
+            shape={shape}
+            errors={errors}
+            dirty={dirty}
+            required={required}
+            autoFocus={autoFocus}
+            hidden={hidden}
+            fieldProps={fieldProps}
+            childrenFn={childrenFn}
+            field={field}
+            idPrefix={idPrefix}
+            components={c}
+            // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
+            fieldRouter={FieldRouter.current as React.ComponentType<any>}
+            register={register}
+          />
+        )
+      }
+
+      if (fieldType === 'object' && shape?.type === 'object') {
+        const ObjectFieldComp = c.objectField
+        const subFields = Object.keys(shape.fields)
+
+        const ScopedField = React.memo(
+          // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps the outer FieldRouter — generics are enforced at the consumer level
+          React.forwardRef((subProps: Record<string, any>, subRef) => {
+            const subKey = String(subProps.name)
+            const subShape = shape.fields[subKey]
+            if (!subShape) return null
+            const subName = `${String(name)}.${subKey}`
+            const subRequired = !(subShape.optional || subShape.nullable)
+            // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
+            return React.createElement(FieldRouter.current!, {
+              ref: subRef,
+              ...subProps,
+              name: subName,
+              shape: subShape,
+              fieldType: fieldTypeFromInfo(subShape),
+              label: subProps.label ?? inferLabel(subKey),
+              required: subRequired,
+            })
+          })
+        )
+
+        if (childrenFn) {
+          const childrenDefinition =
+            // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via Children conditional type
+            (childrenFn as (...args: any[]) => React.ReactNode)({
+              name,
+              Label,
+              Field: ScopedField,
+              Errors,
+              Error,
+              ...field,
+            })
+
+          return (
+            <FieldContext.Provider value={field}>
+              <Field style={mergedStyle} {...restFieldProps}>
+                {childrenDefinition}
+              </Field>
+            </FieldContext.Provider>
+          )
+        }
+
+        return (
+          <FieldContext.Provider value={field}>
+            <Field style={mergedStyle} {...restFieldProps}>
+              <Label id={labelId}>{label}</Label>
+              <ObjectFieldComp>
+                {subFields.map((subKey) => {
+                  const subShape = shape.fields[subKey]
+                  const subName = `${String(name)}.${subKey}`
+                  const subRequired = !(subShape.optional || subShape.nullable)
+                  // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
+                  return React.createElement(FieldRouter.current!, {
+                    key: subKey,
+                    name: subName,
+                    shape: subShape,
+                    fieldType: fieldTypeFromInfo(subShape),
+                    label: inferLabel(subKey),
+                    required: subRequired,
+                  })
+                })}
+              </ObjectFieldComp>
+              {Boolean(errorsChildren) && (
+                <Errors role="alert" id={errorsId}>
+                  {errorsChildren}
+                </Errors>
+              )}
+            </Field>
+          </FieldContext.Provider>
+        )
+      }
+
       const type =
         typeProp ?? (hidden ? 'hidden' : getInputType(fieldType, radio))
 
-      const { ref: registerRef, ...registerProps } = register(String(name), {
+      const { ref: registerRef, ...rawRegisterProps } = register(String(name), {
         setValueAs:
           fieldType === 'file'
             ? undefined
@@ -506,9 +1183,7 @@ function createField<
                 }
               },
       })
-
-      const labelId = `${idPrefix}label-for-${name.toString()}`
-      const errorsId = `${idPrefix}errors-for-${name.toString()}`
+      const registerProps = { ...rawRegisterProps, name: htmlName }
 
       const a11yProps = {
         'aria-labelledby': labelId,
@@ -558,7 +1233,7 @@ function createField<
           if (child.type === Label) {
             return React.cloneElement(child, {
               id: labelId,
-              htmlFor: `${idPrefix}${String(name)}`,
+              htmlFor: `${idPrefix}${htmlName}`,
               children: label,
               ...child.props,
             })
@@ -593,7 +1268,7 @@ function createField<
           if (child.type === Input) {
             const { defaultValue: _, ...inputProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}`,
+              id: `${idPrefix}${htmlName}`,
               type,
               ...registerProps,
               ...a11yProps,
@@ -607,7 +1282,7 @@ function createField<
           }
           if (child.type === FileInput) {
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}`,
+              id: `${idPrefix}${htmlName}`,
               type: 'file',
               accept: child.props.accept ?? accept,
               ...registerProps,
@@ -620,7 +1295,7 @@ function createField<
           if (child.type === Multiline) {
             const { defaultValue: _, ...multilineProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}`,
+              id: `${idPrefix}${htmlName}`,
               ...registerProps,
               ...a11yProps,
               placeholder,
@@ -634,7 +1309,7 @@ function createField<
           if (child.type === Select) {
             const { defaultValue: _, ...selectProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}`,
+              id: `${idPrefix}${htmlName}`,
               ...registerProps,
               ...a11yProps,
               autoFocus,
@@ -652,7 +1327,7 @@ function createField<
           ) {
             const { defaultChecked: _, ...checkboxProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}`,
+              id: `${idPrefix}${htmlName}`,
               type,
               autoFocus,
               ...registerProps,
@@ -676,7 +1351,7 @@ function createField<
           ) {
             const { defaultChecked: _, ...radioProps } = child.props
             return React.cloneElement(child, {
-              id: `${idPrefix}${String(name)}-${radioProps.value}`,
+              id: `${idPrefix}${htmlName}-${radioProps.value}`,
               type: 'radio',
               autoFocus,
               ...registerProps,
@@ -755,7 +1430,7 @@ function createField<
               </>
             ) : (
               <>
-                <Label id={labelId} htmlFor={`${idPrefix}${String(name)}`}>
+                <Label id={labelId} htmlFor={`${idPrefix}${htmlName}`}>
                   {label}
                 </Label>
                 {smartInput}
@@ -771,11 +1446,15 @@ function createField<
       )
     }
   ) as unknown as FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
+
+  FieldRouter.current = result
+  return result
 }
 
 export type {
   FieldType,
   FieldComponent,
+  ScopedFieldComponent,
   Option,
   SmartInputProps,
   SmartInputSlot,
@@ -784,5 +1463,7 @@ export type {
   IsBoolean,
   IsEnum,
   IsFile,
+  IsArray,
+  IsObject,
 }
 export { createField }
