@@ -15,7 +15,7 @@ export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const schema = z.object({
   title: z.string().min(1),
-  tags: z.array(z.string()).min(1),
+  tags: z.array(z.string().min(1)).min(1),
 })
 
 const mutation = applySchema(schema)(async (values) => values)
@@ -29,7 +29,7 @@ export default () => (
 
 const schema = z.object({
   title: z.string().min(1),
-  tags: z.array(z.string()).min(1),
+  tags: z.array(z.string().min(1)).min(1),
 })
 
 export const loader = () => ({

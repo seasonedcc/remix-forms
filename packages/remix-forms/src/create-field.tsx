@@ -591,7 +591,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   const RemoveButton = c.removeButton
   const ArrayEmptyComp = c.arrayEmpty
 
-  const { control } = useFormContext()
+  const { control, getFieldState, formState } = useFormContext()
   const {
     fields: rhfFields,
     append,
@@ -601,6 +601,11 @@ function ArrayFieldInner(props: Record<string, any>) {
     move,
     swap,
   } = useFieldArray({ control, name: String(name) })
+
+  const errorsFor = (path: string): string[] | undefined => {
+    const { error } = getFieldState(path, formState)
+    return error?.message ? [error.message] : undefined
+  }
 
   const itemShape = shape.item as SchemaInfo
   const arrayHtmlName = dotToBracket(String(name))
@@ -665,10 +670,14 @@ function ArrayFieldInner(props: Record<string, any>) {
         },
       })
 
-      const SmartInput = createSmartInput(idPrefix, c)
+      const ChildSmartInput = createSmartInput(idPrefix, c)
       const itemFieldType = fieldTypeFromInfo(scalarShape)
       const itemType = getInputType(itemFieldType, false)
       const itemValue = ''
+      const itemOptions = scalarShape.enumValues?.map((v: string) => ({
+        name: inferLabel(v),
+        value: v,
+      }))
       const itemA11y = {
         'aria-labelledby': labelId,
         'aria-invalid': false,
@@ -679,10 +688,11 @@ function ArrayFieldInner(props: Record<string, any>) {
         key: rhfField.id,
         index,
         SmartInput: (extraProps: SmartInputBaseProps) =>
-          SmartInput({
+          ChildSmartInput({
             fieldType: itemFieldType,
             type: itemType,
             value: itemValue,
+            options: itemOptions,
             registerProps: itemRegisterProps,
             a11yProps: itemA11y,
             ...extraProps,
@@ -722,95 +732,127 @@ function ArrayFieldInner(props: Record<string, any>) {
 
     return (
       <FieldContext.Provider value={fieldMeta}>
-        <FieldWrapper style={mergedStyle} {...restFieldProps}>
+        <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
           {childrenDefinition}
         </FieldWrapper>
       </FieldContext.Provider>
     )
   }
 
+  const SmartInput = createSmartInput(idPrefix, c)
+
   return (
     <FieldContext.Provider value={fieldMeta}>
-      <FieldWrapper style={mergedStyle} {...restFieldProps}>
+      <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
         <Label id={labelId}>{label}</Label>
-        <ArrayFieldComp>
-          {rhfFields.length === 0 && <ArrayEmptyComp>No items</ArrayEmptyComp>}
-          {rhfFields.map((rhfField, index) => {
-            const itemName = `${String(name)}.${index}`
+        {rhfFields.length === 0 && <ArrayEmptyComp>No items</ArrayEmptyComp>}
+        {rhfFields.map((rhfField, index) => {
+          const itemName = `${String(name)}.${index}`
 
-            if (itemShape.type === 'object') {
-              const subFields = Object.keys(itemShape.fields)
-              return (
-                <ArrayItemComp key={rhfField.id}>
-                  {subFields.map((subKey) => {
-                    const subShape = itemShape.fields[subKey]
-                    const subName = `${itemName}.${subKey}`
-                    const subRequired = !(
-                      subShape.optional || subShape.nullable
-                    )
-                    return React.createElement(Router, {
-                      key: subKey,
-                      name: subName,
-                      shape: subShape,
-                      fieldType: fieldTypeFromInfo(subShape),
-                      label: inferLabel(subKey),
-                      required: subRequired,
-                    })
-                  })}
-                  <RemoveButton onClick={() => remove(index)}>
-                    Remove
-                  </RemoveButton>
-                </ArrayItemComp>
-              )
-            }
-
-            const scalarShape = itemShape
-            const itemRegisterProps = register(itemName, {
-              setValueAs: (value: unknown) => {
-                try {
-                  return coerceValue(
-                    value as FormValue,
-                    scalarShape ?? {
-                      type: null,
-                      optional: false,
-                      nullable: false,
-                    }
-                  )
-                } catch (error) {
-                  if (error instanceof FormDataCoercionError) return null
-                  throw error
-                }
-              },
-            })
-
-            const SmartInput = createSmartInput(idPrefix, c)
-            const itemFieldType = fieldTypeFromInfo(scalarShape)
-            const itemType = getInputType(itemFieldType, false)
-            const bracketRegisterProps = {
-              ...itemRegisterProps,
-              name: dotToBracket(itemName),
-            }
-
+          if (itemShape.type === 'object') {
+            const subFields = Object.keys(itemShape.fields)
             return (
               <ArrayItemComp key={rhfField.id}>
-                {SmartInput({
-                  fieldType: itemFieldType,
-                  type: itemType,
-                  value: '',
-                  registerProps: bracketRegisterProps,
-                  a11yProps: {
-                    'aria-labelledby': labelId,
-                    'aria-invalid': false,
-                    'aria-required': false,
-                  },
+                {subFields.map((subKey) => {
+                  const subShape = itemShape.fields[subKey]
+                  const subName = `${itemName}.${subKey}`
+                  const subRequired = !(subShape.optional || subShape.nullable)
+                  return React.createElement(Router, {
+                    key: subKey,
+                    name: subName,
+                    shape: subShape,
+                    fieldType: fieldTypeFromInfo(subShape),
+                    label: inferLabel(subKey),
+                    required: subRequired,
+                    errors: errorsFor(subName),
+                  })
                 })}
                 <RemoveButton onClick={() => remove(index)}>
                   Remove
                 </RemoveButton>
               </ArrayItemComp>
             )
-          })}
-        </ArrayFieldComp>
+          }
+
+          if (itemShape.type === 'array') {
+            return (
+              <ArrayItemComp key={rhfField.id}>
+                {React.createElement(Router, {
+                  name: itemName,
+                  shape: itemShape,
+                  fieldType: 'array' as FieldType,
+                  label: inferLabel(String(index)),
+                  required: !(itemShape.optional || itemShape.nullable),
+                  errors: errorsFor(itemName),
+                })}
+                <RemoveButton onClick={() => remove(index)}>
+                  Remove
+                </RemoveButton>
+              </ArrayItemComp>
+            )
+          }
+
+          const itemHtmlName = dotToBracket(itemName)
+          const { ref: itemRef, ...rawItemRegisterProps } = register(itemName, {
+            setValueAs: (value: unknown) => {
+              try {
+                return coerceValue(
+                  value as FormValue,
+                  itemShape ?? {
+                    type: null,
+                    optional: false,
+                    nullable: false,
+                  }
+                )
+              } catch (error) {
+                if (error instanceof FormDataCoercionError) return null
+                throw error
+              }
+            },
+          })
+          const itemRegisterProps = {
+            ...rawItemRegisterProps,
+            name: itemHtmlName,
+          }
+          const itemFieldType = fieldTypeFromInfo(itemShape)
+          const itemType = getInputType(itemFieldType, false)
+          const itemErrors = errorsFor(itemName)
+          const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
+          const itemOptions = itemShape.enumValues?.map((v: string) => ({
+            name: inferLabel(v),
+            value: v,
+          }))
+          const itemA11y = {
+            'aria-labelledby': labelId,
+            'aria-invalid': Boolean(itemErrors),
+            'aria-describedby': itemErrors ? itemErrorsId : undefined,
+            'aria-required': !(itemShape.optional || itemShape.nullable),
+          }
+          const itemErrorsChildren = itemErrors?.length
+            ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
+            : undefined
+
+          return (
+            <ArrayItemComp key={rhfField.id}>
+              <ArrayFieldComp>
+                <SmartInput
+                  fieldType={itemFieldType}
+                  type={itemType}
+                  options={itemOptions}
+                  value=""
+                  registerProps={{ ref: itemRef, ...itemRegisterProps }}
+                  a11yProps={itemA11y}
+                />
+                {Boolean(itemErrorsChildren) && (
+                  <Errors role="alert" id={itemErrorsId}>
+                    {itemErrorsChildren}
+                  </Errors>
+                )}
+              </ArrayFieldComp>
+              <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
+            </ArrayItemComp>
+          )
+        })}
         <AddButton onClick={() => appendDefault()}>Add</AddButton>
         {Boolean(errorsChildren) && (
           <Errors role="alert" id={errorsId}>

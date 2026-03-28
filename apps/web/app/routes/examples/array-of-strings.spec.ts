@@ -15,6 +15,14 @@ test('With JS enabled', async ({ example }) => {
 
   await page.locator('button:has-text("Add")').click()
   const tagInput = page.locator('input[name="tags\\[0\\]"]')
+
+  await button.click()
+
+  await example.expectErrorMessage(
+    'tags[0]',
+    'Too small: expected string to have >=1 characters'
+  )
+
   await tagInput.fill('foo')
 
   await button.click()

@@ -2,7 +2,11 @@ vi.mock('react-hook-form', async () => {
   const actual = await vi.importActual('react-hook-form')
   return {
     ...actual,
-    useFormContext: vi.fn(() => ({ control: {} })),
+    useFormContext: vi.fn(() => ({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: () => ({ error: undefined }),
+    })),
     useFieldArray: vi.fn((_opts: { name: string }) => ({
       fields: [{ id: 'item-0' }, { id: 'item-1' }],
       append: vi.fn(),
@@ -1187,6 +1191,40 @@ describe('array fields', () => {
     expect(html).toContain('Add')
   })
 
+  it('wraps scalar array items directly without field wrapper or label', () => {
+    const CustomField = createField({
+      register,
+      idPrefix: 'slot-',
+      components: {
+        ...defaultComponents,
+        field: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="field" {...props} />
+        ),
+        arrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-field" {...props} />
+        ),
+        arrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-item" {...props} />
+        ),
+      },
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <CustomField name="tags" label="Tags" fieldType="array" shape={shape} />
+    )
+
+    const fieldCount = (html.match(/data-slot="field"/g) || []).length
+    expect(fieldCount).toBe(1)
+
+    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
+      .length
+    expect(arrayFieldCount).toBe(2)
+
+    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    expect(arrayItemCount).toBe(2)
+  })
+
   it('renders empty state when useFieldArray returns no items', () => {
     ;(useFieldArray as unknown as Mock).mockReturnValueOnce({
       fields: [],
@@ -1240,6 +1278,48 @@ describe('array fields', () => {
     expect(html).toContain('name="contacts[1][name]"')
     expect(html).toContain('Remove')
     expect(html).toContain('Add')
+  })
+
+  it('wraps object array sub-fields with their own field slot', () => {
+    const objArraySchema = z.object({
+      contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+    })
+    const CustomField = createField({
+      register,
+      idPrefix: 'oa-slot-',
+      components: {
+        ...defaultComponents,
+        field: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="field" {...props} />
+        ),
+        arrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-field" {...props} />
+        ),
+        arrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="array-item" {...props} />
+        ),
+      },
+    })
+
+    const shape = schemaInfo(objArraySchema.shape.contacts)
+    const html = renderToStaticMarkup(
+      <CustomField
+        name="contacts"
+        label="Contacts"
+        fieldType="array"
+        shape={shape}
+      />
+    )
+
+    const fieldCount = (html.match(/data-slot="field"/g) || []).length
+    expect(fieldCount).toBe(5)
+
+    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
+      .length
+    expect(arrayFieldCount).toBe(0)
+
+    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    expect(arrayItemCount).toBe(2)
   })
 
   it('renders custom children with items and helpers', () => {

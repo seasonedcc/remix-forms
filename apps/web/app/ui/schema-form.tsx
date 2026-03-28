@@ -25,7 +25,9 @@ const StyledForm = React.forwardRef<
 const ArrayField = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
->((props, ref) => <div ref={ref} className="flex flex-col gap-2" {...props} />)
+>((props, ref) => (
+  <div ref={ref} className="flex flex-1 flex-col gap-2" {...props} />
+))
 
 const ArrayItem = React.forwardRef<
   HTMLDivElement,
