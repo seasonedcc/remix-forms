@@ -17,17 +17,23 @@ export const exampleRouteGroups = {
     'Transform values',
   ],
   Modes: ['onSubmit', 'onBlur', 'onChange'],
-  Schemas: [
+  'Scalar schemas': [
     'Strings',
     'Numbers',
     'Booleans',
     'Dates',
     'Enums',
     'Zod Effects',
-    'Array of strings',
-    'Array of objects',
     'File upload',
   ],
+  'Array schemas': [
+    'Array of strings',
+    'Array of objects',
+    'Array with children',
+    'Object array with children',
+    'Array of arrays',
+  ],
+  'Object schemas': ['Nested object', 'Object with children', 'Deeply nested'],
   Forms: [
     'Auto-generated',
     'Labels, options, etc',

@@ -1,6 +1,6 @@
 import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/schemas/array-of-objects'
+const route = '/examples/array-schemas/array-of-objects'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example

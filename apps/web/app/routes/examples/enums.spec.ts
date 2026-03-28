@@ -1,6 +1,6 @@
 import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/schemas/enums'
+const route = '/examples/scalar-schemas/enums'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
