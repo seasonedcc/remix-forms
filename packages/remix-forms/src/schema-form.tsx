@@ -571,7 +571,10 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
 
     const fieldErrors = React.useCallback(
       (key: keyof SchemaType & string) => {
-        const message = (formErrors[key] as unknown as FieldError)?.message
+        const error = formErrors[key]
+        const message =
+          (error as unknown as FieldError)?.message ??
+          (error as unknown as { root?: FieldError })?.root?.message
         return browser() ? message && [message] : errors?.[key]
       },
       [errors, formErrors]

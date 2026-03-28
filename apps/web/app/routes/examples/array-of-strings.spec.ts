@@ -13,6 +13,24 @@ test('With JS enabled', async ({ example }) => {
 
   await title.input.fill('My post')
 
+  // Submit with no items — array-level error should show
+  await button.click()
+
+  await example.expectErrorMessage(
+    'tags',
+    'Too small: expected array to have >=1 items'
+  )
+
+  // Add an item, remove it, submit again — same error should show
+  await page.locator('button:has-text("Add")').click()
+  await page.locator('button:has-text("Remove")').click()
+  await button.click()
+
+  await example.expectErrorMessage(
+    'tags',
+    'Too small: expected array to have >=1 items'
+  )
+
   await page.locator('button:has-text("Add")').click()
   const tagInput = page.locator('input[name="tags\\[0\\]"]')
 
