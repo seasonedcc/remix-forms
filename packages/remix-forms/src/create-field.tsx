@@ -63,8 +63,7 @@ type ObjectChildren<
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
     name: Name
     Label: Resolved['label']
-    // biome-ignore lint/suspicious/noExplicitAny: scoped field accepts sub-keys of the nested object — full type safety is enforced at the consumer level
-    Field: React.ComponentType<any>
+    Field: ScopedFieldComponent<NonNullable<Infer<Schema>[Name]>, Resolved>
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
   }
@@ -95,15 +94,116 @@ type ScalarArrayItem<
   ref: React.ForwardedRef<any>
 }
 
-type ObjectArrayItem<
+type ScopedFieldComponent<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = <Name extends keyof T>(
+  props: ScopedFieldProps<T, Resolved, Name>
+) => React.ReactElement | null
+
+type ScopedFieldProps<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof T,
+> = {
+  name: Name
+  label?: string
+  placeholder?: string
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
+  autoFocus?: boolean
+  multiline?: boolean
+  radio?: boolean
+  hidden?: boolean
+  accept?: string
+  options?: Option[]
+  value?: T[Name]
+  type?: React.HTMLInputTypeAttribute
+  fieldProps?: Omit<PropsOf<Resolved['field']>, 'children'>
+  children?: ScopedChildren<T, Resolved, Name>
+}
+
+type ScopedChildren<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+  Name extends keyof T,
+> = IsObject<T[Name]> extends true
+  ? ScopedObjectChildren<NonNullable<T[Name]>, Resolved>
+  : IsArray<T[Name]> extends true
+    ? ScopedArrayChildren<T[Name], Resolved>
+    : ScopedScalarChildren<Resolved>
+
+type ScopedObjectChildren<
+  T,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  Field: ScopedFieldComponent<T, Resolved>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}) => React.ReactNode
+
+type ScopedArrayChildren<
+  V,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+  items: ScopedArrayItemFor<V, Resolved>[]
+  append: (value?: ArrayElement<V>) => void
+  prepend: (value?: ArrayElement<V>) => void
+  remove: (index: number) => void
+  insert: (index: number, value?: ArrayElement<V>) => void
+  move: (from: number, to: number) => void
+  swap: (a: number, b: number) => void
+}) => React.ReactNode
+
+type ScopedScalarChildren<
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = (helpers: {
+  Label: Resolved['label']
+  SmartInput: React.ComponentType<SmartInputBaseProps>
+  Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}) => React.ReactNode
+
+type ScopedArrayItemFor<
+  V,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = IsObject<ArrayElement<V>> extends true
+  ? ScopedObjectArrayItem<NonNullable<ArrayElement<V>>, Resolved>
+  : ScalarArrayItem<Resolved>
+
+type ScopedObjectArrayItem<
+  Elem,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
 > = {
   key: string
   index: number
   Label: Resolved['label']
-  // biome-ignore lint/suspicious/noExplicitAny: scoped field accepts sub-keys of the item object
-  Field: React.ComponentType<any>
+  Field: ScopedFieldComponent<Elem, Resolved>
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}
+
+type ObjectArrayItem<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  key: string
+  index: number
+  Label: Resolved['label']
+  Field: ScopedFieldComponent<Elem, Resolved>
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
 }
@@ -114,7 +214,7 @@ type ArrayItemFor<
   Resolved extends Record<string, any>,
   Name extends keyof Infer<Schema>,
 > = IsObject<ArrayElement<Infer<Schema>[Name]>> extends true
-  ? ObjectArrayItem<Resolved>
+  ? ObjectArrayItem<NonNullable<ArrayElement<Infer<Schema>[Name]>>, Resolved>
   : ScalarArrayItem<Resolved>
 
 type ArrayChildren<
@@ -1354,6 +1454,7 @@ function createField<
 export type {
   FieldType,
   FieldComponent,
+  ScopedFieldComponent,
   Option,
   SmartInputProps,
   SmartInputSlot,

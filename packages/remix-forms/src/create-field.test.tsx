@@ -1107,11 +1107,7 @@ describe('object fields', () => {
         fieldType="object"
         shape={shape}
       >
-        {({
-          Field: BillingField,
-          label,
-          // biome-ignore lint/suspicious/noExplicitAny: test helper — scoped field type is generic
-        }: { Field: React.ComponentType<any>; label?: string }) => (
+        {({ Field: BillingField, label }) => (
           <>
             <h3>{label}</h3>
             <BillingField name="city" />
@@ -1326,10 +1322,7 @@ describe('array fields', () => {
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
       <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
-        {({
-          items,
-          label,
-        }: { items: { key: string; index: number }[]; label?: string }) => (
+        {({ items, label }) => (
           <div>
             <span>{label}</span>
             {items.map((item) => (
