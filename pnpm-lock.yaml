@@ -36,8 +36,8 @@ importers:
         specifier: ^0.16.0
         version: 0.16.0
       coerce-form-data:
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^3.0.0
+        version: 3.0.0
       composable-functions:
         specifier: ^5.0.0
         version: 5.0.0
@@ -72,8 +72,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/remix-forms
       schema-info:
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^0.5.0
+        version: 0.5.0
       string-ts:
         specifier: ^2.2.0
         version: 2.3.1
@@ -1655,9 +1655,6 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
-  coerce-form-data@2.1.0:
-    resolution: {integrity: sha512-7ZSh9alsDb3GEGJioA9+6Bp3NwLvMvxkTh0XnetugpGRyMYZV+AmcPi5t/m8QTRojsr2l52pXDSz4D0WKaSpQA==}
-
   coerce-form-data@3.0.0:
     resolution: {integrity: sha512-s2VCwu4kkFQAJAvCDSp16ki7wAlGpmvedPX1MjOlyE6GkaqwbE1CC+6M6PQNz3QJ7+IR/hnPRnbdgcGnZZpKEQ==}
 
@@ -2354,9 +2351,6 @@ packages:
 
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-
-  schema-info@0.4.1:
-    resolution: {integrity: sha512-vl3TUoreScAoco7k8sEBSvUKCxNXzTscthfS3cEZ88saEoYIRf3P/5/W8it8GkypSjNCDJjzN59K5ubYXNnB3w==}
 
   schema-info@0.5.0:
     resolution: {integrity: sha512-mzHJfV65mCFI1QJzlhW8rUfqf+u9Gl+ih2P0w0UChoJFYoyqwxMVjBOp57zI3WnvBQOlMugX4Ap4o8jvUUGnEQ==}
@@ -3942,8 +3936,6 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
-  coerce-form-data@2.1.0: {}
-
   coerce-form-data@3.0.0: {}
 
   commander@4.1.1: {}
@@ -4620,8 +4612,6 @@ snapshots:
   scheduler@0.23.2:
     dependencies:
       loose-envify: 1.4.0
-
-  schema-info@0.4.1: {}
 
   schema-info@0.5.0: {}
 

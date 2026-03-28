@@ -721,12 +721,13 @@ function ArrayFieldInner(props: Record<string, any>) {
     ? { display: 'none' as const, ...userStyle }
     : userStyle
 
+  const asFieldArrayValue = (v: unknown) => (Array.isArray(v) ? [v] : v)
   const appendDefault = (value?: unknown) =>
-    append(value ?? defaultValue(itemShape))
+    append(asFieldArrayValue(value ?? defaultValue(itemShape)))
   const prependDefault = (value?: unknown) =>
-    prepend(value ?? defaultValue(itemShape))
+    prepend(asFieldArrayValue(value ?? defaultValue(itemShape)))
   const insertDefault = (index: number, value?: unknown) =>
-    insert(index, value ?? defaultValue(itemShape))
+    insert(index, asFieldArrayValue(value ?? defaultValue(itemShape)))
 
   if (childrenFn) {
     const items = rhfFields.map((rhfField, index) => {
@@ -741,6 +742,10 @@ function ArrayFieldInner(props: Record<string, any>) {
             if (!subShape) return null
             const subName = `${itemName}.${subKey}`
             const subRequired = !(subShape.optional || subShape.nullable)
+            const subOptions = subShape.enumValues?.map((v: string) => ({
+              name: inferLabel(v),
+              value: v,
+            }))
             return React.createElement(Router, {
               ref: subRef,
               ...subProps,
@@ -749,6 +754,7 @@ function ArrayFieldInner(props: Record<string, any>) {
               fieldType: fieldTypeFromInfo(subShape),
               label: subProps.label ?? inferLabel(subKey),
               required: subRequired,
+              options: subProps.options ?? subOptions,
             })
           }
         )
@@ -756,7 +762,8 @@ function ArrayFieldInner(props: Record<string, any>) {
       }
 
       const scalarShape = itemShape
-      const itemRegisterProps = register(itemName, {
+      const itemHtmlName = dotToBracket(itemName)
+      const { ref: itemRef, ...rawItemRegisterProps } = register(itemName, {
         setValueAs: (value: unknown) => {
           try {
             return coerceValue(
@@ -769,6 +776,10 @@ function ArrayFieldInner(props: Record<string, any>) {
           }
         },
       })
+      const itemRegisterProps = {
+        ...rawItemRegisterProps,
+        name: itemHtmlName,
+      }
 
       const ChildSmartInput = createSmartInput(idPrefix, c)
       const itemFieldType = fieldTypeFromInfo(scalarShape)
@@ -778,10 +789,17 @@ function ArrayFieldInner(props: Record<string, any>) {
         name: inferLabel(v),
         value: v,
       }))
+      const itemErrors = errorsFor(itemName)
+      const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
+      const itemLabelId = `${idPrefix}label-for-${itemHtmlName}`
+      const itemErrorsChildren = itemErrors?.length
+        ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
+        : undefined
       const itemA11y = {
         'aria-labelledby': labelId,
-        'aria-invalid': false,
-        'aria-required': false as boolean,
+        'aria-invalid': Boolean(itemErrors),
+        'aria-describedby': itemErrors ? itemErrorsId : undefined,
+        'aria-required': !(scalarShape.optional || scalarShape.nullable),
       }
 
       return {
@@ -793,11 +811,16 @@ function ArrayFieldInner(props: Record<string, any>) {
             type: itemType,
             value: itemValue,
             options: itemOptions,
-            registerProps: itemRegisterProps,
+            registerProps: { ref: itemRef, ...itemRegisterProps },
             a11yProps: itemA11y,
             ...extraProps,
           }),
-        Label: c.label,
+        // biome-ignore lint/suspicious/noExplicitAny: bound wrapper — type safety is at the consumer level
+        Label: (props: Record<string, any>) => (
+          <Label id={itemLabelId} {...props}>
+            {props.children ?? label}
+          </Label>
+        ),
         Input: c.input,
         FileInput: c.fileInput,
         Multiline: c.multiline,
@@ -807,9 +830,18 @@ function ArrayFieldInner(props: Record<string, any>) {
         RadioGroup: c.radioGroup,
         RadioLabel: c.radioLabel,
         CheckboxLabel: c.checkboxLabel,
-        Errors: c.fieldErrors,
+        // biome-ignore lint/suspicious/noExplicitAny: bound wrapper — type safety is at the consumer level
+        Errors: (props: Record<string, any>) => {
+          const content = props.children ?? itemErrorsChildren
+          if (!content) return null
+          return (
+            <Errors role="alert" id={itemErrorsId} {...props}>
+              {content}
+            </Errors>
+          )
+        },
         Error: c.error,
-        ref: itemRegisterProps.ref,
+        ref: itemRef,
       }
     })
 
@@ -830,10 +862,30 @@ function ArrayFieldInner(props: Record<string, any>) {
         ...fieldMeta,
       })
 
+    const children = mapChildren(childrenDefinition, (child) => {
+      if (child.type === Label) {
+        return React.cloneElement(child, {
+          id: labelId,
+          children: label,
+          ...child.props,
+        })
+      }
+      if (child.type === Errors) {
+        if (!child.props.children && !errorsChildren) return null
+        return React.cloneElement(child, {
+          id: errorsId,
+          role: 'alert',
+          children: errorsChildren,
+          ...child.props,
+        })
+      }
+      return child
+    })
+
     return (
       <FieldContext.Provider value={fieldMeta}>
         <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
-          {childrenDefinition}
+          {children}
         </FieldWrapper>
       </FieldContext.Provider>
     )
@@ -857,6 +909,10 @@ function ArrayFieldInner(props: Record<string, any>) {
                   const subShape = itemShape.fields[subKey]
                   const subName = `${itemName}.${subKey}`
                   const subRequired = !(subShape.optional || subShape.nullable)
+                  const subOptions = subShape.enumValues?.map((v: string) => ({
+                    name: inferLabel(v),
+                    value: v,
+                  }))
                   return React.createElement(Router, {
                     key: subKey,
                     name: subName,
@@ -865,6 +921,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                     label: inferLabel(subKey),
                     required: subRequired,
                     errors: errorsFor(subName),
+                    options: subOptions,
                   })
                 })}
                 <RemoveButton onClick={() => remove(index)}>
@@ -1100,6 +1157,10 @@ function createField<
             if (!subShape) return null
             const subName = `${String(name)}.${subKey}`
             const subRequired = !(subShape.optional || subShape.nullable)
+            const subOptions = subShape.enumValues?.map((v: string) => ({
+              name: inferLabel(v),
+              value: v,
+            }))
             // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
             return React.createElement(FieldRouter.current!, {
               ref: subRef,
@@ -1109,6 +1170,7 @@ function createField<
               fieldType: fieldTypeFromInfo(subShape),
               label: subProps.label ?? inferLabel(subKey),
               required: subRequired,
+              options: subProps.options ?? subOptions,
             })
           })
         )
@@ -1125,10 +1187,30 @@ function createField<
               ...field,
             })
 
+          const children = mapChildren(childrenDefinition, (child) => {
+            if (child.type === Label) {
+              return React.cloneElement(child, {
+                id: labelId,
+                children: label,
+                ...child.props,
+              })
+            }
+            if (child.type === Errors) {
+              if (!child.props.children && !errorsChildren) return null
+              return React.cloneElement(child, {
+                id: errorsId,
+                role: 'alert',
+                children: errorsChildren,
+                ...child.props,
+              })
+            }
+            return child
+          })
+
           return (
             <FieldContext.Provider value={field}>
               <Field style={mergedStyle} {...restFieldProps}>
-                {childrenDefinition}
+                {children}
               </Field>
             </FieldContext.Provider>
           )

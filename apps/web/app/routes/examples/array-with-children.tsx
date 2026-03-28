@@ -32,20 +32,23 @@ export default () => (
           {({ Label, Errors, items, append, remove, swap }) => (
             <>
               <Label />
-              {items.map(({ key, index, SmartInput }) => (
-                <div key={key} style={{ display: 'flex', gap: '0.5rem' }}>
-                  <SmartInput placeholder={\`Item \${index + 1}\`} />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => swap(index, index - 1)}
-                    >
-                      Up
+              {items.map(({ key, index, SmartInput, Errors: ItemErrors }) => (
+                <div key={key}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <SmartInput placeholder={\`Item \${index + 1}\`} />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => swap(index, index - 1)}
+                      >
+                        Up
+                      </button>
+                    )}
+                    <button type="button" onClick={() => remove(index)}>
+                      Remove
                     </button>
-                  )}
-                  <button type="button" onClick={() => remove(index)}>
-                    Remove
-                  </button>
+                  </div>
+                  <ItemErrors />
                 </div>
               ))}
               <button type="button" onClick={() => append()}>
@@ -87,22 +90,27 @@ export default function Component() {
               {({ Label, Errors, items, append, remove, swap }) => (
                 <>
                   <Label />
-                  {items.map(({ key, index, SmartInput }) => (
-                    <div key={key} style={{ display: 'flex', gap: '0.5rem' }}>
-                      <SmartInput placeholder={`Item ${index + 1}`} />
-                      {index > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => swap(index, index - 1)}
-                        >
-                          Up
-                        </button>
-                      )}
-                      <button type="button" onClick={() => remove(index)}>
-                        Remove
-                      </button>
-                    </div>
-                  ))}
+                  {items.map(
+                    ({ key, index, SmartInput, Errors: ItemErrors }) => (
+                      <div key={key}>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <SmartInput placeholder={`Item ${index + 1}`} />
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => swap(index, index - 1)}
+                            >
+                              Up
+                            </button>
+                          )}
+                          <button type="button" onClick={() => remove(index)}>
+                            Remove
+                          </button>
+                        </div>
+                        <ItemErrors />
+                      </div>
+                    )
+                  )}
                   <button type="button" onClick={() => append()}>
                     Add item
                   </button>

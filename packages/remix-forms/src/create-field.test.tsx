@@ -22,7 +22,7 @@ vi.mock('react-hook-form', async () => {
 import * as React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { UseFormRegister } from 'react-hook-form'
-import { useFieldArray } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 import { createField, useField } from './create-field'
 import { defaultComponents } from './defaults'
@@ -1335,5 +1335,328 @@ describe('array fields', () => {
     expect(html).toContain('Tags')
     expect(html).toContain('data-index="0"')
     expect(html).toContain('data-index="1"')
+  })
+
+  it('enhances Label with id in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ Label }) => <Label />}
+      </ArrayField>
+    )
+    expect(html).toContain('id="arr-label-for-tags"')
+    expect(html).toContain('Tags')
+  })
+
+  it('preserves user children on Label in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ Label }) => <Label>My list</Label>}
+      </ArrayField>
+    )
+    expect(html).toContain('My list')
+    expect(html).not.toContain('>Tags<')
+  })
+
+  it('enhances Errors with id, role, and content in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField
+        name="tags"
+        label="Tags"
+        fieldType="array"
+        shape={shape}
+        errors={['Required']}
+      >
+        {({ Errors }) => <Errors />}
+      </ArrayField>
+    )
+    expect(html).toContain('id="arr-errors-for-tags"')
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Required')
+  })
+
+  it('hides Errors when no errors in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ Errors }) => <Errors />}
+      </ArrayField>
+    )
+    expect(html).not.toContain('role="alert"')
+    expect(html).not.toContain('errors-for-tags')
+  })
+
+  it('preserves user children on Errors in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField
+        name="tags"
+        label="Tags"
+        fieldType="array"
+        shape={shape}
+        errors={['Required']}
+      >
+        {({ Errors }) => <Errors>Custom error</Errors>}
+      </ArrayField>
+    )
+    expect(html).toContain('Custom error')
+    expect(html).not.toContain('Required')
+  })
+
+  it('provides per-item Errors with id and role in array children', () => {
+    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: (path: string) => {
+        if (path === 'tags.0') return { error: { message: 'Too short' } }
+        return { error: undefined }
+      },
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ items }) => (
+          <>
+            {items.map((item) => (
+              <div key={item.key}>
+                <item.Errors />
+              </div>
+            ))}
+          </>
+        )}
+      </ArrayField>
+    )
+    expect(html).toContain('id="arr-errors-for-tags[0]"')
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Too short')
+  })
+
+  it('sets correct a11y props on scalar array item SmartInput', () => {
+    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: (path: string) => {
+        if (path === 'tags.0') return { error: { message: 'Too short' } }
+        return { error: undefined }
+      },
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ items }) => (
+          <>
+            {items.map((item) => (
+              <item.SmartInput key={item.key} />
+            ))}
+          </>
+        )}
+      </ArrayField>
+    )
+    expect(html).toContain('aria-invalid="true"')
+    expect(html).toContain('aria-describedby="arr-errors-for-tags[0]"')
+  })
+})
+
+describe('object children enhancement', () => {
+  const objectSchema = z.object({
+    billing: z.object({
+      street: z.string(),
+      city: z.string(),
+    }),
+  })
+
+  const ObjectField = createField<
+    typeof objectSchema,
+    typeof defaultComponents,
+    readonly [],
+    readonly [],
+    readonly []
+  >({
+    register,
+    idPrefix: 'test-',
+    components: defaultComponents,
+  })
+
+  it('enhances Label with id in object children', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Label }) => <Label />}
+      </ObjectField>
+    )
+    expect(html).toContain('id="test-label-for-billing"')
+    expect(html).toContain('Billing')
+  })
+
+  it('preserves user children on Label in object children', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Label }) => <Label>Payment info</Label>}
+      </ObjectField>
+    )
+    expect(html).toContain('Payment info')
+    expect(html).not.toContain('>Billing<')
+  })
+
+  it('enhances Errors with id, role, and content in object children', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+        errors={['Invalid address']}
+      >
+        {({ Errors }) => <Errors />}
+      </ObjectField>
+    )
+    expect(html).toContain('id="test-errors-for-billing"')
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('Invalid address')
+  })
+
+  it('hides Errors when no errors in object children', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Errors }) => <Errors />}
+      </ObjectField>
+    )
+    expect(html).not.toContain('role="alert"')
+    expect(html).not.toContain('errors-for-billing')
+  })
+})
+
+describe('enum options on scoped fields', () => {
+  it('renders enum as select in object array items via children', () => {
+    const enumArraySchema = z.object({
+      members: z.array(
+        z.object({
+          name: z.string(),
+          role: z.enum(['developer', 'designer', 'manager']),
+        })
+      ),
+    })
+    const EnumField = createField<
+      typeof enumArraySchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'enum-',
+      components: defaultComponents,
+    })
+
+    const shape = schemaInfo(enumArraySchema.shape.members)
+    const html = renderToStaticMarkup(
+      <EnumField name="members" label="Members" fieldType="array" shape={shape}>
+        {({ items }) => (
+          <>
+            {items.map((item) => (
+              <div key={item.key}>
+                <item.Field name="role" />
+              </div>
+            ))}
+          </>
+        )}
+      </EnumField>
+    )
+    expect(html).toContain('<select')
+    expect(html).toContain('Developer')
+    expect(html).toContain('Designer')
+    expect(html).toContain('Manager')
+  })
+
+  it('renders enum as select in object children via scoped Field', () => {
+    const enumObjSchema = z.object({
+      settings: z.object({
+        theme: z.enum(['light', 'dark', 'auto']),
+        name: z.string(),
+      }),
+    })
+    const EnumObjField = createField<
+      typeof enumObjSchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'eobj-',
+      components: defaultComponents,
+    })
+
+    const shape = schemaInfo(enumObjSchema.shape.settings)
+    const html = renderToStaticMarkup(
+      <EnumObjField
+        name="settings"
+        label="Settings"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Field }) => <Field name="theme" />}
+      </EnumObjField>
+    )
+    expect(html).toContain('<select')
+    expect(html).toContain('Light')
+    expect(html).toContain('Dark')
+    expect(html).toContain('Auto')
+  })
+
+  it('renders enum as select in auto-rendered object array items', () => {
+    const enumArraySchema = z.object({
+      members: z.array(
+        z.object({
+          name: z.string(),
+          role: z.enum(['developer', 'designer', 'manager']),
+        })
+      ),
+    })
+    const EnumField = createField<
+      typeof enumArraySchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'auto-enum-',
+      components: defaultComponents,
+    })
+
+    const shape = schemaInfo(enumArraySchema.shape.members)
+    const html = renderToStaticMarkup(
+      <EnumField
+        name="members"
+        label="Members"
+        fieldType="array"
+        shape={shape}
+      />
+    )
+    expect(html).toContain('<select')
+    expect(html).toContain('Developer')
   })
 })
