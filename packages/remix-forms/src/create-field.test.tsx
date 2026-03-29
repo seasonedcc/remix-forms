@@ -1156,6 +1156,54 @@ describe('object fields', () => {
     expect(html).toContain('name="company[address][street]"')
     expect(html).toContain('name="company[address][zip]"')
   })
+
+  it('renders errors for auto-rendered nested object fields', () => {
+    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: (path: string) => {
+        if (path === 'billing.street') return { error: { message: 'Required' } }
+        return { error: undefined }
+      },
+    })
+
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      />
+    )
+    expect(html).toContain('Required')
+    expect(html).toContain('errors-for-billing[street]')
+  })
+
+  it('renders errors for scoped Field in object children', () => {
+    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+      control: {},
+      formState: { errors: {} },
+      getFieldState: (path: string) => {
+        if (path === 'billing.street') return { error: { message: 'Required' } }
+        return { error: undefined }
+      },
+    })
+
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ Field: BillingField }) => <BillingField name="street" />}
+      </ObjectField>
+    )
+    expect(html).toContain('Required')
+    expect(html).toContain('errors-for-billing[street]')
+  })
 })
 
 describe('array fields', () => {
@@ -1406,14 +1454,17 @@ describe('array fields', () => {
   })
 
   it('provides per-item Errors with id and role in array children', () => {
-    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+    const mock = {
       control: {},
       formState: { errors: {} },
       getFieldState: (path: string) => {
         if (path === 'tags.0') return { error: { message: 'Too short' } }
         return { error: undefined }
       },
-    })
+    }
+    ;(useFormContext as unknown as Mock)
+      .mockReturnValueOnce(mock)
+      .mockReturnValueOnce(mock)
 
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
@@ -1435,14 +1486,17 @@ describe('array fields', () => {
   })
 
   it('sets correct a11y props on scalar array item SmartInput', () => {
-    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+    const mock = {
       control: {},
       formState: { errors: {} },
       getFieldState: (path: string) => {
         if (path === 'tags.0') return { error: { message: 'Too short' } }
         return { error: undefined }
       },
-    })
+    }
+    ;(useFormContext as unknown as Mock)
+      .mockReturnValueOnce(mock)
+      .mockReturnValueOnce(mock)
 
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
@@ -1458,6 +1512,59 @@ describe('array fields', () => {
     )
     expect(html).toContain('aria-invalid="true"')
     expect(html).toContain('aria-describedby="arr-errors-for-tags[0]"')
+  })
+
+  it('renders errors for ScopedItemField in object-array children', () => {
+    const objArraySchema = z.object({
+      contacts: z.array(z.object({ name: z.string(), email: z.string() })),
+    })
+
+    const mock = {
+      control: {},
+      formState: { errors: {} },
+      getFieldState: (path: string) => {
+        if (path === 'contacts.0.name')
+          return { error: { message: 'Name required' } }
+        return { error: undefined }
+      },
+    }
+    ;(useFormContext as unknown as Mock)
+      .mockReturnValueOnce(mock)
+      .mockReturnValueOnce(mock)
+
+    const ObjArrayField = createField<
+      typeof objArraySchema,
+      typeof defaultComponents,
+      readonly [],
+      readonly [],
+      readonly []
+    >({
+      register,
+      idPrefix: 'oa-err-',
+      components: defaultComponents,
+    })
+
+    const shape = schemaInfo(objArraySchema.shape.contacts)
+    const html = renderToStaticMarkup(
+      <ObjArrayField
+        name="contacts"
+        label="Contacts"
+        fieldType="array"
+        shape={shape}
+      >
+        {({ items }) => (
+          <>
+            {items.map((item) => (
+              <div key={item.key}>
+                <item.Field name="name" />
+              </div>
+            ))}
+          </>
+        )}
+      </ObjArrayField>
+    )
+    expect(html).toContain('Name required')
+    expect(html).toContain('errors-for-contacts[0][name]')
   })
 })
 

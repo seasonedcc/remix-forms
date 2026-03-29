@@ -29,6 +29,13 @@ test('With JS enabled', async ({ example }) => {
     page.locator('select[name="members\\[0\\]\\[role\\]"]')
   ).toBeVisible()
 
+  await button.click()
+
+  await example.expectErrorMessage(
+    'members\\[0\\]\\[name\\]',
+    'Too small: expected string to have >=1 characters'
+  )
+
   await page.locator('input[name="members\\[0\\]\\[name\\]"]').fill('Alice')
   await page
     .locator('select[name="members\\[0\\]\\[role\\]"]')

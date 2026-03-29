@@ -755,6 +755,7 @@ function ArrayFieldInner(props: Record<string, any>) {
               label: subProps.label ?? inferLabel(subKey),
               required: subRequired,
               options: subProps.options ?? subOptions,
+              errors: errorsFor(subName),
             })
           }
         )
@@ -1109,6 +1110,12 @@ function createField<
         value,
       }
 
+      const { getFieldState: getSubFieldState } = useFormContext()
+      const errorsFor = (path: string): string[] | undefined => {
+        const { error } = getSubFieldState(path)
+        return error?.message ? [error.message] : undefined
+      }
+
       const errorsChildren = errors?.length
         ? errors.map((error: string) => <Error key={error}>{error}</Error>)
         : undefined
@@ -1171,6 +1178,7 @@ function createField<
               label: subProps.label ?? inferLabel(subKey),
               required: subRequired,
               options: subProps.options ?? subOptions,
+              errors: errorsFor(subName),
             })
           })
         )
@@ -1225,6 +1233,10 @@ function createField<
                   const subShape = shape.fields[subKey]
                   const subName = `${String(name)}.${subKey}`
                   const subRequired = !(subShape.optional || subShape.nullable)
+                  const subOptions = subShape.enumValues?.map((v: string) => ({
+                    name: inferLabel(v),
+                    value: v,
+                  }))
                   // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
                   return React.createElement(FieldRouter.current!, {
                     key: subKey,
@@ -1233,6 +1245,8 @@ function createField<
                     fieldType: fieldTypeFromInfo(subShape),
                     label: inferLabel(subKey),
                     required: subRequired,
+                    errors: errorsFor(subName),
+                    options: subOptions,
                   })
                 })}
               </ObjectFieldComp>

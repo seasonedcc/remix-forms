@@ -25,6 +25,12 @@ test('With JS enabled', async ({ example }) => {
     'Too small: expected string to have >=1 characters'
   )
 
+  await example.expectErrorMessage(
+    'author\\[name\\]',
+    'Too small: expected string to have >=1 characters'
+  )
+  await example.expectErrorMessage('author\\[email\\]', 'Invalid email address')
+
   await title.input.fill('My Article')
   await page.locator('input[name="author\\[name\\]"]').fill('Jane Doe')
   await page.locator('input[name="author\\[email\\]"]').fill('jane@example.com')

@@ -28,6 +28,19 @@ test('With JS enabled', async ({ example }) => {
     'Too small: expected string to have >=1 characters'
   )
 
+  await example.expectErrorMessage(
+    'headquarters\\[phone\\]',
+    'Too small: expected string to have >=1 characters'
+  )
+  await example.expectErrorMessage(
+    'headquarters\\[address\\]\\[street\\]',
+    'Too small: expected string to have >=1 characters'
+  )
+  await example.expectErrorMessage(
+    'headquarters\\[address\\]\\[city\\]',
+    'Too small: expected string to have >=1 characters'
+  )
+
   await company.input.fill('Acme Inc')
   await page
     .locator('input[name="headquarters\\[address\\]\\[street\\]"]')
