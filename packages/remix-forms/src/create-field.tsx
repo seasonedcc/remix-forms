@@ -71,14 +71,17 @@ type ObjectChildren<
 
 type ArrayElement<T> = T extends readonly (infer E)[] ? E : never
 
-type ScalarArrayItem<
+type ArrayItem = {
+  key: string
+  index: number
+}
+
+type ScalarItemHelpers<
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
 > = {
-  key: string
-  index: number
-  Label: Resolved['label']
   SmartInput: React.ComponentType<SmartInputBaseProps>
+  Label: Resolved['label']
   Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
   FileInput: StripDefaultProps<Resolved['fileInput'], 'defaultValue'>
   Multiline: StripDefaultProps<Resolved['multiline'], 'defaultValue'>
@@ -90,8 +93,34 @@ type ScalarArrayItem<
   CheckboxLabel: Resolved['checkboxLabel']
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  ref: React.ForwardedRef<any>
+}
+
+type ObjectItemHelpers<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  Field: ScopedFieldComponent<Elem, Resolved>
+  Label: Resolved['label']
+  Errors: Resolved['fieldErrors']
+  Error: Resolved['error']
+}
+
+type ItemChildren<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = IsObject<Elem> extends true
+  ? (helpers: ObjectItemHelpers<NonNullable<Elem>, Resolved>) => React.ReactNode
+  : (helpers: ScalarItemHelpers<Resolved>) => React.ReactNode
+
+type ItemProps<
+  Elem,
+  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
+  Resolved extends Record<string, any>,
+> = {
+  children: ItemChildren<Elem, Resolved>
+  index?: number
 }
 
 type ScopedFieldComponent<
@@ -154,7 +183,8 @@ type ScopedArrayChildren<
   Label: Resolved['label']
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
-  items: ScopedArrayItemFor<V, Resolved>[]
+  items: ArrayItem[]
+  Item: React.ComponentType<ItemProps<ArrayElement<V>, Resolved>>
   append: (value?: ArrayElement<V>) => void
   prepend: (value?: ArrayElement<V>) => void
   remove: (index: number) => void
@@ -174,49 +204,6 @@ type ScopedScalarChildren<
   Error: Resolved['error']
 }) => React.ReactNode
 
-type ScopedArrayItemFor<
-  V,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = IsObject<ArrayElement<V>> extends true
-  ? ScopedObjectArrayItem<NonNullable<ArrayElement<V>>, Resolved>
-  : ScalarArrayItem<Resolved>
-
-type ScopedObjectArrayItem<
-  Elem,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
-  key: string
-  index: number
-  Label: Resolved['label']
-  Field: ScopedFieldComponent<Elem, Resolved>
-  Errors: Resolved['fieldErrors']
-  Error: Resolved['error']
-}
-
-type ObjectArrayItem<
-  Elem,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
-  key: string
-  index: number
-  Label: Resolved['label']
-  Field: ScopedFieldComponent<Elem, Resolved>
-  Errors: Resolved['fieldErrors']
-  Error: Resolved['error']
-}
-
-type ArrayItemFor<
-  Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-  Name extends keyof Infer<Schema>,
-> = IsObject<ArrayElement<Infer<Schema>[Name]>> extends true
-  ? ObjectArrayItem<NonNullable<ArrayElement<Infer<Schema>[Name]>>, Resolved>
-  : ScalarArrayItem<Resolved>
-
 type ArrayChildren<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
@@ -228,7 +215,10 @@ type ArrayChildren<
     Label: Resolved['label']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
-    items: ArrayItemFor<Schema, Resolved, Name>[]
+    items: ArrayItem[]
+    Item: React.ComponentType<
+      ItemProps<ArrayElement<Infer<Schema>[Name]>, Resolved>
+    >
     append: (value?: ArrayElement<Infer<Schema>[Name]>) => void
     prepend: (value?: ArrayElement<Infer<Schema>[Name]>) => void
     remove: (index: number) => void
@@ -708,6 +698,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   }
 
   const itemShape = shape.item as SchemaInfo
+  const objectItemShape = itemShape.type === 'object' ? itemShape : undefined
   const arrayHtmlName = dotToBracket(String(name))
   const labelId = `${idPrefix}label-for-${arrayHtmlName}`
   const errorsId = `${idPrefix}errors-for-${arrayHtmlName}`
@@ -729,122 +720,194 @@ function ArrayFieldInner(props: Record<string, any>) {
   const insertDefault = (index: number, value?: unknown) =>
     insert(index, asFieldArrayValue(value ?? defaultValue(itemShape)))
 
-  if (childrenFn) {
-    const items = rhfFields.map((rhfField, index) => {
-      const itemName = `${String(name)}.${index}`
+  // Per-nesting-level components (stable via useMemo)
+  const ChildSmartInput = React.useMemo(
+    () => createSmartInput(idPrefix, c),
+    [idPrefix, c]
+  )
 
-      if (itemShape.type === 'object') {
-        const ScopedItemField = React.forwardRef(
-          // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps FieldRouter
-          (subProps: Record<string, any>, subRef) => {
-            const subKey = String(subProps.name)
-            const subShape = itemShape.fields[subKey]
-            if (!subShape) return null
-            const subName = `${itemName}.${subKey}`
-            const subRequired = !(subShape.optional || subShape.nullable)
-            const subOptions = subShape.enumValues?.map((v: string) => ({
-              name: inferLabel(v),
-              value: v,
-            }))
-            return React.createElement(Router, {
-              ref: subRef,
-              ...subProps,
-              name: subName,
-              shape: subShape,
-              fieldType: fieldTypeFromInfo(subShape),
-              label: subProps.label ?? inferLabel(subKey),
-              required: subRequired,
-              options: subProps.options ?? subOptions,
-              errors: errorsFor(subName),
+  const ScopedItemField = React.useMemo(
+    () =>
+      React.forwardRef(
+        // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps FieldRouter
+        ({ itemName, ...subProps }: Record<string, any>, subRef) => {
+          if (!objectItemShape) return null
+          const { getFieldState } = useFormContext()
+          const subKey = String(subProps.name)
+          const subShape = objectItemShape.fields[subKey]
+          if (!subShape) return null
+          const subName = `${itemName}.${subKey}`
+          const subError = getFieldState(subName)?.error
+          const subErrors = subError?.message ? [subError.message] : undefined
+          const subRequired = !(subShape.optional || subShape.nullable)
+          const subOptions = subShape.enumValues?.map((v: string) => ({
+            name: inferLabel(v),
+            value: v,
+          }))
+          return React.createElement(Router, {
+            ref: subRef,
+            ...subProps,
+            name: subName,
+            shape: subShape,
+            fieldType: fieldTypeFromInfo(subShape),
+            label: subProps.label ?? inferLabel(subKey),
+            required: subRequired,
+            options: subProps.options ?? subOptions,
+            errors: subErrors,
+          })
+        }
+      ),
+    [objectItemShape, Router]
+  )
+
+  const Item = React.useMemo(
+    () =>
+      function Item({
+        index = 0,
+        children: itemChildrenFn,
+      }: {
+        index?: number
+        // biome-ignore lint/suspicious/noExplicitAny: Resolved is generic inside the implementation — only consumers make it specific
+        children: (...args: any[]) => React.ReactNode
+      }) {
+        const itemName = `${String(name)}.${index}`
+        const itemHtmlName = dotToBracket(itemName)
+        const { getFieldState } = useFormContext()
+        const itemError = getFieldState(itemName)?.error
+        const itemErrors = itemError?.message ? [itemError.message] : undefined
+
+        const itemLabelId = `${idPrefix}label-for-${itemHtmlName}`
+        const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
+        const itemErrorsChildren = itemErrors?.length
+          ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
+          : undefined
+
+        let registerRef: React.Ref<unknown> | undefined
+        let itemRegisterProps: Record<string, unknown> | undefined
+        let itemA11y: Record<string, unknown> | undefined
+        let itemFieldType: FieldType | undefined
+        let itemType: React.HTMLInputTypeAttribute | undefined
+        let itemOptions: Option[] | undefined
+        if (itemShape.type !== 'object' && itemShape.type !== 'array') {
+          const scalarShape = itemShape
+          const { ref, ...rawRegisterProps } = register(itemName, {
+            setValueAs: (value: unknown) => {
+              try {
+                return coerceValue(
+                  value as FormValue,
+                  scalarShape ?? {
+                    type: null,
+                    optional: false,
+                    nullable: false,
+                  }
+                )
+              } catch (error) {
+                if (error instanceof FormDataCoercionError) return null
+                throw error
+              }
+            },
+          })
+          registerRef = ref
+          itemRegisterProps = { ...rawRegisterProps, name: itemHtmlName }
+          itemFieldType = fieldTypeFromInfo(scalarShape)
+          itemType = getInputType(itemFieldType, false)
+          itemOptions = scalarShape.enumValues?.map((v: string) => ({
+            name: inferLabel(v),
+            value: v,
+          }))
+          itemA11y = {
+            'aria-labelledby': labelId,
+            'aria-invalid': Boolean(itemErrors),
+            'aria-describedby': itemErrors ? itemErrorsId : undefined,
+            'aria-required': !(scalarShape.optional || scalarShape.nullable),
+          }
+        }
+
+        const helpers =
+          itemShape.type === 'object'
+            ? {
+                Field: ScopedItemField,
+                Label: Label,
+                Errors: Errors,
+                Error,
+              }
+            : {
+                SmartInput: ChildSmartInput,
+                Label: Label,
+                Errors: Errors,
+                Error,
+                Input: c.input,
+                FileInput: c.fileInput,
+                Multiline: c.multiline,
+                Select: c.select,
+                Checkbox: c.checkbox,
+                Radio: c.radio,
+                RadioGroup: c.radioGroup,
+                RadioLabel: c.radioLabel,
+                CheckboxLabel: c.checkboxLabel,
+              }
+
+        const childrenDefinition = itemChildrenFn(helpers)
+
+        return mapChildren(childrenDefinition, (child) => {
+          if (child.type === ChildSmartInput) {
+            return React.cloneElement(child, {
+              fieldType: itemFieldType,
+              type: itemType,
+              value: '',
+              options: itemOptions,
+              registerProps: { ref: registerRef, ...itemRegisterProps },
+              a11yProps: itemA11y,
+              ...child.props,
             })
           }
-        )
-        return { key: rhfField.id, index, Field: ScopedItemField }
-      }
-
-      const scalarShape = itemShape
-      const itemHtmlName = dotToBracket(itemName)
-      const { ref: itemRef, ...rawItemRegisterProps } = register(itemName, {
-        setValueAs: (value: unknown) => {
-          try {
-            return coerceValue(
-              value as FormValue,
-              scalarShape ?? { type: null, optional: false, nullable: false }
-            )
-          } catch (error) {
-            if (error instanceof FormDataCoercionError) return null
-            throw error
+          if (child.type === Label) {
+            return React.cloneElement(child, {
+              id: itemLabelId,
+              children: label,
+              ...child.props,
+            })
           }
-        },
-      })
-      const itemRegisterProps = {
-        ...rawItemRegisterProps,
-        name: itemHtmlName,
-      }
+          if (child.type === Errors) {
+            if (!child.props.children && !itemErrorsChildren) return null
+            return React.cloneElement(child, {
+              id: itemErrorsId,
+              role: 'alert',
+              children: itemErrorsChildren,
+              ...child.props,
+            })
+          }
+          if (child.type === ScopedItemField) {
+            return React.cloneElement(child, {
+              itemName,
+              ...child.props,
+            })
+          }
+          return child
+        }) as React.ReactElement
+      },
+    [
+      name,
+      itemShape,
+      register,
+      idPrefix,
+      c,
+      label,
+      labelId,
+      ChildSmartInput,
+      Label,
+      Errors,
+      ScopedItemField,
+      Error,
+      Router,
+    ]
+  )
 
-      const ChildSmartInput = createSmartInput(idPrefix, c)
-      const itemFieldType = fieldTypeFromInfo(scalarShape)
-      const itemType = getInputType(itemFieldType, false)
-      const itemValue = ''
-      const itemOptions = scalarShape.enumValues?.map((v: string) => ({
-        name: inferLabel(v),
-        value: v,
-      }))
-      const itemErrors = errorsFor(itemName)
-      const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
-      const itemLabelId = `${idPrefix}label-for-${itemHtmlName}`
-      const itemErrorsChildren = itemErrors?.length
-        ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
-        : undefined
-      const itemA11y = {
-        'aria-labelledby': labelId,
-        'aria-invalid': Boolean(itemErrors),
-        'aria-describedby': itemErrors ? itemErrorsId : undefined,
-        'aria-required': !(scalarShape.optional || scalarShape.nullable),
-      }
-
-      return {
-        key: rhfField.id,
-        index,
-        SmartInput: (extraProps: SmartInputBaseProps) =>
-          ChildSmartInput({
-            fieldType: itemFieldType,
-            type: itemType,
-            value: itemValue,
-            options: itemOptions,
-            registerProps: { ref: itemRef, ...itemRegisterProps },
-            a11yProps: itemA11y,
-            ...extraProps,
-          }),
-        // biome-ignore lint/suspicious/noExplicitAny: bound wrapper — type safety is at the consumer level
-        Label: (props: Record<string, any>) => (
-          <Label id={itemLabelId} {...props}>
-            {props.children ?? label}
-          </Label>
-        ),
-        Input: c.input,
-        FileInput: c.fileInput,
-        Multiline: c.multiline,
-        Select: c.select,
-        Checkbox: c.checkbox,
-        Radio: c.radio,
-        RadioGroup: c.radioGroup,
-        RadioLabel: c.radioLabel,
-        CheckboxLabel: c.checkboxLabel,
-        // biome-ignore lint/suspicious/noExplicitAny: bound wrapper — type safety is at the consumer level
-        Errors: (props: Record<string, any>) => {
-          const content = props.children ?? itemErrorsChildren
-          if (!content) return null
-          return (
-            <Errors role="alert" id={itemErrorsId} {...props}>
-              {content}
-            </Errors>
-          )
-        },
-        Error: c.error,
-        ref: itemRef,
-      }
-    })
+  if (childrenFn) {
+    const items = rhfFields.map((rhfField, index) => ({
+      key: rhfField.id,
+      index,
+    }))
 
     const childrenDefinition =
       // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
@@ -854,6 +917,7 @@ function ArrayFieldInner(props: Record<string, any>) {
         Errors,
         Error,
         items,
+        Item,
         append: appendDefault,
         prepend: prependDefault,
         remove,
@@ -863,6 +927,7 @@ function ArrayFieldInner(props: Record<string, any>) {
         ...fieldMeta,
       })
 
+    let itemIndex = 0
     const children = mapChildren(childrenDefinition, (child) => {
       if (child.type === Label) {
         return React.cloneElement(child, {
@@ -880,6 +945,14 @@ function ArrayFieldInner(props: Record<string, any>) {
           ...child.props,
         })
       }
+      if (child.type === Item) {
+        const idx = child.props.index ?? itemIndex
+        itemIndex++
+        return React.cloneElement(child, {
+          index: idx,
+          ...child.props,
+        })
+      }
       return child
     })
 
@@ -892,7 +965,7 @@ function ArrayFieldInner(props: Record<string, any>) {
     )
   }
 
-  const SmartInput = createSmartInput(idPrefix, c)
+  const SmartInput = ChildSmartInput
 
   return (
     <FieldContext.Provider value={fieldMeta}>
@@ -1022,6 +1095,155 @@ function ArrayFieldInner(props: Record<string, any>) {
   )
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: internal component — generics are for the external API
+function ObjectFieldInner(props: Record<string, any>) {
+  const {
+    name,
+    label,
+    shape,
+    errors,
+    hidden,
+    fieldProps,
+    childrenFn,
+    field,
+    idPrefix,
+    components: c,
+    fieldRouter: FieldRouter,
+  } = props
+
+  const Field = c.field
+  const Label = c.label
+  const Errors = c.fieldErrors
+  const Error = c.error
+  const ObjectFieldComp = c.objectField
+  const subFields = Object.keys(shape.fields)
+
+  const { getFieldState: getSubFieldState } = useFormContext()
+  const errorsFor = (path: string): string[] | undefined => {
+    const { error } = getSubFieldState(path)
+    return error?.message ? [error.message] : undefined
+  }
+
+  const errorsChildren = errors?.length
+    ? errors.map((error: string) => <Error key={error}>{error}</Error>)
+    : undefined
+
+  const { style: userStyle, ...restFieldProps } = fieldProps ?? {}
+  const mergedStyle = hidden
+    ? { display: 'none' as const, ...userStyle }
+    : userStyle
+
+  const htmlName = dotToBracket(String(name))
+  const labelId = `${idPrefix}label-for-${htmlName}`
+  const errorsId = `${idPrefix}errors-for-${htmlName}`
+
+  const ScopedField = React.useMemo(
+    () =>
+      // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps the outer FieldRouter
+      React.forwardRef((subProps: Record<string, any>, subRef) => {
+        const { getFieldState } = useFormContext()
+        const subKey = String(subProps.name)
+        const subShape = shape.fields[subKey]
+        if (!subShape) return null
+        const subName = `${String(name)}.${subKey}`
+        const subError = getFieldState(subName)?.error
+        const subErrors = subError?.message ? [subError.message] : undefined
+        const subRequired = !(subShape.optional || subShape.nullable)
+        const subOptions = subShape.enumValues?.map((v: string) => ({
+          name: inferLabel(v),
+          value: v,
+        }))
+        return React.createElement(FieldRouter, {
+          ref: subRef,
+          ...subProps,
+          name: subName,
+          shape: subShape,
+          fieldType: fieldTypeFromInfo(subShape),
+          label: subProps.label ?? inferLabel(subKey),
+          required: subRequired,
+          options: subProps.options ?? subOptions,
+          errors: subErrors,
+        })
+      }),
+    [name, shape, FieldRouter]
+  )
+
+  if (childrenFn) {
+    const childrenDefinition =
+      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
+      (childrenFn as (...args: any[]) => React.ReactNode)({
+        name,
+        Label,
+        Field: ScopedField,
+        Errors,
+        Error,
+        ...field,
+      })
+
+    const children = mapChildren(childrenDefinition, (child) => {
+      if (child.type === Label) {
+        return React.cloneElement(child, {
+          id: labelId,
+          children: label,
+          ...child.props,
+        })
+      }
+      if (child.type === Errors) {
+        if (!child.props.children && !errorsChildren) return null
+        return React.cloneElement(child, {
+          id: errorsId,
+          role: 'alert',
+          children: errorsChildren,
+          ...child.props,
+        })
+      }
+      return child
+    })
+
+    return (
+      <FieldContext.Provider value={field}>
+        <Field style={mergedStyle} {...restFieldProps}>
+          {children}
+        </Field>
+      </FieldContext.Provider>
+    )
+  }
+
+  return (
+    <FieldContext.Provider value={field}>
+      <Field style={mergedStyle} {...restFieldProps}>
+        <Label id={labelId}>{label}</Label>
+        <ObjectFieldComp>
+          {subFields.map((subKey) => {
+            const subShape = shape.fields[subKey]
+            const subName = `${String(name)}.${subKey}`
+            const subRequired = !(subShape.optional || subShape.nullable)
+            const subOptions = subShape.enumValues?.map((v: string) => ({
+              name: inferLabel(v),
+              value: v,
+            }))
+            return React.createElement(FieldRouter, {
+              key: subKey,
+              name: subName,
+              shape: subShape,
+              fieldType: fieldTypeFromInfo(subShape),
+              label: inferLabel(subKey),
+              required: subRequired,
+              errors: errorsFor(subName),
+              options: subOptions,
+            })
+          })}
+        </ObjectFieldComp>
+        {Boolean(errorsChildren) && (
+          <Errors role="alert" id={errorsId}>
+            {errorsChildren}
+          </Errors>
+        )}
+      </Field>
+    </FieldContext.Provider>
+  )
+}
+
 function createField<
   Schema extends FormSchema,
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
@@ -1110,12 +1332,6 @@ function createField<
         value,
       }
 
-      const { getFieldState: getSubFieldState } = useFormContext()
-      const errorsFor = (path: string): string[] | undefined => {
-        const { error } = getSubFieldState(path)
-        return error?.message ? [error.message] : undefined
-      }
-
       const errorsChildren = errors?.length
         ? errors.map((error: string) => <Error key={error}>{error}</Error>)
         : undefined
@@ -1153,110 +1369,21 @@ function createField<
       }
 
       if (fieldType === 'object' && shape?.type === 'object') {
-        const ObjectFieldComp = c.objectField
-        const subFields = Object.keys(shape.fields)
-
-        const ScopedField = React.memo(
-          // biome-ignore lint/suspicious/noExplicitAny: scoped field wraps the outer FieldRouter — generics are enforced at the consumer level
-          React.forwardRef((subProps: Record<string, any>, subRef) => {
-            const subKey = String(subProps.name)
-            const subShape = shape.fields[subKey]
-            if (!subShape) return null
-            const subName = `${String(name)}.${subKey}`
-            const subRequired = !(subShape.optional || subShape.nullable)
-            const subOptions = subShape.enumValues?.map((v: string) => ({
-              name: inferLabel(v),
-              value: v,
-            }))
-            // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
-            return React.createElement(FieldRouter.current!, {
-              ref: subRef,
-              ...subProps,
-              name: subName,
-              shape: subShape,
-              fieldType: fieldTypeFromInfo(subShape),
-              label: subProps.label ?? inferLabel(subKey),
-              required: subRequired,
-              options: subProps.options ?? subOptions,
-              errors: errorsFor(subName),
-            })
-          })
-        )
-
-        if (childrenFn) {
-          const childrenDefinition =
-            // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via Children conditional type
-            (childrenFn as (...args: any[]) => React.ReactNode)({
-              name,
-              Label,
-              Field: ScopedField,
-              Errors,
-              Error,
-              ...field,
-            })
-
-          const children = mapChildren(childrenDefinition, (child) => {
-            if (child.type === Label) {
-              return React.cloneElement(child, {
-                id: labelId,
-                children: label,
-                ...child.props,
-              })
-            }
-            if (child.type === Errors) {
-              if (!child.props.children && !errorsChildren) return null
-              return React.cloneElement(child, {
-                id: errorsId,
-                role: 'alert',
-                children: errorsChildren,
-                ...child.props,
-              })
-            }
-            return child
-          })
-
-          return (
-            <FieldContext.Provider value={field}>
-              <Field style={mergedStyle} {...restFieldProps}>
-                {children}
-              </Field>
-            </FieldContext.Provider>
-          )
-        }
-
         return (
-          <FieldContext.Provider value={field}>
-            <Field style={mergedStyle} {...restFieldProps}>
-              <Label id={labelId}>{label}</Label>
-              <ObjectFieldComp>
-                {subFields.map((subKey) => {
-                  const subShape = shape.fields[subKey]
-                  const subName = `${String(name)}.${subKey}`
-                  const subRequired = !(subShape.optional || subShape.nullable)
-                  const subOptions = subShape.enumValues?.map((v: string) => ({
-                    name: inferLabel(v),
-                    value: v,
-                  }))
-                  // biome-ignore lint/style/noNonNullAssertion: FieldRouter.current is always set before any component renders
-                  return React.createElement(FieldRouter.current!, {
-                    key: subKey,
-                    name: subName,
-                    shape: subShape,
-                    fieldType: fieldTypeFromInfo(subShape),
-                    label: inferLabel(subKey),
-                    required: subRequired,
-                    errors: errorsFor(subName),
-                    options: subOptions,
-                  })
-                })}
-              </ObjectFieldComp>
-              {Boolean(errorsChildren) && (
-                <Errors role="alert" id={errorsId}>
-                  {errorsChildren}
-                </Errors>
-              )}
-            </Field>
-          </FieldContext.Provider>
+          <ObjectFieldInner
+            name={name}
+            label={label}
+            shape={shape}
+            errors={errors}
+            hidden={hidden}
+            fieldProps={fieldProps}
+            childrenFn={childrenFn}
+            field={field}
+            idPrefix={idPrefix}
+            components={c}
+            // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
+            fieldRouter={FieldRouter.current as React.ComponentType<any>}
+          />
         )
       }
 

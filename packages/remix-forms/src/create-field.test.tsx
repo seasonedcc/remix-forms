@@ -1158,14 +1158,15 @@ describe('object fields', () => {
   })
 
   it('renders errors for auto-rendered nested object fields', () => {
-    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+    const mock = {
       control: {},
       formState: { errors: {} },
       getFieldState: (path: string) => {
         if (path === 'billing.street') return { error: { message: 'Required' } }
         return { error: undefined }
       },
-    })
+    }
+    ;(useFormContext as unknown as Mock).mockReturnValue(mock)
 
     const shape = schemaInfo(objectSchema.shape.billing)
     const html = renderToStaticMarkup(
@@ -1176,19 +1177,21 @@ describe('object fields', () => {
         shape={shape}
       />
     )
+    ;(useFormContext as unknown as Mock).mockRestore()
     expect(html).toContain('Required')
     expect(html).toContain('errors-for-billing[street]')
   })
 
   it('renders errors for scoped Field in object children', () => {
-    ;(useFormContext as unknown as Mock).mockReturnValueOnce({
+    const mock = {
       control: {},
       formState: { errors: {} },
       getFieldState: (path: string) => {
         if (path === 'billing.street') return { error: { message: 'Required' } }
         return { error: undefined }
       },
-    })
+    }
+    ;(useFormContext as unknown as Mock).mockReturnValue(mock)
 
     const shape = schemaInfo(objectSchema.shape.billing)
     const html = renderToStaticMarkup(
@@ -1201,6 +1204,7 @@ describe('object fields', () => {
         {({ Field: BillingField }) => <BillingField name="street" />}
       </ObjectField>
     )
+    ;(useFormContext as unknown as Mock).mockRestore()
     expect(html).toContain('Required')
     expect(html).toContain('errors-for-billing[street]')
   })
@@ -1462,24 +1466,23 @@ describe('array fields', () => {
         return { error: undefined }
       },
     }
-    ;(useFormContext as unknown as Mock)
-      .mockReturnValueOnce(mock)
-      .mockReturnValueOnce(mock)
+    ;(useFormContext as unknown as Mock).mockReturnValue(mock)
 
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
       <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
-        {({ items }) => (
+        {({ items, Item }) => (
           <>
-            {items.map((item) => (
-              <div key={item.key}>
-                <item.Errors />
-              </div>
+            {items.map(({ key }) => (
+              <Item key={key}>
+                {({ Errors: ItemErrors }) => <ItemErrors />}
+              </Item>
             ))}
           </>
         )}
       </ArrayField>
     )
+    ;(useFormContext as unknown as Mock).mockRestore()
     expect(html).toContain('id="arr-errors-for-tags[0]"')
     expect(html).toContain('role="alert"')
     expect(html).toContain('Too short')
@@ -1494,22 +1497,21 @@ describe('array fields', () => {
         return { error: undefined }
       },
     }
-    ;(useFormContext as unknown as Mock)
-      .mockReturnValueOnce(mock)
-      .mockReturnValueOnce(mock)
+    ;(useFormContext as unknown as Mock).mockReturnValue(mock)
 
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
       <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
-        {({ items }) => (
+        {({ items, Item }) => (
           <>
-            {items.map((item) => (
-              <item.SmartInput key={item.key} />
+            {items.map(({ key }) => (
+              <Item key={key}>{({ SmartInput }) => <SmartInput />}</Item>
             ))}
           </>
         )}
       </ArrayField>
     )
+    ;(useFormContext as unknown as Mock).mockRestore()
     expect(html).toContain('aria-invalid="true"')
     expect(html).toContain('aria-describedby="arr-errors-for-tags[0]"')
   })
@@ -1528,9 +1530,7 @@ describe('array fields', () => {
         return { error: undefined }
       },
     }
-    ;(useFormContext as unknown as Mock)
-      .mockReturnValueOnce(mock)
-      .mockReturnValueOnce(mock)
+    ;(useFormContext as unknown as Mock).mockReturnValue(mock)
 
     const ObjArrayField = createField<
       typeof objArraySchema,
@@ -1552,17 +1552,18 @@ describe('array fields', () => {
         fieldType="array"
         shape={shape}
       >
-        {({ items }) => (
+        {({ items, Item }) => (
           <>
-            {items.map((item) => (
-              <div key={item.key}>
-                <item.Field name="name" />
-              </div>
+            {items.map(({ key }) => (
+              <Item key={key}>
+                {({ Field: ItemField }) => <ItemField name="name" />}
+              </Item>
             ))}
           </>
         )}
       </ObjArrayField>
     )
+    ;(useFormContext as unknown as Mock).mockRestore()
     expect(html).toContain('Name required')
     expect(html).toContain('errors-for-contacts[0][name]')
   })
@@ -1680,12 +1681,12 @@ describe('enum options on scoped fields', () => {
     const shape = schemaInfo(enumArraySchema.shape.members)
     const html = renderToStaticMarkup(
       <EnumField name="members" label="Members" fieldType="array" shape={shape}>
-        {({ items }) => (
+        {({ items, Item }) => (
           <>
-            {items.map((item) => (
-              <div key={item.key}>
-                <item.Field name="role" />
-              </div>
+            {items.map(({ key }) => (
+              <Item key={key}>
+                {({ Field: ItemField }) => <ItemField name="role" />}
+              </Item>
             ))}
           </>
         )}

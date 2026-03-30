@@ -781,7 +781,7 @@ it('ArrayChildren provides items, append, remove, etc.', () => {
   expectTypeOf<Helpers>().toHaveProperty('swap')
 })
 
-it('scalar array children items have SmartInput, not Field', () => {
+it('array children items are pure data with key and index', () => {
   const schema = z.object({ tags: z.array(z.string()) })
   type S = typeof schema
   type Resolved = ResolveComponents<Record<never, never>>
@@ -790,30 +790,29 @@ it('scalar array children items have SmartInput, not Field', () => {
   type TagsChildren = NonNullable<TagsProps['children']>
   type Helpers = Parameters<TagsChildren>[0]
   type Item = Helpers['items'][number]
-  expectTypeOf<Item>().toHaveProperty('SmartInput')
-  expectTypeOf<Item>().toHaveProperty('key')
-  expectTypeOf<Item>().toHaveProperty('index')
-  expectTypeOf<Item>().not.toHaveProperty('Field')
-})
-
-it('object array children items have typed Field, not SmartInput', () => {
-  const schema = z.object({
-    contacts: z.array(z.object({ name: z.string(), email: z.string() })),
-  })
-  type S = typeof schema
-  type Resolved = ResolveComponents<Record<never, never>>
-  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
-  type ContactsProps = Parameters<FC>[0] & { name: 'contacts' }
-  type ContactsChildren = NonNullable<ContactsProps['children']>
-  type Helpers = Parameters<ContactsChildren>[0]
-  type Item = Helpers['items'][number]
-  expectTypeOf<Item>().toHaveProperty('Field')
   expectTypeOf<Item>().toHaveProperty('key')
   expectTypeOf<Item>().toHaveProperty('index')
   expectTypeOf<Item>().not.toHaveProperty('SmartInput')
+  expectTypeOf<Item>().not.toHaveProperty('Field')
 })
 
-it('object array item Field constrains name to element keys', () => {
+it('scalar array children provide Item component with SmartInput helpers', () => {
+  const schema = z.object({ tags: z.array(z.string()) })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type TagsProps = Parameters<FC>[0] & { name: 'tags' }
+  type TagsChildren = NonNullable<TagsProps['children']>
+  type Helpers = Parameters<TagsChildren>[0]
+  type ItemComp = Helpers['Item']
+  type IP = React.ComponentProps<ItemComp>
+  type ItemChildrenFn = IP['children']
+  type ItemHelpers = Parameters<ItemChildrenFn>[0]
+  expectTypeOf<ItemHelpers>().toHaveProperty('SmartInput')
+  expectTypeOf<ItemHelpers>().not.toHaveProperty('Field')
+})
+
+it('object array Item children provide typed Field', () => {
   const schema = z.object({
     contacts: z.array(z.object({ name: z.string(), email: z.string() })),
   })
@@ -823,9 +822,15 @@ it('object array item Field constrains name to element keys', () => {
   type ContactsProps = Parameters<FC>[0] & { name: 'contacts' }
   type ContactsChildren = NonNullable<ContactsProps['children']>
   type Helpers = Parameters<ContactsChildren>[0]
-  type ItemFC = Helpers['items'][number]['Field']
-  type ItemProps = Parameters<ItemFC>[0]
-  expectTypeOf<ItemProps['name']>().toEqualTypeOf<'name' | 'email'>()
+  type ItemComp = Helpers['Item']
+  type IP = React.ComponentProps<ItemComp>
+  type ItemChildrenFn = IP['children']
+  type ItemHelpers = Parameters<ItemChildrenFn>[0]
+  expectTypeOf<ItemHelpers>().toHaveProperty('Field')
+  expectTypeOf<ItemHelpers>().not.toHaveProperty('SmartInput')
+  type FieldFC = ItemHelpers['Field']
+  type FieldProps = Parameters<FieldFC>[0]
+  expectTypeOf<FieldProps['name']>().toEqualTypeOf<'name' | 'email'>()
 })
 
 // --- ScalarChildren helpers ---

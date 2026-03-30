@@ -29,27 +29,31 @@ export default () => (
       <>
         <Field name="listName" />
         <Field name="items">
-          {({ Label, Errors, items, append, remove, swap }) => (
+          {({ Label, Errors, Item, items, append, remove, swap }) => (
             <>
               <Label />
-              {items.map(({ key, index, SmartInput, Errors: ItemErrors }) => (
-                <div key={key}>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <SmartInput placeholder={\`Item \${index + 1}\`} />
-                    {index > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => swap(index, index - 1)}
-                      >
-                        Up
-                      </button>
-                    )}
-                    <button type="button" onClick={() => remove(index)}>
-                      Remove
-                    </button>
-                  </div>
-                  <ItemErrors />
-                </div>
+              {items.map(({ key, index }) => (
+                <Item key={key}>
+                  {({ SmartInput, Errors: ItemErrors }) => (
+                    <div>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <SmartInput placeholder={\`Item \${index + 1}\`} />
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => swap(index, index - 1)}
+                          >
+                            Up
+                          </button>
+                        )}
+                        <button type="button" onClick={() => remove(index)}>
+                          Remove
+                        </button>
+                      </div>
+                      <ItemErrors />
+                    </div>
+                  )}
+                </Item>
               ))}
               <button type="button" onClick={() => append()}>
                 Add item
@@ -87,30 +91,32 @@ export default function Component() {
           <>
             <Field name="listName" />
             <Field name="items">
-              {({ Label, Errors, items, append, remove, swap }) => (
+              {({ Label, Errors, Item, items, append, remove, swap }) => (
                 <>
                   <Label />
-                  {items.map(
-                    ({ key, index, SmartInput, Errors: ItemErrors }) => (
-                      <div key={key}>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <SmartInput placeholder={`Item ${index + 1}`} />
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => swap(index, index - 1)}
-                            >
-                              Up
+                  {items.map(({ key, index }) => (
+                    <Item key={key}>
+                      {({ SmartInput, Errors: ItemErrors }) => (
+                        <div>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <SmartInput placeholder={`Item ${index + 1}`} />
+                            {index > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => swap(index, index - 1)}
+                              >
+                                Up
+                              </button>
+                            )}
+                            <button type="button" onClick={() => remove(index)}>
+                              Remove
                             </button>
-                          )}
-                          <button type="button" onClick={() => remove(index)}>
-                            Remove
-                          </button>
+                          </div>
+                          <ItemErrors />
                         </div>
-                        <ItemErrors />
-                      </div>
-                    )
-                  )}
+                      )}
+                    </Item>
+                  ))}
                   <button type="button" onClick={() => append()}>
                     Add item
                   </button>

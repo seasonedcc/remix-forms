@@ -36,18 +36,22 @@ export default () => (
       <>
         <Field name="teamName" />
         <Field name="members">
-          {({ Label, Errors, items, append, remove }) => (
+          {({ Label, Errors, Item, items, append, remove }) => (
             <>
               <Label />
-              {items.map(({ key, index, Field }) => (
-                <fieldset key={key}>
-                  <legend>Member {index + 1}</legend>
-                  <Field name="name" />
-                  <Field name="role" />
-                  <button type="button" onClick={() => remove(index)}>
-                    Remove
-                  </button>
-                </fieldset>
+              {items.map(({ key, index }) => (
+                <Item key={key}>
+                  {({ Field: MemberField }) => (
+                    <fieldset>
+                      <legend>Member {index + 1}</legend>
+                      <MemberField name="name" />
+                      <MemberField name="role" />
+                      <button type="button" onClick={() => remove(index)}>
+                        Remove
+                      </button>
+                    </fieldset>
+                  )}
+                </Item>
               ))}
               <button type="button" onClick={() => append()}>
                 Add member
@@ -92,18 +96,22 @@ export default function Component() {
           <>
             <Field name="teamName" />
             <Field name="members">
-              {({ Label, Errors, items, append, remove }) => (
+              {({ Label, Errors, Item, items, append, remove }) => (
                 <>
                   <Label />
-                  {items.map(({ key, index, Field }) => (
-                    <fieldset key={key}>
-                      <legend>Member {index + 1}</legend>
-                      <Field name="name" />
-                      <Field name="role" />
-                      <button type="button" onClick={() => remove(index)}>
-                        Remove
-                      </button>
-                    </fieldset>
+                  {items.map(({ key, index }) => (
+                    <Item key={key}>
+                      {({ Field: MemberField }) => (
+                        <fieldset>
+                          <legend>Member {index + 1}</legend>
+                          <MemberField name="name" />
+                          <MemberField name="role" />
+                          <button type="button" onClick={() => remove(index)}>
+                            Remove
+                          </button>
+                        </fieldset>
+                      )}
+                    </Item>
                   ))}
                   <button type="button" onClick={() => append()}>
                     Add member
