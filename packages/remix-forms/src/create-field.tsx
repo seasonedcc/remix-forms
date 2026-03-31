@@ -294,6 +294,7 @@ type FieldBaseProps<
   hidden?: H
   children?: Children<Schema, Resolved, Multiline, Radio, Hidden, Name, M, R, H>
   fieldProps?: Omit<PropsOf<Resolved['field']>, 'children'>
+  emptyArrayLabel?: string
 }
 
 type SmartInputInternalKeys =
@@ -669,6 +670,7 @@ function ArrayFieldInner(props: Record<string, any>) {
     components: c,
     fieldRouter: Router,
     register,
+    emptyArrayLabel,
   } = props
 
   const FieldWrapper = c.field
@@ -986,7 +988,9 @@ function ArrayFieldInner(props: Record<string, any>) {
     <FieldContext.Provider value={fieldMeta}>
       <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
         <ArrayTitle id={labelId}>{label}</ArrayTitle>
-        {rhfFields.length === 0 && <ArrayEmptyComp>No items</ArrayEmptyComp>}
+        {rhfFields.length === 0 && (
+          <ArrayEmptyComp>{emptyArrayLabel}</ArrayEmptyComp>
+        )}
         {rhfFields.map((rhfField, index) => {
           const itemName = `${String(name)}.${index}`
 
@@ -1319,6 +1323,7 @@ function createField<
         accept,
         children: childrenFn,
         fieldProps,
+        emptyArrayLabel = 'No items',
         ...smartInputExtra
       }: // biome-ignore lint/suspicious/noExplicitAny: internal implementation — generics are for the external API
       Record<string, any>,
@@ -1376,6 +1381,7 @@ function createField<
             field={field}
             idPrefix={idPrefix}
             components={c}
+            emptyArrayLabel={emptyArrayLabel}
             // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
             register={register}

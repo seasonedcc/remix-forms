@@ -287,6 +287,7 @@ type SchemaFormProps<
   >
   options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
+  emptyArrayLabel?: string
   hiddenFields?: Hidden
   inputTypes?: Partial<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
@@ -448,6 +449,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     inputTypes,
     autoInputTypes = ['date', 'datetime-local', 'time'],
     emptyOptionLabel = '',
+    emptyArrayLabel: emptyArrayLabelProp = 'No items',
     hiddenFields,
     multiline,
     radio,
@@ -769,6 +771,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
             ...field,
             ...child.props,
             autoFocus,
+            emptyArrayLabel: emptyArrayLabelProp,
           })
         }
 
@@ -776,6 +779,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
           ...field,
           ...child.props,
           autoFocus,
+          emptyArrayLabel: emptyArrayLabelProp,
         })
       }
       if (child.type === Errors) {
@@ -909,6 +913,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.errors - Error messages keyed by field name
  * @param props.values - Initial values for fields
  * @param props.emptyOptionLabel - Label for the empty select option
+ * @param props.emptyArrayLabel - Text shown when an array field has no items. Defaults to `'No items'`
  * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
  * @param props.flushSync - Whether to flush React updates synchronously
  * @returns A form element ready to be used inside a React Router v7 route

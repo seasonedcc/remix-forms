@@ -1296,6 +1296,31 @@ describe('array fields', () => {
     expect(html).not.toContain('Remove')
   })
 
+  it('renders custom emptyArrayLabel when provided', () => {
+    ;(useFieldArray as unknown as Mock).mockReturnValueOnce({
+      fields: [],
+      append: vi.fn(),
+      prepend: vi.fn(),
+      remove: vi.fn(),
+      insert: vi.fn(),
+      move: vi.fn(),
+      swap: vi.fn(),
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField
+        name="tags"
+        label="Tags"
+        fieldType="array"
+        shape={shape}
+        emptyArrayLabel="Nothing here yet"
+      />
+    )
+    expect(html).toContain('Nothing here yet')
+    expect(html).not.toContain('No items')
+  })
+
   it('auto-renders array of objects with nested fields', () => {
     const objArraySchema = z.object({
       contacts: z.array(z.object({ name: z.string(), email: z.string() })),
