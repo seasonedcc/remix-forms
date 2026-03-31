@@ -123,6 +123,11 @@ type ArrayEmptySlotProps = { children?: React.ReactNode }
 
 type ObjectFieldSlotProps = { children?: React.ReactNode }
 
+type TitleSlotProps = {
+  id?: string
+  children?: React.ReactNode
+}
+
 /**
  * Describes the full set of component slots available for customisation.
  *
@@ -160,6 +165,8 @@ type ComponentMap = {
   removeButton: ComponentFor<RemoveButtonSlotProps>
   arrayEmpty: ComponentFor<ArrayEmptySlotProps>
   objectField: ComponentFor<ObjectFieldSlotProps>
+  arrayTitle: ComponentFor<TitleSlotProps>
+  objectTitle: ComponentFor<TitleSlotProps>
 }
 
 const DefaultForm = ReactRouterForm
@@ -277,6 +284,16 @@ const DefaultObjectField = React.forwardRef<
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
 
+const DefaultArrayTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
 type DefaultComponents = {
   form: typeof DefaultForm
   field: typeof DefaultField
@@ -301,6 +318,8 @@ type DefaultComponents = {
   removeButton: typeof DefaultRemoveButton
   arrayEmpty: typeof DefaultArrayEmpty
   objectField: typeof DefaultObjectField
+  arrayTitle: typeof DefaultArrayTitle
+  objectTitle: typeof DefaultObjectTitle
 }
 
 const defaultComponents: DefaultComponents = {
@@ -327,6 +346,8 @@ const defaultComponents: DefaultComponents = {
   removeButton: DefaultRemoveButton,
   arrayEmpty: DefaultArrayEmpty,
   objectField: DefaultObjectField,
+  arrayTitle: DefaultArrayTitle,
+  objectTitle: DefaultObjectTitle,
 }
 
 type ResolveComponents<Components extends Partial<ComponentMap>> = {
@@ -390,5 +411,7 @@ export {
   DefaultRemoveButton,
   DefaultArrayEmpty,
   DefaultObjectField,
+  DefaultArrayTitle,
+  DefaultObjectTitle,
   defaultComponents,
 }

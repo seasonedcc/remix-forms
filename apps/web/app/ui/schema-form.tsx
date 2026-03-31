@@ -78,6 +78,16 @@ const ObjectField = React.forwardRef<
   />
 ))
 
+const ArrayTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div ref={ref} className="label" {...props} />)
+
+const ObjectTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div ref={ref} className="label" {...props} />)
+
 const SchemaForm = makeSchemaForm({
   form: StyledForm,
   fields: Fields,
@@ -101,6 +111,8 @@ const SchemaForm = makeSchemaForm({
   removeButton: RemoveButton,
   arrayEmpty: ArrayEmpty,
   objectField: ObjectField,
+  arrayTitle: ArrayTitle,
+  objectTitle: ObjectTitle,
 })
 
 export { SchemaForm }

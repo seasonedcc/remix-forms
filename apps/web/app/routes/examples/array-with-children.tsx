@@ -29,9 +29,9 @@ export default () => (
       <>
         <Field name="listName" />
         <Field name="items">
-          {({ Label, Errors, Item, items, append, remove, swap }) => (
+          {({ Title, Errors, Item, items, append, remove, swap }) => (
             <>
-              <Label />
+              <Title />
               {items.map(({ key, index }) => (
                 <Item key={key}>
                   {({ SmartInput, Errors: ItemErrors }) => (
@@ -91,9 +91,9 @@ export default function Component() {
           <>
             <Field name="listName" />
             <Field name="items">
-              {({ Label, Errors, Item, items, append, remove, swap }) => (
+              {({ Title, Errors, Item, items, append, remove, swap }) => (
                 <>
-                  <Label />
+                  <Title />
                   {items.map(({ key, index }) => (
                     <Item key={key}>
                       {({ SmartInput, Errors: ItemErrors }) => (

@@ -34,6 +34,14 @@ const SchemaForm = makeSchemaForm({
   fieldErrors: /* your custom FieldErrors */,
   globalErrors: /* your custom GlobalErrors */,
   error: /* your custom Error */,
+  arrayField: /* your custom array field wrapper */,
+  arrayItem: /* your custom array item wrapper */,
+  arrayTitle: /* your custom array title (div by default, not label) */,
+  addButton: /* your custom add-item button */,
+  removeButton: /* your custom remove-item button */,
+  arrayEmpty: /* your custom empty-array message */,
+  objectField: /* your custom object field wrapper */,
+  objectTitle: /* your custom object title (div by default, not label) */,
 })
 
 export { SchemaForm }

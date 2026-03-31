@@ -36,9 +36,9 @@ export default () => (
       <>
         <Field name="teamName" />
         <Field name="members">
-          {({ Label, Errors, Item, items, append, remove }) => (
+          {({ Title, Errors, Item, items, append, remove }) => (
             <>
-              <Label />
+              <Title />
               {items.map(({ key, index }) => (
                 <Item key={key}>
                   {({ Field: MemberField }) => (
@@ -96,9 +96,9 @@ export default function Component() {
           <>
             <Field name="teamName" />
             <Field name="members">
-              {({ Label, Errors, Item, items, append, remove }) => (
+              {({ Title, Errors, Item, items, append, remove }) => (
                 <>
-                  <Label />
+                  <Title />
                   {items.map(({ key, index }) => (
                     <Item key={key}>
                       {({ Field: MemberField }) => (

@@ -33,9 +33,9 @@ export default () => (
       <>
         <Field name="title" />
         <Field name="author">
-          {({ Label, Field, Errors }) => (
+          {({ Title, Field, Errors }) => (
             <>
-              <Label>Author details</Label>
+              <Title>Author details</Title>
               <Field name="name" label="Full name" />
               <Field name="email" />
               <Field name="bio" multiline placeholder="Tell us about yourself" />
@@ -76,9 +76,9 @@ export default function Component() {
           <>
             <Field name="title" />
             <Field name="author">
-              {({ Label, Field, Errors }) => (
+              {({ Title, Field, Errors }) => (
                 <>
-                  <Label>Author details</Label>
+                  <Title>Author details</Title>
                   <Field name="name" label="Full name" />
                   <Field name="email" />
                   <Field

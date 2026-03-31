@@ -715,7 +715,7 @@ it('ScopedFieldComponent rejects invalid sub-field name', () => {
 
 // --- ObjectChildren helpers ---
 
-it('ObjectChildren provides typed Field, Label, Errors, Error', () => {
+it('ObjectChildren provides typed Field, Title, Errors, Error', () => {
   const schema = z.object({
     billing: z.object({ street: z.string(), city: z.string() }),
   })
@@ -726,7 +726,7 @@ it('ObjectChildren provides typed Field, Label, Errors, Error', () => {
   type BillingChildren = NonNullable<BillingProps['children']>
   type Helpers = Parameters<BillingChildren>[0]
   expectTypeOf<Helpers>().toHaveProperty('Field')
-  expectTypeOf<Helpers>().toHaveProperty('Label')
+  expectTypeOf<Helpers>().toHaveProperty('Title')
   expectTypeOf<Helpers>().toHaveProperty('Errors')
   expectTypeOf<Helpers>().toHaveProperty('Error')
 })

@@ -11,7 +11,7 @@ test('With JS enabled', async ({ example }) => {
   await example.expectField(title)
   await expect(button).toBeEnabled()
 
-  await expect(page.locator('label:has-text("Author details")')).toBeVisible()
+  await expect(page.getByText('Author details', { exact: true })).toBeVisible()
   await expect(page.locator('label:has-text("Full name")')).toBeVisible()
 
   await expect(page.locator('input[name="author\\[name\\]"]')).toBeVisible()

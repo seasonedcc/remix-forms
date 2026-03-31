@@ -1520,7 +1520,7 @@ describe('renderForm', () => {
     )
   })
 
-  it('gives object children Field/Label, not array helpers', () => {
+  it('gives object children Field/Title, not array helpers', () => {
     const schema = z.object({
       author: z.object({ name: z.string() }),
     })
@@ -1531,7 +1531,7 @@ describe('renderForm', () => {
           <Field name="author">
             {(helpers) => {
               helpers.Field
-              helpers.Label
+              helpers.Title
               // @ts-expect-error - object children don't have items
               helpers.items
               // @ts-expect-error - object children don't have append

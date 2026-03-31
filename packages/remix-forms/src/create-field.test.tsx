@@ -1096,6 +1096,7 @@ describe('object fields', () => {
     expect(html).toContain('City')
     expect(html).toContain('name="billing[street]"')
     expect(html).toContain('name="billing[city]"')
+    expect(html).toMatch(/<div[^>]*>Billing<\/div>/)
   })
 
   it('renders custom children with scoped Field for object fieldType', () => {
@@ -1237,6 +1238,7 @@ describe('array fields', () => {
     expect(html).toContain('name="tags[1]"')
     expect(html).toContain('Remove')
     expect(html).toContain('Add')
+    expect(html).toMatch(/<div[^>]*>Tags<\/div>/)
   })
 
   it('wraps scalar array items directly without field wrapper or label', () => {
@@ -1389,22 +1391,24 @@ describe('array fields', () => {
     expect(html).toContain('data-index="1"')
   })
 
-  it('enhances Label with id in array children', () => {
+  it('enhances Title with id in array children', () => {
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
       <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
-        {({ Label }) => <Label />}
+        {({ Title }) => <Title />}
       </ArrayField>
     )
     expect(html).toContain('id="arr-label-for-tags"')
     expect(html).toContain('Tags')
+    expect(html).toContain('<div ')
+    expect(html).not.toContain('<label')
   })
 
-  it('preserves user children on Label in array children', () => {
+  it('preserves user children on Title in array children', () => {
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
       <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
-        {({ Label }) => <Label>My list</Label>}
+        {({ Title }) => <Title>My list</Title>}
       </ArrayField>
     )
     expect(html).toContain('My list')
@@ -1589,7 +1593,7 @@ describe('object children enhancement', () => {
     components: defaultComponents,
   })
 
-  it('enhances Label with id in object children', () => {
+  it('enhances Title with id in object children', () => {
     const shape = schemaInfo(objectSchema.shape.billing)
     const html = renderToStaticMarkup(
       <ObjectField
@@ -1598,14 +1602,16 @@ describe('object children enhancement', () => {
         fieldType="object"
         shape={shape}
       >
-        {({ Label }) => <Label />}
+        {({ Title }) => <Title />}
       </ObjectField>
     )
     expect(html).toContain('id="test-label-for-billing"')
     expect(html).toContain('Billing')
+    expect(html).toContain('<div ')
+    expect(html).not.toContain('<label')
   })
 
-  it('preserves user children on Label in object children', () => {
+  it('preserves user children on Title in object children', () => {
     const shape = schemaInfo(objectSchema.shape.billing)
     const html = renderToStaticMarkup(
       <ObjectField
@@ -1614,7 +1620,7 @@ describe('object children enhancement', () => {
         fieldType="object"
         shape={shape}
       >
-        {({ Label }) => <Label>Payment info</Label>}
+        {({ Title }) => <Title>Payment info</Title>}
       </ObjectField>
     )
     expect(html).toContain('Payment info')

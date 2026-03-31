@@ -62,7 +62,7 @@ type ObjectChildren<
 > = (
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
     name: Name
-    Label: Resolved['label']
+    Title: Resolved['objectTitle']
     Field: ScopedFieldComponent<NonNullable<Infer<Schema>[Name]>, Resolved>
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
@@ -169,7 +169,7 @@ type ScopedObjectChildren<
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
 > = (helpers: {
-  Label: Resolved['label']
+  Title: Resolved['objectTitle']
   Field: ScopedFieldComponent<T, Resolved>
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
@@ -180,7 +180,7 @@ type ScopedArrayChildren<
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
 > = (helpers: {
-  Label: Resolved['label']
+  Title: Resolved['arrayTitle']
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
   items: ArrayItem[]
@@ -212,7 +212,7 @@ type ArrayChildren<
 > = (
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
     name: Name
-    Label: Resolved['label']
+    Title: Resolved['arrayTitle']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
     items: ArrayItem[]
@@ -673,6 +673,7 @@ function ArrayFieldInner(props: Record<string, any>) {
 
   const FieldWrapper = c.field
   const Label = c.label
+  const ArrayTitle = c.arrayTitle
   const Errors = c.fieldErrors
   const Error = c.error
   const ArrayFieldComp = c.arrayField
@@ -913,7 +914,7 @@ function ArrayFieldInner(props: Record<string, any>) {
       // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
       (childrenFn as (...args: any[]) => React.ReactNode)({
         name,
-        Label,
+        Title: ArrayTitle,
         Errors,
         Error,
         items,
@@ -929,7 +930,7 @@ function ArrayFieldInner(props: Record<string, any>) {
 
     let itemIndex = 0
     const children = mapChildren(childrenDefinition, (child) => {
-      if (child.type === Label) {
+      if (child.type === ArrayTitle) {
         return React.cloneElement(child, {
           id: labelId,
           children: label,
@@ -970,7 +971,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   return (
     <FieldContext.Provider value={fieldMeta}>
       <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
-        <Label id={labelId}>{label}</Label>
+        <ArrayTitle id={labelId}>{label}</ArrayTitle>
         {rhfFields.length === 0 && <ArrayEmptyComp>No items</ArrayEmptyComp>}
         {rhfFields.map((rhfField, index) => {
           const itemName = `${String(name)}.${index}`
@@ -1112,7 +1113,7 @@ function ObjectFieldInner(props: Record<string, any>) {
   } = props
 
   const Field = c.field
-  const Label = c.label
+  const ObjectTitle = c.objectTitle
   const Errors = c.fieldErrors
   const Error = c.error
   const ObjectFieldComp = c.objectField
@@ -1173,7 +1174,7 @@ function ObjectFieldInner(props: Record<string, any>) {
       // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
       (childrenFn as (...args: any[]) => React.ReactNode)({
         name,
-        Label,
+        Title: ObjectTitle,
         Field: ScopedField,
         Errors,
         Error,
@@ -1181,7 +1182,7 @@ function ObjectFieldInner(props: Record<string, any>) {
       })
 
     const children = mapChildren(childrenDefinition, (child) => {
-      if (child.type === Label) {
+      if (child.type === ObjectTitle) {
         return React.cloneElement(child, {
           id: labelId,
           children: label,
@@ -1212,7 +1213,7 @@ function ObjectFieldInner(props: Record<string, any>) {
   return (
     <FieldContext.Provider value={field}>
       <Field style={mergedStyle} {...restFieldProps}>
-        <Label id={labelId}>{label}</Label>
+        <ObjectTitle id={labelId}>{label}</ObjectTitle>
         <ObjectFieldComp>
           {subFields.map((subKey) => {
             const subShape = shape.fields[subKey]
