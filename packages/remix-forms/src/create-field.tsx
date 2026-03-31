@@ -677,7 +677,9 @@ function ArrayFieldInner(props: Record<string, any>) {
   const Errors = c.fieldErrors
   const Error = c.error
   const ArrayFieldComp = c.arrayField
-  const ArrayItemComp = c.arrayItem
+  const ScalarArrayItemComp = c.scalarArrayItem
+  const ObjectArrayItemComp = c.objectArrayItem
+  const ArrayArrayItemComp = c.arrayArrayItem
   const AddButton = c.addButton
   const RemoveButton = c.removeButton
   const ArrayEmptyComp = c.arrayEmpty
@@ -850,7 +852,7 @@ function ArrayFieldInner(props: Record<string, any>) {
 
         const childrenDefinition = itemChildrenFn(helpers)
 
-        return mapChildren(childrenDefinition, (child) => {
+        const mappedChildren = mapChildren(childrenDefinition, (child) => {
           if (child.type === ChildSmartInput) {
             return React.cloneElement(child, {
               fieldType: itemFieldType,
@@ -885,7 +887,16 @@ function ArrayFieldInner(props: Record<string, any>) {
             })
           }
           return child
-        }) as React.ReactElement
+        })
+
+        const ItemWrapper =
+          itemShape.type === 'object'
+            ? ObjectArrayItemComp
+            : itemShape.type === 'array'
+              ? ArrayArrayItemComp
+              : ScalarArrayItemComp
+
+        return <ItemWrapper>{mappedChildren}</ItemWrapper>
       },
     [
       name,
@@ -901,6 +912,9 @@ function ArrayFieldInner(props: Record<string, any>) {
       ScopedItemField,
       Error,
       Router,
+      ScalarArrayItemComp,
+      ObjectArrayItemComp,
+      ArrayArrayItemComp,
     ]
   )
 
@@ -979,7 +993,7 @@ function ArrayFieldInner(props: Record<string, any>) {
           if (itemShape.type === 'object') {
             const subFields = Object.keys(itemShape.fields)
             return (
-              <ArrayItemComp key={rhfField.id}>
+              <ObjectArrayItemComp key={rhfField.id}>
                 {subFields.map((subKey) => {
                   const subShape = itemShape.fields[subKey]
                   const subName = `${itemName}.${subKey}`
@@ -1002,13 +1016,13 @@ function ArrayFieldInner(props: Record<string, any>) {
                 <RemoveButton onClick={() => remove(index)}>
                   Remove
                 </RemoveButton>
-              </ArrayItemComp>
+              </ObjectArrayItemComp>
             )
           }
 
           if (itemShape.type === 'array') {
             return (
-              <ArrayItemComp key={rhfField.id}>
+              <ArrayArrayItemComp key={rhfField.id}>
                 {React.createElement(Router, {
                   name: itemName,
                   shape: itemShape,
@@ -1020,7 +1034,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                 <RemoveButton onClick={() => remove(index)}>
                   Remove
                 </RemoveButton>
-              </ArrayItemComp>
+              </ArrayArrayItemComp>
             )
           }
 
@@ -1065,7 +1079,7 @@ function ArrayFieldInner(props: Record<string, any>) {
             : undefined
 
           return (
-            <ArrayItemComp key={rhfField.id}>
+            <ScalarArrayItemComp key={rhfField.id}>
               <ArrayFieldComp>
                 <SmartInput
                   fieldType={itemFieldType}
@@ -1082,7 +1096,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                 )}
               </ArrayFieldComp>
               <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
-            </ArrayItemComp>
+            </ScalarArrayItemComp>
           )
         })}
         <AddButton onClick={() => appendDefault()}>Add</AddButton>

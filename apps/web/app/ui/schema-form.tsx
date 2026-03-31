@@ -29,12 +29,22 @@ const ArrayField = React.forwardRef<
   <div ref={ref} className="flex flex-1 flex-col gap-2" {...props} />
 ))
 
-const ArrayItem = React.forwardRef<
+const ScalarArrayItem = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => (
   <div ref={ref} className="flex items-center gap-2" {...props} />
 ))
+
+const ObjectArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div ref={ref} className="flex flex-col gap-2" {...props} />)
+
+const ArrayArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div ref={ref} className="flex flex-col gap-2" {...props} />)
 
 const AddButton = React.forwardRef<
   HTMLButtonElement,
@@ -106,7 +116,9 @@ const SchemaForm = makeSchemaForm({
   globalErrors: Errors,
   error: Error,
   arrayField: ArrayField,
-  arrayItem: ArrayItem,
+  scalarArrayItem: ScalarArrayItem,
+  objectArrayItem: ObjectArrayItem,
+  arrayArrayItem: ArrayArrayItem,
   addButton: AddButton,
   removeButton: RemoveButton,
   arrayEmpty: ArrayEmpty,

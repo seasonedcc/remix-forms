@@ -1253,8 +1253,8 @@ describe('array fields', () => {
         arrayField: (props: React.ComponentProps<'div'>) => (
           <div data-slot="array-field" {...props} />
         ),
-        arrayItem: (props: React.ComponentProps<'div'>) => (
-          <div data-slot="array-item" {...props} />
+        scalarArrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="scalar-array-item" {...props} />
         ),
       },
     })
@@ -1271,7 +1271,8 @@ describe('array fields', () => {
       .length
     expect(arrayFieldCount).toBe(2)
 
-    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    const arrayItemCount = (html.match(/data-slot="scalar-array-item"/g) || [])
+      .length
     expect(arrayItemCount).toBe(2)
   })
 
@@ -1345,8 +1346,8 @@ describe('array fields', () => {
         arrayField: (props: React.ComponentProps<'div'>) => (
           <div data-slot="array-field" {...props} />
         ),
-        arrayItem: (props: React.ComponentProps<'div'>) => (
-          <div data-slot="array-item" {...props} />
+        objectArrayItem: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="object-array-item" {...props} />
         ),
       },
     })
@@ -1368,7 +1369,8 @@ describe('array fields', () => {
       .length
     expect(arrayFieldCount).toBe(0)
 
-    const arrayItemCount = (html.match(/data-slot="array-item"/g) || []).length
+    const arrayItemCount = (html.match(/data-slot="object-array-item"/g) || [])
+      .length
     expect(arrayItemCount).toBe(2)
   })
 

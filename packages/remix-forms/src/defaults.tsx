@@ -107,7 +107,9 @@ type ButtonSlotProps = {
 
 type ArrayFieldSlotProps = { children?: React.ReactNode }
 
-type ArrayItemSlotProps = { children?: React.ReactNode }
+type ScalarArrayItemSlotProps = { children?: React.ReactNode }
+type ObjectArrayItemSlotProps = { children?: React.ReactNode }
+type ArrayArrayItemSlotProps = { children?: React.ReactNode }
 
 type AddButtonSlotProps = {
   onClick?: React.MouseEventHandler
@@ -160,7 +162,9 @@ type ComponentMap = {
   globalErrors: ComponentFor<ErrorContainerSlotProps>
   button: ComponentFor<ButtonSlotProps>
   arrayField: ComponentFor<ArrayFieldSlotProps>
-  arrayItem: ComponentFor<ArrayItemSlotProps>
+  scalarArrayItem: ComponentFor<ScalarArrayItemSlotProps>
+  objectArrayItem: ComponentFor<ObjectArrayItemSlotProps>
+  arrayArrayItem: ComponentFor<ArrayArrayItemSlotProps>
   addButton: ComponentFor<AddButtonSlotProps>
   removeButton: ComponentFor<RemoveButtonSlotProps>
   arrayEmpty: ComponentFor<ArrayEmptySlotProps>
@@ -259,7 +263,17 @@ const DefaultArrayField = React.forwardRef<
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
 
-const DefaultArrayItem = React.forwardRef<
+const DefaultScalarArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultArrayArrayItem = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
@@ -313,7 +327,9 @@ type DefaultComponents = {
   globalErrors: typeof DefaultGlobalErrors
   button: typeof DefaultButton
   arrayField: typeof DefaultArrayField
-  arrayItem: typeof DefaultArrayItem
+  scalarArrayItem: typeof DefaultScalarArrayItem
+  objectArrayItem: typeof DefaultObjectArrayItem
+  arrayArrayItem: typeof DefaultArrayArrayItem
   addButton: typeof DefaultAddButton
   removeButton: typeof DefaultRemoveButton
   arrayEmpty: typeof DefaultArrayEmpty
@@ -341,7 +357,9 @@ const defaultComponents: DefaultComponents = {
   globalErrors: DefaultGlobalErrors,
   button: DefaultButton,
   arrayField: DefaultArrayField,
-  arrayItem: DefaultArrayItem,
+  scalarArrayItem: DefaultScalarArrayItem,
+  objectArrayItem: DefaultObjectArrayItem,
+  arrayArrayItem: DefaultArrayArrayItem,
   addButton: DefaultAddButton,
   removeButton: DefaultRemoveButton,
   arrayEmpty: DefaultArrayEmpty,
@@ -406,7 +424,9 @@ export {
   DefaultGlobalErrors,
   DefaultButton,
   DefaultArrayField,
-  DefaultArrayItem,
+  DefaultScalarArrayItem,
+  DefaultObjectArrayItem,
+  DefaultArrayArrayItem,
   DefaultAddButton,
   DefaultRemoveButton,
   DefaultArrayEmpty,
