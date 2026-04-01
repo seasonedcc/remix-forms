@@ -36,7 +36,7 @@ export default () => (
       <>
         <Field name="teamName" />
         <Field name="members">
-          {({ Title, Errors, Item, items, append, remove }) => (
+          {({ Title, Errors, Item, items, append, remove, AddButton, RemoveButton }) => (
             <>
               <Title />
               {items.map(({ key, index }) => (
@@ -46,16 +46,16 @@ export default () => (
                       <legend>Member {index + 1}</legend>
                       <MemberField name="name" />
                       <MemberField name="role" />
-                      <button type="button" onClick={() => remove(index)}>
+                      <RemoveButton onClick={() => remove(index)}>
                         Remove
-                      </button>
+                      </RemoveButton>
                     </fieldset>
                   )}
                 </Item>
               ))}
-              <button type="button" onClick={() => append()}>
+              <AddButton onClick={() => append()}>
                 Add member
-              </button>
+              </AddButton>
               <Errors />
             </>
           )}
@@ -96,7 +96,16 @@ export default function Component() {
           <>
             <Field name="teamName" />
             <Field name="members">
-              {({ Title, Errors, Item, items, append, remove }) => (
+              {({
+                Title,
+                Errors,
+                Item,
+                items,
+                append,
+                remove,
+                AddButton,
+                RemoveButton,
+              }) => (
                 <>
                   <Title />
                   {items.map(({ key, index }) => (
@@ -106,16 +115,14 @@ export default function Component() {
                           <legend>Member {index + 1}</legend>
                           <MemberField name="name" />
                           <MemberField name="role" />
-                          <button type="button" onClick={() => remove(index)}>
+                          <RemoveButton onClick={() => remove(index)}>
                             Remove
-                          </button>
+                          </RemoveButton>
                         </fieldset>
                       )}
                     </Item>
                   ))}
-                  <button type="button" onClick={() => append()}>
-                    Add member
-                  </button>
+                  <AddButton onClick={() => append()}>Add member</AddButton>
                   <Errors />
                 </>
               )}

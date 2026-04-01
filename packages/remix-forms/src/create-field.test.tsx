@@ -1418,6 +1418,34 @@ describe('array fields', () => {
     expect(html).toContain('data-index="1"')
   })
 
+  it('exposes AddButton, RemoveButton, and ArrayEmpty in array children', () => {
+    ;(useFieldArray as unknown as Mock).mockReturnValueOnce({
+      fields: [],
+      append: vi.fn(),
+      prepend: vi.fn(),
+      remove: vi.fn(),
+      insert: vi.fn(),
+      move: vi.fn(),
+      swap: vi.fn(),
+    })
+
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ AddButton, RemoveButton, ArrayEmpty }) => (
+          <>
+            <ArrayEmpty>No tags yet</ArrayEmpty>
+            <AddButton onClick={() => {}}>Add tag</AddButton>
+            <RemoveButton onClick={() => {}}>Delete</RemoveButton>
+          </>
+        )}
+      </ArrayField>
+    )
+    expect(html).toContain('No tags yet')
+    expect(html).toContain('Add tag')
+    expect(html).toContain('Delete')
+  })
+
   it('enhances Title with id in array children', () => {
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(

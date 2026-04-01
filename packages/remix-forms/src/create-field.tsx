@@ -191,6 +191,9 @@ type ScopedArrayChildren<
   insert: (index: number, value?: ArrayElement<V>) => void
   move: (from: number, to: number) => void
   swap: (a: number, b: number) => void
+  AddButton: Resolved['addButton']
+  RemoveButton: Resolved['removeButton']
+  ArrayEmpty: Resolved['arrayEmpty']
 }) => React.ReactNode
 
 type ScopedScalarChildren<
@@ -225,6 +228,9 @@ type ArrayChildren<
     insert: (index: number, value?: ArrayElement<Infer<Schema>[Name]>) => void
     move: (from: number, to: number) => void
     swap: (a: number, b: number) => void
+    AddButton: Resolved['addButton']
+    RemoveButton: Resolved['removeButton']
+    ArrayEmpty: Resolved['arrayEmpty']
   }
 ) => React.ReactNode
 
@@ -941,6 +947,9 @@ function ArrayFieldInner(props: Record<string, any>) {
         insert: insertDefault,
         move,
         swap,
+        AddButton,
+        RemoveButton,
+        ArrayEmpty: ArrayEmptyComp,
         ...fieldMeta,
       })
 

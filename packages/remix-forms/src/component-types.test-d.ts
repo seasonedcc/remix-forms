@@ -781,6 +781,19 @@ it('ArrayChildren provides items, append, remove, etc.', () => {
   expectTypeOf<Helpers>().toHaveProperty('swap')
 })
 
+it('ArrayChildren provides AddButton, RemoveButton, and ArrayEmpty', () => {
+  const schema = z.object({ tags: z.array(z.string()) })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type FC = FieldComponent<S, Resolved, readonly [], readonly [], readonly []>
+  type TagsProps = Parameters<FC>[0] & { name: 'tags' }
+  type TagsChildren = NonNullable<TagsProps['children']>
+  type Helpers = Parameters<TagsChildren>[0]
+  expectTypeOf<Helpers>().toHaveProperty('AddButton')
+  expectTypeOf<Helpers>().toHaveProperty('RemoveButton')
+  expectTypeOf<Helpers>().toHaveProperty('ArrayEmpty')
+})
+
 it('array children items are pure data with key and index', () => {
   const schema = z.object({ tags: z.array(z.string()) })
   type S = typeof schema

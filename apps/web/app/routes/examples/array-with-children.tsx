@@ -29,7 +29,7 @@ export default () => (
       <>
         <Field name="listName" />
         <Field name="items">
-          {({ Title, Errors, Item, items, append, remove, swap }) => (
+          {({ Title, Errors, Item, items, append, remove, swap, AddButton, RemoveButton }) => (
             <>
               <Title />
               {items.map(({ key, index }) => (
@@ -46,18 +46,18 @@ export default () => (
                             Up
                           </button>
                         )}
-                        <button type="button" onClick={() => remove(index)}>
+                        <RemoveButton onClick={() => remove(index)}>
                           Remove
-                        </button>
+                        </RemoveButton>
                       </div>
                       <ItemErrors />
                     </div>
                   )}
                 </Item>
               ))}
-              <button type="button" onClick={() => append()}>
+              <AddButton onClick={() => append()}>
                 Add item
-              </button>
+              </AddButton>
               <Errors />
             </>
           )}
@@ -91,7 +91,17 @@ export default function Component() {
           <>
             <Field name="listName" />
             <Field name="items">
-              {({ Title, Errors, Item, items, append, remove, swap }) => (
+              {({
+                Title,
+                Errors,
+                Item,
+                items,
+                append,
+                remove,
+                swap,
+                AddButton,
+                RemoveButton,
+              }) => (
                 <>
                   <Title />
                   {items.map(({ key, index }) => (
@@ -108,18 +118,16 @@ export default function Component() {
                                 Up
                               </button>
                             )}
-                            <button type="button" onClick={() => remove(index)}>
+                            <RemoveButton onClick={() => remove(index)}>
                               Remove
-                            </button>
+                            </RemoveButton>
                           </div>
                           <ItemErrors />
                         </div>
                       )}
                     </Item>
                   ))}
-                  <button type="button" onClick={() => append()}>
-                    Add item
-                  </button>
+                  <AddButton onClick={() => append()}>Add item</AddButton>
                   <Errors />
                 </>
               )}
