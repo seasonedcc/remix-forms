@@ -64,6 +64,7 @@ type ObjectChildren<
     name: Name
     Title: Resolved['objectTitle']
     Field: ScopedFieldComponent<NonNullable<Infer<Schema>[Name]>, Resolved>
+    ObjectFields: Resolved['objectFields']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
   }
@@ -171,6 +172,7 @@ type ScopedObjectChildren<
 > = (helpers: {
   Title: Resolved['objectTitle']
   Field: ScopedFieldComponent<T, Resolved>
+  ObjectFields: Resolved['objectFields']
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
 }) => React.ReactNode
@@ -194,6 +196,7 @@ type ScopedArrayChildren<
   AddButton: Resolved['addButton']
   RemoveButton: Resolved['removeButton']
   ArrayEmpty: Resolved['arrayEmpty']
+  ScalarArrayField: Resolved['scalarArrayField']
 }) => React.ReactNode
 
 type ScopedScalarChildren<
@@ -231,6 +234,7 @@ type ArrayChildren<
     AddButton: Resolved['addButton']
     RemoveButton: Resolved['removeButton']
     ArrayEmpty: Resolved['arrayEmpty']
+    ScalarArrayField: Resolved['scalarArrayField']
   }
 ) => React.ReactNode
 
@@ -950,6 +954,7 @@ function ArrayFieldInner(props: Record<string, any>) {
         AddButton,
         RemoveButton,
         ArrayEmpty: ArrayEmptyComp,
+        ScalarArrayField: ScalarArrayFieldComp,
         ...fieldMeta,
       })
 
@@ -1203,6 +1208,7 @@ function ObjectFieldInner(props: Record<string, any>) {
         name,
         Title: ObjectTitle,
         Field: ScopedField,
+        ObjectFields: ObjectFieldsComp,
         Errors,
         Error,
         ...field,

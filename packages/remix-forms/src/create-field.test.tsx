@@ -1448,6 +1448,22 @@ describe('array fields', () => {
     expect(html).toContain('Delete')
   })
 
+  it('exposes ScalarArrayField in array children', () => {
+    const shape = schemaInfo(arraySchema.shape.tags)
+    const html = renderToStaticMarkup(
+      <ArrayField name="tags" label="Tags" fieldType="array" shape={shape}>
+        {({ ScalarArrayField, items }) => (
+          <>
+            {items.map(({ key }) => (
+              <ScalarArrayField key={key}>content</ScalarArrayField>
+            ))}
+          </>
+        )}
+      </ArrayField>
+    )
+    expect(html).toContain('content')
+  })
+
   it('enhances Title with id in array children', () => {
     const shape = schemaInfo(arraySchema.shape.tags)
     const html = renderToStaticMarkup(
@@ -1648,6 +1664,25 @@ describe('object children enhancement', () => {
     register,
     idPrefix: 'test-',
     components: defaultComponents,
+  })
+
+  it('exposes ObjectFields in object children', () => {
+    const shape = schemaInfo(objectSchema.shape.billing)
+    const html = renderToStaticMarkup(
+      <ObjectField
+        name="billing"
+        label="Billing"
+        fieldType="object"
+        shape={shape}
+      >
+        {({ ObjectFields, Field: BillingField }) => (
+          <ObjectFields>
+            <BillingField name="street" />
+          </ObjectFields>
+        )}
+      </ObjectField>
+    )
+    expect(html).toContain('name="billing[street]"')
   })
 
   it('enhances Title with id in object children', () => {

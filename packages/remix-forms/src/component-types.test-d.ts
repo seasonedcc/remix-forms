@@ -727,6 +727,7 @@ it('ObjectChildren provides typed Field, Title, Errors, Error', () => {
   type Helpers = Parameters<BillingChildren>[0]
   expectTypeOf<Helpers>().toHaveProperty('Field')
   expectTypeOf<Helpers>().toHaveProperty('Title')
+  expectTypeOf<Helpers>().toHaveProperty('ObjectFields')
   expectTypeOf<Helpers>().toHaveProperty('Errors')
   expectTypeOf<Helpers>().toHaveProperty('Error')
 })
@@ -792,6 +793,7 @@ it('ArrayChildren provides AddButton, RemoveButton, and ArrayEmpty', () => {
   expectTypeOf<Helpers>().toHaveProperty('AddButton')
   expectTypeOf<Helpers>().toHaveProperty('RemoveButton')
   expectTypeOf<Helpers>().toHaveProperty('ArrayEmpty')
+  expectTypeOf<Helpers>().toHaveProperty('ScalarArrayField')
 })
 
 it('array children items are pure data with key and index', () => {
