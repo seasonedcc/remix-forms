@@ -1250,8 +1250,8 @@ describe('array fields', () => {
         field: (props: React.ComponentProps<'div'>) => (
           <div data-slot="field" {...props} />
         ),
-        arrayField: (props: React.ComponentProps<'div'>) => (
-          <div data-slot="array-field" {...props} />
+        scalarArrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="scalar-array-field" {...props} />
         ),
         scalarArrayItem: (props: React.ComponentProps<'div'>) => (
           <div data-slot="scalar-array-item" {...props} />
@@ -1267,8 +1267,9 @@ describe('array fields', () => {
     const fieldCount = (html.match(/data-slot="field"/g) || []).length
     expect(fieldCount).toBe(1)
 
-    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
-      .length
+    const arrayFieldCount = (
+      html.match(/data-slot="scalar-array-field"/g) || []
+    ).length
     expect(arrayFieldCount).toBe(2)
 
     const arrayItemCount = (html.match(/data-slot="scalar-array-item"/g) || [])
@@ -1368,8 +1369,8 @@ describe('array fields', () => {
         field: (props: React.ComponentProps<'div'>) => (
           <div data-slot="field" {...props} />
         ),
-        arrayField: (props: React.ComponentProps<'div'>) => (
-          <div data-slot="array-field" {...props} />
+        scalarArrayField: (props: React.ComponentProps<'div'>) => (
+          <div data-slot="scalar-array-field" {...props} />
         ),
         objectArrayItem: (props: React.ComponentProps<'div'>) => (
           <div data-slot="object-array-item" {...props} />
@@ -1390,8 +1391,9 @@ describe('array fields', () => {
     const fieldCount = (html.match(/data-slot="field"/g) || []).length
     expect(fieldCount).toBe(5)
 
-    const arrayFieldCount = (html.match(/data-slot="array-field"/g) || [])
-      .length
+    const arrayFieldCount = (
+      html.match(/data-slot="scalar-array-field"/g) || []
+    ).length
     expect(arrayFieldCount).toBe(0)
 
     const arrayItemCount = (html.match(/data-slot="object-array-item"/g) || [])

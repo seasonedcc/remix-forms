@@ -684,7 +684,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   const ArrayTitle = c.arrayTitle
   const Errors = c.fieldErrors
   const Error = c.error
-  const ArrayFieldComp = c.arrayField
+  const ScalarArrayFieldComp = c.scalarArrayField
   const ScalarArrayItemComp = c.scalarArrayItem
   const ObjectArrayItemComp = c.objectArrayItem
   const ArrayArrayItemComp = c.arrayArrayItem
@@ -1093,7 +1093,7 @@ function ArrayFieldInner(props: Record<string, any>) {
 
           return (
             <ScalarArrayItemComp key={rhfField.id}>
-              <ArrayFieldComp>
+              <ScalarArrayFieldComp>
                 <SmartInput
                   fieldType={itemFieldType}
                   type={itemType}
@@ -1107,7 +1107,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                     {itemErrorsChildren}
                   </Errors>
                 )}
-              </ArrayFieldComp>
+              </ScalarArrayFieldComp>
               <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
             </ScalarArrayItemComp>
           )
@@ -1143,7 +1143,7 @@ function ObjectFieldInner(props: Record<string, any>) {
   const ObjectTitle = c.objectTitle
   const Errors = c.fieldErrors
   const Error = c.error
-  const ObjectFieldComp = c.objectField
+  const ObjectFieldsComp = c.objectFields
   const subFields = Object.keys(shape.fields)
 
   const { getFieldState: getSubFieldState } = useFormContext()
@@ -1241,7 +1241,7 @@ function ObjectFieldInner(props: Record<string, any>) {
     <FieldContext.Provider value={field}>
       <Field style={mergedStyle} {...restFieldProps}>
         <ObjectTitle id={labelId}>{label}</ObjectTitle>
-        <ObjectFieldComp>
+        <ObjectFieldsComp>
           {subFields.map((subKey) => {
             const subShape = shape.fields[subKey]
             const subName = `${String(name)}.${subKey}`
@@ -1261,7 +1261,7 @@ function ObjectFieldInner(props: Record<string, any>) {
               options: subOptions,
             })
           })}
-        </ObjectFieldComp>
+        </ObjectFieldsComp>
         {Boolean(errorsChildren) && (
           <Errors role="alert" id={errorsId}>
             {errorsChildren}

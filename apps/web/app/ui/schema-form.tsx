@@ -22,7 +22,7 @@ const StyledForm = React.forwardRef<
   React.ComponentPropsWithRef<typeof Form>
 >((props, ref) => <Form ref={ref} className="flex flex-col gap-6" {...props} />)
 
-const ArrayField = React.forwardRef<
+const ScalarArrayField = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => (
@@ -77,7 +77,7 @@ const ArrayEmpty = React.forwardRef<
   <div ref={ref} className="py-2 text-base-content/50 text-sm" {...props} />
 ))
 
-const ObjectField = React.forwardRef<
+const ObjectFields = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => (
@@ -115,14 +115,14 @@ const SchemaForm = makeSchemaForm({
   button: SubmitButton,
   globalErrors: Errors,
   error: Error,
-  arrayField: ArrayField,
+  scalarArrayField: ScalarArrayField,
   scalarArrayItem: ScalarArrayItem,
   objectArrayItem: ObjectArrayItem,
   arrayArrayItem: ArrayArrayItem,
   addButton: AddButton,
   removeButton: RemoveButton,
   arrayEmpty: ArrayEmpty,
-  objectField: ObjectField,
+  objectFields: ObjectFields,
   arrayTitle: ArrayTitle,
   objectTitle: ObjectTitle,
 })

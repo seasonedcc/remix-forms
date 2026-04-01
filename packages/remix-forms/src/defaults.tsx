@@ -105,7 +105,7 @@ type ButtonSlotProps = {
   children?: React.ReactNode
 }
 
-type ArrayFieldSlotProps = { children?: React.ReactNode }
+type ScalarArrayFieldSlotProps = { children?: React.ReactNode }
 
 type ScalarArrayItemSlotProps = { children?: React.ReactNode }
 type ObjectArrayItemSlotProps = { children?: React.ReactNode }
@@ -123,7 +123,7 @@ type RemoveButtonSlotProps = {
 
 type ArrayEmptySlotProps = { children?: React.ReactNode }
 
-type ObjectFieldSlotProps = { children?: React.ReactNode }
+type ObjectFieldsSlotProps = { children?: React.ReactNode }
 
 type TitleSlotProps = {
   id?: string
@@ -161,14 +161,14 @@ type ComponentMap = {
   fields: ComponentFor<FieldsSlotProps>
   globalErrors: ComponentFor<ErrorContainerSlotProps>
   button: ComponentFor<ButtonSlotProps>
-  arrayField: ComponentFor<ArrayFieldSlotProps>
+  scalarArrayField: ComponentFor<ScalarArrayFieldSlotProps>
   scalarArrayItem: ComponentFor<ScalarArrayItemSlotProps>
   objectArrayItem: ComponentFor<ObjectArrayItemSlotProps>
   arrayArrayItem: ComponentFor<ArrayArrayItemSlotProps>
   addButton: ComponentFor<AddButtonSlotProps>
   removeButton: ComponentFor<RemoveButtonSlotProps>
   arrayEmpty: ComponentFor<ArrayEmptySlotProps>
-  objectField: ComponentFor<ObjectFieldSlotProps>
+  objectFields: ComponentFor<ObjectFieldsSlotProps>
   arrayTitle: ComponentFor<TitleSlotProps>
   objectTitle: ComponentFor<TitleSlotProps>
 }
@@ -258,7 +258,7 @@ const DefaultButton = React.forwardRef<
   JSX.IntrinsicElements['button']
 >((props, ref) => <button {...props} ref={ref} />)
 
-const DefaultArrayField = React.forwardRef<
+const DefaultScalarArrayField = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
@@ -293,7 +293,7 @@ const DefaultArrayEmpty = React.forwardRef<
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
 
-const DefaultObjectField = React.forwardRef<
+const DefaultObjectFields = React.forwardRef<
   HTMLDivElement,
   JSX.IntrinsicElements['div']
 >((props, ref) => <div {...props} ref={ref} />)
@@ -326,14 +326,14 @@ type DefaultComponents = {
   fields: typeof DefaultFieldsWrapper
   globalErrors: typeof DefaultGlobalErrors
   button: typeof DefaultButton
-  arrayField: typeof DefaultArrayField
+  scalarArrayField: typeof DefaultScalarArrayField
   scalarArrayItem: typeof DefaultScalarArrayItem
   objectArrayItem: typeof DefaultObjectArrayItem
   arrayArrayItem: typeof DefaultArrayArrayItem
   addButton: typeof DefaultAddButton
   removeButton: typeof DefaultRemoveButton
   arrayEmpty: typeof DefaultArrayEmpty
-  objectField: typeof DefaultObjectField
+  objectFields: typeof DefaultObjectFields
   arrayTitle: typeof DefaultArrayTitle
   objectTitle: typeof DefaultObjectTitle
 }
@@ -356,14 +356,14 @@ const defaultComponents: DefaultComponents = {
   fields: DefaultFieldsWrapper,
   globalErrors: DefaultGlobalErrors,
   button: DefaultButton,
-  arrayField: DefaultArrayField,
+  scalarArrayField: DefaultScalarArrayField,
   scalarArrayItem: DefaultScalarArrayItem,
   objectArrayItem: DefaultObjectArrayItem,
   arrayArrayItem: DefaultArrayArrayItem,
   addButton: DefaultAddButton,
   removeButton: DefaultRemoveButton,
   arrayEmpty: DefaultArrayEmpty,
-  objectField: DefaultObjectField,
+  objectFields: DefaultObjectFields,
   arrayTitle: DefaultArrayTitle,
   objectTitle: DefaultObjectTitle,
 }
@@ -423,14 +423,14 @@ export {
   DefaultFieldsWrapper,
   DefaultGlobalErrors,
   DefaultButton,
-  DefaultArrayField,
+  DefaultScalarArrayField,
   DefaultScalarArrayItem,
   DefaultObjectArrayItem,
   DefaultArrayArrayItem,
   DefaultAddButton,
   DefaultRemoveButton,
   DefaultArrayEmpty,
-  DefaultObjectField,
+  DefaultObjectFields,
   DefaultArrayTitle,
   DefaultObjectTitle,
   defaultComponents,
