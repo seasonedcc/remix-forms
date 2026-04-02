@@ -46,9 +46,7 @@ export default () => (
                       <legend>Member {index + 1}</legend>
                       <MemberField name="name" />
                       <MemberField name="role" />
-                      <RemoveButton onClick={() => remove(index)}>
-                        Remove
-                      </RemoveButton>
+                      <RemoveButton onClick={() => remove(index)} />
                     </fieldset>
                   )}
                 </Item>

@@ -681,8 +681,12 @@ function ArrayFieldInner(props: Record<string, any>) {
     fieldRouter: Router,
     register,
     emptyArrayLabel,
+    addButtonLabel,
+    removeButtonLabel,
     renderFunctions: rf,
     defaultEmptyArrayLabel,
+    defaultAddButtonLabel,
+    defaultRemoveButtonLabel,
   } = props
 
   const FieldWrapper = c.field
@@ -782,6 +786,8 @@ function ArrayFieldInner(props: Record<string, any>) {
               return rf.renderArrayField({
                 ...renderProps,
                 emptyArrayLabel: defaultEmptyArrayLabel,
+                addButtonLabel: defaultAddButtonLabel,
+                removeButtonLabel: defaultRemoveButtonLabel,
               })
             }
             if (ft === 'object') return rf.renderObjectField(renderProps)
@@ -895,7 +901,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                   })
                 })}
                 <RemoveButton onClick={() => remove(index)}>
-                  Remove
+                  {removeButtonLabel}
                 </RemoveButton>
               </ItemWrapper>
             )
@@ -913,7 +919,7 @@ function ArrayFieldInner(props: Record<string, any>) {
                   errors: itemErrors,
                 })}
                 <RemoveButton onClick={() => remove(index)}>
-                  Remove
+                  {removeButtonLabel}
                 </RemoveButton>
               </ItemWrapper>
             )
@@ -939,7 +945,9 @@ function ArrayFieldInner(props: Record<string, any>) {
                   </Errors>
                 )}
               </ScalarArrayFieldComp>
-              <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
+              <RemoveButton onClick={() => remove(index)}>
+                {removeButtonLabel}
+              </RemoveButton>
             </ItemWrapper>
           )
         }
@@ -1004,6 +1012,18 @@ function ArrayFieldInner(props: Record<string, any>) {
               ...child.props,
             })
           }
+          if (child.type === AddButton) {
+            return React.cloneElement(child, {
+              children: addButtonLabel,
+              ...child.props,
+            })
+          }
+          if (child.type === RemoveButton) {
+            return React.cloneElement(child, {
+              children: removeButtonLabel,
+              ...child.props,
+            })
+          }
           return child
         })
 
@@ -1055,6 +1075,18 @@ function ArrayFieldInner(props: Record<string, any>) {
           id: errorsId,
           role: 'alert',
           children: errorsChildren,
+          ...child.props,
+        })
+      }
+      if (child.type === AddButton) {
+        return React.cloneElement(child, {
+          children: addButtonLabel,
+          ...child.props,
+        })
+      }
+      if (child.type === RemoveButton) {
+        return React.cloneElement(child, {
+          children: removeButtonLabel,
           ...child.props,
         })
       }
@@ -1111,7 +1143,7 @@ function ArrayFieldInner(props: Record<string, any>) {
             return child
           })
         })}
-        <AddButton onClick={() => appendDefault()}>Add</AddButton>
+        <AddButton onClick={() => appendDefault()}>{addButtonLabel}</AddButton>
         {Boolean(errorsChildren) && (
           <Errors role="alert" id={errorsId}>
             {errorsChildren}
@@ -1138,6 +1170,8 @@ function ObjectFieldInner(props: Record<string, any>) {
     fieldRouter: FieldRouter,
     renderFunctions: rf,
     defaultEmptyArrayLabel,
+    defaultAddButtonLabel,
+    defaultRemoveButtonLabel,
   } = props
 
   const Field = c.field
@@ -1203,6 +1237,8 @@ function ObjectFieldInner(props: Record<string, any>) {
             return rf.renderArrayField({
               ...renderProps,
               emptyArrayLabel: defaultEmptyArrayLabel,
+              addButtonLabel: defaultAddButtonLabel,
+              removeButtonLabel: defaultRemoveButtonLabel,
             })
           }
           if (ft === 'object') return rf.renderObjectField(renderProps)
@@ -1287,6 +1323,8 @@ function ObjectFieldInner(props: Record<string, any>) {
                 ? rf.renderArrayField({
                     ...renderProps,
                     emptyArrayLabel: defaultEmptyArrayLabel,
+                    addButtonLabel: defaultAddButtonLabel,
+                    removeButtonLabel: defaultRemoveButtonLabel,
                   })
                 : ft === 'object'
                   ? rf.renderObjectField(renderProps)
@@ -1331,6 +1369,8 @@ function createField<
   components,
   renderFunctions,
   emptyArrayLabel: defaultEmptyArrayLabel = 'No items',
+  addButtonLabel: defaultAddButtonLabel = 'Add',
+  removeButtonLabel: defaultRemoveButtonLabel = 'Remove',
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
@@ -1338,6 +1378,8 @@ function createField<
   components: Resolved
   renderFunctions: RenderFunctions
   emptyArrayLabel?: string
+  addButtonLabel?: string
+  removeButtonLabel?: string
 }): FieldComponent<Schema, Resolved, Multiline, Radio, Hidden> {
   // biome-ignore lint/suspicious/noExplicitAny: forward reference for recursive field rendering (objects/arrays render nested fields)
   const FieldRouter: { current: React.ComponentType<any> | null } = {
@@ -1383,6 +1425,8 @@ function createField<
         children: childrenFn,
         fieldProps,
         emptyArrayLabel = 'No items',
+        addButtonLabel = 'Add',
+        removeButtonLabel = 'Remove',
         ...smartInputExtra
       }: // biome-ignore lint/suspicious/noExplicitAny: internal implementation — generics are for the external API
       Record<string, any>,
@@ -1441,11 +1485,15 @@ function createField<
             idPrefix={idPrefix}
             components={c}
             emptyArrayLabel={emptyArrayLabel}
+            addButtonLabel={addButtonLabel}
+            removeButtonLabel={removeButtonLabel}
             // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
             register={register}
             renderFunctions={renderFunctions}
             defaultEmptyArrayLabel={defaultEmptyArrayLabel}
+            defaultAddButtonLabel={defaultAddButtonLabel}
+            defaultRemoveButtonLabel={defaultRemoveButtonLabel}
           />
         )
       }
@@ -1467,6 +1515,8 @@ function createField<
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
             renderFunctions={renderFunctions}
             defaultEmptyArrayLabel={defaultEmptyArrayLabel}
+            defaultAddButtonLabel={defaultAddButtonLabel}
+            defaultRemoveButtonLabel={defaultRemoveButtonLabel}
           />
         )
       }

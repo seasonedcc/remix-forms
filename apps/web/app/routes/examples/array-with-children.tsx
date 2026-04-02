@@ -24,7 +24,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
   formAction({ request, schema, mutation })
 
 export default () => (
-  <SchemaForm schema={schema}>
+  <SchemaForm schema={schema} addButtonLabel="Add item">
     {({ Field, Errors, Button }) => (
       <>
         <Field name="listName" />
@@ -46,18 +46,14 @@ export default () => (
                             Up
                           </button>
                         )}
-                        <RemoveButton onClick={() => remove(index)}>
-                          Remove
-                        </RemoveButton>
+                        <RemoveButton onClick={() => remove(index)} />
                       </div>
                       <ItemErrors />
                     </div>
                   )}
                 </Item>
               ))}
-              <AddButton onClick={() => append()}>
-                Add item
-              </AddButton>
+              <AddButton onClick={() => append()} />
               <Errors />
             </>
           )}
@@ -86,7 +82,7 @@ export const action = async ({ request }: Route.ActionArgs) =>
 export default function Component() {
   return (
     <Example title={title} description={description}>
-      <SchemaForm schema={schema}>
+      <SchemaForm schema={schema} addButtonLabel="Add item">
         {({ Field, Errors, Button }) => (
           <>
             <Field name="listName" />
@@ -118,16 +114,14 @@ export default function Component() {
                                 Up
                               </button>
                             )}
-                            <RemoveButton onClick={() => remove(index)}>
-                              Remove
-                            </RemoveButton>
+                            <RemoveButton onClick={() => remove(index)} />
                           </div>
                           <ItemErrors />
                         </div>
                       )}
                     </Item>
                   ))}
-                  <AddButton onClick={() => append()}>Add item</AddButton>
+                  <AddButton onClick={() => append()} />
                   <Errors />
                 </>
               )}

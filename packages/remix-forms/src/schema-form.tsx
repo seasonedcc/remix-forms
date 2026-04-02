@@ -519,6 +519,8 @@ type SchemaFormProps<
   options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
   emptyArrayLabel?: string
+  addButtonLabel?: string
+  removeButtonLabel?: string
   hiddenFields?: Hidden
   inputTypes?: Partial<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
@@ -711,6 +713,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     autoInputTypes = ['date', 'datetime-local', 'time'],
     emptyOptionLabel = '',
     emptyArrayLabel: emptyArrayLabelProp = 'No items',
+    addButtonLabel: addButtonLabelProp = 'Add',
+    removeButtonLabel: removeButtonLabelProp = 'Remove',
     hiddenFields,
     multiline,
     radio,
@@ -868,6 +872,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
             renderArrayArrayItem: effectiveRenderArrayArrayItem,
           },
           emptyArrayLabel: emptyArrayLabelProp,
+          addButtonLabel: addButtonLabelProp,
+          removeButtonLabel: removeButtonLabelProp,
         }),
       [idPrefix, ...Object.values(componentsProp ?? {}), form.register]
     )
@@ -1073,6 +1079,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
             return effectiveRenderArrayField({
               ...renderProps,
               emptyArrayLabel: emptyArrayLabelProp,
+              addButtonLabel: addButtonLabelProp,
+              removeButtonLabel: removeButtonLabelProp,
             })
           }
           if (field.fieldType === 'object') {
@@ -1086,6 +1094,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
           ...child.props,
           autoFocus,
           emptyArrayLabel: emptyArrayLabelProp,
+          addButtonLabel: addButtonLabelProp,
+          removeButtonLabel: removeButtonLabelProp,
         })
       }
       if (child.type === Errors) {
@@ -1225,6 +1235,8 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.values - Initial values for fields
  * @param props.emptyOptionLabel - Label for the empty select option
  * @param props.emptyArrayLabel - Text shown when an array field has no items. Defaults to `'No items'`
+ * @param props.addButtonLabel - Text shown in the array Add button. Defaults to `'Add'`
+ * @param props.removeButtonLabel - Text shown in the array Remove button. Defaults to `'Remove'`
  * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
  * @param props.flushSync - Whether to flush React updates synchronously
  * @returns A form element ready to be used inside a React Router v7 route

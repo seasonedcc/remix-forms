@@ -445,6 +445,32 @@ describe('SchemaForm', () => {
     expect(html).toMatch(/<button[^>]*>Send<\/button>/)
   })
 
+  it('renders the provided addButtonLabel', () => {
+    const schema = z.object({ tags: z.array(z.string()) })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} addButtonLabel="New tag" />
+    )
+
+    expect(html).toContain('New tag')
+    expect(html).not.toContain('>Add<')
+  })
+
+  it('renders the provided removeButtonLabel', () => {
+    const schema = z.object({ tags: z.array(z.string()) })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        values={{ tags: ['one'] }}
+        removeButtonLabel="Delete"
+      />
+    )
+
+    expect(html).toContain('Delete')
+    expect(html).not.toContain('>Remove<')
+  })
+
   it('uses custom renderScalarField for each scalar field', () => {
     const schema = z.object({ first: z.string(), second: z.string() })
     const renderScalarField: RenderScalarField<
