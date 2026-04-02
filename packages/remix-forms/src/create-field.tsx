@@ -472,7 +472,7 @@ const FieldContext = React.createContext<
  * Access information about the field currently being rendered.
  *
  * This hook is meant to be used from inside custom components passed to
- * {@link SchemaForm} or {@link RenderField}. It exposes metadata such as the
+ * {@link SchemaForm} or a render function. It exposes metadata such as the
  * computed label, validation errors and the coerced value so that custom
  * inputs can easily hook into the form.
  *
@@ -496,7 +496,7 @@ export function useField() {
       'useField() hook must be used within a Field component.\n' +
         'This hook provides access to field metadata and can only be called from components rendered inside:\n' +
         '  1. A custom Field component passed to SchemaForm\n' +
-        '  2. A custom renderField function\n' +
+        '  2. A custom render function (renderScalarField, renderArrayField, etc.)\n' +
         '  3. Children of a Field component\n' +
         'Make sure your component is wrapped by a Field provider.'
     )
@@ -681,6 +681,8 @@ function ArrayFieldInner(props: Record<string, any>) {
     fieldRouter: Router,
     register,
     emptyArrayLabel,
+    renderFunctions: rf,
+    defaultEmptyArrayLabel,
   } = props
 
   const FieldWrapper = c.field
@@ -754,8 +756,7 @@ function ArrayFieldInner(props: Record<string, any>) {
             name: inferLabel(v),
             value: v,
           }))
-          return React.createElement(Router, {
-            ref: subRef,
+          const resolvedProps = {
             ...subProps,
             name: subName,
             shape: subShape,
@@ -764,6 +765,22 @@ function ArrayFieldInner(props: Record<string, any>) {
             required: subRequired,
             options: subProps.options ?? subOptions,
             errors: subErrors,
+          }
+          if (!subProps.children) {
+            const ft = fieldTypeFromInfo(subShape)
+            const renderProps = { Field: Router, ref: subRef, ...resolvedProps }
+            if (ft === 'array') {
+              return rf.renderArrayField({
+                ...renderProps,
+                emptyArrayLabel: defaultEmptyArrayLabel,
+              })
+            }
+            if (ft === 'object') return rf.renderObjectField(renderProps)
+            return rf.renderScalarField(renderProps)
+          }
+          return React.createElement(Router, {
+            ref: subRef,
+            ...resolvedProps,
           })
         }
       ),
@@ -1059,9 +1076,32 @@ function ArrayFieldInner(props: Record<string, any>) {
         {rhfFields.length === 0 && (
           <ArrayEmptyComp>{emptyArrayLabel}</ArrayEmptyComp>
         )}
-        {rhfFields.map((rhfField, index) => (
-          <Item key={rhfField.id} index={index} />
-        ))}
+        {rhfFields.map((rhfField, index) => {
+          const itemRenderFn =
+            itemShape.type === 'object'
+              ? rf.renderObjectArrayItem
+              : itemShape.type === 'array'
+                ? rf.renderArrayArrayItem
+                : rf.renderScalarArrayItem
+          const rendered = itemRenderFn({
+            Item,
+            itemKey: rhfField.id,
+            index,
+            RemoveButton,
+            remove,
+            move,
+            swap,
+          })
+          return mapChildren(rendered, (child) => {
+            if (child.type === Item) {
+              return React.cloneElement(child, {
+                index: child.props.index ?? index,
+                ...child.props,
+              })
+            }
+            return child
+          })
+        })}
         <AddButton onClick={() => appendDefault()}>Add</AddButton>
         {Boolean(errorsChildren) && (
           <Errors role="alert" id={errorsId}>
@@ -1087,6 +1127,8 @@ function ObjectFieldInner(props: Record<string, any>) {
     idPrefix,
     components: c,
     fieldRouter: FieldRouter,
+    renderFunctions: rf,
+    defaultEmptyArrayLabel,
   } = props
 
   const Field = c.field
@@ -1131,8 +1173,7 @@ function ObjectFieldInner(props: Record<string, any>) {
           name: inferLabel(v),
           value: v,
         }))
-        return React.createElement(FieldRouter, {
-          ref: subRef,
+        const resolvedProps = {
           ...subProps,
           name: subName,
           shape: subShape,
@@ -1141,6 +1182,26 @@ function ObjectFieldInner(props: Record<string, any>) {
           required: subRequired,
           options: subProps.options ?? subOptions,
           errors: subErrors,
+        }
+        if (!subProps.children) {
+          const ft = fieldTypeFromInfo(subShape)
+          const renderProps = {
+            Field: FieldRouter,
+            ref: subRef,
+            ...resolvedProps,
+          }
+          if (ft === 'array') {
+            return rf.renderArrayField({
+              ...renderProps,
+              emptyArrayLabel: defaultEmptyArrayLabel,
+            })
+          }
+          if (ft === 'object') return rf.renderObjectField(renderProps)
+          return rf.renderScalarField(renderProps)
+        }
+        return React.createElement(FieldRouter, {
+          ref: subRef,
+          ...resolvedProps,
         })
       }),
     [name, shape, FieldRouter]
@@ -1201,16 +1262,25 @@ function ObjectFieldInner(props: Record<string, any>) {
               name: inferLabel(v),
               value: v,
             }))
-            return React.createElement(FieldRouter, {
-              key: subKey,
+            const ft = fieldTypeFromInfo(subShape)
+            const renderProps = {
+              Field: FieldRouter,
               name: subName,
               shape: subShape,
-              fieldType: fieldTypeFromInfo(subShape),
+              fieldType: ft,
               label: inferLabel(subKey),
               required: subRequired,
               errors: errorsFor(subName),
               options: subOptions,
-            })
+            }
+            if (ft === 'array') {
+              return rf.renderArrayField({
+                ...renderProps,
+                emptyArrayLabel: defaultEmptyArrayLabel,
+              })
+            }
+            if (ft === 'object') return rf.renderObjectField(renderProps)
+            return rf.renderScalarField(renderProps)
           })}
         </ObjectFieldsComp>
         {Boolean(errorsChildren) && (
@@ -1221,6 +1291,18 @@ function ObjectFieldInner(props: Record<string, any>) {
       </Field>
     </FieldContext.Provider>
   )
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: internal type — generics are for the external API
+type RenderFn = (props: Record<string, any>) => JSX.Element
+
+type RenderFunctions = {
+  renderScalarField: RenderFn
+  renderArrayField: RenderFn
+  renderObjectField: RenderFn
+  renderScalarArrayItem: RenderFn
+  renderObjectArrayItem: RenderFn
+  renderArrayArrayItem: RenderFn
 }
 
 function createField<
@@ -1234,11 +1316,15 @@ function createField<
   register,
   idPrefix,
   components,
+  renderFunctions,
+  emptyArrayLabel: defaultEmptyArrayLabel = 'No items',
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   register: UseFormRegister<any>
   idPrefix: string
   components: Resolved
+  renderFunctions: RenderFunctions
+  emptyArrayLabel?: string
 }): FieldComponent<Schema, Resolved, Multiline, Radio, Hidden> {
   // biome-ignore lint/suspicious/noExplicitAny: forward reference for recursive field rendering (objects/arrays render nested fields)
   const FieldRouter: { current: React.ComponentType<any> | null } = {
@@ -1345,6 +1431,8 @@ function createField<
             // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
             register={register}
+            renderFunctions={renderFunctions}
+            defaultEmptyArrayLabel={defaultEmptyArrayLabel}
           />
         )
       }
@@ -1364,6 +1452,8 @@ function createField<
             components={c}
             // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
+            renderFunctions={renderFunctions}
+            defaultEmptyArrayLabel={defaultEmptyArrayLabel}
           />
         )
       }

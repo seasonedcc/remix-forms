@@ -1,6 +1,6 @@
 import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/render-field/global-render-field'
+const route = '/examples/render-scalar-field/global-render-scalar-field'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example

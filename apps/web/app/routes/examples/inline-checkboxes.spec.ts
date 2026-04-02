@@ -1,6 +1,6 @@
 import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/render-field/inline-checkboxes'
+const route = '/examples/render-scalar-field/inline-checkboxes'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example

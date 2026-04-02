@@ -58,12 +58,12 @@ export const exampleRouteGroups = {
     'Chakra UI',
   ],
   renderForm: ['Pending UI', 'Errors first', 'Custom wrapper', 'Global layout'],
-  renderField: [
+  renderScalarField: [
     'Required indicator',
     'Error indicator',
     'Dirty indicator',
     'Inline checkboxes',
-    'Global render field',
+    'Global render scalar field',
   ],
 }
 

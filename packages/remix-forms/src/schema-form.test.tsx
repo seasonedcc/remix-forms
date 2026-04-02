@@ -17,7 +17,7 @@ import type { Form as ReactRouterForm } from 'react-router'
 import * as z from 'zod'
 import { defaultComponents } from './defaults'
 import { SchemaForm, makeSchemaForm } from './schema-form'
-import type { RenderField } from './schema-form'
+import type { RenderScalarField } from './schema-form'
 
 import { useActionData, useNavigation } from 'react-router'
 
@@ -440,9 +440,9 @@ describe('SchemaForm', () => {
     expect(html).toMatch(/<button[^>]*>Send<\/button>/)
   })
 
-  it('uses custom renderField for each field', () => {
+  it('uses custom renderScalarField for each scalar field', () => {
     const schema = z.object({ first: z.string(), second: z.string() })
-    const renderField: RenderField<
+    const renderScalarField: RenderScalarField<
       typeof schema,
       // biome-ignore lint/suspicious/noExplicitAny: test helper
       any,
@@ -456,10 +456,10 @@ describe('SchemaForm', () => {
     ))
 
     const html = renderToStaticMarkup(
-      <SchemaForm schema={schema} renderField={renderField} />
+      <SchemaForm schema={schema} renderScalarField={renderScalarField} />
     )
 
-    expect(renderField).toHaveBeenCalledTimes(2)
+    expect(renderScalarField).toHaveBeenCalledTimes(2)
     expect(html).toContain('class="custom"')
   })
 
@@ -538,9 +538,9 @@ describe('SchemaForm', () => {
     expect(html).toContain('autoComplete="organization"')
   })
 
-  it('passes schema-level autoComplete through renderField', () => {
+  it('passes schema-level autoComplete through renderScalarField', () => {
     const schema = z.object({ email: z.string() })
-    const renderField: RenderField<
+    const renderScalarField: RenderScalarField<
       typeof schema,
       // biome-ignore lint/suspicious/noExplicitAny: test helper
       any,
@@ -555,11 +555,11 @@ describe('SchemaForm', () => {
       <SchemaForm
         schema={schema}
         autoComplete={{ email: 'email' }}
-        renderField={renderField}
+        renderScalarField={renderScalarField}
       />
     )
 
-    expect(renderField).toHaveBeenCalledWith(
+    expect(renderScalarField).toHaveBeenCalledWith(
       expect.objectContaining({ autoComplete: 'email' })
     )
   })
@@ -1043,9 +1043,9 @@ describe('Fields component', () => {
     expect(html).toMatch(/<button/)
   })
 
-  it('works with renderField prop', () => {
+  it('works with renderScalarField prop', () => {
     const schema = z.object({ first: z.string(), second: z.string() })
-    const renderField: RenderField<
+    const renderScalarField: RenderScalarField<
       typeof schema,
       // biome-ignore lint/suspicious/noExplicitAny: test helper
       any,
@@ -1059,7 +1059,7 @@ describe('Fields component', () => {
     ))
 
     const html = renderToStaticMarkup(
-      <SchemaForm schema={schema} renderField={renderField}>
+      <SchemaForm schema={schema} renderScalarField={renderScalarField}>
         {({ Fields, Errors, Button }) => (
           <>
             <Fields />
@@ -1070,7 +1070,7 @@ describe('Fields component', () => {
       </SchemaForm>
     )
 
-    expect(renderField).toHaveBeenCalledTimes(2)
+    expect(renderScalarField).toHaveBeenCalledTimes(2)
     expect(html).toContain('class="custom-render"')
   })
 
@@ -1348,9 +1348,9 @@ describe('renderForm', () => {
     expect(html).not.toContain('data-factory')
   })
 
-  it('works with makeSchemaForm factory-level renderField', () => {
+  it('works with makeSchemaForm factory-level renderScalarField', () => {
     const CustomSchemaForm = makeSchemaForm(defaultComponents, {
-      renderField: ({ Field, name, ...props }) => (
+      renderScalarField: ({ Field, name, ...props }) => (
         <div data-factory-field>
           {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
           <Field name={name} {...(props as any)} />
@@ -1365,9 +1365,9 @@ describe('renderForm', () => {
     expect(html).toContain('name="name"')
   })
 
-  it('per-form renderField overrides factory-level', () => {
+  it('per-form renderScalarField overrides factory-level', () => {
     const CustomSchemaForm = makeSchemaForm(defaultComponents, {
-      renderField: ({ Field, name, ...props }) => (
+      renderScalarField: ({ Field, name, ...props }) => (
         <div data-factory-field>
           {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
           <Field name={name} {...(props as any)} />
@@ -1379,7 +1379,7 @@ describe('renderForm', () => {
     const html = renderToStaticMarkup(
       <CustomSchemaForm
         schema={schema}
-        renderField={({ Field, name, ...props }) => (
+        renderScalarField={({ Field, name, ...props }) => (
           <div data-per-form-field>
             {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
             <Field name={name} {...(props as any)} />
@@ -1392,7 +1392,7 @@ describe('renderForm', () => {
     expect(html).not.toContain('data-factory-field')
   })
 
-  it('uses defaultRenderField when no factory or per-form renderField', () => {
+  it('uses defaultRenderScalarField when no factory or per-form render fn', () => {
     const CustomSchemaForm = makeSchemaForm(defaultComponents)
     const schema = z.object({ name: z.string() })
 

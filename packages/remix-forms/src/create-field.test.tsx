@@ -25,13 +25,32 @@ import type { UseFormRegister } from 'react-hook-form'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 import { createField, useField } from './create-field'
+import {
+  defaultRenderArrayArrayItem,
+  defaultRenderArrayField,
+  defaultRenderObjectArrayItem,
+  defaultRenderObjectField,
+  defaultRenderScalarArrayItem,
+  defaultRenderScalarField,
+} from './default-render-field'
 import { defaultComponents } from './defaults'
+
+const defaultRenderFunctions = {
+  renderScalarField: defaultRenderScalarField,
+  renderArrayField: defaultRenderArrayField,
+  renderObjectField: defaultRenderObjectField,
+  renderScalarArrayItem: defaultRenderScalarArrayItem,
+  renderObjectArrayItem: defaultRenderObjectArrayItem,
+  renderArrayArrayItem: defaultRenderArrayArrayItem,
+  // biome-ignore lint/suspicious/noExplicitAny: test helper
+} as any
 
 const register = vi.fn((name: string) => ({
   name,
   onChange: () => Promise.resolve(),
   onBlur: () => Promise.resolve(),
   ref: () => {},
+  renderFunctions: defaultRenderFunctions,
 })) as unknown as UseFormRegister<Record<string, unknown>>
 import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
@@ -47,6 +66,7 @@ const Field = createField<
   register,
   idPrefix: '',
   components: defaultComponents,
+  renderFunctions: defaultRenderFunctions,
 })
 const ChoiceField = createField({
   register,
@@ -58,6 +78,7 @@ const ChoiceField = createField({
       React.ComponentPropsWithoutRef<'input'>
     >((props, ref) => <input ref={ref} {...props} />),
   },
+  renderFunctions: defaultRenderFunctions,
 })
 
 afterEach(() => {
@@ -167,6 +188,7 @@ describe('createField', () => {
       register,
       idPrefix: '',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     renderToStaticMarkup(
@@ -196,6 +218,7 @@ describe('createField', () => {
       register,
       idPrefix: '',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     renderToStaticMarkup(
@@ -511,6 +534,7 @@ describe('component mappings', () => {
           <span data-error {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const html = renderToStaticMarkup(
@@ -535,6 +559,7 @@ describe('component mappings', () => {
           React.ComponentProps<'input'>
         >((props, ref) => <input data-checkbox ref={ref} {...props} />),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const boolHtml = renderToStaticMarkup(
@@ -552,6 +577,7 @@ describe('component mappings', () => {
           React.ComponentProps<'textarea'>
         >((props, ref) => <textarea data-multi ref={ref} {...props} />),
       },
+      renderFunctions: defaultRenderFunctions,
     })
     const multiHtml = renderToStaticMarkup(
       <MultiField name="foo" label="Foo" multiline />
@@ -571,6 +597,7 @@ describe('component mappings', () => {
           React.ComponentProps<'input'>
         >((props, ref) => <input data-radio ref={ref} {...props} />),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const radioHtml = renderToStaticMarkup(
@@ -596,6 +623,7 @@ describe('component mappings', () => {
           <label data-checkbox-label {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const html = renderToStaticMarkup(
@@ -616,6 +644,7 @@ describe('component mappings', () => {
           <label data-radio-label {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const html = renderToStaticMarkup(
@@ -649,6 +678,7 @@ describe('component mappings', () => {
           <label data-radio-label {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const html = renderToStaticMarkup(
@@ -678,6 +708,7 @@ describe('component mappings', () => {
           <label data-checkbox-label {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const htmlBool = renderToStaticMarkup(
@@ -1019,6 +1050,7 @@ describe('file fields', () => {
       register,
       idPrefix: '',
       components: { ...defaultComponents, fileInput: CustomFileInput },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const html = renderToStaticMarkup(
@@ -1050,6 +1082,7 @@ describe('file fields', () => {
       register,
       idPrefix: '',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     renderToStaticMarkup(
@@ -1079,6 +1112,7 @@ describe('object fields', () => {
     register,
     idPrefix: 'test-',
     components: defaultComponents,
+    renderFunctions: defaultRenderFunctions,
   })
 
   it('auto-renders nested fields for object fieldType', () => {
@@ -1141,6 +1175,7 @@ describe('object fields', () => {
       register,
       idPrefix: 'deep-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
     const shape = schemaInfo(deepSchema.shape.company)
     const html = renderToStaticMarkup(
@@ -1226,6 +1261,7 @@ describe('array fields', () => {
     register,
     idPrefix: 'arr-',
     components: defaultComponents,
+    renderFunctions: defaultRenderFunctions,
   })
 
   it('auto-renders array of scalars with add/remove buttons', () => {
@@ -1257,6 +1293,7 @@ describe('array fields', () => {
           <div data-slot="scalar-array-item" {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(arraySchema.shape.tags)
@@ -1336,6 +1373,7 @@ describe('array fields', () => {
       register,
       idPrefix: 'oa-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(objArraySchema.shape.contacts)
@@ -1376,6 +1414,7 @@ describe('array fields', () => {
           <div data-slot="object-array-item" {...props} />
         ),
       },
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(objArraySchema.shape.contacts)
@@ -1619,6 +1658,7 @@ describe('array fields', () => {
       register,
       idPrefix: 'oa-err-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(objArraySchema.shape.contacts)
@@ -1664,6 +1704,7 @@ describe('object children enhancement', () => {
     register,
     idPrefix: 'test-',
     components: defaultComponents,
+    renderFunctions: defaultRenderFunctions,
   })
 
   it('exposes ObjectFields in object children', () => {
@@ -1774,6 +1815,7 @@ describe('enum options on scoped fields', () => {
       register,
       idPrefix: 'enum-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(enumArraySchema.shape.members)
@@ -1813,6 +1855,7 @@ describe('enum options on scoped fields', () => {
       register,
       idPrefix: 'eobj-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(enumObjSchema.shape.settings)
@@ -1851,6 +1894,7 @@ describe('enum options on scoped fields', () => {
       register,
       idPrefix: 'auto-enum-',
       components: defaultComponents,
+      renderFunctions: defaultRenderFunctions,
     })
 
     const shape = schemaInfo(enumArraySchema.shape.members)

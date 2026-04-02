@@ -20,18 +20,18 @@ import RadioLabel from '~/ui/radio-label'
 import Select from '~/ui/select'
 import SubmitButton from '~/ui/submit-button'
 import TextArea from '~/ui/text-area'
-import type { Route } from './+types/global-render-field'
+import type { Route } from './+types/global-render-scalar-field'
 
-const title = 'Global render field'
+const title = 'Global render scalar field'
 const description =
-  'In this example, we use makeSchemaForm with a renderField option to globally customize how every field is rendered. Labels turn red when a field has errors.'
+  'In this example, we use makeSchemaForm with a renderScalarField option to globally customize how every field is rendered. Labels turn red when a field has errors.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
 const code = `const SchemaForm = makeSchemaForm(
   { /* your custom components */ },
   {
-    renderField: ({ Field, ...props }) => {
+    renderScalarField: ({ Field, ...props }) => {
       const { name, errors } = props
 
       return (
@@ -78,7 +78,7 @@ const GlobalSchemaForm = makeSchemaForm(
     error: Error,
   },
   {
-    renderField: ({ Field, ...props }) => {
+    renderScalarField: ({ Field, ...props }) => {
       const { name, errors } = props
 
       return (
