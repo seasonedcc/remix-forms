@@ -1273,14 +1273,18 @@ function ObjectFieldInner(props: Record<string, any>) {
               errors: errorsFor(subName),
               options: subOptions,
             }
-            if (ft === 'array') {
-              return rf.renderArrayField({
-                ...renderProps,
-                emptyArrayLabel: defaultEmptyArrayLabel,
-              })
-            }
-            if (ft === 'object') return rf.renderObjectField(renderProps)
-            return rf.renderScalarField(renderProps)
+            const rendered =
+              ft === 'array'
+                ? rf.renderArrayField({
+                    ...renderProps,
+                    emptyArrayLabel: defaultEmptyArrayLabel,
+                  })
+                : ft === 'object'
+                  ? rf.renderObjectField(renderProps)
+                  : rf.renderScalarField(renderProps)
+            return React.cloneElement(rendered, {
+              key: rendered.key ?? subName,
+            })
           })}
         </ObjectFieldsComp>
         {Boolean(errorsChildren) && (
