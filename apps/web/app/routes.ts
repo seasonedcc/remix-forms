@@ -65,6 +65,9 @@ export const exampleRouteGroups = {
     'Inline checkboxes',
     'Global render scalar field',
   ],
+  renderArrayField: ['Array title customization'],
+  renderObjectField: ['Object title customization'],
+  renderObjectArrayItem: ['Drag and drop'],
 }
 
 const testRoutes = [

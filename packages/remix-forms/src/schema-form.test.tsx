@@ -17,7 +17,12 @@ import type { Form as ReactRouterForm } from 'react-router'
 import * as z from 'zod'
 import { defaultComponents } from './defaults'
 import { SchemaForm, makeSchemaForm } from './schema-form'
-import type { RenderScalarField } from './schema-form'
+import type {
+  RenderArrayField,
+  RenderObjectArrayItem,
+  RenderObjectField,
+  RenderScalarField,
+} from './schema-form'
 
 import { useActionData, useNavigation } from 'react-router'
 
@@ -1587,5 +1592,170 @@ describe('renderForm', () => {
         )}
       </SchemaForm>
     )
+  })
+})
+
+describe('renderArrayField', () => {
+  it('uses custom renderArrayField for array fields', () => {
+    const schema = z.object({ tags: z.array(z.string()) })
+    const renderArrayField: RenderArrayField<
+      typeof schema,
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any,
+      readonly [],
+      readonly [],
+      readonly []
+    > = ({ Field, name, ...props }) => (
+      <div data-array-field="true">
+        {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+        <Field name={name} {...(props as any)} />
+      </div>
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} renderArrayField={renderArrayField} />
+    )
+
+    expect(html).toContain('data-array-field="true"')
+    expect(html).toContain('Tags')
+  })
+})
+
+describe('renderObjectField', () => {
+  it('uses custom renderObjectField for object fields', () => {
+    const schema = z.object({
+      address: z.object({ street: z.string() }),
+    })
+    const renderObjectField: RenderObjectField<
+      typeof schema,
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any,
+      readonly [],
+      readonly [],
+      readonly []
+    > = ({ Field, name, ...props }) => (
+      <div data-object-field="true">
+        {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+        <Field name={name} {...(props as any)} />
+      </div>
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm schema={schema} renderObjectField={renderObjectField} />
+    )
+
+    expect(html).toContain('data-object-field="true"')
+    expect(html).toContain('name="address[street]"')
+  })
+})
+
+describe('render function recursion', () => {
+  it('dispatches scalar, array, and object render functions recursively', () => {
+    const schema = z.object({
+      config: z.object({
+        name: z.string(),
+        tags: z.array(z.string()),
+      }),
+    })
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        renderScalarField={({ Field, name, ...props }) => (
+          <div data-scalar="true">
+            {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+            <Field name={name} {...(props as any)} />
+          </div>
+        )}
+        renderArrayField={({ Field, name, ...props }) => (
+          <div data-array="true">
+            {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+            <Field name={name} {...(props as any)} />
+          </div>
+        )}
+        renderObjectField={({ Field, name, ...props }) => (
+          <div data-object="true">
+            {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+            <Field name={name} {...(props as any)} />
+          </div>
+        )}
+      />
+    )
+
+    expect(html).toContain('data-object="true"')
+    expect(html).toContain('data-scalar="true"')
+    expect(html).toContain('data-array="true"')
+  })
+})
+
+describe('renderObjectArrayItem', () => {
+  it('uses custom renderObjectArrayItem for object array items', () => {
+    const schema = z.object({
+      people: z.array(z.object({ name: z.string() })),
+    })
+    const renderObjectArrayItem: RenderObjectArrayItem<
+      // biome-ignore lint/suspicious/noExplicitAny: test helper
+      any
+    > = ({ Item, itemKey }) => (
+      <div data-obj-item="true" key={itemKey}>
+        <Item />
+      </div>
+    )
+
+    const html = renderToStaticMarkup(
+      <SchemaForm
+        schema={schema}
+        values={{ people: [{ name: 'Alice' }] }}
+        renderObjectArrayItem={renderObjectArrayItem}
+      />
+    )
+
+    expect(html).toContain('data-obj-item="true"')
+  })
+})
+
+describe('factory-level renderArrayField', () => {
+  it('applies renderArrayField from makeSchemaForm options', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderArrayField: ({ Field, name, ...props }) => (
+        <div data-factory-array="true">
+          {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+          <Field name={name} {...(props as any)} />
+        </div>
+      ),
+    })
+    const schema = z.object({ tags: z.array(z.string()) })
+
+    const html = renderToStaticMarkup(<CustomSchemaForm schema={schema} />)
+
+    expect(html).toContain('data-factory-array="true"')
+    expect(html).toContain('Tags')
+  })
+
+  it('per-form renderArrayField overrides factory-level', () => {
+    const CustomSchemaForm = makeSchemaForm(defaultComponents, {
+      renderArrayField: ({ Field, name, ...props }) => (
+        <div data-factory-array="true">
+          {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+          <Field name={name} {...(props as any)} />
+        </div>
+      ),
+    })
+    const schema = z.object({ tags: z.array(z.string()) })
+
+    const html = renderToStaticMarkup(
+      <CustomSchemaForm
+        schema={schema}
+        renderArrayField={({ Field, name, ...props }) => (
+          <div data-per-form-array="true">
+            {/* biome-ignore lint/suspicious/noExplicitAny: test helper */}
+            <Field name={name} {...(props as any)} />
+          </div>
+        )}
+      />
+    )
+
+    expect(html).toContain('data-per-form-array="true"')
+    expect(html).not.toContain('data-factory-array="true"')
   })
 })

@@ -1,5 +1,6 @@
 import type * as React from 'react'
-import { expectTypeOf, it } from 'vitest'
+import type { ArraySchemaInfo, ObjectSchemaInfo, SchemaInfo } from 'schema-info'
+import { describe, expectTypeOf, it } from 'vitest'
 import * as z from 'zod'
 import type {
   FieldComponent,
@@ -18,7 +19,17 @@ import type {
   ResolveComponents,
 } from './defaults'
 import { defaultComponents } from './defaults'
-import type { RenderFormProps, SchemaFormProps } from './schema-form'
+import type {
+  RenderArrayArrayItemProps,
+  RenderArrayFieldProps,
+  RenderFormProps,
+  RenderObjectArrayItemProps,
+  RenderObjectFieldProps,
+  RenderScalarArrayItemProps,
+  RenderScalarFieldProps,
+  ScalarFieldType,
+  SchemaFormProps,
+} from './schema-form'
 
 it('PropsOf extracts props from a React component', () => {
   type MyProps = { size: string; color: number }
@@ -930,4 +941,203 @@ it('scoped Field for an array-only object provides array children', () => {
   expectTypeOf<EmailsHelpers>().toHaveProperty('append')
   expectTypeOf<EmailsHelpers>().not.toHaveProperty('SmartInput')
   expectTypeOf<EmailsHelpers>().not.toHaveProperty('Field')
+})
+
+// --- Render function prop types ---
+
+describe('ScalarFieldType', () => {
+  it('is the union of scalar field type strings', () => {
+    expectTypeOf<ScalarFieldType>().toEqualTypeOf<
+      'string' | 'boolean' | 'number' | 'date' | 'file'
+    >()
+  })
+})
+
+describe('RenderScalarFieldProps', () => {
+  const schema = z.object({ name: z.string(), age: z.number() })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderScalarFieldProps<
+    S,
+    Resolved,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+
+  it('narrows fieldType to ScalarFieldType', () => {
+    expectTypeOf<Props['fieldType']>().toEqualTypeOf<ScalarFieldType>()
+  })
+
+  it('excludes array and object from fieldType', () => {
+    expectTypeOf<'array'>().not.toMatchTypeOf<Props['fieldType']>()
+    expectTypeOf<'object'>().not.toMatchTypeOf<Props['fieldType']>()
+  })
+
+  it('narrows shape to exclude ArraySchemaInfo and ObjectSchemaInfo', () => {
+    expectTypeOf<Props['shape']>().toEqualTypeOf<
+      Exclude<SchemaInfo, ArraySchemaInfo | ObjectSchemaInfo>
+    >()
+  })
+
+  it('does not have emptyArrayLabel', () => {
+    expectTypeOf<Props>().not.toHaveProperty('emptyArrayLabel')
+  })
+})
+
+describe('RenderArrayFieldProps', () => {
+  const schema = z.object({ tags: z.array(z.string()) })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderArrayFieldProps<
+    S,
+    Resolved,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+
+  it('narrows fieldType to array', () => {
+    expectTypeOf<Props['fieldType']>().toEqualTypeOf<'array'>()
+  })
+
+  it('narrows shape to ArraySchemaInfo', () => {
+    expectTypeOf<Props['shape']>().toEqualTypeOf<ArraySchemaInfo>()
+  })
+
+  it('has emptyArrayLabel as string', () => {
+    expectTypeOf<Props['emptyArrayLabel']>().toEqualTypeOf<string>()
+  })
+})
+
+describe('RenderObjectFieldProps', () => {
+  const schema = z.object({
+    address: z.object({ street: z.string(), city: z.string() }),
+  })
+  type S = typeof schema
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderObjectFieldProps<
+    S,
+    Resolved,
+    readonly [],
+    readonly [],
+    readonly []
+  >
+
+  it('narrows fieldType to object', () => {
+    expectTypeOf<Props['fieldType']>().toEqualTypeOf<'object'>()
+  })
+
+  it('narrows shape to ObjectSchemaInfo', () => {
+    expectTypeOf<Props['shape']>().toEqualTypeOf<ObjectSchemaInfo>()
+  })
+
+  it('does not have emptyArrayLabel', () => {
+    expectTypeOf<Props>().not.toHaveProperty('emptyArrayLabel')
+  })
+})
+
+describe('RenderScalarArrayItemProps', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderScalarArrayItemProps<Resolved>
+
+  it('has Item component accepting optional index', () => {
+    expectTypeOf<Props['Item']>().toEqualTypeOf<
+      React.ComponentType<{ index?: number }>
+    >()
+  })
+
+  it('has itemKey as string', () => {
+    expectTypeOf<Props['itemKey']>().toEqualTypeOf<string>()
+  })
+
+  it('has index as number', () => {
+    expectTypeOf<Props['index']>().toEqualTypeOf<number>()
+  })
+
+  it('has remove function', () => {
+    expectTypeOf<Props['remove']>().toEqualTypeOf<(index: number) => void>()
+  })
+
+  it('has move function', () => {
+    expectTypeOf<Props['move']>().toEqualTypeOf<
+      (from: number, to: number) => void
+    >()
+  })
+
+  it('has swap function', () => {
+    expectTypeOf<Props['swap']>().toEqualTypeOf<
+      (a: number, b: number) => void
+    >()
+  })
+
+  it('has optional errors array', () => {
+    expectTypeOf<Props['errors']>().toEqualTypeOf<string[] | undefined>()
+  })
+})
+
+describe('RenderObjectArrayItemProps', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderObjectArrayItemProps<Resolved>
+
+  it('has Item component accepting optional index', () => {
+    expectTypeOf<Props['Item']>().toEqualTypeOf<
+      React.ComponentType<{ index?: number }>
+    >()
+  })
+
+  it('has itemKey as string', () => {
+    expectTypeOf<Props['itemKey']>().toEqualTypeOf<string>()
+  })
+
+  it('has index as number', () => {
+    expectTypeOf<Props['index']>().toEqualTypeOf<number>()
+  })
+
+  it('has remove, move, and swap functions', () => {
+    expectTypeOf<Props['remove']>().toEqualTypeOf<(index: number) => void>()
+    expectTypeOf<Props['move']>().toEqualTypeOf<
+      (from: number, to: number) => void
+    >()
+    expectTypeOf<Props['swap']>().toEqualTypeOf<
+      (a: number, b: number) => void
+    >()
+  })
+
+  it('has optional errors array', () => {
+    expectTypeOf<Props['errors']>().toEqualTypeOf<string[] | undefined>()
+  })
+})
+
+describe('RenderArrayArrayItemProps', () => {
+  type Resolved = ResolveComponents<Record<never, never>>
+  type Props = RenderArrayArrayItemProps<Resolved>
+
+  it('has Item component accepting optional index', () => {
+    expectTypeOf<Props['Item']>().toEqualTypeOf<
+      React.ComponentType<{ index?: number }>
+    >()
+  })
+
+  it('has itemKey as string', () => {
+    expectTypeOf<Props['itemKey']>().toEqualTypeOf<string>()
+  })
+
+  it('has index as number', () => {
+    expectTypeOf<Props['index']>().toEqualTypeOf<number>()
+  })
+
+  it('has remove, move, and swap functions', () => {
+    expectTypeOf<Props['remove']>().toEqualTypeOf<(index: number) => void>()
+    expectTypeOf<Props['move']>().toEqualTypeOf<
+      (from: number, to: number) => void
+    >()
+    expectTypeOf<Props['swap']>().toEqualTypeOf<
+      (a: number, b: number) => void
+    >()
+  })
+
+  it('has optional errors array', () => {
+    expectTypeOf<Props['errors']>().toEqualTypeOf<string[] | undefined>()
+  })
 })

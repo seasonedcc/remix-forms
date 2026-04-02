@@ -50,7 +50,6 @@ const register = vi.fn((name: string) => ({
   onChange: () => Promise.resolve(),
   onBlur: () => Promise.resolve(),
   ref: () => {},
-  renderFunctions: defaultRenderFunctions,
 })) as unknown as UseFormRegister<Record<string, unknown>>
 import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
