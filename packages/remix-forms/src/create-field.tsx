@@ -120,7 +120,7 @@ type ItemProps<
   // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
   Resolved extends Record<string, any>,
 > = {
-  children: ItemChildren<Elem, Resolved>
+  children?: ItemChildren<Elem, Resolved>
   index?: number
 }
 
@@ -696,7 +696,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   const RemoveButton = c.removeButton
   const ArrayEmptyComp = c.arrayEmpty
 
-  const { control, getFieldState, formState } = useFormContext()
+  const { control } = useFormContext()
   const {
     fields: rhfFields,
     append,
@@ -706,11 +706,6 @@ function ArrayFieldInner(props: Record<string, any>) {
     move,
     swap,
   } = useFieldArray({ control, name: String(name) })
-
-  const errorsFor = (path: string): string[] | undefined => {
-    const { error } = getFieldState(path, formState)
-    return error?.message ? [error.message] : undefined
-  }
 
   const itemShape = shape.item as SchemaInfo
   const objectItemShape = itemShape.type === 'object' ? itemShape : undefined
@@ -783,7 +778,7 @@ function ArrayFieldInner(props: Record<string, any>) {
       }: {
         index?: number
         // biome-ignore lint/suspicious/noExplicitAny: Resolved is generic inside the implementation — only consumers make it specific
-        children: (...args: any[]) => React.ReactNode
+        children?: (...args: any[]) => React.ReactNode
       }) {
         const itemName = `${String(name)}.${index}`
         const itemHtmlName = dotToBracket(itemName)
@@ -836,6 +831,91 @@ function ArrayFieldInner(props: Record<string, any>) {
             'aria-describedby': itemErrors ? itemErrorsId : undefined,
             'aria-required': !(scalarShape.optional || scalarShape.nullable),
           }
+        }
+
+        const ItemWrapper =
+          itemShape.type === 'object'
+            ? ObjectArrayItemComp
+            : itemShape.type === 'array'
+              ? ArrayArrayItemComp
+              : ScalarArrayItemComp
+
+        if (!itemChildrenFn) {
+          if (itemShape.type === 'object') {
+            const subFieldKeys = Object.keys(itemShape.fields)
+            return (
+              <ItemWrapper>
+                {subFieldKeys.map((subKey) => {
+                  const subShape = itemShape.fields[subKey]
+                  const subName = `${itemName}.${subKey}`
+                  const subError = getFieldState(subName)?.error
+                  const subErrors = subError?.message
+                    ? [subError.message]
+                    : undefined
+                  const subRequired = !(subShape.optional || subShape.nullable)
+                  const subOptions = subShape.enumValues?.map((v: string) => ({
+                    name: inferLabel(v),
+                    value: v,
+                  }))
+                  return React.createElement(Router, {
+                    key: subKey,
+                    name: subName,
+                    shape: subShape,
+                    fieldType: fieldTypeFromInfo(subShape),
+                    label: inferLabel(subKey),
+                    required: subRequired,
+                    errors: subErrors,
+                    options: subOptions,
+                  })
+                })}
+                <RemoveButton onClick={() => remove(index)}>
+                  Remove
+                </RemoveButton>
+              </ItemWrapper>
+            )
+          }
+
+          if (itemShape.type === 'array') {
+            return (
+              <ItemWrapper>
+                {React.createElement(Router, {
+                  name: itemName,
+                  shape: itemShape,
+                  fieldType: 'array' as FieldType,
+                  label: inferLabel(String(index)),
+                  required: !(itemShape.optional || itemShape.nullable),
+                  errors: itemErrors,
+                })}
+                <RemoveButton onClick={() => remove(index)}>
+                  Remove
+                </RemoveButton>
+              </ItemWrapper>
+            )
+          }
+
+          // biome-ignore lint/suspicious/noExplicitAny: internal auto-render — type safety is at the consumer level
+          const smartInputProps: Record<string, any> = {
+            fieldType: itemFieldType,
+            type: itemType,
+            options: itemOptions,
+            value: '',
+            registerProps: { ref: registerRef, ...itemRegisterProps },
+            a11yProps: itemA11y,
+          }
+
+          return (
+            <ItemWrapper>
+              <ScalarArrayFieldComp>
+                {React.createElement(ChildSmartInput, smartInputProps)}
+                {Boolean(itemErrorsChildren) && (
+                  <Errors role="alert" id={itemErrorsId}>
+                    {itemErrorsChildren}
+                  </Errors>
+                )}
+              </ScalarArrayFieldComp>
+              <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
+            </ItemWrapper>
+          )
         }
 
         const helpers =
@@ -901,33 +981,9 @@ function ArrayFieldInner(props: Record<string, any>) {
           return child
         })
 
-        const ItemWrapper =
-          itemShape.type === 'object'
-            ? ObjectArrayItemComp
-            : itemShape.type === 'array'
-              ? ArrayArrayItemComp
-              : ScalarArrayItemComp
-
         return <ItemWrapper>{mappedChildren}</ItemWrapper>
       },
-    [
-      name,
-      itemShape,
-      register,
-      idPrefix,
-      c,
-      label,
-      labelId,
-      ChildSmartInput,
-      Label,
-      Errors,
-      ScopedItemField,
-      Error,
-      Router,
-      ScalarArrayItemComp,
-      ObjectArrayItemComp,
-      ArrayArrayItemComp,
-    ]
+    [name, idPrefix]
   )
 
   if (childrenFn) {
@@ -996,8 +1052,6 @@ function ArrayFieldInner(props: Record<string, any>) {
     )
   }
 
-  const SmartInput = ChildSmartInput
-
   return (
     <FieldContext.Provider value={fieldMeta}>
       <FieldWrapper hidden={hidden} style={mergedStyle} {...restFieldProps}>
@@ -1005,118 +1059,9 @@ function ArrayFieldInner(props: Record<string, any>) {
         {rhfFields.length === 0 && (
           <ArrayEmptyComp>{emptyArrayLabel}</ArrayEmptyComp>
         )}
-        {rhfFields.map((rhfField, index) => {
-          const itemName = `${String(name)}.${index}`
-
-          if (itemShape.type === 'object') {
-            const subFields = Object.keys(itemShape.fields)
-            return (
-              <ObjectArrayItemComp key={rhfField.id}>
-                {subFields.map((subKey) => {
-                  const subShape = itemShape.fields[subKey]
-                  const subName = `${itemName}.${subKey}`
-                  const subRequired = !(subShape.optional || subShape.nullable)
-                  const subOptions = subShape.enumValues?.map((v: string) => ({
-                    name: inferLabel(v),
-                    value: v,
-                  }))
-                  return React.createElement(Router, {
-                    key: subKey,
-                    name: subName,
-                    shape: subShape,
-                    fieldType: fieldTypeFromInfo(subShape),
-                    label: inferLabel(subKey),
-                    required: subRequired,
-                    errors: errorsFor(subName),
-                    options: subOptions,
-                  })
-                })}
-                <RemoveButton onClick={() => remove(index)}>
-                  Remove
-                </RemoveButton>
-              </ObjectArrayItemComp>
-            )
-          }
-
-          if (itemShape.type === 'array') {
-            return (
-              <ArrayArrayItemComp key={rhfField.id}>
-                {React.createElement(Router, {
-                  name: itemName,
-                  shape: itemShape,
-                  fieldType: 'array' as FieldType,
-                  label: inferLabel(String(index)),
-                  required: !(itemShape.optional || itemShape.nullable),
-                  errors: errorsFor(itemName),
-                })}
-                <RemoveButton onClick={() => remove(index)}>
-                  Remove
-                </RemoveButton>
-              </ArrayArrayItemComp>
-            )
-          }
-
-          const itemHtmlName = dotToBracket(itemName)
-          const { ref: itemRef, ...rawItemRegisterProps } = register(itemName, {
-            setValueAs: (value: unknown) => {
-              try {
-                return coerceValue(
-                  value as FormValue,
-                  itemShape ?? {
-                    type: null,
-                    optional: false,
-                    nullable: false,
-                  }
-                )
-              } catch (error) {
-                if (error instanceof FormDataCoercionError) return null
-                throw error
-              }
-            },
-          })
-          const itemRegisterProps = {
-            ...rawItemRegisterProps,
-            name: itemHtmlName,
-          }
-          const itemFieldType = fieldTypeFromInfo(itemShape)
-          const itemType = getInputType(itemFieldType, false)
-          const itemErrors = errorsFor(itemName)
-          const itemErrorsId = `${idPrefix}errors-for-${itemHtmlName}`
-          const itemOptions = itemShape.enumValues?.map((v: string) => ({
-            name: inferLabel(v),
-            value: v,
-          }))
-          const itemA11y = {
-            'aria-labelledby': labelId,
-            'aria-invalid': Boolean(itemErrors),
-            'aria-describedby': itemErrors ? itemErrorsId : undefined,
-            'aria-required': !(itemShape.optional || itemShape.nullable),
-          }
-          const itemErrorsChildren = itemErrors?.length
-            ? itemErrors.map((e: string) => <Error key={e}>{e}</Error>)
-            : undefined
-
-          return (
-            <ScalarArrayItemComp key={rhfField.id}>
-              <ScalarArrayFieldComp>
-                <SmartInput
-                  fieldType={itemFieldType}
-                  type={itemType}
-                  options={itemOptions}
-                  value=""
-                  registerProps={{ ref: itemRef, ...itemRegisterProps }}
-                  a11yProps={itemA11y}
-                />
-                {Boolean(itemErrorsChildren) && (
-                  <Errors role="alert" id={itemErrorsId}>
-                    {itemErrorsChildren}
-                  </Errors>
-                )}
-              </ScalarArrayFieldComp>
-              <RemoveButton onClick={() => remove(index)}>Remove</RemoveButton>
-            </ScalarArrayItemComp>
-          )
-        })}
+        {rhfFields.map((rhfField, index) => (
+          <Item key={rhfField.id} index={index} />
+        ))}
         <AddButton onClick={() => appendDefault()}>Add</AddButton>
         {Boolean(errorsChildren) && (
           <Errors role="alert" id={errorsId}>

@@ -821,7 +821,7 @@ it('scalar array children provide Item component with SmartInput helpers', () =>
   type Helpers = Parameters<TagsChildren>[0]
   type ItemComp = Helpers['Item']
   type IP = React.ComponentProps<ItemComp>
-  type ItemChildrenFn = IP['children']
+  type ItemChildrenFn = NonNullable<IP['children']>
   type ItemHelpers = Parameters<ItemChildrenFn>[0]
   expectTypeOf<ItemHelpers>().toHaveProperty('SmartInput')
   expectTypeOf<ItemHelpers>().not.toHaveProperty('Field')
@@ -839,7 +839,7 @@ it('object array Item children provide typed Field', () => {
   type Helpers = Parameters<ContactsChildren>[0]
   type ItemComp = Helpers['Item']
   type IP = React.ComponentProps<ItemComp>
-  type ItemChildrenFn = IP['children']
+  type ItemChildrenFn = NonNullable<IP['children']>
   type ItemHelpers = Parameters<ItemChildrenFn>[0]
   expectTypeOf<ItemHelpers>().toHaveProperty('Field')
   expectTypeOf<ItemHelpers>().not.toHaveProperty('SmartInput')
