@@ -21,7 +21,7 @@ test('With JS enabled', async ({ example }) => {
   )
 
   await page.locator('button:has-text("Add item")').click()
-  await expect(page.locator('input[name="items\\[0\\]"]')).toBeVisible()
+  await expect(page.locator('input[name="items\\[0\\]"]')).toBeFocused()
 
   await button.click()
 
@@ -33,6 +33,7 @@ test('With JS enabled', async ({ example }) => {
   await page.locator('input[name="items\\[0\\]"]').fill('Apples')
 
   await page.locator('button:has-text("Add item")').click()
+  await expect(page.locator('input[name="items\\[1\\]"]')).toBeFocused()
   await page.locator('input[name="items\\[1\\]"]').fill('Bananas')
 
   await page.locator('button:has-text("Up")').click()

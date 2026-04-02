@@ -21,8 +21,11 @@ test('With JS enabled', async ({ example }) => {
     'Too small: expected array to have >=1 items'
   )
 
-  // Add an item, remove it, submit again — same error should show
+  // Add an item — focus should move to the new input
   await page.locator('button:has-text("Add")').click()
+  await expect(page.locator('input[name="tags\\[0\\]"]')).toBeFocused()
+
+  // Remove it, submit again — same error should show
   await page.locator('button:has-text("Remove")').click()
   await button.click()
 
@@ -33,6 +36,7 @@ test('With JS enabled', async ({ example }) => {
 
   await page.locator('button:has-text("Add")').click()
   const tagInput = page.locator('input[name="tags\\[0\\]"]')
+  await expect(tagInput).toBeFocused()
 
   await button.click()
 

@@ -13,13 +13,15 @@ test('With JS enabled', async ({ example }) => {
 
   const addButton = page.getByRole('button', { name: 'Add' })
   await addButton.click()
-  await addButton.click()
 
   const nameInputs = page.locator('input[name*="name"]').filter({
     hasNot: page.locator('[name="title"]'),
   })
-  await expect(nameInputs).toHaveCount(2)
+  await expect(nameInputs.first()).toBeFocused()
   await nameInputs.first().fill('Task A')
+
+  await addButton.click()
+  await expect(nameInputs.nth(1)).toBeFocused()
   await nameInputs.nth(1).fill('Task B')
 
   await button.click()

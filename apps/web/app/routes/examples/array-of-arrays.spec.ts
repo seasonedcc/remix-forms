@@ -23,6 +23,7 @@ test('With JS enabled', async ({ example }) => {
   await page.locator('button:has-text("Add")').first().click()
 
   await page.locator('button:has-text("Add")').first().click()
+  await expect(page.locator('input[name="matrix\\[0\\]\\[0\\]"]')).toBeFocused()
 
   await page.locator('input[name="matrix\\[0\\]\\[0\\]"]').fill('cell')
 

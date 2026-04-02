@@ -19,9 +19,11 @@ test('With JS enabled', async ({ example }) => {
   await addButton.click()
 
   const tagInputs = page.locator('input[name*="tags"]')
+  await expect(tagInputs.first()).toBeFocused()
   await tagInputs.first().fill('react')
 
   await addButton.click()
+  await expect(tagInputs.nth(1)).toBeFocused()
   await tagInputs.nth(1).fill('remix')
 
   await button.click()

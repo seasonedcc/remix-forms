@@ -24,7 +24,7 @@ test('With JS enabled', async ({ example }) => {
 
   await expect(
     page.locator('input[name="members\\[0\\]\\[name\\]"]')
-  ).toBeVisible()
+  ).toBeFocused()
   await expect(
     page.locator('select[name="members\\[0\\]\\[role\\]"]')
   ).toBeVisible()
@@ -42,6 +42,9 @@ test('With JS enabled', async ({ example }) => {
     .selectOption('designer')
 
   await page.locator('button:has-text("Add member")').click()
+  await expect(
+    page.locator('input[name="members\\[1\\]\\[name\\]"]')
+  ).toBeFocused()
   await page.locator('input[name="members\\[1\\]\\[name\\]"]').fill('Bob')
   await page
     .locator('select[name="members\\[1\\]\\[role\\]"]')

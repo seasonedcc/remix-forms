@@ -725,12 +725,21 @@ function ArrayFieldInner(props: Record<string, any>) {
     : userStyle
 
   const asFieldArrayValue = (v: unknown) => (Array.isArray(v) ? [v] : v)
+  const isScalarItem = itemShape.type !== 'object' && itemShape.type !== 'array'
+  const scalarFocusName = (index: number) =>
+    isScalarItem ? `${String(name)}.${index}` : undefined
   const appendDefault = (value?: unknown) =>
-    append(asFieldArrayValue(value ?? defaultValue(itemShape)))
+    append(asFieldArrayValue(value ?? defaultValue(itemShape)), {
+      focusName: scalarFocusName(rhfFields.length),
+    })
   const prependDefault = (value?: unknown) =>
-    prepend(asFieldArrayValue(value ?? defaultValue(itemShape)))
+    prepend(asFieldArrayValue(value ?? defaultValue(itemShape)), {
+      focusName: scalarFocusName(0),
+    })
   const insertDefault = (index: number, value?: unknown) =>
-    insert(index, asFieldArrayValue(value ?? defaultValue(itemShape)))
+    insert(index, asFieldArrayValue(value ?? defaultValue(itemShape)), {
+      focusName: scalarFocusName(index),
+    })
 
   // Per-nesting-level components (stable via useMemo)
   const ChildSmartInput = React.useMemo(
