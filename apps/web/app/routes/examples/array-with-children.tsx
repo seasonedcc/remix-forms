@@ -36,18 +36,13 @@ export default () => (
                 <Item key={key}>
                   {({ SmartInput, Errors: ItemErrors }) => (
                     <div>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <SmartInput placeholder={\`Item \${index + 1}\`} />
-                        {index > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => swap(index, index - 1)}
-                          >
-                            Up
-                          </button>
-                        )}
-                        <RemoveButton onClick={() => remove(index)} />
-                      </div>
+                      <SmartInput placeholder={\`Item \${index + 1}\`} />
+                      {index > 0 && (
+                        <button type="button" onClick={() => swap(index, index - 1)}>
+                          Up
+                        </button>
+                      )}
+                      <RemoveButton onClick={() => remove(index)} />
                       <ItemErrors />
                     </div>
                   )}

@@ -36,18 +36,23 @@ export default () => (
       <>
         <Field name="teamName" />
         <Field name="members">
-          {({ Title, Errors, Item, items, append, remove, AddButton, RemoveButton }) => (
+          {({ Title, Errors, Item, items, append,
+              remove, AddButton, RemoveButton }) => (
             <>
               <Title />
               {items.map(({ key, index }) => (
                 <Item key={key}>
                   {({ Field: MemberField }) => (
-                    <fieldset>
-                      <legend>Member {index + 1}</legend>
+                    <>
+                      <div>
+                        <span>Member {index + 1}</span>
+                        <RemoveButton onClick={() => remove(index)}>
+                          Remove
+                        </RemoveButton>
+                      </div>
                       <MemberField name="name" />
                       <MemberField name="role" />
-                      <RemoveButton onClick={() => remove(index)} />
-                    </fieldset>
+                    </>
                   )}
                 </Item>
               ))}
@@ -106,20 +111,26 @@ export default function Component() {
               }) => (
                 <>
                   <Title />
-                  {items.map(({ key, index }) => (
-                    <Item key={key}>
-                      {({ Field: MemberField }) => (
-                        <fieldset>
-                          <legend>Member {index + 1}</legend>
-                          <MemberField name="name" />
-                          <MemberField name="role" />
-                          <RemoveButton onClick={() => remove(index)}>
-                            Remove
-                          </RemoveButton>
-                        </fieldset>
-                      )}
-                    </Item>
-                  ))}
+                  <div className="flex flex-col gap-3">
+                    {items.map(({ key, index }) => (
+                      <Item key={key}>
+                        {({ Field: MemberField }) => (
+                          <div className="flex flex-col gap-2 rounded-lg border border-base-content/10 p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-sm">
+                                Member {index + 1}
+                              </span>
+                              <RemoveButton onClick={() => remove(index)}>
+                                Remove
+                              </RemoveButton>
+                            </div>
+                            <MemberField name="name" />
+                            <MemberField name="role" />
+                          </div>
+                        )}
+                      </Item>
+                    ))}
+                  </div>
                   <AddButton onClick={() => append()}>Add member</AddButton>
                   <Errors />
                 </>
