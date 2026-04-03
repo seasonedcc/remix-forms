@@ -74,7 +74,6 @@ const testRoutes = [
   'button-name-value',
   'fetcher-with-other-forms-error',
   'field-with-radio-children',
-  'field-with-ref',
   'fields-component',
   'hidden-field-with-custom-children',
   'hidden-field-with-errors',
