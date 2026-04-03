@@ -1,6 +1,6 @@
 import { expect, test, testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/schemas/zod-effects'
+const route = '/examples/scalar-schemas/zod-effects'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example

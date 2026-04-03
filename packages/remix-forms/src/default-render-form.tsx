@@ -1,10 +1,10 @@
+import type { ComponentSlots } from './defaults'
 import type { FormSchema, Infer } from './prelude'
 import type { RenderFormProps } from './schema-form'
 
 function defaultRenderForm<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,

@@ -9,7 +9,7 @@ import type { Route } from './+types/dirty-indicator'
 
 const title = 'Dirty indicator'
 const description =
-  'In this example, we use renderField to make labels and borders yellow when the field value has changed.'
+  'In this example, we use renderScalarField to make labels and borders yellow when the field value has changed.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
@@ -25,7 +25,7 @@ export default () => (
     <SchemaForm
       values={{ email: 'default@domain.tld', preferredSport: 'Basketball' }}
       schema={schema}
-      renderField={({ Field, ...props }) => {
+      renderScalarField={({ Field, ...props }) => {
         const { name, dirty } = props
 
         return (
@@ -73,7 +73,7 @@ export default () => (
     <SchemaForm
       values={{ email: 'default@domain.tld', preferredSport: 'Basketball' }}
       schema={schema}
-      renderField={({ Field, ...props }) => {
+      renderScalarField={({ Field, ...props }) => {
         const { name, dirty } = props
 
         return (

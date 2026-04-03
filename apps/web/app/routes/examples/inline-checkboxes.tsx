@@ -9,7 +9,7 @@ import type { Route } from './+types/inline-checkboxes'
 
 const title = 'Inline checkboxes'
 const description =
-  'In this example, we use renderField to add required indicators but render checkboxes inline.'
+  'In this example, we use renderScalarField to add required indicators but render checkboxes inline.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
@@ -23,7 +23,7 @@ const code = `const schema = z.object({
 export default () => (
   <SchemaForm
     schema={schema}
-    renderField={({ Field, ...props }) => {
+    renderScalarField={({ Field, ...props }) => {
       const { fieldType, name, label, required } = props
 
       return (
@@ -80,7 +80,7 @@ export default function Component() {
     <Example title={title} description={description}>
       <SchemaForm
         schema={schema}
-        renderField={({ Field, ...props }) => {
+        renderScalarField={({ Field, ...props }) => {
           const { fieldType, name, label, required } = props
 
           return (

@@ -161,9 +161,9 @@ describe('performMutation', () => {
       const errors = result.errors as Record<string, string[]>
       expect(errors['user.name']).toEqual(['Required'])
       const values = result.values as {
-        user?: { name?: string; age?: string }
+        user?: { name?: string; age?: number }
       }
-      expect(values.user).toEqual({ name: '', age: '42' })
+      expect(values.user).toEqual({ name: '', age: 42 })
     }
   })
 
@@ -395,5 +395,66 @@ describe('getFormValues with file fields', () => {
 
     expect(uploadHandler).toHaveBeenCalled()
     expect(result.success).toBe(true)
+  })
+})
+
+describe('getFormValues with arrays and objects', () => {
+  it('coerces array of strings from bracket-notation form data', async () => {
+    const schema = z.object({
+      title: z.string(),
+      tags: z.array(z.string()),
+    })
+
+    const request = makeRequest(
+      new URLSearchParams([
+        ['title', 'Hello'],
+        ['tags[0]', 'foo'],
+        ['tags[1]', 'bar'],
+      ])
+    )
+
+    const values = await getFormValues(request, schema)
+    expect(values.title).toBe('Hello')
+    expect(values.tags).toEqual(['foo', 'bar'])
+  })
+
+  it('coerces array of objects from bracket-notation form data', async () => {
+    const schema = z.object({
+      contacts: z.array(z.object({ name: z.string(), age: z.number() })),
+    })
+
+    const request = makeRequest(
+      new URLSearchParams([
+        ['contacts[0][name]', 'Jane'],
+        ['contacts[0][age]', '30'],
+        ['contacts[1][name]', 'Bob'],
+        ['contacts[1][age]', '25'],
+      ])
+    )
+
+    const values = await getFormValues(request, schema)
+    expect(values.contacts).toEqual([
+      { name: 'Jane', age: 30 },
+      { name: 'Bob', age: 25 },
+    ])
+  })
+
+  it('coerces nested objects from bracket-notation form data', async () => {
+    const schema = z.object({
+      billing: z.object({
+        street: z.string(),
+        zip: z.number(),
+      }),
+    })
+
+    const request = makeRequest(
+      new URLSearchParams([
+        ['billing[street]', 'Main St'],
+        ['billing[zip]', '12345'],
+      ])
+    )
+
+    const values = await getFormValues(request, schema)
+    expect(values.billing).toEqual({ street: 'Main St', zip: 12345 })
   })
 })

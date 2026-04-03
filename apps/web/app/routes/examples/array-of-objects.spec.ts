@@ -1,31 +1,49 @@
 import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/schemas/array-of-objects'
+const route = '/examples/array-schemas/array-of-objects'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
   const title = example.field('title')
-  const nameInput = page.locator('input[placeholder="Name"]')
-  const emailInput = page.locator('input[placeholder="E-mail"]')
-  const addButton = page.locator('button:has-text("+")')
 
   await page.goto(route)
 
   await example.expectField(title)
-  await expect(nameInput).toBeVisible()
-  await expect(emailInput).toBeVisible()
   await expect(button).toBeEnabled()
 
   await title.input.fill('Contacts')
-  await nameInput.fill('John')
-  await emailInput.fill('john@doe.com')
-  await addButton.click()
 
-  await nameInput.fill('Jane')
-  await emailInput.fill('jane@doe.com')
-  await addButton.click()
+  // Submit with no items — array-level error should show
+  await button.click()
 
-  await page.locator('span:has-text("John (john@doe.com)") button').click()
+  await example.expectErrorMessage(
+    'contacts',
+    'Too small: expected array to have >=1 items'
+  )
+
+  // Add an item — focus should move to the first input
+  await page.locator('button:has-text("Add")').click()
+  await expect(
+    page.locator('input[name="contacts\\[0\\]\\[name\\]"]')
+  ).toBeFocused()
+
+  // Remove it, submit again — same error should show
+  await page.locator('button:has-text("Remove")').click()
+  await button.click()
+
+  await example.expectErrorMessage(
+    'contacts',
+    'Too small: expected array to have >=1 items'
+  )
+
+  await page.locator('button:has-text("Add")').click()
+  await expect(
+    page.locator('input[name="contacts\\[0\\]\\[name\\]"]')
+  ).toBeFocused()
+  await page.locator('input[name="contacts\\[0\\]\\[name\\]"]').fill('Jane')
+  await page
+    .locator('input[name="contacts\\[0\\]\\[email\\]"]')
+    .fill('jane@doe.com')
 
   await button.click()
 

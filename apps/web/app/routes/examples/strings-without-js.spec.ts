@@ -1,6 +1,6 @@
 import { testWithoutJS } from 'tests/setup/tests'
 
-const route = '/examples/schemas/strings'
+const route = '/examples/scalar-schemas/strings'
 
 testWithoutJS('With JS disabled', async ({ example }) => {
   const { email, button, page } = example

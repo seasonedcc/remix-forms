@@ -9,7 +9,7 @@ import type { Route } from './+types/error-indicator'
 
 const title = 'Error indicator'
 const description =
-  'In this example, we use renderField to make labels and borders red when there is an error.'
+  'In this example, we use renderScalarField to make labels and borders red when there is an error.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
@@ -23,7 +23,7 @@ const code = `const schema = z.object({
 export default () => (
   <SchemaForm
     schema={schema}
-    renderField={({ Field, ...props }) => {
+    renderScalarField={({ Field, ...props }) => {
       const { name, errors } = props
 
       return (
@@ -68,7 +68,7 @@ export default function Component() {
     <Example title={title} description={description}>
       <SchemaForm
         schema={schema}
-        renderField={({ Field, ...props }) => {
+        renderScalarField={({ Field, ...props }) => {
           const { name, errors } = props
 
           return (

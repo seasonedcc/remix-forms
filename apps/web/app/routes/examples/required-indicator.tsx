@@ -9,7 +9,7 @@ import type { Route } from './+types/required-indicator'
 
 const title = 'Required indicator'
 const description =
-  'In this example, we use renderField to add an asterisk to required fields.'
+  'In this example, we use renderScalarField to add an asterisk to required fields.'
 
 export const meta: Route.MetaFunction = () => metaTags({ title, description })
 
@@ -23,7 +23,7 @@ const code = `const schema = z.object({
 export default () => (
   <SchemaForm
     schema={schema}
-    renderField={({ Field, ...props }) => {
+    renderScalarField={({ Field, ...props }) => {
       const { name, label, required } = props
 
       return (
@@ -65,7 +65,7 @@ export default function Component() {
     <Example title={title} description={description}>
       <SchemaForm
         schema={schema}
-        renderField={({ Field, ...props }) => {
+        renderScalarField={({ Field, ...props }) => {
           const { name, label, required } = props
 
           return (

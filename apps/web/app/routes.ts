@@ -17,17 +17,23 @@ export const exampleRouteGroups = {
     'Transform values',
   ],
   Modes: ['onSubmit', 'onBlur', 'onChange'],
-  Schemas: [
+  'Scalar schemas': [
     'Strings',
     'Numbers',
     'Booleans',
     'Dates',
     'Enums',
     'Zod Effects',
-    'Array of strings',
-    'Array of objects',
     'File upload',
   ],
+  'Array schemas': [
+    'Array of strings',
+    'Array of objects',
+    'Array with children',
+    'Object array with children',
+    'Array of arrays',
+  ],
+  'Object schemas': ['Nested object', 'Object with children', 'Deeply nested'],
   Forms: [
     'Auto-generated',
     'Labels, options, etc',
@@ -52,20 +58,22 @@ export const exampleRouteGroups = {
     'Chakra UI',
   ],
   renderForm: ['Pending UI', 'Errors first', 'Custom wrapper', 'Global layout'],
-  renderField: [
+  renderScalarField: [
     'Required indicator',
     'Error indicator',
     'Dirty indicator',
     'Inline checkboxes',
-    'Global render field',
+    'Global render scalar field',
   ],
+  renderArrayField: ['Array title customization'],
+  renderObjectField: ['Object title customization'],
+  renderObjectArrayItem: ['Drag and drop'],
 }
 
 const testRoutes = [
   'button-name-value',
   'fetcher-with-other-forms-error',
   'field-with-radio-children',
-  'field-with-ref',
   'fields-component',
   'hidden-field-with-custom-children',
   'hidden-field-with-errors',

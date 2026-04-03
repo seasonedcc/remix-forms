@@ -17,14 +17,22 @@ import {
   useSubmit,
 } from 'react-router'
 import { schemaFields } from 'schema-info'
-import type { SchemaInfo } from 'schema-info'
+import type { ArraySchemaInfo, ObjectSchemaInfo, SchemaInfo } from 'schema-info'
 import { mapChildren, reduceElements } from './children-traversal'
 import type { FieldComponent, FieldType, Option } from './create-field'
 import { createField } from './create-field'
-import { defaultRenderField } from './default-render-field'
+import {
+  defaultRenderArrayArrayItem,
+  defaultRenderArrayField,
+  defaultRenderObjectArrayItem,
+  defaultRenderObjectField,
+  defaultRenderScalarArrayItem,
+  defaultRenderScalarField,
+} from './default-render-field'
 import { defaultRenderForm } from './default-render-form'
 import type {
   ComponentMap,
+  ComponentSlots,
   MergeComponents,
   NoOverrides,
   ReactRouterFormProps,
@@ -65,7 +73,7 @@ type Field<SchemaType> = {
   autoFocus?: boolean
   autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
   accept?: string
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: field value can be any primitive, Date, File, array, or object depending on schema
   value?: any
   hidden?: boolean
   multiline?: boolean
@@ -74,59 +82,244 @@ type Field<SchemaType> = {
 }
 
 /**
- * Props passed to a custom field rendering component.
+ * Subset of {@link FieldType} values that represent non-compound field types.
+ * Used to narrow the `fieldType` property in {@link RenderScalarFieldProps}.
+ */
+type ScalarFieldType = 'string' | 'boolean' | 'number' | 'date' | 'file'
+
+/**
+ * Props passed to a {@link RenderScalarField} function.
  *
- * When using the {@link SchemaForm.renderField | renderField} prop you
- * receive these props for each field in the schema. They include the built
- * in `Field` component plus the computed metadata for that particular form
- * field.
+ * The `fieldType` and `shape` properties are narrowed to scalar variants,
+ * giving you full type safety when customizing how scalar fields render.
  *
  * @example
  * ```tsx
- * const MyField = ({ Field, name }) => <Field name={name} />
- * ```
- *
- * @example
- * ```tsx
- * const MyField = ({ errors }) => <span>{errors?.join(',')}</span>
+ * const renderScalarField = ({ Field, name, required, ...props }) => (
+ *   <div className={required ? 'required' : ''}>
+ *     <Field name={name} {...props} />
+ *   </div>
+ * )
  * ```
  */
-type RenderFieldProps<
+type RenderScalarFieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
-> = Field<Infer<Schema>> & {
+> = Omit<Field<Infer<Schema>>, 'fieldType' | 'shape'> & {
+  fieldType: ScalarFieldType
+  shape: Exclude<SchemaInfo, ArraySchemaInfo | ObjectSchemaInfo>
   Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
 }
 
 /**
- * Function signature used for rendering form fields.
- *
- * The function is called once for every key in the provided schema and
- * should return the JSX that renders that field.
- *
- * @example
- * ```tsx
- * const renderField = ({ Field, ...props }) => <Field {...props} />
- * ```
+ * Function signature for rendering scalar fields (string, number, boolean,
+ * date, file). Called for each scalar field when no explicit `children` are
+ * provided on the `Field` element.
  *
  * @example
  * ```tsx
- * const renderField = ({ name }) => <input name={String(name)} />
+ * const renderScalarField = ({ Field, name, ...props }) => (
+ *   <Field key={name} name={name} {...props} />
+ * )
  * ```
  */
-type RenderField<
+type RenderScalarField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = (
-  props: RenderFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
+  props: RenderScalarFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
+) => JSX.Element
+
+/**
+ * Props passed to a {@link RenderArrayField} function.
+ *
+ * The `fieldType` is narrowed to `'array'` and `shape` to
+ * {@link ArraySchemaInfo}. Includes the `emptyArrayLabel` string shown
+ * when the array has no items.
+ *
+ * @example
+ * ```tsx
+ * const renderArrayField = ({ Field, name, label, ...props }) => (
+ *   <section>
+ *     <h3>{label}</h3>
+ *     <Field name={name} {...props} />
+ *   </section>
+ * )
+ * ```
+ */
+type RenderArrayFieldProps<
+  Schema extends FormSchema,
+  Resolved extends ComponentSlots,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = Omit<Field<Infer<Schema>>, 'fieldType' | 'shape'> & {
+  fieldType: 'array'
+  shape: ArraySchemaInfo
+  emptyArrayLabel: string
+  Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
+}
+
+/**
+ * Function signature for rendering array fields. Called for each array
+ * field when no explicit `children` are provided on the `Field` element.
+ *
+ * @example
+ * ```tsx
+ * const renderArrayField = ({ Field, name, ...props }) => (
+ *   <Field key={name} name={name} {...props} />
+ * )
+ * ```
+ */
+type RenderArrayField<
+  Schema extends FormSchema,
+  Resolved extends ComponentSlots,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = (
+  props: RenderArrayFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
+) => JSX.Element
+
+/**
+ * Props passed to a {@link RenderObjectField} function.
+ *
+ * The `fieldType` is narrowed to `'object'` and `shape` to
+ * {@link ObjectSchemaInfo}, giving access to `shape.fields` for the
+ * object's sub-field metadata.
+ *
+ * @example
+ * ```tsx
+ * const renderObjectField = ({ Field, name, label, ...props }) => (
+ *   <fieldset>
+ *     <legend>{label}</legend>
+ *     <Field name={name} {...props} />
+ *   </fieldset>
+ * )
+ * ```
+ */
+type RenderObjectFieldProps<
+  Schema extends FormSchema,
+  Resolved extends ComponentSlots,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = Omit<Field<Infer<Schema>>, 'fieldType' | 'shape'> & {
+  fieldType: 'object'
+  shape: ObjectSchemaInfo
+  Field: FieldComponent<Schema, Resolved, Multiline, Radio, Hidden>
+}
+
+/**
+ * Function signature for rendering object fields. Called for each object
+ * field when no explicit `children` are provided on the `Field` element.
+ *
+ * @example
+ * ```tsx
+ * const renderObjectField = ({ Field, name, ...props }) => (
+ *   <Field key={name} name={name} {...props} />
+ * )
+ * ```
+ */
+type RenderObjectField<
+  Schema extends FormSchema,
+  Resolved extends ComponentSlots,
+  Multiline extends ReadonlyArray<keyof Infer<Schema>>,
+  Radio extends ReadonlyArray<keyof Infer<Schema>>,
+  Hidden extends ReadonlyArray<keyof Infer<Schema>>,
+> = (
+  props: RenderObjectFieldProps<Schema, Resolved, Multiline, Radio, Hidden>
+) => JSX.Element
+
+/**
+ * Props passed to a {@link RenderScalarArrayItem} function.
+ *
+ * Includes the `Item` component, the React `key` string, the item's
+ * `index`, and array manipulation helpers (`remove`, `move`, `swap`).
+ */
+type RenderScalarArrayItemProps<Resolved extends ComponentSlots> = {
+  Item: React.ComponentType<{ index?: number }>
+  itemKey: string
+  index: number
+  RemoveButton: Resolved['removeButton']
+  remove: (index: number) => void
+  move: (from: number, to: number) => void
+  swap: (a: number, b: number) => void
+  errors?: string[]
+}
+
+/**
+ * Function signature for rendering scalar array items. Called for each
+ * item in a scalar array field during auto-render.
+ *
+ * @example
+ * ```tsx
+ * const renderScalarArrayItem = ({ Item, itemKey }) => (
+ *   <Item key={itemKey} />
+ * )
+ * ```
+ */
+type RenderScalarArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderScalarArrayItemProps<Resolved>
+) => JSX.Element
+
+/**
+ * Props passed to a {@link RenderObjectArrayItem} function.
+ *
+ * Same shape as {@link RenderScalarArrayItemProps} — the `Item` component
+ * renders object sub-fields automatically when given no children.
+ *
+ * @example
+ * ```tsx
+ * const renderObjectArrayItem = ({ Item, itemKey, index, move }) => (
+ *   <div key={itemKey} draggable onDrop={...}>
+ *     <Item />
+ *   </div>
+ * )
+ * ```
+ */
+type RenderObjectArrayItemProps<Resolved extends ComponentSlots> = {
+  Item: React.ComponentType<{ index?: number }>
+  itemKey: string
+  index: number
+  RemoveButton: Resolved['removeButton']
+  remove: (index: number) => void
+  move: (from: number, to: number) => void
+  swap: (a: number, b: number) => void
+  errors?: string[]
+}
+
+/** Function signature for rendering object array items. */
+type RenderObjectArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderObjectArrayItemProps<Resolved>
+) => JSX.Element
+
+/**
+ * Props passed to a {@link RenderArrayArrayItem} function.
+ *
+ * Same shape as {@link RenderScalarArrayItemProps} — the `Item` component
+ * renders the nested array automatically when given no children.
+ */
+type RenderArrayArrayItemProps<Resolved extends ComponentSlots> = {
+  Item: React.ComponentType<{ index?: number }>
+  itemKey: string
+  index: number
+  RemoveButton: Resolved['removeButton']
+  remove: (index: number) => void
+  move: (from: number, to: number) => void
+  swap: (a: number, b: number) => void
+  errors?: string[]
+}
+
+/** Function signature for rendering nested-array items. */
+type RenderArrayArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderArrayArrayItemProps<Resolved>
 ) => JSX.Element
 
 /**
@@ -149,8 +342,7 @@ type RenderField<
  */
 type RenderFormProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -161,11 +353,11 @@ type RenderFormProps<
   Error: Resolved['error']
   Button: Resolved['button']
   submit: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: fetcher data type is application-specific
   fetcher: FetcherWithComponents<any> | undefined
   disabled: boolean
   buttonLabel: string
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
 } & UseFormReturn<Infer<Schema>, any>
 
 /**
@@ -192,8 +384,7 @@ type RenderFormProps<
  */
 type RenderForm<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -205,8 +396,7 @@ type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
 type Children<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -218,12 +408,12 @@ type Children<
     Error: Resolved['error']
     Button: Resolved['button']
     submit: () => void
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
   } & UseFormReturn<Infer<Schema>, any>
 ) => React.ReactNode
 
 type OnNavigation<Schema extends FormSchema> = (
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
   helpers: UseFormReturn<Infer<Schema>, any>
 ) => void
 
@@ -253,20 +443,41 @@ type SchemaFormProps<
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = {
   components?: Components
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: fetcher data type is application-specific
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
     ValidationMode,
     'onBlur' | 'onChange' | 'onSubmit'
   >
-  renderField?: RenderField<
+  renderScalarField?: RenderScalarField<
     Schema,
     MergeComponents<Base, Components>,
     Multiline,
     Radio,
     Hidden
   >
+  renderArrayField?: RenderArrayField<
+    Schema,
+    MergeComponents<Base, Components>,
+    Multiline,
+    Radio,
+    Hidden
+  >
+  renderObjectField?: RenderObjectField<
+    Schema,
+    MergeComponents<Base, Components>,
+    Multiline,
+    Radio,
+    Hidden
+  >
+  renderScalarArrayItem?: RenderScalarArrayItem<
+    MergeComponents<Base, Components>
+  >
+  renderObjectArrayItem?: RenderObjectArrayItem<
+    MergeComponents<Base, Components>
+  >
+  renderArrayArrayItem?: RenderArrayArrayItem<MergeComponents<Base, Components>>
   renderForm?: RenderForm<
     Schema,
     MergeComponents<Base, Components>,
@@ -287,6 +498,9 @@ type SchemaFormProps<
   >
   options?: Options<Infer<Schema>>
   emptyOptionLabel?: string
+  emptyArrayLabel?: string
+  addButtonLabel?: string
+  removeButtonLabel?: string
   hiddenFields?: Hidden
   inputTypes?: Partial<
     Record<keyof Infer<Schema>, React.HTMLInputTypeAttribute>
@@ -329,6 +543,8 @@ function resolveAutoInputType(
 function uiFieldType(info: SchemaInfo): FieldType {
   if (info.type === 'enum') return 'string'
   if (info.type === 'file') return 'file'
+  if (info.type === 'array') return 'array'
+  if (info.type === 'object') return 'object'
   return (info.type ?? 'string') as FieldType
 }
 
@@ -345,10 +561,13 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * @param options.renderForm - Default form layout function used when no
  *   `children` or per-form `renderForm` is provided. Receives the same
  *   helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`.
- * @param options.renderField - Default field rendering function used when no
- *   per-form `renderField` is provided. Receives the `Field` component plus
- *   field metadata. Each individual form can override this with its own
- *   `renderField` prop.
+ * @param options.renderScalarField - Default scalar field rendering function.
+ *   Each form can override with its own `renderScalarField` prop.
+ * @param options.renderArrayField - Default array field rendering function.
+ * @param options.renderObjectField - Default object field rendering function.
+ * @param options.renderScalarArrayItem - Default scalar array item rendering function.
+ * @param options.renderObjectArrayItem - Default object array item rendering function.
+ * @param options.renderArrayArrayItem - Default nested-array item rendering function.
  * @returns A SchemaForm component that uses the provided base components.
  *
  * @example
@@ -382,7 +601,7 @@ function uiFieldType(info: SchemaInfo): FieldType {
  * const SchemaForm = makeSchemaForm(
  *   { input: MyInput },
  *   {
- *     renderField: ({ Field, name, ...props }) => (
+ *     renderScalarField: ({ Field, name, ...props }) => (
  *       <Field key={name} name={name} {...props} />
  *     ),
  *   }
@@ -399,17 +618,39 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       readonly never[],
       readonly never[]
     >
-    renderField?: RenderField<
+    renderScalarField?: RenderScalarField<
       FormSchema,
       ResolveComponents<Base>,
       readonly never[],
       readonly never[],
       readonly never[]
     >
+    renderArrayField?: RenderArrayField<
+      FormSchema,
+      ResolveComponents<Base>,
+      readonly never[],
+      readonly never[],
+      readonly never[]
+    >
+    renderObjectField?: RenderObjectField<
+      FormSchema,
+      ResolveComponents<Base>,
+      readonly never[],
+      readonly never[],
+      readonly never[]
+    >
+    renderScalarArrayItem?: RenderScalarArrayItem<ResolveComponents<Base>>
+    renderObjectArrayItem?: RenderObjectArrayItem<ResolveComponents<Base>>
+    renderArrayArrayItem?: RenderArrayArrayItem<ResolveComponents<Base>>
   }
 ) {
   const factoryRenderForm = options?.renderForm
-  const factoryRenderField = options?.renderField
+  const factoryRenderScalarField = options?.renderScalarField
+  const factoryRenderArrayField = options?.renderArrayField
+  const factoryRenderObjectField = options?.renderObjectField
+  const factoryRenderScalarArrayItem = options?.renderScalarArrayItem
+  const factoryRenderObjectArrayItem = options?.renderObjectArrayItem
+  const factoryRenderArrayArrayItem = options?.renderArrayArrayItem
   const mergedBase = { ...defaultComponents, ...base } as Record<
     string,
     // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
@@ -429,7 +670,12 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     fetcher,
     mode = 'onSubmit',
     reValidateMode = 'onChange',
-    renderField: renderFieldProp,
+    renderScalarField: renderScalarFieldProp,
+    renderArrayField: renderArrayFieldProp,
+    renderObjectField: renderObjectFieldProp,
+    renderScalarArrayItem: renderScalarArrayItemProp,
+    renderObjectArrayItem: renderObjectArrayItemProp,
+    renderArrayArrayItem: renderArrayArrayItemProp,
     renderForm: renderFormProp,
     buttonLabel: rawButtonLabel = 'OK',
     pendingButtonLabel,
@@ -446,6 +692,9 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
     inputTypes,
     autoInputTypes = ['date', 'datetime-local', 'time'],
     emptyOptionLabel = '',
+    emptyArrayLabel: emptyArrayLabelProp = 'No items',
+    addButtonLabel: addButtonLabelProp = 'Add',
+    removeButtonLabel: removeButtonLabelProp = 'Remove',
     hiddenFields,
     multiline,
     radio,
@@ -490,7 +739,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       [valuesProp, actionValues]
     )
 
-    const fields = schemaFields(schema)
+    const fields = React.useMemo(() => schemaFields(schema), [schema])
     const hasFileFields = Object.values(fields).some(
       (info) => info.type === 'file'
     )
@@ -526,8 +775,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
 
     const formRef = React.useRef<HTMLFormElement>(null)
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const onSubmit = (event: any) => {
+    const onSubmit = (event: React.BaseSyntheticEvent) => {
       const target = event.currentTarget ?? formRef.current
       form.handleSubmit(() => {
         if (!formRef.current) return
@@ -550,6 +798,37 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       )
     }
 
+    const effectiveRenderScalarField =
+      renderScalarFieldProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderScalarField as any) ??
+      defaultRenderScalarField
+    const effectiveRenderArrayField =
+      renderArrayFieldProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderArrayField as any) ??
+      defaultRenderArrayField
+    const effectiveRenderObjectField =
+      renderObjectFieldProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderObjectField as any) ??
+      defaultRenderObjectField
+    const effectiveRenderScalarArrayItem =
+      renderScalarArrayItemProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderScalarArrayItem as any) ??
+      defaultRenderScalarArrayItem
+    const effectiveRenderObjectArrayItem =
+      renderObjectArrayItemProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderObjectArrayItem as any) ??
+      defaultRenderObjectArrayItem
+    const effectiveRenderArrayArrayItem =
+      renderArrayArrayItemProp ??
+      // biome-ignore lint/suspicious/noExplicitAny: factory-level render fns use widened generics
+      (factoryRenderArrayArrayItem as any) ??
+      defaultRenderArrayArrayItem
+
     const Field = React.useMemo(
       () =>
         createField<
@@ -563,13 +842,27 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
           idPrefix,
           // biome-ignore lint/suspicious/noExplicitAny: rc is the merged components — generics ensure type safety at the consumer level
           components: rc as any,
+          renderFunctions: {
+            renderScalarField: effectiveRenderScalarField,
+            renderArrayField: effectiveRenderArrayField,
+            renderObjectField: effectiveRenderObjectField,
+            renderScalarArrayItem: effectiveRenderScalarArrayItem,
+            renderObjectArrayItem: effectiveRenderObjectArrayItem,
+            renderArrayArrayItem: effectiveRenderArrayArrayItem,
+          },
+          emptyArrayLabel: emptyArrayLabelProp,
+          addButtonLabel: addButtonLabelProp,
+          removeButtonLabel: removeButtonLabelProp,
         }),
       [idPrefix, ...Object.values(componentsProp ?? {}), form.register]
     )
 
     const fieldErrors = React.useCallback(
       (key: keyof SchemaType & string) => {
-        const message = (formErrors[key] as unknown as FieldError)?.message
+        const error = formErrors[key]
+        const message =
+          (error as unknown as FieldError)?.message ??
+          (error as unknown as { root?: FieldError })?.root?.message
         return browser() ? message && [message] : errors?.[key]
       },
       [errors, formErrors]
@@ -681,10 +974,6 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       // biome-ignore lint/suspicious/noExplicitAny: factory-level renderForm uses widened generics — type safety is enforced at the consumer level
       renderFormProp ?? (factoryRenderForm as any) ?? defaultRenderForm
 
-    const effectiveRenderField =
-      // biome-ignore lint/suspicious/noExplicitAny: factory-level renderField uses widened generics — type safety is enforced at the consumer level
-      renderFieldProp ?? (factoryRenderField as any) ?? defaultRenderField
-
     const childrenHelpers = {
       Field,
       Fields: FieldsSentinel,
@@ -759,18 +1048,33 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
           : (child.props.autoFocus ?? field?.autoFocus)
 
         if (!child.props.children && field) {
-          return effectiveRenderField({
+          const renderProps = {
             Field,
             ...field,
             ...child.props,
             autoFocus,
-          })
+          }
+          if (field.fieldType === 'array') {
+            return effectiveRenderArrayField({
+              ...renderProps,
+              emptyArrayLabel: emptyArrayLabelProp,
+              addButtonLabel: addButtonLabelProp,
+              removeButtonLabel: removeButtonLabelProp,
+            })
+          }
+          if (field.fieldType === 'object') {
+            return effectiveRenderObjectField(renderProps)
+          }
+          return effectiveRenderScalarField(renderProps)
         }
 
         return React.cloneElement(child, {
           ...field,
           ...child.props,
           autoFocus,
+          emptyArrayLabel: emptyArrayLabelProp,
+          addButtonLabel: addButtonLabelProp,
+          removeButtonLabel: removeButtonLabelProp,
         })
       }
       if (child.type === Errors) {
@@ -881,7 +1185,12 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.fetcher - Fetcher object returned by `useFetcher()`
  * @param props.mode - Validation trigger mode for React Hook Form
  * @param props.reValidateMode - Validation mode after submission
- * @param props.renderField - Custom field rendering function. Can also be set globally via `makeSchemaForm`
+ * @param props.renderScalarField - Custom rendering for scalar fields (string, number, boolean, date, file). Can also be set globally via `makeSchemaForm`
+ * @param props.renderArrayField - Custom rendering for array fields. Can also be set globally via `makeSchemaForm`
+ * @param props.renderObjectField - Custom rendering for object fields. Can also be set globally via `makeSchemaForm`
+ * @param props.renderScalarArrayItem - Custom rendering for scalar array items. Can also be set globally via `makeSchemaForm`
+ * @param props.renderObjectArrayItem - Custom rendering for object array items. Can also be set globally via `makeSchemaForm`
+ * @param props.renderArrayArrayItem - Custom rendering for nested-array items. Can also be set globally via `makeSchemaForm`
  * @param props.renderForm - Custom form layout function. Called when no `children` is provided. Receives the same helpers as `children` plus `fetcher`, `disabled` and `buttonLabel`. Can also be set globally via `makeSchemaForm`
  * @param props.buttonLabel - Text shown in the submit button
  * @param props.pendingButtonLabel - Text shown while submitting
@@ -904,6 +1213,9 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
  * @param props.errors - Error messages keyed by field name
  * @param props.values - Initial values for fields
  * @param props.emptyOptionLabel - Label for the empty select option
+ * @param props.emptyArrayLabel - Text shown when an array field has no items. Defaults to `'No items'`
+ * @param props.addButtonLabel - Text shown in the array Add button. Defaults to `'Add'`
+ * @param props.removeButtonLabel - Text shown in the array Remove button. Defaults to `'Remove'`
  * @param props.idPrefix - Custom prefix for generated element IDs. Defaults to a `useId()` value
  * @param props.flushSync - Whether to flush React updates synchronously
  * @returns A form element ready to be used inside a React Router v7 route
@@ -938,8 +1250,19 @@ const SchemaForm = makeSchemaForm(defaultComponents)
 export type {
   AutoInputType,
   Field,
-  RenderFieldProps,
-  RenderField,
+  ScalarFieldType,
+  RenderScalarFieldProps,
+  RenderScalarField,
+  RenderArrayFieldProps,
+  RenderArrayField,
+  RenderObjectFieldProps,
+  RenderObjectField,
+  RenderScalarArrayItemProps,
+  RenderScalarArrayItem,
+  RenderObjectArrayItemProps,
+  RenderObjectArrayItem,
+  RenderArrayArrayItemProps,
+  RenderArrayArrayItem,
   RenderFormProps,
   RenderForm,
   SchemaFormProps,

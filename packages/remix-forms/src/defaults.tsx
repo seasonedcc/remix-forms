@@ -105,6 +105,31 @@ type ButtonSlotProps = {
   children?: React.ReactNode
 }
 
+type ScalarArrayFieldSlotProps = { children?: React.ReactNode }
+
+type ScalarArrayItemSlotProps = { children?: React.ReactNode }
+type ObjectArrayItemSlotProps = { children?: React.ReactNode }
+type ArrayArrayItemSlotProps = { children?: React.ReactNode }
+
+type AddButtonSlotProps = {
+  onClick?: React.MouseEventHandler
+  children?: React.ReactNode
+}
+
+type RemoveButtonSlotProps = {
+  onClick?: React.MouseEventHandler
+  children?: React.ReactNode
+}
+
+type ArrayEmptySlotProps = { children?: React.ReactNode }
+
+type ObjectFieldsSlotProps = { children?: React.ReactNode }
+
+type TitleSlotProps = {
+  id?: string
+  children?: React.ReactNode
+}
+
 /**
  * Describes the full set of component slots available for customisation.
  *
@@ -136,6 +161,16 @@ type ComponentMap = {
   fields: ComponentFor<FieldsSlotProps>
   globalErrors: ComponentFor<ErrorContainerSlotProps>
   button: ComponentFor<ButtonSlotProps>
+  scalarArrayField: ComponentFor<ScalarArrayFieldSlotProps>
+  scalarArrayItem: ComponentFor<ScalarArrayItemSlotProps>
+  objectArrayItem: ComponentFor<ObjectArrayItemSlotProps>
+  arrayArrayItem: ComponentFor<ArrayArrayItemSlotProps>
+  addButton: ComponentFor<AddButtonSlotProps>
+  removeButton: ComponentFor<RemoveButtonSlotProps>
+  arrayEmpty: ComponentFor<ArrayEmptySlotProps>
+  objectFields: ComponentFor<ObjectFieldsSlotProps>
+  arrayTitle: ComponentFor<TitleSlotProps>
+  objectTitle: ComponentFor<TitleSlotProps>
 }
 
 const DefaultForm = ReactRouterForm
@@ -223,6 +258,56 @@ const DefaultButton = React.forwardRef<
   JSX.IntrinsicElements['button']
 >((props, ref) => <button {...props} ref={ref} />)
 
+const DefaultScalarArrayField = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultScalarArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultArrayArrayItem = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultAddButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => <button type="button" {...props} ref={ref} />)
+
+const DefaultRemoveButton = React.forwardRef<
+  HTMLButtonElement,
+  JSX.IntrinsicElements['button']
+>((props, ref) => <button type="button" {...props} ref={ref} />)
+
+const DefaultArrayEmpty = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectFields = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultArrayTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
+const DefaultObjectTitle = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>((props, ref) => <div {...props} ref={ref} />)
+
 type DefaultComponents = {
   form: typeof DefaultForm
   field: typeof DefaultField
@@ -241,6 +326,16 @@ type DefaultComponents = {
   fields: typeof DefaultFieldsWrapper
   globalErrors: typeof DefaultGlobalErrors
   button: typeof DefaultButton
+  scalarArrayField: typeof DefaultScalarArrayField
+  scalarArrayItem: typeof DefaultScalarArrayItem
+  objectArrayItem: typeof DefaultObjectArrayItem
+  arrayArrayItem: typeof DefaultArrayArrayItem
+  addButton: typeof DefaultAddButton
+  removeButton: typeof DefaultRemoveButton
+  arrayEmpty: typeof DefaultArrayEmpty
+  objectFields: typeof DefaultObjectFields
+  arrayTitle: typeof DefaultArrayTitle
+  objectTitle: typeof DefaultObjectTitle
 }
 
 const defaultComponents: DefaultComponents = {
@@ -261,6 +356,16 @@ const defaultComponents: DefaultComponents = {
   fields: DefaultFieldsWrapper,
   globalErrors: DefaultGlobalErrors,
   button: DefaultButton,
+  scalarArrayField: DefaultScalarArrayField,
+  scalarArrayItem: DefaultScalarArrayItem,
+  objectArrayItem: DefaultObjectArrayItem,
+  arrayArrayItem: DefaultArrayArrayItem,
+  addButton: DefaultAddButton,
+  removeButton: DefaultRemoveButton,
+  arrayEmpty: DefaultArrayEmpty,
+  objectFields: DefaultObjectFields,
+  arrayTitle: DefaultArrayTitle,
+  objectTitle: DefaultObjectTitle,
 }
 
 type ResolveComponents<Components extends Partial<ComponentMap>> = {
@@ -290,8 +395,12 @@ type PropsOf<T> = T extends React.ComponentType<infer P>
     ? JSX.IntrinsicElements[T]
     : Record<string, unknown>
 
+// biome-ignore lint/suspicious/noExplicitAny: values are concrete component types at each call site — any here is the constraint floor
+type ComponentSlots = Record<keyof ComponentMap, any>
+
 export type {
   ComponentMap,
+  ComponentSlots,
   DefaultComponents,
   NoOverrides,
   ResolveComponents,
@@ -318,5 +427,15 @@ export {
   DefaultFieldsWrapper,
   DefaultGlobalErrors,
   DefaultButton,
+  DefaultScalarArrayField,
+  DefaultScalarArrayItem,
+  DefaultObjectArrayItem,
+  DefaultArrayArrayItem,
+  DefaultAddButton,
+  DefaultRemoveButton,
+  DefaultArrayEmpty,
+  DefaultObjectFields,
+  DefaultArrayTitle,
+  DefaultObjectTitle,
   defaultComponents,
 }

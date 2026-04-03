@@ -159,8 +159,7 @@ class Example {
     expect(await field.input.getAttribute('autofocus')).toBeNull()
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  async expectData(data: any) {
+  async expectData(data: Record<string, unknown>) {
     const actionData = JSON.parse(
       await this.page.locator('#action-data > pre:visible').first().innerText()
     )

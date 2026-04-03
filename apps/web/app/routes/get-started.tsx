@@ -34,6 +34,16 @@ const SchemaForm = makeSchemaForm({
   fieldErrors: /* your custom FieldErrors */,
   globalErrors: /* your custom GlobalErrors */,
   error: /* your custom Error */,
+  scalarArrayField: /* your custom scalar array field wrapper */,
+  scalarArrayItem: /* your custom scalar array item wrapper */,
+  objectArrayItem: /* your custom object array item wrapper */,
+  arrayArrayItem: /* your custom nested-array item wrapper */,
+  arrayTitle: /* your custom array title (div by default, not label) */,
+  addButton: /* your custom add-item button */,
+  removeButton: /* your custom remove-item button */,
+  arrayEmpty: /* your custom empty-array message */,
+  objectFields: /* your custom object sub-fields wrapper */,
+  objectTitle: /* your custom object title (div by default, not label) */,
 })
 
 export { SchemaForm }

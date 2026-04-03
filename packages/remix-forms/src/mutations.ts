@@ -59,8 +59,7 @@ type FormActionFailure<SchemaType> = {
   values: FormValues<SchemaType>
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FormValues<SchemaType> = Partial<Record<keyof SchemaType, any>>
+type FormValues<SchemaType> = Partial<Record<keyof SchemaType, unknown>>
 
 type FormErrors<SchemaType = Record<string, unknown>> = Partial<
   Record<(keyof SchemaType & string) | '_global' | (string & {}), string[]>

@@ -1,6 +1,6 @@
 import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/render-field/dirty-indicator'
+const route = '/examples/render-scalar-field/dirty-indicator'
 
 test('With JS enabled', async ({ example }) => {
   const { firstName, email, button, page } = example

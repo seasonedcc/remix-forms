@@ -2,6 +2,7 @@ import * as React from 'react'
 
 type FieldsSentinelProps = {
   children?: React.ReactNode
+  [key: string]: unknown
 }
 
 /**
@@ -20,10 +21,10 @@ function FieldsSentinel(
 
 type ExpandOptions = {
   sentinelType: React.ComponentType
-  // biome-ignore lint/suspicious/noExplicitAny: Field identity varies per schema
+  // biome-ignore lint/suspicious/noExplicitAny: Field component props vary per schema — used for identity check and createElement
   fieldIdentity: React.ComponentType<any>
   schemaKeys: string[]
-  // biome-ignore lint/suspicious/noExplicitAny: wrapper component props vary
+  // biome-ignore lint/suspicious/noExplicitAny: wrapper component props vary per user-provided component
   FieldsWrapper: React.ComponentType<any>
 }
 
@@ -52,8 +53,7 @@ function expandFieldsSentinel(
         (child.props as FieldsSentinelProps).children,
         (overrideChild) => {
           if (React.isValidElement(overrideChild)) {
-            // biome-ignore lint/suspicious/noExplicitAny: props vary per field
-            const props = overrideChild.props as any
+            const props = overrideChild.props as { name?: string }
             if (overrideChild.type === fieldIdentity && props.name) {
               overrides.set(String(props.name), overrideChild)
             }
@@ -67,17 +67,17 @@ function expandFieldsSentinel(
         return React.createElement(fieldIdentity, { key, name: key })
       })
 
-      // biome-ignore lint/suspicious/noExplicitAny: sentinel props vary per fields slot
-      const { children: _c, ...wrapperProps } = child.props as any
+      const { children: _c, ...wrapperProps } =
+        child.props as FieldsSentinelProps
       return React.createElement(FieldsWrapper, wrapperProps, ...fieldElements)
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: generic React element traversal
-    const childProps = child.props as any
+    const childProps = child.props as { children?: React.ReactNode }
     if (childProps.children && typeof childProps.children !== 'function') {
       const newChildren = expandFieldsSentinel(childProps.children, options)
-      // biome-ignore lint/suspicious/noExplicitAny: generic React element props
-      return React.cloneElement(child, { children: newChildren } as any)
+      return React.cloneElement(child, {
+        children: newChildren,
+      } as React.Attributes & { children: React.ReactNode })
     }
 
     return child

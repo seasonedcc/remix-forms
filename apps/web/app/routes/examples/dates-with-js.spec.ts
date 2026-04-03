@@ -1,6 +1,6 @@
 import { expect, test } from 'tests/setup/tests'
 
-const route = '/examples/schemas/dates'
+const route = '/examples/scalar-schemas/dates'
 
 test('With JS enabled', async ({ example }) => {
   const { button, page } = example
