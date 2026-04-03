@@ -15,20 +15,28 @@ describe('mapObject', () => {
 describe('browser', () => {
   const original = globalThis.document
   afterEach(() => {
-    // restore original document
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    ;(globalThis as any).document = original
+    Object.defineProperty(globalThis, 'document', {
+      value: original,
+      writable: true,
+      configurable: true,
+    })
   })
 
   it('returns false when document is undefined', () => {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    ;(globalThis as any).document = undefined
+    Object.defineProperty(globalThis, 'document', {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    })
     expect(browser()).toBe(false)
   })
 
   it('returns true when document is defined', () => {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    ;(globalThis as any).document = {}
+    Object.defineProperty(globalThis, 'document', {
+      value: {},
+      writable: true,
+      configurable: true,
+    })
     expect(browser()).toBe(true)
   })
 })

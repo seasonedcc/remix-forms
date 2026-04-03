@@ -395,8 +395,12 @@ type PropsOf<T> = T extends React.ComponentType<infer P>
     ? JSX.IntrinsicElements[T]
     : Record<string, unknown>
 
+// biome-ignore lint/suspicious/noExplicitAny: values are concrete component types at each call site — any here is the constraint floor
+type ComponentSlots = Record<keyof ComponentMap, any>
+
 export type {
   ComponentMap,
+  ComponentSlots,
   DefaultComponents,
   NoOverrides,
   ResolveComponents,

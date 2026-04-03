@@ -1,3 +1,4 @@
+import type { ComponentSlots } from './defaults'
 import type { FormSchema, Infer } from './prelude'
 import type {
   RenderArrayArrayItemProps,
@@ -10,8 +11,7 @@ import type {
 
 function defaultRenderScalarField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -26,8 +26,7 @@ function defaultRenderScalarField<
 
 function defaultRenderArrayField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -42,8 +41,7 @@ function defaultRenderArrayField<
 
 function defaultRenderObjectField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -56,24 +54,24 @@ function defaultRenderObjectField<
   return <Field key={String(name)} name={name} {...(props as any)} />
 }
 
-function defaultRenderScalarArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
->({ Item, itemKey }: RenderScalarArrayItemProps<Resolved>) {
+function defaultRenderScalarArrayItem<Resolved extends ComponentSlots>({
+  Item,
+  itemKey,
+}: RenderScalarArrayItemProps<Resolved>) {
   return <Item key={itemKey} />
 }
 
-function defaultRenderObjectArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
->({ Item, itemKey }: RenderObjectArrayItemProps<Resolved>) {
+function defaultRenderObjectArrayItem<Resolved extends ComponentSlots>({
+  Item,
+  itemKey,
+}: RenderObjectArrayItemProps<Resolved>) {
   return <Item key={itemKey} />
 }
 
-function defaultRenderArrayArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
->({ Item, itemKey }: RenderArrayArrayItemProps<Resolved>) {
+function defaultRenderArrayArrayItem<Resolved extends ComponentSlots>({
+  Item,
+  itemKey,
+}: RenderArrayArrayItemProps<Resolved>) {
   return <Item key={itemKey} />
 }
 

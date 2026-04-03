@@ -32,6 +32,7 @@ import {
 import { defaultRenderForm } from './default-render-form'
 import type {
   ComponentMap,
+  ComponentSlots,
   MergeComponents,
   NoOverrides,
   ReactRouterFormProps,
@@ -72,7 +73,7 @@ type Field<SchemaType> = {
   autoFocus?: boolean
   autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
   accept?: string
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: field value can be any primitive, Date, File, array, or object depending on schema
   value?: any
   hidden?: boolean
   multiline?: boolean
@@ -103,8 +104,7 @@ type ScalarFieldType = 'string' | 'boolean' | 'number' | 'date' | 'file'
  */
 type RenderScalarFieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -128,8 +128,7 @@ type RenderScalarFieldProps<
  */
 type RenderScalarField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -156,8 +155,7 @@ type RenderScalarField<
  */
 type RenderArrayFieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -181,8 +179,7 @@ type RenderArrayFieldProps<
  */
 type RenderArrayField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -209,8 +206,7 @@ type RenderArrayField<
  */
 type RenderObjectFieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -233,8 +229,7 @@ type RenderObjectFieldProps<
  */
 type RenderObjectField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -248,10 +243,7 @@ type RenderObjectField<
  * Includes the `Item` component, the React `key` string, the item's
  * `index`, and array manipulation helpers (`remove`, `move`, `swap`).
  */
-type RenderScalarArrayItemProps<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type RenderScalarArrayItemProps<Resolved extends ComponentSlots> = {
   Item: React.ComponentType<{ index?: number }>
   itemKey: string
   index: number
@@ -273,10 +265,9 @@ type RenderScalarArrayItemProps<
  * )
  * ```
  */
-type RenderScalarArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (props: RenderScalarArrayItemProps<Resolved>) => JSX.Element
+type RenderScalarArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderScalarArrayItemProps<Resolved>
+) => JSX.Element
 
 /**
  * Props passed to a {@link RenderObjectArrayItem} function.
@@ -293,10 +284,7 @@ type RenderScalarArrayItem<
  * )
  * ```
  */
-type RenderObjectArrayItemProps<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type RenderObjectArrayItemProps<Resolved extends ComponentSlots> = {
   Item: React.ComponentType<{ index?: number }>
   itemKey: string
   index: number
@@ -308,10 +296,9 @@ type RenderObjectArrayItemProps<
 }
 
 /** Function signature for rendering object array items. */
-type RenderObjectArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (props: RenderObjectArrayItemProps<Resolved>) => JSX.Element
+type RenderObjectArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderObjectArrayItemProps<Resolved>
+) => JSX.Element
 
 /**
  * Props passed to a {@link RenderArrayArrayItem} function.
@@ -319,10 +306,7 @@ type RenderObjectArrayItem<
  * Same shape as {@link RenderScalarArrayItemProps} — the `Item` component
  * renders the nested array automatically when given no children.
  */
-type RenderArrayArrayItemProps<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type RenderArrayArrayItemProps<Resolved extends ComponentSlots> = {
   Item: React.ComponentType<{ index?: number }>
   itemKey: string
   index: number
@@ -334,10 +318,9 @@ type RenderArrayArrayItemProps<
 }
 
 /** Function signature for rendering nested-array items. */
-type RenderArrayArrayItem<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (props: RenderArrayArrayItemProps<Resolved>) => JSX.Element
+type RenderArrayArrayItem<Resolved extends ComponentSlots> = (
+  props: RenderArrayArrayItemProps<Resolved>
+) => JSX.Element
 
 /**
  * Props passed to a custom form rendering function.
@@ -359,8 +342,7 @@ type RenderArrayArrayItem<
  */
 type RenderFormProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -371,11 +353,11 @@ type RenderFormProps<
   Error: Resolved['error']
   Button: Resolved['button']
   submit: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: fetcher data type is application-specific
   fetcher: FetcherWithComponents<any> | undefined
   disabled: boolean
   buttonLabel: string
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
 } & UseFormReturn<Infer<Schema>, any>
 
 /**
@@ -402,8 +384,7 @@ type RenderFormProps<
  */
 type RenderForm<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -415,8 +396,7 @@ type Options<SchemaType> = Partial<Record<keyof SchemaType, Option[]>>
 
 type Children<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -428,12 +408,12 @@ type Children<
     Error: Resolved['error']
     Button: Resolved['button']
     submit: () => void
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
   } & UseFormReturn<Infer<Schema>, any>
 ) => React.ReactNode
 
 type OnNavigation<Schema extends FormSchema> = (
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: RHF's TContext param — not constrained by schema
   helpers: UseFormReturn<Infer<Schema>, any>
 ) => void
 
@@ -463,7 +443,7 @@ type SchemaFormProps<
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
 > = {
   components?: Components
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: fetcher data type is application-specific
   fetcher?: FetcherWithComponents<any>
   mode?: keyof ValidationMode
   reValidateMode?: keyof Pick<
@@ -795,8 +775,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
 
     const formRef = React.useRef<HTMLFormElement>(null)
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const onSubmit = (event: any) => {
+    const onSubmit = (event: React.BaseSyntheticEvent) => {
       const target = event.currentTarget ?? formRef.current
       form.handleSubmit(() => {
         if (!formRef.current) return

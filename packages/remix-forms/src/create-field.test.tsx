@@ -50,7 +50,8 @@ const register = vi.fn((name: string) => ({
   onChange: () => Promise.resolve(),
   onBlur: () => Promise.resolve(),
   ref: () => {},
-})) as unknown as UseFormRegister<Record<string, unknown>>
+  // biome-ignore lint/suspicious/noExplicitAny: test mock — schema type varies per test case
+})) as unknown as UseFormRegister<any>
 import { schemaInfo } from 'schema-info'
 import * as z from 'zod'
 

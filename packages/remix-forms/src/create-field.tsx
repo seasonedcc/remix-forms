@@ -1,11 +1,16 @@
 import type { FormValue } from 'coerce-form-data'
 import { FormDataCoercionError, coerceValue, parseDate } from 'coerce-form-data'
 import * as React from 'react'
-import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form'
+import type {
+  FieldValues,
+  Path,
+  UseFormRegister,
+  UseFormRegisterReturn,
+} from 'react-hook-form'
 import { useFieldArray, useFormContext } from 'react-hook-form'
-import type { SchemaInfo } from 'schema-info'
+import type { ArraySchemaInfo, ObjectSchemaInfo, SchemaInfo } from 'schema-info'
 import { mapChildren } from './children-traversal'
-import type { PropsOf } from './defaults'
+import type { ComponentSlots, PropsOf } from './defaults'
 import { inferLabel } from './infer-label'
 import type { FormSchema, Infer } from './prelude'
 
@@ -21,8 +26,7 @@ type Option = { name: string } & Required<
 
 type ScalarChildren<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -49,15 +53,13 @@ type ScalarChildren<
     CheckboxLabel: Resolved['checkboxLabel']
     Errors: Resolved['fieldErrors']
     Error: Resolved['error']
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    ref: React.ForwardedRef<any>
+    ref: React.ForwardedRef<unknown>
   }
 ) => React.ReactNode
 
 type ObjectChildren<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Name extends keyof Infer<Schema>,
 > = (
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
@@ -77,10 +79,7 @@ type ArrayItem = {
   index: number
 }
 
-type ScalarItemHelpers<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type ScalarItemHelpers<Resolved extends ComponentSlots> = {
   SmartInput: React.ComponentType<SmartInputBaseProps>
   Label: Resolved['label']
   Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
@@ -96,11 +95,7 @@ type ScalarItemHelpers<
   Error: Resolved['error']
 }
 
-type ObjectItemHelpers<
-  Elem,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type ObjectItemHelpers<Elem, Resolved extends ComponentSlots> = {
   Field: ScopedFieldComponent<Elem, Resolved>
   Label: Resolved['label']
   Errors: Resolved['fieldErrors']
@@ -109,33 +104,25 @@ type ObjectItemHelpers<
 
 type ItemChildren<
   Elem,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
 > = IsObject<Elem> extends true
   ? (helpers: ObjectItemHelpers<NonNullable<Elem>, Resolved>) => React.ReactNode
   : (helpers: ScalarItemHelpers<Resolved>) => React.ReactNode
 
-type ItemProps<
-  Elem,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = {
+type ItemProps<Elem, Resolved extends ComponentSlots> = {
   children?: ItemChildren<Elem, Resolved>
   index?: number
 }
 
-type ScopedFieldComponent<
-  T,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = <Name extends keyof T>(
+type ScopedFieldComponent<T, Resolved extends ComponentSlots> = <
+  Name extends keyof T,
+>(
   props: ScopedFieldProps<T, Resolved, Name>
 ) => React.ReactElement | null
 
 type ScopedFieldProps<
   T,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Name extends keyof T,
 > = {
   name: Name
@@ -156,8 +143,7 @@ type ScopedFieldProps<
 
 type ScopedChildren<
   T,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Name extends keyof T,
 > = IsObject<T[Name]> extends true
   ? ScopedObjectChildren<NonNullable<T[Name]>, Resolved>
@@ -165,11 +151,7 @@ type ScopedChildren<
     ? ScopedArrayChildren<T[Name], Resolved>
     : ScopedScalarChildren<Resolved>
 
-type ScopedObjectChildren<
-  T,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (helpers: {
+type ScopedObjectChildren<T, Resolved extends ComponentSlots> = (helpers: {
   Title: Resolved['objectTitle']
   Field: ScopedFieldComponent<T, Resolved>
   ObjectFields: Resolved['objectFields']
@@ -177,11 +159,7 @@ type ScopedObjectChildren<
   Error: Resolved['error']
 }) => React.ReactNode
 
-type ScopedArrayChildren<
-  V,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (helpers: {
+type ScopedArrayChildren<V, Resolved extends ComponentSlots> = (helpers: {
   Title: Resolved['arrayTitle']
   Errors: Resolved['fieldErrors']
   Error: Resolved['error']
@@ -199,10 +177,7 @@ type ScopedArrayChildren<
   ScalarArrayField: Resolved['scalarArrayField']
 }) => React.ReactNode
 
-type ScopedScalarChildren<
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
-> = (helpers: {
+type ScopedScalarChildren<Resolved extends ComponentSlots> = (helpers: {
   Label: Resolved['label']
   SmartInput: React.ComponentType<SmartInputBaseProps>
   Input: StripDefaultProps<Resolved['input'], 'defaultValue'>
@@ -212,8 +187,7 @@ type ScopedScalarChildren<
 
 type ArrayChildren<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Name extends keyof Infer<Schema>,
 > = (
   helpers: Omit<Partial<Field<Infer<Schema>>>, 'name'> & {
@@ -240,8 +214,7 @@ type ArrayChildren<
 
 type Children<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -285,8 +258,7 @@ function getInputType(
 
 type FieldBaseProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -316,8 +288,7 @@ type SmartInputInternalKeys =
 
 type FieldProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -344,8 +315,7 @@ type FieldProps<
 
 type FieldComponent<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -361,7 +331,7 @@ type FieldComponent<
 type SmartInputBaseProps = {
   fieldType?: FieldType
   type?: React.HTMLInputTypeAttribute
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: passed to HTML defaultValue/defaultChecked — must accept any input value type
   value?: any
   autoFocus?: boolean
   autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
@@ -436,8 +406,7 @@ type SmartInputSlot<
 
 type SmartInputProps<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -516,8 +485,19 @@ const makeOptionComponents = (
   options: Option[] | undefined
 ) => (options ? options.map(fn) : undefined)
 
-// biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-function createSmartInput(idPrefix: string, components: Record<string, any>) {
+function createSmartInput(
+  idPrefix: string,
+  components: Pick<
+    ComponentSlots,
+    | 'input'
+    | 'fileInput'
+    | 'multiline'
+    | 'select'
+    | 'checkbox'
+    | 'radio'
+    | 'radioLabel'
+  >
+) {
   const {
     input: Input,
     fileInput: FileInput,
@@ -665,8 +645,56 @@ function fieldTypeFromInfo(info: SchemaInfo): FieldType {
   return (info.type ?? 'string') as FieldType
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: internal component — type safety is at the consumer level
-function ArrayFieldInner(props: Record<string, any>) {
+// biome-ignore lint/suspicious/noExplicitAny: helper shape varies per field type (scalar/array/object children types)
+type ChildrenRenderFn = (...args: any[]) => React.ReactNode
+
+type FieldMetadata = {
+  dirty?: boolean
+  autoFocus?: boolean
+  errors?: string[]
+  fieldType: FieldType
+  hidden?: boolean
+  label?: string
+  multiline?: boolean
+  options?: Option[]
+  placeholder?: string
+  autoComplete?: JSX.IntrinsicElements['input']['autoComplete']
+  radio?: boolean
+  required?: boolean
+  shape?: SchemaInfo
+  // biome-ignore lint/suspicious/noExplicitAny: form field value passed to HTML defaultValue/defaultChecked
+  value?: any
+}
+
+type InternalFieldBaseProps<S extends SchemaInfo = SchemaInfo> = {
+  name: string
+  label?: string
+  shape: S
+  errors?: string[]
+  hidden?: boolean
+  fieldProps?: Record<string, unknown>
+  childrenFn?: ChildrenRenderFn
+  field: FieldMetadata
+  idPrefix: string
+  components: ComponentSlots
+  // biome-ignore lint/suspicious/noExplicitAny: forward ref to FieldRouter — concrete type resolved at runtime
+  fieldRouter: React.ComponentType<any>
+  renderFunctions: RenderFunctions
+  defaultEmptyArrayLabel: string
+  defaultAddButtonLabel: string
+  defaultRemoveButtonLabel: string
+}
+
+type ArrayFieldInnerProps = InternalFieldBaseProps<ArraySchemaInfo> & {
+  register: UseFormRegister<FieldValues>
+  emptyArrayLabel: string
+  addButtonLabel: string
+  removeButtonLabel: string
+}
+
+type ObjectFieldInnerProps = InternalFieldBaseProps<ObjectSchemaInfo>
+
+function ArrayFieldInner(props: ArrayFieldInnerProps) {
   const {
     name,
     label,
@@ -725,8 +753,8 @@ function ArrayFieldInner(props: Record<string, any>) {
 
   const { style: userStyle, ...restFieldProps } = fieldProps ?? {}
   const mergedStyle = hidden
-    ? { display: 'none' as const, ...userStyle }
-    : userStyle
+    ? { display: 'none' as const, ...(userStyle as React.CSSProperties) }
+    : (userStyle as React.CSSProperties | undefined)
 
   const asFieldArrayValue = (v: unknown) => (Array.isArray(v) ? [v] : v)
   const isScalarItem = itemShape.type !== 'object' && itemShape.type !== 'array'
@@ -809,8 +837,7 @@ function ArrayFieldInner(props: Record<string, any>) {
         children: itemChildrenFn,
       }: {
         index?: number
-        // biome-ignore lint/suspicious/noExplicitAny: Resolved is generic inside the implementation — only consumers make it specific
-        children?: (...args: any[]) => React.ReactNode
+        children?: ChildrenRenderFn
       }) {
         const itemName = `${String(name)}.${index}`
         const itemHtmlName = dotToBracket(itemName)
@@ -925,8 +952,7 @@ function ArrayFieldInner(props: Record<string, any>) {
             )
           }
 
-          // biome-ignore lint/suspicious/noExplicitAny: internal auto-render — type safety is at the consumer level
-          const smartInputProps: Record<string, any> = {
+          const smartInputProps = {
             fieldType: itemFieldType,
             type: itemType,
             options: itemOptions,
@@ -938,7 +964,10 @@ function ArrayFieldInner(props: Record<string, any>) {
           return (
             <ItemWrapper>
               <ScalarArrayFieldComp>
-                {React.createElement(ChildSmartInput, smartInputProps)}
+                {React.createElement(
+                  ChildSmartInput,
+                  smartInputProps as SmartInputBaseProps
+                )}
                 {Boolean(itemErrorsChildren) && (
                   <Errors role="alert" id={itemErrorsId}>
                     {itemErrorsChildren}
@@ -1038,27 +1067,25 @@ function ArrayFieldInner(props: Record<string, any>) {
       index,
     }))
 
-    const childrenDefinition =
-      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
-      (childrenFn as (...args: any[]) => React.ReactNode)({
-        name,
-        Title: ArrayTitle,
-        Errors,
-        Error,
-        items,
-        Item,
-        append: appendDefault,
-        prepend: prependDefault,
-        remove,
-        insert: insertDefault,
-        move,
-        swap,
-        AddButton,
-        RemoveButton,
-        ArrayEmpty: ArrayEmptyComp,
-        ScalarArrayField: ScalarArrayFieldComp,
-        ...fieldMeta,
-      })
+    const childrenDefinition = (childrenFn as ChildrenRenderFn)({
+      name,
+      Title: ArrayTitle,
+      Errors,
+      Error,
+      items,
+      Item,
+      append: appendDefault,
+      prepend: prependDefault,
+      remove,
+      insert: insertDefault,
+      move,
+      swap,
+      AddButton,
+      RemoveButton,
+      ArrayEmpty: ArrayEmptyComp,
+      ScalarArrayField: ScalarArrayFieldComp,
+      ...fieldMeta,
+    })
 
     let itemIndex = 0
     const children = mapChildren(childrenDefinition, (child) => {
@@ -1154,8 +1181,7 @@ function ArrayFieldInner(props: Record<string, any>) {
   )
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: internal component — generics are for the external API
-function ObjectFieldInner(props: Record<string, any>) {
+function ObjectFieldInner(props: ObjectFieldInnerProps) {
   const {
     name,
     label,
@@ -1193,8 +1219,8 @@ function ObjectFieldInner(props: Record<string, any>) {
 
   const { style: userStyle, ...restFieldProps } = fieldProps ?? {}
   const mergedStyle = hidden
-    ? { display: 'none' as const, ...userStyle }
-    : userStyle
+    ? { display: 'none' as const, ...(userStyle as React.CSSProperties) }
+    : (userStyle as React.CSSProperties | undefined)
 
   const htmlName = dotToBracket(String(name))
   const labelId = `${idPrefix}label-for-${htmlName}`
@@ -1253,17 +1279,15 @@ function ObjectFieldInner(props: Record<string, any>) {
   )
 
   if (childrenFn) {
-    const childrenDefinition =
-      // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side
-      (childrenFn as (...args: any[]) => React.ReactNode)({
-        name,
-        Title: ObjectTitle,
-        Field: ScopedField,
-        ObjectFields: ObjectFieldsComp,
-        Errors,
-        Error,
-        ...field,
-      })
+    const childrenDefinition = (childrenFn as ChildrenRenderFn)({
+      name,
+      Title: ObjectTitle,
+      Field: ScopedField,
+      ObjectFields: ObjectFieldsComp,
+      Errors,
+      Error,
+      ...field,
+    })
 
     const children = mapChildren(childrenDefinition, (child) => {
       if (child.type === ObjectTitle) {
@@ -1358,8 +1382,7 @@ type RenderFunctions = {
 
 function createField<
   Schema extends FormSchema,
-  // biome-ignore lint/suspicious/noExplicitAny: resolved map varies per call site
-  Resolved extends Record<string, any>,
+  Resolved extends ComponentSlots,
   Multiline extends ReadonlyArray<keyof Infer<Schema>>,
   Radio extends ReadonlyArray<keyof Infer<Schema>>,
   Hidden extends ReadonlyArray<keyof Infer<Schema>>,
@@ -1372,8 +1395,7 @@ function createField<
   addButtonLabel: defaultAddButtonLabel = 'Add',
   removeButtonLabel: defaultRemoveButtonLabel = 'Remove',
 }: {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  register: UseFormRegister<any>
+  register: UseFormRegister<Infer<Schema>>
   idPrefix: string
   components: Resolved
   renderFunctions: RenderFunctions
@@ -1386,8 +1408,7 @@ function createField<
     current: null,
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: widen for internal JSX rendering — generics are for the external API
-  const c = components as Record<string, React.ComponentType<any>>
+  const c = components as ComponentSlots
   const Field = c.field
   const Label = c.label
   const Input = c.input
@@ -1475,9 +1496,6 @@ function createField<
             label={label}
             shape={shape}
             errors={errors}
-            dirty={dirty}
-            required={required}
-            autoFocus={autoFocus}
             hidden={hidden}
             fieldProps={fieldProps}
             childrenFn={childrenFn}
@@ -1489,7 +1507,7 @@ function createField<
             removeButtonLabel={removeButtonLabel}
             // biome-ignore lint/suspicious/noExplicitAny: FieldRouter is the outer component
             fieldRouter={FieldRouter.current as React.ComponentType<any>}
-            register={register}
+            register={register as UseFormRegister<FieldValues>}
             renderFunctions={renderFunctions}
             defaultEmptyArrayLabel={defaultEmptyArrayLabel}
             defaultAddButtonLabel={defaultAddButtonLabel}
@@ -1524,22 +1542,25 @@ function createField<
       const type =
         typeProp ?? (hidden ? 'hidden' : getInputType(fieldType, radio))
 
-      const { ref: registerRef, ...rawRegisterProps } = register(String(name), {
-        setValueAs:
-          fieldType === 'file'
-            ? undefined
-            : (value) => {
-                try {
-                  return coerceValue(
-                    value,
-                    shape ?? { type: null, optional: false, nullable: false }
-                  )
-                } catch (error) {
-                  if (error instanceof FormDataCoercionError) return null
-                  throw error
-                }
-              },
-      })
+      const { ref: registerRef, ...rawRegisterProps } = register(
+        String(name) as Path<Infer<Schema>>,
+        {
+          setValueAs:
+            fieldType === 'file'
+              ? undefined
+              : (value) => {
+                  try {
+                    return coerceValue(
+                      value,
+                      shape ?? { type: null, optional: false, nullable: false }
+                    )
+                  } catch (error) {
+                    if (error instanceof FormDataCoercionError) return null
+                    throw error
+                  }
+                },
+        }
+      )
       const registerProps = { ...rawRegisterProps, name: htmlName }
 
       const a11yProps = {
@@ -1555,33 +1576,30 @@ function createField<
       )
 
       if (childrenFn) {
-        const childrenDefinition =
-          // biome-ignore lint/suspicious/noExplicitAny: type safety is enforced on the consumer side via FieldBaseProps
-          (childrenFn as (...args: any[]) => React.ReactNode)({
-            Label,
-            SmartInput,
-            Input,
-            FileInput,
-            Multiline,
-            Select,
-            Checkbox,
-            Radio,
-            RadioGroup,
-            RadioLabel,
-            CheckboxLabel,
-            Errors,
-            Error,
-            ref,
-            name,
-            type,
-            ...field,
-          })
+        const childrenDefinition = (childrenFn as ChildrenRenderFn)({
+          Label,
+          SmartInput,
+          Input,
+          FileInput,
+          Multiline,
+          Select,
+          Checkbox,
+          Radio,
+          RadioGroup,
+          RadioLabel,
+          CheckboxLabel,
+          Errors,
+          Error,
+          ref,
+          name,
+          type,
+          ...field,
+        })
 
         const children = mapChildren(childrenDefinition, (child) => {
           const mergedRef = (instance: unknown) => {
             registerRef(instance)
-            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            const { ref: childRef } = child as any
+            const childRef = (child as { ref?: { current: unknown } }).ref
             if (childRef) {
               childRef.current = instance
             }
@@ -1596,7 +1614,7 @@ function createField<
             })
           }
           if (child.type === SmartInput) {
-            const smartInputProps: SmartInputBaseProps = {
+            const smartInputProps = {
               fieldType,
               type,
               options: options,
