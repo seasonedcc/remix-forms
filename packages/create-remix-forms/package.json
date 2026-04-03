@@ -1,0 +1,29 @@
+{
+  "name": "create-remix-forms",
+  "version": "0.1.0",
+  "description": "Scaffold styled components for remix-forms",
+  "type": "module",
+  "bin": {
+    "create-remix-forms": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "tsc": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.1",
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "5.8.3",
+    "vitest": "2.1.8"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

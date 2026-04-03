@@ -232,8 +232,24 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <Code>{customInputCode}</Code>
       <SubHeading>[Optional] Customize styles</SubHeading>
       <p>
-        Remix Forms doesn&apos;t ship any styles, so you might want to configure
-        basic styles for your forms. Let&apos;s edit our custom{' '}
+        Remix Forms works out of the box with unstyled HTML elements, but
+        you&apos;ll probably want styled components. The easiest way is to use
+        our CLI:
+      </p>
+      <Pre>npx create-remix-forms</Pre>
+      <p>
+        It will scaffold a <em>schema-form</em> directory with styled components
+        for every slot. Two presets are available: <strong>Tailwind CSS</strong>{' '}
+        (plain utility classes) and <strong>DaisyUI</strong> (Tailwind + DaisyUI
+        component classes).
+      </p>
+      <p>You can also skip the prompts with flags:</p>
+      <Pre>
+        npx create-remix-forms --preset daisyui --output ./app/ui/schema-form
+      </Pre>
+      <SubHeading>[Alternative] Manual setup</SubHeading>
+      <p>
+        If you prefer to set things up manually, create a custom{' '}
         <em>SchemaForm</em> component:
       </p>
       <Code>{stylesCode}</Code>

@@ -1,0 +1,173 @@
+import type { SlotDefinition } from '../types'
+
+const slotDefinitions: SlotDefinition[] = [
+  {
+    slotName: 'form',
+    fileName: 'form.tsx',
+    exportName: 'Form',
+    pattern: 'form',
+  },
+  {
+    slotName: 'fields',
+    fileName: 'fields.tsx',
+    exportName: 'Fields',
+    pattern: 'function-div',
+  },
+  {
+    slotName: 'field',
+    fileName: 'field.tsx',
+    exportName: 'Field',
+    pattern: 'function-div',
+  },
+  {
+    slotName: 'label',
+    fileName: 'label.tsx',
+    exportName: 'Label',
+    pattern: 'function-label',
+  },
+  {
+    slotName: 'input',
+    fileName: 'input.tsx',
+    exportName: 'Input',
+    pattern: 'forwardRef-input',
+    defaultProps: { type: "'text'" },
+  },
+  {
+    slotName: 'multiline',
+    fileName: 'multiline.tsx',
+    exportName: 'Multiline',
+    pattern: 'forwardRef-textarea',
+  },
+  {
+    slotName: 'select',
+    fileName: 'select.tsx',
+    exportName: 'Select',
+    pattern: 'forwardRef-select',
+  },
+  {
+    slotName: 'checkbox',
+    fileName: 'checkbox.tsx',
+    exportName: 'Checkbox',
+    pattern: 'forwardRef-input',
+    defaultProps: { type: "'checkbox'" },
+  },
+  {
+    slotName: 'fileInput',
+    fileName: 'file-input.tsx',
+    exportName: 'FileInput',
+    pattern: 'forwardRef-input',
+  },
+  {
+    slotName: 'radio',
+    fileName: 'radio.tsx',
+    exportName: 'Radio',
+    pattern: 'forwardRef-input',
+    defaultProps: { type: "'radio'" },
+  },
+  {
+    slotName: 'radioGroup',
+    fileName: 'radio-group.tsx',
+    exportName: 'RadioGroup',
+    pattern: 'function-fieldset',
+  },
+  {
+    slotName: 'radioLabel',
+    fileName: 'radio-label.tsx',
+    exportName: 'RadioLabel',
+    pattern: 'function-label',
+  },
+  {
+    slotName: 'checkboxLabel',
+    fileName: 'checkbox-label.tsx',
+    exportName: 'CheckboxLabel',
+    pattern: 'function-label',
+  },
+  {
+    slotName: 'fieldErrors',
+    fileName: 'field-errors.tsx',
+    exportName: 'FieldErrors',
+    pattern: 'function-div',
+  },
+  {
+    slotName: 'globalErrors',
+    fileName: 'global-errors.tsx',
+    exportName: 'GlobalErrors',
+    pattern: 'function-div',
+  },
+  {
+    slotName: 'error',
+    fileName: 'error.tsx',
+    exportName: 'Error',
+    pattern: 'function-div',
+  },
+  {
+    slotName: 'button',
+    fileName: 'button.tsx',
+    exportName: 'Button',
+    pattern: 'button-wrapped',
+  },
+  {
+    slotName: 'scalarArrayField',
+    fileName: 'scalar-array-field.tsx',
+    exportName: 'ScalarArrayField',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'scalarArrayItem',
+    fileName: 'scalar-array-item.tsx',
+    exportName: 'ScalarArrayItem',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'objectArrayItem',
+    fileName: 'object-array-item.tsx',
+    exportName: 'ObjectArrayItem',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'arrayArrayItem',
+    fileName: 'array-array-item.tsx',
+    exportName: 'ArrayArrayItem',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'addButton',
+    fileName: 'add-button.tsx',
+    exportName: 'AddButton',
+    pattern: 'forwardRef-button',
+    defaultProps: { type: "'button'" },
+  },
+  {
+    slotName: 'removeButton',
+    fileName: 'remove-button.tsx',
+    exportName: 'RemoveButton',
+    pattern: 'forwardRef-button',
+    defaultProps: { type: "'button'" },
+  },
+  {
+    slotName: 'arrayEmpty',
+    fileName: 'array-empty.tsx',
+    exportName: 'ArrayEmpty',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'arrayTitle',
+    fileName: 'array-title.tsx',
+    exportName: 'ArrayTitle',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'objectTitle',
+    fileName: 'object-title.tsx',
+    exportName: 'ObjectTitle',
+    pattern: 'forwardRef-div',
+  },
+  {
+    slotName: 'objectFields',
+    fileName: 'object-fields.tsx',
+    exportName: 'ObjectFields',
+    pattern: 'forwardRef-div',
+  },
+]
+
+export { slotDefinitions }

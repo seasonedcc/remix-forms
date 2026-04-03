@@ -50,7 +50,7 @@
         "useSortedClasses": {
           "options": {
             "attributes": [],
-            "functions": ["cx"]
+            "functions": ["cx", "twMerge"]
           },
           "level": "warn",
           "fix": "safe"
