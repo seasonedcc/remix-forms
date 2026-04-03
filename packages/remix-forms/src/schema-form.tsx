@@ -739,7 +739,7 @@ function makeSchemaForm<Base extends Partial<ComponentMap>>(
       [valuesProp, actionValues]
     )
 
-    const fields = schemaFields(schema)
+    const fields = React.useMemo(() => schemaFields(schema), [schema])
     const hasFileFields = Object.values(fields).some(
       (info) => info.type === 'file'
     )
